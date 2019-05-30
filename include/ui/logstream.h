@@ -1,16 +1,11 @@
-#ifndef UI_LOGSTREAM_H_
-#define UI_LOGSTREAM_H_
+#ifndef HAUNTED_UI_LOGSTREAM_H_
+#define HAUNTED_UI_LOGSTREAM_H_
 
 #include <memory>
-#include "ui/ui.h"
 
-namespace spjalla {
+namespace haunted::ui {
 	class logstream {
-		private:
-			// ui &parent;
 
-		public:
-			// logstream(ui &ui_): parent(ui_) {}
 	};
 }
 

@@ -4,3 +4,4 @@ UNISRC    := uniset uobject uvector uvectr32 uvectr64 unifilt unifunct unistr us
 CFLAGS    += -Iicu/icu4c/source/common -Iicu/icu4c/source/common/unicode
 COMMONSRC += $(patsubst %,src/lib/unicode/%.cpp,$(UNISRC))
 COMMONSRC += src/lib/utf8.cpp
+COMMONSRC += src/lib/utf8.cpp

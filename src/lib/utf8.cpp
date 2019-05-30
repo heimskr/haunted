@@ -1,7 +1,7 @@
 #include "lib/utf8.h"
 #include "unicode/unistr.h"
 
-namespace spjalla {
+namespace haunted {
 	/**
 	 * Determines the expected codepoint width for a given start byte.
 	 * @param ch The initial byte of the codepoint.

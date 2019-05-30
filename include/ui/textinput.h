@@ -1,5 +1,5 @@
-#ifndef UI_TEXTINPUT_H_
-#define UI_TEXTINPUT_H_
+#ifndef HAUNTED_UI_TEXTINPUT_H_
+#define HAUNTED_UI_TEXTINPUT_H_
 
 #include <cstddef>
 #include <functional>
@@ -7,10 +7,10 @@
 #include <string>
 #include <unordered_set>
 
-#include "ui/defs.h"
-#include "lib/utf8.h"
+#include "defs.h"
+#include "../lib/utf8.h"
 
-namespace spjalla {
+namespace haunted::ui {
 	class textinput {
 		using update_fn = std::function<void(const utf8str &, int)>;
 

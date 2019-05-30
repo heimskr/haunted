@@ -1,7 +1,7 @@
 #include "ui/textinput.h"
 #include "lib/utf8.h"
 
-namespace spjalla {
+namespace haunted::ui {
 	std::unordered_set<unsigned char> textinput::whitelist = {9, 10, 11, 13};
 
 	void textinput::update() {

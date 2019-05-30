@@ -1,13 +1,12 @@
-#ifndef LIB_UTF8_H_
-#define LIB_UTF8_H_
+#ifndef HAUNTED_LIB_UTF8_H_
+#define HAUNTED_LIB_UTF8_H_
 
 #include <string>
 
 #include "unicode/unistr.h"
 
-namespace spjalla {
+namespace haunted {
 	using utf8char = int32_t;
-
 
 	class utf8 {
 		public:

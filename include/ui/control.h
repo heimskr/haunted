@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "core/defs.h"
+#include "ui/control.h"
 
 namespace haunted::ui {
 	/**
