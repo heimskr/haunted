@@ -17,7 +17,7 @@ endif
 all: Makefile
 
 # Peter Miller, "Recursive Make Considered Harmful" (http://aegis.sourceforge.net/auug97.pdf)
-MODULES			:= core ui ui/boxes
+MODULES			:= core lib ui ui/boxes
 COMMONSRC		:=
 SRC				:=
 CFLAGS			+= -Iinclude
@@ -49,7 +49,16 @@ grind: $(OUTPUT)
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=no ./$(OUTPUT)
 
 clean:
-	rm -rf build
+	@ tmpdir=".build.$$RANDOM"; mkdir "$$tmpdir";                                \
+	  if [ -e build/lib/unicode ]; then echo "Saving Unicode directory.";        \
+	      mv build/lib/unicode "$$tmpdir/unicode";  fi;                          \
+	  rm -rf build;                                                              \
+	  if [ -e "$$tmpdir/unicode" ];  then echo "Restoring Unicode directory.";   \
+	      mkdir -p build/lib;      mv "$$tmpdir/unicode"  build/lib/unicode; fi; \
+	  rm -rf "$$tmpdir";
+
+spotless:
+	rm -rf build $(DEPFILE)
 
 DEPFILE  = .dep
 DEPTOKEN = "\# MAKEDEPENDS"
