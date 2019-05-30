@@ -12,9 +12,11 @@ int main(int, char **) {
 
 	key k;
 	while (term >> k) {
-		std::cout << "\r" << std::setw(3) << std::left << std::setfill(' ') << static_cast<int>(k) << " " << k << std::endl;
-		if (k == '|')
+		std::cout << "\r" << std::setw(3) << std::left << std::setfill(' ') << int(k) << " " << k << std::endl;
+		if (k == '\\')
 			break;
+		else if (k == '.')
+			term.raw = !term.raw;
 	}
 
 	std::cout << "Terminating." << std::endl;

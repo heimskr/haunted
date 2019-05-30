@@ -13,8 +13,9 @@ namespace haunted {
 	 * If the key is greater than 127, this returns zero.
 	 */
 	key::operator char() const {
-		char c = static_cast<char>(type);
-		return 127 < c? 0 : c;
+		// char c = static_cast<char>(type);
+		// return 127 < c? 0 : c;
+		return type;
 	}
 
 	/**
@@ -22,6 +23,18 @@ namespace haunted {
 	 */
 	key::operator int() const {
 		return type;
+	}
+
+	key::operator std::string() const {
+		std::string out;
+		if (ctrl) out.append("⌃ ");
+		if (alt)  out.append("⎇ ");
+		auto found = keymap.find(type);
+		if (found != keymap.end())
+			out += found->second;
+		else
+			out += static_cast<char>(type);
+		return out;
 	}
 
 	/**
@@ -48,4 +61,16 @@ namespace haunted {
 	bool key::operator==(char right) const {
 		return type == right;
 	}
+
+	std::ostream & operator<<(std::ostream &os, const key &k) {
+		os << std::string(k);
+		return os;
+	}
+
+	std::unordered_map<key_type, std::string> key::keymap = {
+		{key_type::up,    "↑"},
+		{key_type::down,  "↓"},
+		{key_type::right, "→"},
+		{key_type::left,  "←"}
+	};
 }

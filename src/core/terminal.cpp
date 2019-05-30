@@ -60,18 +60,30 @@ namespace haunted {
 	}
 
 	terminal & terminal::operator>>(key &k) {
-		char c = 0;
+		char c;
+		if (raw) {
+			in_stream >> c;
+			k = c;
+			return *this;
+		}
+
 		k = 0;
-		if (!(in_stream >> c)) return *this;
-		if (c == key_type::alt) {
-			if (!(in_stream >> c)) return *this;
-			if (c == key_type::open_square) {
-				if (!(in_stream >> c)) return *this;
-				if (key_type::A <= c && c <= key_type::D)
+		if (!(in_stream >> c)) {
+			return *this;
+		} else if (c == key_type::alt) {
+			if (!(in_stream >> c)) {
+				return *this;
+			} else if (c == key_type::open_square) {
+				if (!(in_stream >> c)) {
+					return *this;
+				} else if (key_type::A <= c && c <= key_type::D) {
 					k = key_type::up + c - key_type::A;
-				else
-					k = {key_type(c), 0, 1};
+					return *this;
+				}
 			}
+			k = {c, false, true};
+		} else {
+			k = c;
 		}
 
 		return *this;

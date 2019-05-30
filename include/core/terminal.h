@@ -25,6 +25,7 @@ namespace haunted {
 
 		public:
 			termios attrs;
+			bool raw = false;
 
 			terminal(std::istream &);
 			terminal();
