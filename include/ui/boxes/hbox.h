@@ -1,10 +1,10 @@
-#ifndef HAUNTED_BOXES_HBOX_H_
-#define HAUNTED_BOXES_HBOX_H_
+#ifndef HAUNTED_UI_BOXES_HBOX_H_
+#define HAUNTED_UI_BOXES_HBOX_H_
 
-#include "haunted/defs.h"
-#include "haunted/boxes/box_dual.h"
+#include "core/defs.h"
+#include "ui/boxes/box_dual.h"
 
-namespace haunted::boxes {
+namespace haunted::ui::boxes {
 	/**
 	 * Represents a box that holds two children and displays them horizontally.
 	 * The first child is on the left, the second on the right.

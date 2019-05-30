@@ -1,5 +1,5 @@
-COMMONSRC += src/boxes/box.cpp
-COMMONSRC += src/boxes/box_dual.cpp
-COMMONSRC += src/boxes/box_propo.cpp
-COMMONSRC += src/boxes/hbox.cpp
-COMMONSRC += src/boxes/hbox_propo.cpp
+COMMONSRC += src/ui/boxes/box.cpp
+COMMONSRC += src/ui/boxes/box_dual.cpp
+COMMONSRC += src/ui/boxes/box_propo.cpp
+COMMONSRC += src/ui/boxes/hbox.cpp
+COMMONSRC += src/ui/boxes/hbox_propo.cpp

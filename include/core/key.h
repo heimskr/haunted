@@ -1,5 +1,5 @@
-#ifndef HAUNTED_KEYS_H_
-#define HAUNTED_KEYS_H_
+#ifndef HAUNTED_CORE_KEYS_H_
+#define HAUNTED_CORE_KEYS_H_
 
 namespace haunted {
 	enum key_type {

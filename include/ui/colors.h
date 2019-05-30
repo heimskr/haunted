@@ -1,5 +1,5 @@
-#ifndef HAUNTED_COLORS_H_
-#define HAUNTED_COLORS_H_
+#ifndef HAUNTED_UI_COLORS_H_
+#define HAUNTED_UI_COLORS_H_
 
 namespace spjalla {
 	

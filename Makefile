@@ -17,7 +17,7 @@ endif
 all: Makefile
 
 # Peter Miller, "Recursive Make Considered Harmful" (http://aegis.sourceforge.net/auug97.pdf)
-MODULES			:= core boxes
+MODULES			:= core ui ui/boxes
 COMMONSRC		:=
 SRC				:=
 CFLAGS			+= -Iinclude
@@ -32,7 +32,7 @@ SRC_ALL			:= $(SRC) $(SRC_PP)
 
 sinclude $(patsubst %,src/%/targets.mk,$(MODULES))
 
-all: $(COMMONOBJ) $(OUTPUT)
+all: $(COMMONOBJ)
 
 build/tests: build/tests/tests.o $(COMMONOBJ)
 	@ $(MKBUILD)

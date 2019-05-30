@@ -1,10 +1,10 @@
 #ifndef HAUNTED_UI_BOXES_BOX_PROPO_H_
 #define HAUNTED_UI_BOXES_BOX_PROPO_H_
 
-#include "boxes/box.h"
-#include "boxes/box_dual.h"
+#include "ui/boxes/box.h"
+#include "ui/boxes/box_dual.h"
 
-namespace haunted::boxes {
+namespace haunted::ui::boxes {
 	/**
 	 * Represents a box whose two children's width are determined with a ratio. 
 	 * For example, if the ratio is 1.5, the first child's size will be 1.5x

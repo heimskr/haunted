@@ -1,5 +1,5 @@
-#include "boxes/hbox_propo.h"
+#include "ui/boxes/hbox_propo.h"
 
-namespace haunted::boxes {
+namespace haunted::ui::boxes {
 	
 }

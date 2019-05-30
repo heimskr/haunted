@@ -1,9 +1,9 @@
-#ifndef HAUNTED_CONTROL_H_
-#define HAUNTED_CONTROL_H_
+#ifndef HAUNTED_UI_CONTROL_H_
+#define HAUNTED_UI_CONTROL_H_
 
 #include <vector>
 
-#include "haunted/defs.h"
+#include "core/defs.h"
 
 namespace haunted {
 	/**

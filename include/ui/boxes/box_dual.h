@@ -1,9 +1,9 @@
-#ifndef BOXES_BOX_DUAL_H_
-#define BOXES_BOX_DUAL_H_
+#ifndef HAUNTED_UI_BOXES_BOX_DUAL_H_
+#define HAUNTED_UI_BOXES_BOX_DUAL_H_
 
-#include "boxes/box.h"
+#include "ui/boxes/box.h"
 
-namespace haunted::boxes {
+namespace haunted::ui::boxes {
 	class box_dual: public virtual box {
 		protected:
 			using box::box;

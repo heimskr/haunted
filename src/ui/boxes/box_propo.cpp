@@ -1,9 +1,9 @@
 #include <stdexcept>
 
-#include "boxes/box_dual.h"
-#include "boxes/box_propo.h"
+#include "ui/boxes/box_dual.h"
+#include "ui/boxes/box_propo.h"
 
-namespace haunted::boxes {
+namespace haunted::ui::boxes {
 	box_propo::box_propo(const position &pos_, double ratio_): control(pos_), box_dual(pos_), ratio(ratio_) {
 		if (ratio_ < 0)
 			throw std::domain_error("Box ratio cannot be negative");

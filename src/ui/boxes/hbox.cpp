@@ -1,6 +1,6 @@
-#include "boxes/hbox.h"
+#include "ui/boxes/hbox.h"
 
-namespace haunted::boxes {
+namespace haunted::ui::boxes {
 	void hbox::resize(const position &new_pos) {
 		if (control *left = (*this)[0])
 			left->resize({new_pos.left, new_pos.top, size_one(), new_pos.height});

@@ -1,11 +1,11 @@
-#ifndef HAUNTED_TERMINAL_H_
-#define HAUNTED_TERMINAL_H_
+#ifndef HAUNTED_CORE_TERMINAL_H_
+#define HAUNTED_CORE_TERMINAL_H_
 
 #include <iostream>
 #include <memory>
 #include <termios.h>
 
-#include "haunted/key.h"
+#include "core/key.h"
 
 namespace haunted {
 	/**

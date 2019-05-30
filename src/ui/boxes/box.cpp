@@ -1,5 +1,5 @@
-#include "boxes/box.h"
+#include "ui/boxes/box.h"
 
-namespace haunted::boxes {
+namespace haunted::ui::boxes {
 	
 }
