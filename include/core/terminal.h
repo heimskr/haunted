@@ -35,6 +35,7 @@ namespace haunted {
 
 			operator bool() const;
 			terminal & operator>>(char &);
+			terminal & operator>>(key &);
 	};
 }
 

@@ -18,7 +18,7 @@ endif
 all: Makefile
 
 # Peter Miller, "Recursive Make Considered Harmful" (http://aegis.sourceforge.net/auug97.pdf)
-MODULES			:= core lib ui ui/boxes
+MODULES			:= core lib ui ui/boxes tests
 COMMONSRC		:=
 SRC				:=
 CFLAGS			+= -Iinclude
@@ -42,9 +42,6 @@ build/tests: build/tests/tests.o $(COMMONOBJ)
 build/%.o: src/%.cpp
 	@ mkdir -p "$(shell dirname "$@")"
 	$(CC) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
-
-test: $(OUTPUT)
-	./$(OUTPUT)
 
 grind: $(OUTPUT)
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=no ./$(OUTPUT)

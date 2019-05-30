@@ -13,7 +13,9 @@ namespace haunted {
 		          A =  65, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
 		          a =  97, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z,
 
-		carriage_return = 13, escape = 27, less_than = 60,  greater_than = 62
+		carriage_return = 13, alt = 27, escape = 27, less_than = 60,  greater_than = 62,
+
+		up = 128, down, right, left,
 	};
 
 	struct key {
@@ -22,9 +24,15 @@ namespace haunted {
 
 		key(key_type type_, bool ctrl_, bool alt_): type(type_), ctrl(ctrl_), alt(alt_) {}
 		key(key_type type_): key(type_, false, false) {}
+		key(char c): key(key_type(c)) {}
+		key(): key('\0') {}
 
+		operator bool() const;
 		operator char() const;
+		operator int() const;
 		bool operator<=>(char) const;
+		bool operator==(const key &) const;
+		bool operator==(char) const;
 	};
 }
 

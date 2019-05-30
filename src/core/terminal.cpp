@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include "core/terminal.h"
+#include "core/key.h"
 
 namespace haunted {
 	terminal::terminal(std::istream &in_stream_): in_stream(in_stream_) {
@@ -42,7 +43,8 @@ namespace haunted {
 	}
 
 	void terminal::cbreak() {
-		attrs.c_lflag &= ~(ECHO | ICANON);
+		attrs.c_lflag &= ~(ECHO | ICANON | ISIG);
+		attrs.c_iflag &= ~IXON;
 		apply();
 	}
 
@@ -52,12 +54,24 @@ namespace haunted {
 
 	terminal & terminal::operator>>(char &ch) {
 		char c = 0;
-		if (in_stream >> c) {
-			if (c == 27) {
-
-			}
-
+		if (in_stream >> c)
 			ch = c;
+		return *this;
+	}
+
+	terminal & terminal::operator>>(key &k) {
+		char c = 0;
+		k = 0;
+		if (!(in_stream >> c)) return *this;
+		if (c == key_type::alt) {
+			if (!(in_stream >> c)) return *this;
+			if (c == key_type::open_square) {
+				if (!(in_stream >> c)) return *this;
+				if (key_type::A <= c && c <= key_type::D)
+					k = key_type::up + c - key_type::A;
+				else
+					k = {key_type(c), 0, 1};
+			}
 		}
 
 		return *this;
