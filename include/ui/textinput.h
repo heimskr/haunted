@@ -7,7 +7,7 @@
 #include <string>
 #include <unordered_set>
 
-#include "defs.h"
+#include "../core/defs.h"
 #include "../lib/utf8.h"
 
 namespace haunted::ui {

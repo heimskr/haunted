@@ -1,8 +1,15 @@
 #ifndef HAUNTED_CORE_DEFS_H_
 #define HAUNTED_CORE_DEFS_H_
 
+#include <cstddef>
+
 namespace haunted {
 	enum side {left, right, top, bottom};
+
+	struct point {
+		size_t x, y;
+		point(size_t x_, size_t y_): x(x_), y(y_) {}
+	};
 
 	struct position {
 		int left, top, width, height;
