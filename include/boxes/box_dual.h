@@ -1,7 +1,7 @@
-#ifndef HAUNTED_BOXES_BOX_DUAL_H_
-#define HAUNTED_BOXES_BOX_DUAL_H_
+#ifndef BOXES_BOX_DUAL_H_
+#define BOXES_BOX_DUAL_H_
 
-#include "haunted/boxes/box.h"
+#include "boxes/box.h"
 
 namespace haunted::boxes {
 	class box_dual: public virtual box {

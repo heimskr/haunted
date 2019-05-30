@@ -1,8 +1,8 @@
-#ifndef HAUNTED_BOXES_BOX_PROPO_H_
-#define HAUNTED_BOXES_BOX_PROPO_H_
+#ifndef HAUNTED_UI_BOXES_BOX_PROPO_H_
+#define HAUNTED_UI_BOXES_BOX_PROPO_H_
 
-#include "haunted/boxes/box.h"
-#include "haunted/boxes/box_dual.h"
+#include "boxes/box.h"
+#include "boxes/box_dual.h"
 
 namespace haunted::boxes {
 	/**

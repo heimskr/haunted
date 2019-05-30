@@ -1,4 +1,4 @@
-#include "haunted/defs.h"
+#include "core/defs.h"
 
 namespace haunted {
 	position::operator bool() const {

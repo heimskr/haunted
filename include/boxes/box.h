@@ -1,10 +1,10 @@
-#ifndef HAUNTED_BOXES_BOX_H_
-#define HAUNTED_BOXES_BOX_H_
+#ifndef HAUNTED_UI_BOXES_BOX_H_
+#define HAUNTED_UI_BOXES_BOX_H_
 
-#include "haunted/defs.h"
-#include "haunted/control.h"
+#include "defs.h"
+#include "control.h"
 
-namespace haunted::boxes {
+namespace haunted::ui::boxes {
 	/**
 	 * Base class representing boxes, which are controls that contain
 	 * two subcontrols and provide resize them as appropriate.

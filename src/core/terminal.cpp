@@ -4,7 +4,7 @@
 
 #include <unistd.h>
 
-#include "haunted/terminal.h"
+#include "core/terminal.h"
 
 namespace haunted {
 	terminal::terminal(std::istream &in_stream_): in_stream(in_stream_) {

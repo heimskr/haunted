@@ -1,4 +1,4 @@
-#include "haunted/boxes/box_dual.h"
+#include "boxes/box_dual.h"
 
 namespace haunted::boxes {
 	int box_dual::max_children() const {

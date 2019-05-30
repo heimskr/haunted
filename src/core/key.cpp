@@ -1,4 +1,4 @@
-#include "haunted/key.h"
+#include "core/key.h"
 
 namespace haunted {
 	/**

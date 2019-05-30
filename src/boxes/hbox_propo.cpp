@@ -1,4 +1,4 @@
-#include "haunted/boxes/hbox_propo.h"
+#include "boxes/hbox_propo.h"
 
 namespace haunted::boxes {
 	

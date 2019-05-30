@@ -1,4 +1,4 @@
-#include "haunted/boxes/hbox.h"
+#include "boxes/hbox.h"
 
 namespace haunted::boxes {
 	void hbox::resize(const position &new_pos) {

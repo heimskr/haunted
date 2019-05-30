@@ -1,7 +1,7 @@
 #include <stdexcept>
 
-#include "haunted/boxes/box_dual.h"
-#include "haunted/boxes/box_propo.h"
+#include "boxes/box_dual.h"
+#include "boxes/box_propo.h"
 
 namespace haunted::boxes {
 	box_propo::box_propo(const position &pos_, double ratio_): control(pos_), box_dual(pos_), ratio(ratio_) {

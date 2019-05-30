@@ -1,4 +1,4 @@
-#include "haunted/control.h"
+#include "ui/control.h"
 
 namespace haunted {
 	int control::max_children() const {
