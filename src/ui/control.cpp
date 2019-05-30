@@ -1,6 +1,6 @@
 #include "ui/control.h"
 
-namespace haunted {
+namespace haunted::ui {
 	int control::max_children() const {
 		return -1;
 	}

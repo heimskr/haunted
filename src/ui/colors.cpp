@@ -1,5 +1,5 @@
 #include "ui/colors.h"
 
-namespace spjalla {
+namespace haunted::ui {
 	
 }
