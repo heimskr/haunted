@@ -2,6 +2,7 @@ COMPILER		:= clang++
 CFLAGS			:= -std=c++2a -stdlib=libc++ -g -O0 -Wall -Wextra -fdiagnostics-color=always
 CFLAGS_ORIG		:= $(CFLAGS)
 LDFLAGS			:=
+INCLUDE			:=
 CC				 = $(COMPILER) $(CFLAGS) $(CHECKFLAGS)
 MKBUILD			:= mkdir -p build
 CHECK			:= asan
@@ -40,7 +41,7 @@ build/tests: build/tests/tests.o $(COMMONOBJ)
 
 build/%.o: src/%.cpp
 	@ mkdir -p "$(shell dirname "$@")"
-	$(CC) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(CC) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
 
 test: $(OUTPUT)
 	./$(OUTPUT)

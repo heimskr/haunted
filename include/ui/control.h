@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "core/defs.h"
-#include "ui/control.h"
+#include "../core/defs.h"
+#include "control.h"
 
 namespace haunted::ui {
 	/**

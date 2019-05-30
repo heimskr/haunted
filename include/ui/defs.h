@@ -1,9 +1,9 @@
-#ifndef UI_DEFS_H_
-#define UI_DEFS_H_
+#ifndef HAUNTED_UI_DEFS_H_
+#define HAUNTED_UI_DEFS_H_
 
 #include <cstddef>
 
-namespace spjalla {
+namespace haunted {
 	enum side {left, right};
 
 	struct point {
