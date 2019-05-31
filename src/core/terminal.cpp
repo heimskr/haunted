@@ -151,14 +151,22 @@ namespace haunted {
 					buffer += c;
 				}
 
-				std::cout << "buffer = \"" << buffer << "\"[" << buffer.size() << "]. " << util::is_csiu(buffer) << std::endl;
 				std::pair<int, int> csiu_pair = util::parse_csiu(buffer);
-				if (csiu_pair.first >= 0) {
-					int first = csiu_pair.first, second = csiu_pair.second;
+				int codepoint = csiu_pair.first, mods = csiu_pair.second;
+				if (codepoint >= 0) {
+					k = {codepoint, (mods - 1) & 7};
+					return *this;
 				}
 			}
 
 			k = {c, alt};
+		} else if (c == 13) {
+			k = {key_type::carriage_return};
+		} else if (c == 10) {
+			k = {key_type::enter};
+		} else if (0 < c && c < 27) {
+			// 1..26 corresponds to ^a..^z.
+			k = {key_type::a + c - 1, ctrl};
 		} else {
 			k = c;
 		}

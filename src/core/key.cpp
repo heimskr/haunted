@@ -70,6 +70,8 @@ namespace haunted {
 		{key_type::up,    "↑"},
 		{key_type::down,  "↓"},
 		{key_type::right, "→"},
-		{key_type::left,  "←"}
+		{key_type::left,  "←"},
+		{key_type::enter, "⌅"},
+		{key_type::carriage_return, "↩"},
 	};
 }

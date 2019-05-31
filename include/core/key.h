@@ -21,7 +21,7 @@ namespace haunted {
 		up = 128, down, right, left
 	};
 
-	enum key_modifier {none = 0, shift = 1, ctrl = 2, alt = 4};
+	enum key_modifier {none = 0, shift = 1, alt = 2, ctrl = 4};
 
 	struct key {
 		private:
@@ -37,6 +37,7 @@ namespace haunted {
 			key(key_type t): key(t, none) {}
 
 			key(int t, key_modifier mod): key(key_type(t), mod) {}
+			key(int t, int mod): key(t, key_modifier(mod)) {}
 			key(int t): key(key_type(t), none) {}
 			key(): key(key_type('\0'), none) {}
 
