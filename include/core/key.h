@@ -6,7 +6,7 @@
 
 namespace haunted {
 	enum key_type: int {
-		       bell =   7, backspace,          tab,  enter,
+		       bell =   7,        bs,          tab,  enter,
 		      space =  32,      bang,       dquote,   hash,      dollar,  percent, ampersand, squote,
 		     oparen =  40,    cparen,         star,   plus,       comma,    minus,    period,  slash,
 		      colon =  58, semicolon,   open_angle, equals, close_angle, question,        at,
@@ -15,7 +15,7 @@ namespace haunted {
 		         _0 =  48, _1, _2, _3, _4, _5, _6, _7, _8, _9,
 		          A =  65, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
 		          a =  97, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z,
-		carriage_return = 13, escape = 27, less_than = 60,  greater_than = 62,
+		carriage_return = 13, escape = 27, less_than = 60,  greater_than = 62, backspace = 127,
 
 		// Here be dragons.
 		up = 128, down, right, left

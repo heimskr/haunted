@@ -67,11 +67,15 @@ namespace haunted {
 	}
 
 	std::unordered_map<key_type, std::string> key::keymap = {
-		{key_type::up,    "↑"},
-		{key_type::down,  "↓"},
-		{key_type::right, "→"},
-		{key_type::left,  "←"},
-		{key_type::enter, "⌅"},
 		{key_type::carriage_return, "↩"},
+		{key_type::up,        "↑"},
+		{key_type::down,      "↓"},
+		{key_type::right,     "→"},
+		{key_type::left,      "←"},
+		{key_type::enter,     "⌅"},
+		{key_type::tab,       "⇥"},
+		{key_type::escape,    "⎋"},
+		{key_type::backspace, "⌫"},
+		{key_type::space,     "␣"},
 	};
 }

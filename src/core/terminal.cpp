@@ -160,10 +160,12 @@ namespace haunted {
 			}
 
 			k = {c, alt};
-		} else if (c == 13) {
-			k = {key_type::carriage_return};
+		} else if (c == 9) {
+			k = {key_type::tab};
 		} else if (c == 10) {
 			k = {key_type::enter};
+		} else if (c == 13) {
+			k = {key_type::carriage_return};
 		} else if (0 < c && c < 27) {
 			// 1..26 corresponds to ^a..^z.
 			k = {key_type::a + c - 1, ctrl};
