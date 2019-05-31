@@ -13,6 +13,9 @@
 #include "core/terminal.h"
 
 namespace haunted::tests {
+	/**
+	 * Contains general utilities for testing.
+	 */
 	class testing {
 		private:
 			static std::string stringify(const std::pair<int, int> &p);
@@ -24,6 +27,13 @@ namespace haunted::tests {
 				return std::string(o);
 			}
 
+		/**
+		 * Runs a set of tests and displays the results.
+		 * @param  pairs    A vector of {input data, expected results} pairs.
+		 * @param  fn       The function whose output will be compared to the expected results.
+		 * @param  fn_name  The name of the function.
+		 * @return True if no tests failed.
+		 */
 		public:
 			template <typename I, typename O>
 			static bool check(const std::vector<std::pair<I, O>> &pairs, std::function<O(const I &)> fn,

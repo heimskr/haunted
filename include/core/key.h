@@ -5,6 +5,9 @@
 #include <unordered_map>
 
 namespace haunted {
+	/**
+	 * Represents a key code.
+	 */
 	enum key_type: int {
 		       bell =   7,        bs,          tab,  enter,
 		      space =  32,      bang,       dquote,   hash,      dollar,  percent, ampersand, squote,
@@ -21,8 +24,14 @@ namespace haunted {
 		up = 128, down, right, left
 	};
 
+	/**
+	 * Represents a keyboard modifier in the CSI u representation (but 0-based).
+	 */
 	enum key_modifier {none = 0, shift = 1, alt = 2, ctrl = 4};
 
+	/**
+	 * Represents a keypress, including any modifiers.
+	 */
 	struct key {
 		private:
 			static std::unordered_map<key_type, std::string> keymap;

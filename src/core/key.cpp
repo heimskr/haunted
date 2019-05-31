@@ -24,6 +24,10 @@ namespace haunted {
 		return type;
 	}
 
+	/**
+	 * Returns a string representation of the key and its modifiers.
+	 * Useful mostly for debugging purposes.
+	 */
 	key::operator std::string() const {
 		std::string out;
 		if (mod & ctrl) out.append("⌃");

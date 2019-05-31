@@ -9,9 +9,8 @@
 
 namespace haunted {
 	/**
-	 * This class enables interaction with terminals.
-	 * It makes use of termios to change terminal modes.
-	 * With its destructor, it resets 
+	 * This class enables interaction with terminals. It uses termios to change terminal modes.
+	 * When the destructor is called, it resets the modes to their original values.
 	 */
 	class terminal {
 		private:

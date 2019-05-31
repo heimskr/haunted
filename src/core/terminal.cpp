@@ -19,8 +19,13 @@ namespace haunted {
 		reset();
 	}
 
+
 	// Private static methods
 
+
+	/**
+	 * Returns the terminal attributes from tcgetaddr.
+	 */
 	termios terminal::getattr() {
 		termios out;
 		int result;
@@ -30,43 +35,70 @@ namespace haunted {
 		return out;
 	}
 
+	/**
+	 * Sets the terminal attributes with tcsetaddr.
+	 */
 	void terminal::setattr(const termios &new_attrs) {
 		int result;
 		if ((result = tcsetattr(STDIN_FILENO, TCSAFLUSH, &new_attrs)) < 0)
 			throw std::runtime_error("tcsetattr returned " + std::to_string(result));
 	}
 
+
 	// Private instance methods
 
+
+	/**
+	 * Applies the terminal attribute settings.
+	 */
 	void terminal::apply() {
 		setattr(attrs);
 	}
 
+	/**
+	 * Resets the terminal attributes to what they were before any changes were applied.
+	 */
 	void terminal::reset() {
 		setattr(original);
 		attrs = original;
 	}
 
+
 	// Public instance methods
 
+
+	/**
+	 * Activates cbreak mode.
+	 */
 	void terminal::cbreak() {
 		attrs.c_lflag &= ~(ECHO | ICANON | ISIG);
 		attrs.c_iflag &= ~IXON;
 		apply();
 	}
 
+
 	// Public operators
 
+
+	/**
+	 * Returns true if in_stream is in a valid state.
+	 */
 	terminal::operator bool() const {
 		return bool(in_stream);
 	}
 
+	/**
+	 * Reads a single raw character from the terminal as an int.
+	 */
 	terminal & terminal::operator>>(int &ch) {
 		if (int c = in_stream.get())
 			ch = c;
 		return *this;
 	}
 
+	/**
+	 * Reads a single raw character from the terminal.
+	 */
 	terminal & terminal::operator>>(char &ch) {
 		char c = 0;
 		if (in_stream.get(c))
@@ -74,6 +106,9 @@ namespace haunted {
 		return *this;
 	}
 
+	/**
+	 * Reads a key from the terminal. This conveniently handles much of the weirdness of terminal input.
+	 */
 	terminal & terminal::operator>>(key &k) {
 		// If we receive an escape followed by a [ and another escape,
 		// we return Alt+[ after receiving the second escape, but this
