@@ -15,11 +15,13 @@ namespace haunted {
 		         _0 =  48, _1, _2, _3, _4, _5, _6, _7, _8, _9,
 		          A =  65, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
 		          a =  97, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z,
-		carriage_return = 13, alt = 27, escape = 27, less_than = 60,  greater_than = 62,
+		carriage_return = 13, escape = 27, less_than = 60,  greater_than = 62,
 
 		// Here be dragons.
-		up = 128, down, right, left,
+		up = 128, down, right, left
 	};
+
+	enum key_modifier {none = 0, shift = 1, ctrl = 2, alt = 4};
 
 	struct key {
 		private:
@@ -27,13 +29,16 @@ namespace haunted {
 
 		public:
 			key_type type;
-			bool ctrl, alt;
+			key_modifier mod;
 
-			key(key_type t, bool ctrl, bool alt): type(t), ctrl(ctrl), alt(alt) {}
-			key(int t, bool ctrl, bool alt): key(key_type(t), ctrl, alt) {}
-			key(key_type t): key(t, false, false) {}
-			key(int t): key(key_type(t), false, false) {}
-			key(): key('\0') {}
+			key(key_type type, key_modifier mod): type(type), mod(mod) {}
+			key(key_type t, bool ctrl, bool alt):
+				key(t, key_modifier((ctrl * key_modifier::ctrl) | (alt * key_modifier::alt))) {}
+			key(key_type t): key(t, none) {}
+
+			key(int t, key_modifier mod): key(key_type(t), mod) {}
+			key(int t): key(key_type(t), none) {}
+			key(): key(key_type('\0'), none) {}
 
 			operator bool() const;
 			operator char() const;

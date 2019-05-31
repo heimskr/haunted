@@ -1,3 +1,1 @@
-COMMONSRC += src/core/defs.cpp
-COMMONSRC += src/core/key.cpp
-COMMONSRC += src/core/terminal.cpp
+COMMONSRC += src/core/defs.cpp src/core/key.cpp src/core/terminal.cpp src/core/util.cpp

@@ -27,8 +27,8 @@ namespace haunted {
 
 	key::operator std::string() const {
 		std::string out;
-		if (ctrl) out.append("⌃ ");
-		if (alt)  out.append("⎇ ");
+		if (mod & ctrl) out.append("⌃");
+		if (mod & alt)  out.append("⎇ ");
 		auto found = keymap.find(type);
 		if (found != keymap.end())
 			out += found->second;
@@ -52,7 +52,7 @@ namespace haunted {
 	 * Returns whether the key is identical to another key. The key type and modifiers must match.
 	 */
 	bool key::operator==(const key &right) const {
-		return type == right.type && ctrl == right.ctrl && alt == right.alt;
+		return type == right.type && mod == right.mod;
 	}
 
 	/**
