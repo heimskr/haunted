@@ -25,7 +25,7 @@ namespace haunted::tests {
 	}
 
 	void maintest::test_csiu() {
-		ansi::out << "\nTesting CSI u checking.\n";
+		ansi::out << "\nTesting CSI u validation.\n";
 		testing::check<std::string, bool>({
 			{"1;1u",   true},
 			{"1;1a",  false},
@@ -41,6 +41,7 @@ namespace haunted::tests {
 			{"5;5U",  false},
 		}, &util::is_csiu, "is_csiu");
 
+		ansi::out << "\nTesting CSI u parsing.\n";
 		testing::check<std::string, std::pair<int, int>>({
 			{"1;1u",    { 1,   1}},
 			{"42;0u",   {42,   0}},
