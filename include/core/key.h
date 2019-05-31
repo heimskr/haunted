@@ -44,7 +44,7 @@ namespace haunted {
 			operator char() const;
 			operator int() const;
 			operator std::string() const;
-			bool operator<=>(char) const;
+			bool operator%(char) const;
 			bool operator==(const key &) const;
 			bool operator==(char) const;
 

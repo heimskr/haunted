@@ -39,7 +39,7 @@ namespace haunted {
 	/**
 	 * Returns whether the key is equal to a character, but case-insensitively.
 	 */
-	bool key::operator<=>(char right) const {
+	bool key::operator%(char right) const {
 		char left = *this;
 		if (left == right) return true;
 		if (key_type::A <= right && right <= key_type::Z) return left == right + 32;
