@@ -1,4 +1,4 @@
-build/test: build/tests/test.o $(COMMONOBJ)
+build/test: build/tests/test.o $(OBJ)
 	@ $(MKBUILD)
 	$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 
