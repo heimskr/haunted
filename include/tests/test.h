@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <iomanip>
+#include <sstream>
 #include <utility>
 #include <vector>
 
@@ -14,14 +15,14 @@
 namespace haunted::tests {
 	class testing {
 		private:
-			template <typename T>
-			static std::string stringify(const T &o) { return std::string(o); }
-			
-			template <typename N, std::enable_if_t<std::is_integral<N>::value, int> = 0>
-			static std::string stringify(N o) { return std::to_string(o); }
-			
+			static std::string stringify(const std::pair<int, int> &p);
 			static std::string stringify(const std::string &);
 			static std::string stringify(bool);
+
+			template <typename T>
+			static std::string stringify(const T &o) {
+				return std::string(o);
+			}
 
 		public:
 			template <typename I, typename O>

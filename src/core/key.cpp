@@ -13,9 +13,8 @@ namespace haunted {
 	 * If the key is greater than 127, this returns zero.
 	 */
 	key::operator char() const {
-		// char c = static_cast<char>(type);
-		// return 127 < c? 0 : c;
-		return type;
+		char c = static_cast<char>(type);
+		return 127 < c? 0 : c;
 	}
 
 	/**

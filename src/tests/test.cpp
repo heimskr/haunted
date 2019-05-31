@@ -12,6 +12,10 @@
 #include "core/util.h"
 
 namespace haunted::tests {
+	std::string testing::stringify(const std::pair<int, int> &p) {
+		return "{" + std::to_string(p.first) + ", " + std::to_string(p.second) + "}";
+	}
+
 	std::string testing::stringify(const std::string &str) {
 		return "\"" + str + "\"";
 	}
@@ -36,6 +40,22 @@ namespace haunted::tests {
 			{"3;911u", true},
 			{"5;5U",  false},
 		}, &util::is_csiu, "is_csiu");
+
+		testing::check<std::string, std::pair<int, int>>({
+			{"1;1u",    { 1,   1}},
+			{"42;0u",   {42,   0}},
+			{"3;911u",  { 3, 911}},
+			{"55;555u", {55, 555}},
+			{"1;1a",    {-1,  -2}},
+			{";1u",     {-1,  -1}},
+			{"1;u",     {-1,  -1}},
+			{"4u",      {-1,  -1}},
+			{"1;u1",    {-1,  -2}},
+			{"1u;1",    {-1,  -2}},
+			{";1u",     {-1,  -1}},
+			{"u1;1",    {-1,  -1}},
+			{"5;5U",    {-1,  -2}},
+		}, &util::parse_csiu, "parse_csiu");
 	}
 }
 
