@@ -1,3 +1,6 @@
 [submodule "icu"]
 	path = icu
 	url = https://github.com/unicode-org/icu.git
+[submodule "formicine"]
+	path = formicine
+	url = https://github.com/kaitamkun/formicine.git
