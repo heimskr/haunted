@@ -35,6 +35,7 @@ namespace haunted {
 			void cbreak();
 
 			operator bool() const;
+			terminal & operator>>(int &);
 			terminal & operator>>(char &);
 			terminal & operator>>(key &);
 	};

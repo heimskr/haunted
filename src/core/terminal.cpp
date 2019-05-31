@@ -61,9 +61,15 @@ namespace haunted {
 		return bool(in_stream);
 	}
 
+	terminal & terminal::operator>>(int &ch) {
+		if (int c = in_stream.get())
+			ch = c;
+		return *this;
+	}
+
 	terminal & terminal::operator>>(char &ch) {
 		char c = 0;
-		if (in_stream >> c)
+		if (in_stream.get(c))
 			ch = c;
 		return *this;
 	}
@@ -77,14 +83,14 @@ namespace haunted {
 
 		char c;
 		if (raw) {
-			in_stream >> c;
+			*this >> c;
 			k = c;
 			return *this;
 		}
 
 		k = 0;
 
-		if (!(in_stream >> c))
+		if (!(*this >> c))
 			return *this;
 
 		// It's important to reset the partial_escape flag. Resetting it right
@@ -96,7 +102,7 @@ namespace haunted {
 		if (escape) {
 			// If we read an escape byte, that means something interesting is about to happen.
 
-			if (!(in_stream >> c))
+			if (!(*this >> c))
 				return *this;
 
 			if (c == key_type::escape) {
@@ -107,7 +113,7 @@ namespace haunted {
 				k = {c, none};
 				return *this;
 			} else if (c == key_type::open_square) {
-				if (!(in_stream >> c))
+				if (!(*this >> c))
 					return *this;
 
 				switch (c) {
@@ -139,13 +145,17 @@ namespace haunted {
 				buffer = c;
 
 				while (!util::is_alpha(c)) {
-					if (!(in_stream >> c))
+					if (!(*this >> c))
 						return *this;
 
 					buffer += c;
 				}
 
 				std::cout << "buffer = \"" << buffer << "\"[" << buffer.size() << "]. " << util::is_csiu(buffer) << std::endl;
+				std::pair<int, int> csiu_pair = util::parse_csiu(buffer);
+				if (csiu_pair.first >= 0) {
+					int first = csiu_pair.first, second = csiu_pair.second;
+				}
 			}
 
 			k = {c, alt};
