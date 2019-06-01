@@ -21,7 +21,7 @@ namespace haunted {
 		carriage_return = 13, escape = 27, less_than = 60,  greater_than = 62, backspace = 127,
 
 		// Here be dragons.
-		up = 128, down, right, left
+		up_arrow = 128, down_arrow, right_arrow, left_arrow
 	};
 
 	/**

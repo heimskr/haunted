@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <string>
 
+#include <sys/ioctl.h>
 #include <unistd.h>
 
 #include "core/terminal.h"
@@ -9,8 +10,14 @@
 #include "core/util.h"
 
 namespace haunted {
+	std::vector<terminal *> terminal::winch_targets {};
+
 	terminal::terminal(std::istream &in_stream_): in_stream(in_stream_) {
 		original = attrs = getattr();
+		winsize size;
+		ioctl(STDIN_FILENO, TIOCGWINSZ, &size);
+		rows = size.ws_row;
+		cols = size.ws_col;
 	}
 
 	terminal::terminal(): terminal(std::cin) {}
@@ -20,7 +27,7 @@ namespace haunted {
 	}
 
 
-	// Private static methods
+// Private static methods
 
 
 	/**
@@ -44,8 +51,18 @@ namespace haunted {
 			throw std::runtime_error("tcsetattr returned " + std::to_string(result));
 	}
 
+	/**
+	 * Notifies terminal objects of a window resize.
+	 */
+	void terminal::winch_handler(int) {
+		winsize new_size;
+		ioctl(STDIN_FILENO, TIOCGWINSZ, &new_size);
+		for (terminal *ptr: winch_targets)
+			ptr->winch(new_size.ws_row, new_size.ws_col);
+	}
 
-	// Private instance methods
+
+// Private instance methods
 
 
 	/**
@@ -63,8 +80,16 @@ namespace haunted {
 		attrs = original;
 	}
 
+	/**
+	 * Handles window resizes.
+	 */
+	void terminal::winch(int new_rows, int new_cols) {
+		rows = new_rows;
+		cols = new_cols;
+	}
 
-	// Public instance methods
+
+// Public instance methods
 
 
 	/**
@@ -76,8 +101,17 @@ namespace haunted {
 		apply();
 	}
 
+	/**
+	 * Sets a handler for SIGWINCH to detect terminal resizes.
+	 */
+	void terminal::watch_size() {
+		if (winch_targets.empty())
+			signal(SIGWINCH, &terminal::winch_handler);
+		winch_targets.push_back(this);
+	}
 
-	// Public operators
+
+// Public operators
 
 
 	/**
@@ -167,10 +201,10 @@ namespace haunted {
 						return *this;
 
 					// If the first character after the [ is A, B, C or D, it's an arrow key.
-					case 'A': k = key_type::up;    return *this;
-					case 'B': k = key_type::down;  return *this;
-					case 'C': k = key_type::right; return *this;
-					case 'D': k = key_type::left;  return *this;
+					case 'A': k = key_type::up_arrow;    return *this;
+					case 'B': k = key_type::down_arrow;  return *this;
+					case 'C': k = key_type::right_arrow; return *this;
+					case 'D': k = key_type::left_arrow;  return *this;
 				}
 
 				// At this point, we haven't yet determined what the input is.

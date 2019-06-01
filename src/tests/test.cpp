@@ -10,6 +10,7 @@
 #include "tests/test.h"
 #include "core/key.h"
 #include "core/util.h"
+#include "ui/textinput.h"
 
 namespace haunted::tests {
 	/**
@@ -70,12 +71,18 @@ namespace haunted::tests {
 			{"5;5U",    {-1,  -2}},
 		}, &util::parse_csiu, "parse_csiu");
 	}
+
+	void maintest::test_textinput() {
+		// haunted::ui::textinput ti;
+	}
 }
 
 int main(int, char **) {
 	using namespace haunted;
+	
 	terminal term;
 	term.cbreak();
+	term.watch_size();
 
 	haunted::tests::maintest::test_csiu();
 
