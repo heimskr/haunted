@@ -21,7 +21,8 @@ namespace haunted::ui {
 			virtual ~control() = 0;
 			virtual int max_children() const;
 			virtual int  child_count() const;
-			virtual void resize(const haunted::position &new_pos) = 0;
+			virtual void draw() = 0;
+			virtual void resize(const haunted::position &);
 
 			control * operator[](size_t);
 	};

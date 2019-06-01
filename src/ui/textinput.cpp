@@ -160,10 +160,8 @@ namespace haunted::ui {
 		return cursor;
 	}
 
-	std::string textinput::dbg_render(bool show_cursor) const {
-		if (show_cursor)
-			return "[" + buffer.substr(0, cursor) + "\e[2m|\e[0m" + buffer.substr(cursor) + "]";
-		return "[" + buffer + "]";
+	void textinput::draw() {
+		
 	}
 
 	textinput::operator std::string() const {

@@ -9,9 +9,10 @@
 
 #include "../core/defs.h"
 #include "../lib/utf8.h"
+#include "ui/control.h"
 
 namespace haunted::ui {
-	class textinput {
+	class textinput: public virtual control {
 		using update_fn = std::function<void(const utf8str &, int)>;
 
 		private:
@@ -24,10 +25,13 @@ namespace haunted::ui {
 
 		public:
 			std::string unicode_buffer;
-			textinput(std::string buffer_, size_t cursor_): buffer(buffer_), cursor(cursor_) {}
-			textinput(std::string buffer_): textinput(buffer_, 0) {}
-			textinput(size_t cursor_): textinput("", cursor_) {}
-			textinput(): textinput("", 0) {}
+			textinput(position pos_, std::string buffer_, size_t cursor_):
+				control(pos_), buffer(buffer_), cursor(cursor_) {}
+			textinput(position pos_, std::string buffer_): textinput(pos_, buffer_, 0) {}
+			textinput(position pos_, size_t cursor_): textinput(pos_, "", cursor_) {}
+			textinput(position pos_): textinput(pos_, "", 0) {}
+
+			virtual ~textinput() override { }
 
 			operator std::string() const;
 
@@ -51,6 +55,8 @@ namespace haunted::ui {
 			char prev_char() const;
 			char next_char() const;
 			size_t get_cursor() const;
+
+			void draw() override;
 
 			std::string dbg_render(bool = true) const;
 
