@@ -41,7 +41,7 @@ build/tests: build/tests/tests.o $(COMMONOBJ)
 
 build/%.o: src/%.cpp
 	@ mkdir -p "$(shell dirname "$@")"
-	$(CC) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
+	$(CC) $(strip $(INCLUDE)) -c $< -o $@
 
 grind: $(OUTPUT)
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=no ./$(OUTPUT)
