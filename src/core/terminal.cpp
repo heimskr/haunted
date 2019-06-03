@@ -8,6 +8,7 @@
 #include "core/terminal.h"
 #include "core/key.h"
 #include "core/util.h"
+#include "lib/ansi.h"
 
 namespace haunted {
 	std::vector<terminal *> terminal::winch_targets {};
@@ -84,8 +85,11 @@ namespace haunted {
 	 * Handles window resizes.
 	 */
 	void terminal::winch(int new_rows, int new_cols) {
+		bool changed = rows != new_rows || cols != new_cols;
 		rows = new_rows;
 		cols = new_cols;
+		if (changed)
+			redraw();
 	}
 
 
@@ -108,6 +112,37 @@ namespace haunted {
 		if (winch_targets.empty())
 			signal(SIGWINCH, &terminal::winch_handler);
 		winch_targets.push_back(this);
+	}
+
+	/**
+	 * Redraws the root control.
+	 */
+	void terminal::redraw() {
+		if (root) {
+			ansi::clear();
+			ansi::jump();
+			root->resize({0, 0, cols, rows});
+			root->draw();
+		}
+	}
+
+	/**
+	 * Sets the terminal's root control.
+	 */
+	void terminal::set_root(ui::control *new_root) {
+		delete root;
+		root = new_root;
+		redraw();
+	}
+
+	void terminal::draw() {
+		if (root)
+			root->draw();
+	}
+
+	bool terminal::add_child(ui::control *child) {
+		set_root(child);
+		return true;
 	}
 
 

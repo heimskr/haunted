@@ -8,15 +8,20 @@
 #include <termios.h>
 
 #include "core/key.h"
+#include "ui/container.h"
+#include "ui/control.h"
 
 namespace haunted {
 	/**
 	 * This class enables interaction with terminals. It uses termios to change terminal modes.
 	 * When the destructor is called, it resets the modes to their original values.
 	 */
-	class terminal {
+	class terminal: public virtual ui::container {
 		private:
 			std::istream &in_stream;
+			ui::control *root = nullptr;
+
+			int rows, cols;
 
 			static termios getattr();
 			static void setattr(const termios &);
@@ -37,8 +42,6 @@ namespace haunted {
 		public:
 			termios attrs;
 			bool raw = false;
-			int rows;
-			int cols;
 
 			terminal(std::istream &);
 			terminal();
@@ -47,6 +50,10 @@ namespace haunted {
 
 			void cbreak();
 			void watch_size();
+			void redraw();
+			void set_root(ui::control *);
+			void draw();
+			bool add_child(ui::control *) override;
 
 			operator bool() const;
 			terminal & operator>>(int &);

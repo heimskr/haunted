@@ -9,6 +9,7 @@
 
 #include "../core/defs.h"
 #include "../lib/utf8.h"
+#include "ui/container.h"
 #include "ui/control.h"
 
 namespace haunted::ui {
@@ -25,13 +26,16 @@ namespace haunted::ui {
 
 		public:
 			std::string unicode_buffer;
-			textinput(position pos_, std::string buffer_, size_t cursor_):
-				control(pos_), buffer(buffer_), cursor(cursor_) {}
-			textinput(position pos_, std::string buffer_): textinput(pos_, buffer_, 0) {}
-			textinput(position pos_, size_t cursor_): textinput(pos_, "", cursor_) {}
-			textinput(position pos_): textinput(pos_, "", 0) {}
 
-			virtual ~textinput() override { }
+			textinput(container *parent, const std::string &buffer, size_t cursor);
+			textinput(container *parent, const std::string &buffer): textinput(parent, buffer, 0) {}
+			textinput(container *parent): textinput(parent, "") {}
+
+			textinput(position pos, const std::string &buffer, size_t cursor):
+				control(pos), buffer(buffer), cursor(cursor) {}
+			textinput(position pos, const std::string &buffer): textinput(pos, buffer, 0) {}
+			textinput(position pos, size_t cursor): textinput(pos, "", cursor) {}
+			textinput(position pos): textinput(pos, "", 0) {}
 
 			operator std::string() const;
 

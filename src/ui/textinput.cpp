@@ -1,8 +1,15 @@
+#include <iostream>
+
 #include "ui/textinput.h"
 #include "lib/utf8.h"
 
 namespace haunted::ui {
 	std::unordered_set<unsigned char> textinput::whitelist = {9, 10, 11, 13};
+
+	textinput::textinput(container *parent, const std::string &buffer, size_t cursor):
+	control(parent), buffer(buffer), cursor(cursor) {
+		parent->add_child(this);
+	}
 
 	void textinput::update() {
 		if (on_update)
@@ -34,7 +41,8 @@ namespace haunted::ui {
 		if (!unicode_buffer.empty()) {
 			unicode_buffer.push_back(ch);
 			if (unicode_buffer.size() == bytes_expected) {
-				// The Unicode buffer now contains a complete and valid codepoint (the first byte is valid, at least).
+				// The Unicode buffer now contains a complete and valid codepoint
+				// (the first byte is valid, at least).
 				// Insert the buffer's contents into the primary buffer.
 				buffer.insert(cursor++, unicode_buffer);
 				unicode_buffer.clear();
@@ -44,7 +52,8 @@ namespace haunted::ui {
 		} else {
 			size_t width = utf8::width(ch);
 			if (width < 2) {
-				// It seems we've received a plain old ASCII character or an invalid UTF8 start byte.
+				// It seems we've received a plain old ASCII
+				// character or an invalid UTF8 start byte.
 				// Either way, ppend it to the buffer.
 				buffer.insert(cursor++, ch);
 				update();
@@ -161,7 +170,7 @@ namespace haunted::ui {
 	}
 
 	void textinput::draw() {
-		
+		std::cout << "drawing textinput\n";
 	}
 
 	textinput::operator std::string() const {

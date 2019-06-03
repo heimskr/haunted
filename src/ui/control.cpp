@@ -3,20 +3,8 @@
 namespace haunted::ui {
 	control::~control() = default;
 
-	int control::max_children() const {
-		return -1;
-	}
-
-	int control::child_count() const {
-		return children.size();
-	}
-
 	void control::resize(const haunted::position &new_pos) {
+		// It's up to the caller of resize() to also call draw().
 		pos = new_pos;
-		draw();
-	}
-
-	control * control::operator[](size_t index) {
-		return index < children.size()? children.at(index) : nullptr;
 	}
 }
