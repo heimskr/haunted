@@ -13,13 +13,16 @@
 
 namespace haunted {
 	/**
-	 * This class enables interaction with terminals. It uses termios to change terminal modes.
-	 * When the destructor is called, it resets the modes to their original values.
+	 * This class enables interaction with terminals.
+	 * It uses termios to change terminal modes.
+	 * When the destructor is called, it resets
+	 * the modes to their original values.
 	 */
 	class terminal: public virtual ui::container {
 		private:
 			std::istream &in_stream;
 			ui::control *root = nullptr;
+			ui::control *focused = nullptr;
 
 			int rows, cols;
 
@@ -31,10 +34,11 @@ namespace haunted {
 			void reset();
 
 			// signal() takes a pointer to a static function.
-			// To get around this, every terminal object whose watch_size() method is called
-			// adds itself to a static vector of terminal pointers. When the WINCH signal
-			// handler is called, it notifies all the listening terminal objects of the
-			// terminal's new dimensions.
+			// To get around this, every terminal object whose watch_size()
+			// method is called adds itself to a static vector of terminal
+			// pointers. When the WINCH signal handler is called, it notifies
+			// all the listening terminal objects of the terminal's new
+			// dimensions.
 			static void winch_handler(int);
 			static std::vector<terminal *> winch_targets;
 			void winch(int, int);
@@ -53,7 +57,9 @@ namespace haunted {
 			void redraw();
 			void set_root(ui::control *);
 			void draw();
+
 			bool add_child(ui::control *) override;
+			terminal * get_term() const override;
 
 			operator bool() const;
 			terminal & operator>>(int &);

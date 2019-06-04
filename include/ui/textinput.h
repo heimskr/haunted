@@ -17,23 +17,31 @@ namespace haunted::ui {
 		using update_fn = std::function<void(const utf8str &, int)>;
 
 		private:
+			static std::unordered_set<unsigned char> whitelist;
+			
 			std::string prefix;
 			utf8str buffer;
 			size_t cursor = 0, bytes_expected = 0;
 			update_fn on_update;
+
+			// Every time the textinput is redrawn, it
+			// records the screen position of the cursor.
+			point cursor_pos;
+
 			void update();
-			static std::unordered_set<unsigned char> whitelist;
 
 		public:
 			std::string unicode_buffer;
 
 			textinput(container *parent, const std::string &buffer, size_t cursor);
-			textinput(container *parent, const std::string &buffer): textinput(parent, buffer, 0) {}
+			textinput(container *parent, const std::string &buffer):
+				textinput(parent, buffer, 0) {}
 			textinput(container *parent): textinput(parent, "") {}
 
 			textinput(position pos, const std::string &buffer, size_t cursor):
 				control(pos), buffer(buffer), cursor(cursor) {}
-			textinput(position pos, const std::string &buffer): textinput(pos, buffer, 0) {}
+			textinput(position pos, const std::string &buffer):
+				textinput(pos, buffer, 0) {}
 			textinput(position pos, size_t cursor): textinput(pos, "", cursor) {}
 			textinput(position pos): textinput(pos, "", 0) {}
 
@@ -64,7 +72,8 @@ namespace haunted::ui {
 
 			std::string dbg_render(bool = true) const;
 
-			friend std::ostream & operator<<(std::ostream &os, const textinput &input);
+			friend std::ostream & operator<<(std::ostream &os,
+				const textinput &input);
 	};
 }
 

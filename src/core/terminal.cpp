@@ -145,6 +145,10 @@ namespace haunted {
 		return true;
 	}
 
+	terminal * terminal::get_term() const {
+		return this;
+	}
+
 
 // Public operators
 

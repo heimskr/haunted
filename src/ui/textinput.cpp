@@ -170,7 +170,14 @@ namespace haunted::ui {
 	}
 
 	void textinput::draw() {
-		std::cout << "drawing textinput\n";
+		size_t remaining = buffer.length() - prefix.length();
+		size_t width = pos.width;
+
+		if (size() <= width - prefix.length()) {
+			jump();
+			std::cout << prefix << buffer;
+			return;
+		}
 	}
 
 	textinput::operator std::string() const {
