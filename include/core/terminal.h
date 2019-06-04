@@ -40,6 +40,8 @@ namespace haunted {
 			void apply();
 			void reset();
 			void work_input();
+			ui::control * send_key(key &);
+			ui::control * get_focused();
 
 			// signal() takes a pointer to a static function.
 			// To get around this, every terminal object whose watch_size()

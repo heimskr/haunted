@@ -88,6 +88,36 @@ namespace haunted {
 	}
 
 	/**
+	 * Sends a key press to whichever control is most appropriate and willing to receive it.
+	 * Returns a pointer to the control that ended up handling the key press.
+	 */
+	ui::control * terminal::send_key(key &k) {
+		// If the root is null, there are no controls and nothing to send key presses to.
+		if (root == nullptr)
+			return nullptr;
+
+		ui::control *ptr = get_focused();
+		
+		// Keep trying on_key, going up to the root as long as we keep getting false.
+		// If we're at the root and on_key still returns false, give up.
+		while (!ptr->on_key(k) && ptr != root) {
+			ptr = ptr->get_parent();
+		}
+
+		return ptr;
+	}
+
+	/**
+	 * Returns the focused control. If none is currently selected,
+	 * this function focuses the root control.
+	 */
+	ui::control * terminal::get_focused() {
+		if (focused)
+			return focused;
+		return focused = root;
+	}
+
+	/**
 	 * Handles window resizes.
 	 */
 	void terminal::winch(int new_rows, int new_cols) {

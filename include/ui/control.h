@@ -5,18 +5,18 @@
 #include "../core/key.h"
 #include "container.h"
 #include "control.h"
+#include "keyhandler.h"
 
 namespace haunted {
 	class terminal;
 }
 
 namespace haunted::ui {
-
 	/**
 	 * Represents a control.
 	 * This includes things like boxes, text views and text inputs.
 	 */
-	class control {
+	class control: public keyhandler {
 		protected:
 			container *parent = nullptr;
 			terminal *term;
@@ -34,8 +34,8 @@ namespace haunted::ui {
 			
 			virtual void draw() = 0;
 			virtual void resize(const haunted::position &);
-			virtual bool on_key(key &);
 			void jump();
+			container * get_parent();
 
 			friend class container;
 	};

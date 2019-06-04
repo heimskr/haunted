@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "ui/keyhandler.h"
+
 namespace haunted {
 	class terminal;
 }
@@ -13,7 +15,7 @@ namespace haunted::ui {
 	/**
 	 * Containers contain controls.
 	 */
-	class container {
+	class container: public keyhandler {
 		protected:
 			std::vector<control *> children;
 		
