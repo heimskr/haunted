@@ -201,7 +201,7 @@ namespace haunted::ui {
 				}
 		}
 
-		term->redraw();
+		draw();
 		std::cout.flush();
 		return true;
 	}
@@ -211,6 +211,7 @@ namespace haunted::ui {
 		size_t width = pos.width;
 
 		if (size() <= width - prefix.length()) {
+			clear_rect();
 			jump();
 			std::cout << prefix << buffer;
 			ansi::jump(pos.top + 1, pos.left + 1 + prefix.length() + cursor);

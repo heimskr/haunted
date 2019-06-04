@@ -33,7 +33,12 @@ namespace haunted::ui {
 			
 			virtual void draw() = 0;
 			virtual void resize(const haunted::position &);
+
+			/** Moves the cursor on the screen to the top-left corner of the control. */
 			void jump();
+
+			/** Erases the portion of the display that this control occupies. */
+			void clear_rect();
 
 			virtual void focus();
 

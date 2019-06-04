@@ -230,6 +230,14 @@ namespace haunted {
 		return this;
 	}
 
+	int terminal::get_rows() const {
+		return rows;
+	}
+
+	int terminal::get_cols() const {
+		return cols;
+	}
+
 
 // Public operators
 

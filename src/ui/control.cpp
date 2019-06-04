@@ -11,9 +11,48 @@ namespace haunted::ui {
 		pos = new_pos;
 	}
 
-	/** Moves the cursor to the top-left corner of the control. */
 	void control::jump() {
-		ansi::jump(pos.top + 1, pos.left + 1);
+		pos.jump();
+	}
+
+	void control::clear_rect() {
+		// There are four different ways to clear text on a row: erase the entire row, erase
+		// everything to the left of the cursor, erase everything to the right of the cursor and
+		// simply writing spaces. The first is ideal, the next two are okay and the last is the
+		// worst option. Which option we can use depends on the left-offset and width of the
+		// control.
+		ansi::save();
+		if (pos.left == 0) {
+			// If we're at the left edge of the screen, we can clear-line if the width is full, or
+			// clear-left otherwise.
+			if (pos.width == term->get_cols()) {
+				for (int i = 1; i <= pos.height; ++i) {
+					ansi::jump(pos.top + i, 1);
+					ansi::clear_line();
+				}
+			} else {
+				for (int i = 1; i <= pos.height; ++i) {
+					ansi::jump(pos.top + i, pos.width + 1);
+					ansi::clear_left();
+				}
+			}
+		} else if (pos.left + pos.width == term->get_cols()) {
+			// If we're at the right edge of the screen, we can clear-right.
+			for (int i = 1; i <= pos.height; ++i) {
+				ansi::jump(pos.top + i, pos.left + 1);
+				ansi::clear_right();
+			}
+		} else {
+			// If the control doesn't reach either end of the screen, we have to print a bunch
+			// of spaces.
+			std::string spaces(pos.width, ' ');
+			for (int i = 1; i <= pos.height; ++i) {
+				ansi::jump(pos.top + i, pos.left + 1);
+				std::cout << spaces;
+			}
+		}
+
+		ansi::restore();
 	}
 
 	void control::focus() {

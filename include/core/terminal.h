@@ -73,6 +73,9 @@ namespace haunted {
 			bool add_child(ui::control *) override;
 			terminal * get_term() override;
 
+			int get_rows() const;
+			int get_cols() const;
+
 			operator bool() const;
 			terminal & operator>>(int &);
 			terminal & operator>>(char &);

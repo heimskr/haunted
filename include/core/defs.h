@@ -15,6 +15,7 @@ namespace haunted {
 		operator bool() const;
 	};
 
+	/** Represents a position. This is zero-based, while ANSI is one-based, so be careful. */
 	struct position {
 		int left, top, width, height;
 		
@@ -24,6 +25,10 @@ namespace haunted {
 		position():
 			left(-1), top(-1), width(-1), height(-1) {}
 		
+		/** Moves the cursor to a given offset from the top-left corner of the position. */
+		void jump(int offset_left = 0, int offset_top = 0);
+
+		/** Returns whether this is a valid (i.e., not default-constructed) position. */
 		operator bool() const;
 	};
 }
