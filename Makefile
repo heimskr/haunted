@@ -60,7 +60,7 @@ spotless:
 
 DEPFILE  = .dep
 DEPTOKEN = "\# MAKEDEPENDS"
-DEPFLAGS = -f $(DEPFILE) -s $(DEPTOKEN)
+DEPFLAGS = -Y -f $(DEPFILE) -s $(DEPTOKEN)
 
 depend:
 	@ echo $(DEPTOKEN) > $(DEPFILE)
