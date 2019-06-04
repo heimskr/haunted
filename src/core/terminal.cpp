@@ -9,6 +9,7 @@
 #include "core/key.h"
 #include "core/util.h"
 #include "lib/ansi.h"
+#include "ui/child.h"
 
 namespace haunted {
 	std::vector<terminal *> terminal::winch_targets {};
@@ -40,7 +41,8 @@ namespace haunted {
 		termios out;
 		int result;
 		if ((result = tcgetattr(STDIN_FILENO, &out)) < 0)
-			throw std::runtime_error("tcgetattr returned " + std::to_string(result));
+			throw std::runtime_error("tcgetattr returned " +
+				std::to_string(result));
 
 		return out;
 	}
@@ -51,7 +53,8 @@ namespace haunted {
 	void terminal::setattr(const termios &new_attrs) {
 		int result;
 		if ((result = tcsetattr(STDIN_FILENO, TCSAFLUSH, &new_attrs)) < 0)
-			throw std::runtime_error("tcsetattr returned " + std::to_string(result));
+			throw std::runtime_error("tcsetattr returned " +
+				std::to_string(result));
 	}
 
 	/**
@@ -76,7 +79,8 @@ namespace haunted {
 	}
 
 	/**
-	 * Resets the terminal attributes to what they were before any changes were applied.
+	 * Resets the terminal attributes to what they were before any changes were
+	 * applied.
 	 */
 	void terminal::reset() {
 		setattr(original);
@@ -88,20 +92,28 @@ namespace haunted {
 	}
 
 	/**
-	 * Sends a key press to whichever control is most appropriate and willing to receive it.
-	 * Returns a pointer to the control that ended up handling the key press.
+	 * Sends a key press to whichever control is most appropriate and willing
+	 * to receive it. Returns a pointer to the control or container that ended
+	 * up handling the key press.
 	 */
-	ui::control * terminal::send_key(key &k) {
-		// If the root is null, there are no controls and nothing to send key presses to.
+	ui::keyhandler * terminal::send_key(key &k) {
+		// If the root is null, there are no controls
+		// and nothing to send key presses to.
 		if (root == nullptr)
 			return nullptr;
 
-		ui::control *ptr = get_focused();
+		ui::control *ctrl = get_focused();
+		if (ctrl->on_key(k))
+			return ctrl;
+
+		ui::container *ptr = ctrl->get_parent();
 		
-		// Keep trying on_key, going up to the root as long as we keep getting false.
-		// If we're at the root and on_key still returns false, give up.
-		while (!ptr->on_key(k) && ptr != root) {
-			ptr = ptr->get_parent();
+		// Keep trying on_key, going up to the root as long as
+		// we keep getting false. If we're at the root and on_key
+		// still returns false, give up.
+		while (!ptr->on_key(k) && dynamic_cast<ui::control *>(ptr) != root) {
+			if (ui::child *cptr = dynamic_cast<ui::child *>(ptr))
+				ptr = cptr->get_parent();
 		}
 
 		return ptr;
@@ -220,7 +232,8 @@ namespace haunted {
 	}
 
 	/**
-	 * Reads a key from the terminal. This conveniently handles much of the weirdness of terminal input.
+	 * Reads a key from the terminal. This conveniently handles much of the
+	 * weirdness of terminal input.
 	 */
 	terminal & terminal::operator>>(key &k) {
 		// If we receive an escape followed by a [ and another escape,
@@ -248,16 +261,18 @@ namespace haunted {
 		partial_escape = false;
 
 		if (escape) {
-			// If we read an escape byte, that means something interesting is about to happen.
+			// If we read an escape byte, that means something interesting is
+			// about to happen.
 
 			if (!(*this >> c))
 				return *this;
 
 			if (c == key_type::escape) {
-				// We can't tell the difference between an actual press of the escape key and
-				// the beginning of a CSI. Perhaps it would be possible with the use of some
-				// timing trickery, but I don't consider that necessary right now. Instead,
-				// the user will have to press the escape key twice.
+				// We can't tell the difference between an actual press of the
+				// escape key and the beginning of a CSI. Perhaps it would be
+				// possible with the use of some timing trickery, but I don't
+				// consider that necessary right now. Instead, the user will
+				// have to press the escape key twice.
 				k = {c, none};
 				return *this;
 			} else if (c == key_type::open_square) {
@@ -265,21 +280,24 @@ namespace haunted {
 					return *this;
 
 				switch (c) {
-					// To input an actual Alt+[, the user has to press the [ key again.
-					// Otherwise, we wouldn't be able to tell the difference between an
-					// actual Alt+[ and the beginning of a CSI.
+					// To input an actual Alt+[, the user has to press the
+					// [ key again. Otherwise, we wouldn't be able to tell the
+					// difference between an actual Alt+[ and the beginning of
+					// a CSI.
 					case '[':
 						k = {c, alt};
 						return *this;
 
-					// If there's another escape immediately after "^[", we'll assume the
-					// user typed an actual Alt+[ and then input another escape sequence.
+					// If there's another escape immediately after "^[", we'll
+					// assume the user typed an actual Alt+[ and then input
+					// another escape sequence.
 					case key_type::escape:
 						partial_escape = false;
 						k = {'[', alt};
 						return *this;
 
-					// If the first character after the [ is A, B, C or D, it's an arrow key.
+					// If the first character after the [ is A, B, C or D,
+					// it's an arrow key.
 					case 'A': k = key_type::up_arrow;    return *this;
 					case 'B': k = key_type::down_arrow;  return *this;
 					case 'C': k = key_type::right_arrow; return *this;

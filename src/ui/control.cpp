@@ -13,8 +13,4 @@ namespace haunted::ui {
 	void control::jump() {
 		ansi::jump(pos.top + 1, pos.left + 1);
 	}
-
-	container * control::get_parent() {
-		return parent;
-	}
 }
