@@ -14,15 +14,14 @@
 namespace haunted {
 	std::vector<terminal *> terminal::winch_targets {};
 
-	terminal::terminal(std::istream &in_stream_): in_stream(in_stream_) {
+	terminal::terminal(std::istream &in_stream, ansi::ansistream out_stream):
+	in_stream(in_stream), out_stream(out_stream) {
 		original = attrs = getattr();
 		winsize size;
 		ioctl(STDIN_FILENO, TIOCGWINSZ, &size);
 		rows = size.ws_row;
 		cols = size.ws_col;
 	}
-
-	terminal::terminal(): terminal(std::cin) {}
 
 	terminal::~terminal() {
 		reset();

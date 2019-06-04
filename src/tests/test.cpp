@@ -77,6 +77,7 @@ namespace haunted::tests {
 		haunted::ui::textinput *ti = new haunted::ui::textinput(&term);
 		term.set_root(ti);
 		ti->focus();
+		ti->resize({0, 0, term.get_cols(), 1});
 		term.start_input();
 	}
 

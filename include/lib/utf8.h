@@ -6,11 +6,23 @@
 #include "unicode/unistr.h"
 
 namespace haunted {
-	using utf8char = int32_t;
-
 	class utf8 {
 		public:
 			static size_t width(unsigned char);
+	};
+
+	class utf8char {
+		public:
+			int32_t cp;
+			utf8char(int32_t cp): cp(cp) {}
+			utf8char(): cp(0) {}
+
+			operator int32_t() const;
+			operator std::string() const;
+
+			friend std::ostream & operator<<(std::ostream &os, const utf8char &input);
+			friend std::string operator+(const std::string &, const utf8char &);
+			friend std::string operator+(const char *, const utf8char &);
 	};
 
 	class utf8str {

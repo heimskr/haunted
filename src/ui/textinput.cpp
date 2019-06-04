@@ -165,12 +165,12 @@ namespace haunted::ui {
 		return buffer.length();
 	}
 
-	char textinput::prev_char() const {
-		return cursor > 0? buffer[cursor - 1] : '\0';
+	utf8char textinput::prev_char() const {
+		return cursor > 0? buffer[cursor - 1] : utf8char();
 	}
 
-	char textinput::next_char() const {
-		return cursor < size()? buffer[cursor] : '\0';
+	utf8char textinput::next_char() const {
+		return cursor < size()? buffer[cursor] : utf8char();
 	}
 
 	size_t textinput::get_cursor() const {
@@ -206,17 +206,27 @@ namespace haunted::ui {
 		return true;
 	}
 
+	void textinput::draw_insert() {
+		size_t cur = cursor;
+		// for (; cur <
+	}
+
 	void textinput::draw() {
 		// size_t remaining = buffer.length() - prefix.length();
 		size_t width = pos.width;
 
 		if (size() <= width - prefix.length()) {
+			
 			clear_rect();
 			jump();
 			std::cout << prefix << buffer;
 			ansi::jump(pos.top + 1, pos.left + 1 + prefix.length() + cursor);
 			return;
 		}
+	}
+
+	void textinput::jump_cursor() {
+		ansi::jump(pos.top + 1, pos.left + 1 + prefix.length() + cursor - scroll);
 	}
 
 	textinput::operator std::string() const {

@@ -9,6 +9,8 @@
 
 #include <termios.h>
 
+#include "lib/ansi.h"
+
 #include "core/key.h"
 #include "ui/container.h"
 #include "ui/control.h"
@@ -23,6 +25,7 @@ namespace haunted {
 	class terminal: public virtual ui::container {
 		private:
 			std::istream &in_stream;
+			ansi::ansistream out_stream;
 			std::mutex render_mx;
 			std::thread input_thread;
 
@@ -57,8 +60,9 @@ namespace haunted {
 			termios attrs;
 			bool raw = false;
 
-			terminal(std::istream &);
-			terminal();
+			terminal(std::istream &, ansi::ansistream);
+			terminal(std::istream &in_stream): terminal(in_stream, ansi::ansistream()) {}
+			terminal(): terminal(std::cin) {}
 
 			~terminal();
 
@@ -80,6 +84,12 @@ namespace haunted {
 			terminal & operator>>(int &);
 			terminal & operator>>(char &);
 			terminal & operator>>(key &);
+
+			template <typename T>
+			terminal & operator<<(const T &t) {
+				out_stream << t;
+				return *this;
+			}
 	};
 }
 

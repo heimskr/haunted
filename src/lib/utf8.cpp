@@ -15,8 +15,37 @@ namespace haunted {
 		return 0;
 	}
 
+	utf8char::operator int32_t() const {
+		return cp;
+	}
+
+	utf8char::operator std::string() const {
+		const char chars[5] = {
+			static_cast<char>(cp & 0xff),
+			static_cast<char>((cp >> 8) & 0xff),
+			static_cast<char>((cp >> 16) & 0xff),
+			static_cast<char>((cp >> 24) & 0xff),
+			0
+		};
+
+		return chars;
+	}
+
 	utf8char utf8str::operator[](ssize_t index) const {
 		return unistr.char32At(index);
+	}
+
+	std::ostream & operator<<(std::ostream &os, const utf8char &input) {
+		os << std::string(input);
+		return os;
+	}
+
+	std::string operator+(const std::string &left, const utf8char &right) {
+		return left + std::string(right);
+	}
+
+	std::string operator+(const char *left, const utf8char &right) {
+		return std::string(left) + std::string(right);
 	}
 
 	utf8str & utf8str::operator=(const utf8str &rhs) {

@@ -141,10 +141,10 @@ namespace haunted::ui {
 			size_t size() const;
 
 			/** Returns the character to the left of the cursor. */
-			char prev_char() const;
+			utf8char prev_char() const;
 
 			/** Returns the character to the right of the cursor. */
-			char next_char() const;
+			utf8char next_char() const;
 
 			/** Returns the cursor's offset. */
 			size_t get_cursor() const;
@@ -152,12 +152,17 @@ namespace haunted::ui {
 			/** Handles key presses. */
 			bool on_key(key &) override;
 
+			/** Partially re-renders the control onto the terminal in response to an insertion. */
+			void draw_insert();
+
 			/** Renders the control onto the terminal. */
 			void draw() override;
 
+			/** Moves the terminal cursor to the position of the textinput cursor. */
+			void jump_cursor();
+
 			/** Writes the contents of the buffer to an output stream. */
-			friend std::ostream & operator<<(std::ostream &os,
-				const textinput &input);
+			friend std::ostream & operator<<(std::ostream &os, const textinput &input);
 	};
 }
 
