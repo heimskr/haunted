@@ -84,6 +84,7 @@ int main(int, char **) {
 	terminal term;
 	term.cbreak();
 	term.watch_size();
+	term.start_input();
 
 	// haunted::tests::maintest::test_csiu();
 	haunted::tests::maintest::test_textinput(term);

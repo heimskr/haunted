@@ -35,6 +35,7 @@ namespace haunted {
 	struct key {
 		private:
 			static std::unordered_map<key_type, std::string> keymap;
+			static key_modifier make_modifier(bool shift, bool alt, bool ctrl);
 
 		public:
 			key_type type;
@@ -42,7 +43,7 @@ namespace haunted {
 
 			key(key_type type, key_modifier mod): type(type), mod(mod) {}
 			key(key_type t, bool ctrl, bool alt):
-				key(t, key_modifier((ctrl * key_modifier::ctrl) | (alt * key_modifier::alt))) {}
+				key(t, key_modifier(make_modifier(false, alt, ctrl))) {}
 			key(key_type t): key(t, none) {}
 
 			key(int t, key_modifier mod): key(key_type(t), mod) {}

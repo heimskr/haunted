@@ -1,6 +1,12 @@
 #include "core/key.h"
 
 namespace haunted {
+	key_modifier key::make_modifier(bool shift, bool alt, bool ctrl) {
+		return key_modifier((shift * key_modifier::shift)
+		                  | (alt   * key_modifier::alt)
+		                  | (ctrl  * key_modifier::ctrl));
+	}
+
 	/**
 	 * Returns whether the key is null/invalid.
 	 */

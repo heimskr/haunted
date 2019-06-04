@@ -40,7 +40,7 @@ namespace haunted {
 			void apply();
 			void reset();
 			void work_input();
-			ui::keyhandler * send_key(key &);
+			ui::keyhandler * send_key(key);
 			ui::control * get_focused();
 
 			// signal() takes a pointer to a static function.

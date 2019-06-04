@@ -87,8 +87,16 @@ namespace haunted {
 		attrs = original;
 	}
 
+	/**
+	 * Repeatedly reads from the terminal and sends the key press
+	 * to the focused control.
+	 */
 	void terminal::work_input() {
-
+		key k;
+		while (*this >> k) {
+			std::cout << "sending key.\n";
+			send_key(k);
+		}
 	}
 
 	/**
@@ -96,13 +104,17 @@ namespace haunted {
 	 * to receive it. Returns a pointer to the control or container that ended
 	 * up handling the key press.
 	 */
-	ui::keyhandler * terminal::send_key(key &k) {
+	ui::keyhandler * terminal::send_key(key k) {
 		// If the root is null, there are no controls
 		// and nothing to send key presses to.
 		if (root == nullptr)
 			return nullptr;
 
 		ui::control *ctrl = get_focused();
+
+		if (ctrl == nullptr)
+			throw std::runtime_error("Focused control is null");
+
 		if (ctrl->on_key(k))
 			return ctrl;
 
@@ -126,7 +138,8 @@ namespace haunted {
 	ui::control * terminal::get_focused() {
 		if (focused)
 			return focused;
-		return focused = root;
+		focused = root;
+		return root;
 	}
 
 	/**
