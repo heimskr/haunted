@@ -207,8 +207,31 @@ namespace haunted::ui {
 	}
 
 	void textinput::draw_insert() {
+		if (text_width() <= cursor - scroll) {
+			// If, for whatever reason, the cursor is to the right of the bounds of the textinput,
+			// there's no visible change to render because the change in text occurs entirely
+			// offscreen. We can just give up now if that's the case.
+			return;
+		}
+
+		if (cursor < scroll) {
+			// Things will turn out weird if we use this approach when the cursor is to the left of
+			// the bounds of the textinput, so when that's the case we just rerender the whole
+			// thing. TODO: improve this?
+			draw();
+			return;
+		}
+
+		// This is the x-coordinate (zero-indexed) of the last character in the buffer.
+		size_t right_bound = pos.left + prefix.length() + buffer.length() - scroll - cursor;
+		size_t right_edge = pos.left + pos.width;
 		size_t cur = cursor;
-		// for (; cur <
+		if (right_edge < right_bound)
+			right_bound = right_edge;
+
+		for (; cur < right_bound; ++cur) {
+
+		}
 	}
 
 	void textinput::draw() {
@@ -227,6 +250,10 @@ namespace haunted::ui {
 
 	void textinput::jump_cursor() {
 		ansi::jump(pos.top + 1, pos.left + 1 + prefix.length() + cursor - scroll);
+	}
+
+	size_t textinput::text_width() {
+		return pos.width - prefix.length();
 	}
 
 	textinput::operator std::string() const {

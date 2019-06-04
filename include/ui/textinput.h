@@ -161,6 +161,10 @@ namespace haunted::ui {
 			/** Moves the terminal cursor to the position of the textinput cursor. */
 			void jump_cursor();
 
+			/** Returns the width of the buffer area (i.e., the width of the control minus the
+			 *  prefix length). */
+			inline size_t text_width();
+
 			/** Writes the contents of the buffer to an output stream. */
 			friend std::ostream & operator<<(std::ostream &os, const textinput &input);
 	};
