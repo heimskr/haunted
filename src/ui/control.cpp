@@ -26,28 +26,28 @@ namespace haunted::ui {
 			// If we're at the left edge of the screen, we can clear-line if the width is full, or
 			// clear-left otherwise.
 			if (pos.width == term->get_cols()) {
-				for (int i = 1; i <= pos.height; ++i) {
-					ansi::jump(pos.top + i, 1);
+				for (int i = 0; i < pos.height; ++i) {
+					ansi::jump(pos.top + i, 0);
 					ansi::clear_line();
 				}
 			} else {
-				for (int i = 1; i <= pos.height; ++i) {
-					ansi::jump(pos.top + i, pos.width + 1);
+				for (int i = 0; i < pos.height; ++i) {
+					ansi::jump(pos.top + i, pos.width);
 					ansi::clear_left();
 				}
 			}
 		} else if (pos.left + pos.width == term->get_cols()) {
 			// If we're at the right edge of the screen, we can clear-right.
-			for (int i = 1; i <= pos.height; ++i) {
-				ansi::jump(pos.top + i, pos.left + 1);
+			for (int i = 0; i < pos.height; ++i) {
+				ansi::jump(pos.top + i, pos.left);
 				ansi::clear_right();
 			}
 		} else {
 			// If the control doesn't reach either end of the screen, we have to print a bunch
 			// of spaces.
 			std::string spaces(pos.width, ' ');
-			for (int i = 1; i <= pos.height; ++i) {
-				ansi::jump(pos.top + i, pos.left + 1);
+			for (int i = 0; i < pos.height; ++i) {
+				ansi::jump(pos.top + i, pos.left);
 				std::cout << spaces;
 			}
 		}

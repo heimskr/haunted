@@ -222,7 +222,7 @@ namespace haunted::ui {
 			return;
 		}
 
-		// This is the x-coordinate (zero-indexed) of the last character in the buffer.
+		// This is the x-coordinate of the last character in the buffer.
 		size_t right_bound = pos.left + prefix.length() + buffer.length() - scroll - cursor;
 		size_t right_edge = pos.left + pos.width;
 		size_t cur = cursor;
@@ -243,13 +243,13 @@ namespace haunted::ui {
 			clear_rect();
 			jump();
 			std::cout << prefix << buffer;
-			ansi::jump(pos.top + 1, pos.left + 1 + prefix.length() + cursor);
+			ansi::jump(pos.top, pos.left + prefix.length() + cursor);
 			return;
 		}
 	}
 
 	void textinput::jump_cursor() {
-		ansi::jump(pos.top + 1, pos.left + 1 + prefix.length() + cursor - scroll);
+		ansi::jump(pos.top, pos.left + prefix.length() + cursor - scroll);
 	}
 
 	size_t textinput::text_width() {
