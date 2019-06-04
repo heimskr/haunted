@@ -169,6 +169,11 @@ namespace haunted::ui {
 		return cursor;
 	}
 
+	bool textinput::on_key(key k) {
+		std::cout << "received " << k << "\n";
+		return true;
+	}
+
 	void textinput::draw() {
 		size_t remaining = buffer.length() - prefix.length();
 		size_t width = pos.width;

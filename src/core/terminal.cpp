@@ -93,8 +93,11 @@ namespace haunted {
 	 */
 	void terminal::work_input() {
 		key k;
+		cbreak();
 		while (*this >> k) {
-			std::cout << "sending key.\n";
+			if (k == key(key_type::c, true, false))
+				break;
+
 			send_key(k);
 		}
 	}
@@ -124,8 +127,11 @@ namespace haunted {
 		// we keep getting false. If we're at the root and on_key
 		// still returns false, give up.
 		while (!ptr->on_key(k) && dynamic_cast<ui::control *>(ptr) != root) {
-			if (ui::child *cptr = dynamic_cast<ui::child *>(ptr))
+			if (ui::child *cptr = dynamic_cast<ui::child *>(ptr)) {
 				ptr = cptr->get_parent();
+			} else {
+				return nullptr;
+			}
 		}
 
 		return ptr;
@@ -191,6 +197,12 @@ namespace haunted {
 	 * Sets the terminal's root control.
 	 */
 	void terminal::set_root(ui::control *new_root) {
+		// If new_root is already the root, we need to return here.
+		// Otherwise, we'd set the root to a dangling pointer and
+		// then try to call methods on it from terminal::redraw().
+		if (root == new_root)
+			return;
+
 		delete root;
 		root = new_root;
 		redraw();
@@ -203,6 +215,10 @@ namespace haunted {
 
 	void terminal::start_input() {
 		input_thread = std::thread(&terminal::work_input, this);
+	}
+
+	void terminal::focus(ui::control *to_focus) {
+		focused = to_focus;
 	}
 
 	bool terminal::add_child(ui::control *child) {

@@ -10,6 +10,7 @@
 #include "tests/test.h"
 #include "core/key.h"
 #include "core/util.h"
+#include "core/terminal.h"
 #include "ui/textinput.h"
 
 namespace haunted::tests {
@@ -73,8 +74,10 @@ namespace haunted::tests {
 	}
 
 	void maintest::test_textinput(terminal &term) {
-		haunted::ui::textinput ti(&term);
-		
+		haunted::ui::textinput *ti = new haunted::ui::textinput(&term);
+		term.set_root(ti);
+		ti->focus();
+		term.start_input();
 	}
 }
 
@@ -82,14 +85,10 @@ int main(int, char **) {
 	using namespace haunted;
 	
 	terminal term;
-	term.cbreak();
 	term.watch_size();
-	term.start_input();
 
 	// haunted::tests::maintest::test_csiu();
 	haunted::tests::maintest::test_textinput(term);
-
-	std::cout << "\n";
 
 	// key k;
 	// while (term >> k) {
@@ -100,5 +99,4 @@ int main(int, char **) {
 	// 	else if (k == '.')
 	// 		term.raw = !term.raw;
 	// }
-
 }

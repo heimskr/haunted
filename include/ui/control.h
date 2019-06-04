@@ -8,10 +8,6 @@
 #include "control.h"
 #include "keyhandler.h"
 
-namespace haunted {
-	class terminal;
-}
-
 namespace haunted::ui {
 	/**
 	 * Represents a control.
@@ -36,6 +32,8 @@ namespace haunted::ui {
 			virtual void draw() = 0;
 			virtual void resize(const haunted::position &);
 			void jump();
+
+			virtual void focus();
 
 			friend class container;
 	};

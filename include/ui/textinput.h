@@ -8,6 +8,7 @@
 #include <unordered_set>
 
 #include "../core/defs.h"
+#include "../core/key.h"
 #include "../lib/utf8.h"
 #include "ui/container.h"
 #include "ui/control.h"
@@ -68,6 +69,7 @@ namespace haunted::ui {
 			char next_char() const;
 			size_t get_cursor() const;
 
+			bool on_key(key) override;
 			void draw() override;
 
 			std::string dbg_render(bool = true) const;

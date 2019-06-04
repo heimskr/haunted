@@ -8,7 +8,7 @@ namespace haunted::ui {
 	 * If the key handler is a control or a container, then its parent's on_key method will be called.
 	 * This can continue until the root is reached.
 	 */
-	bool keyhandler::on_key(key &) {
+	bool keyhandler::on_key(key) {
 		return false;
 	}
 }

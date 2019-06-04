@@ -68,6 +68,7 @@ namespace haunted {
 			void set_root(ui::control *);
 			void draw();
 			void start_input();
+			void focus(ui::control *);
 
 			bool add_child(ui::control *) override;
 			terminal * get_term() override;

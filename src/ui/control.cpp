@@ -1,4 +1,6 @@
 #include "lib/ansi.h"
+
+#include "core/terminal.h"
 #include "ui/control.h"
 
 namespace haunted::ui {
@@ -12,5 +14,9 @@ namespace haunted::ui {
 	/** Moves the cursor to the top-left corner of the control. */
 	void control::jump() {
 		ansi::jump(pos.top + 1, pos.left + 1);
+	}
+
+	void control::focus() {
+		term->focus(this);
 	}
 }
