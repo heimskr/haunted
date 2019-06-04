@@ -79,6 +79,19 @@ namespace haunted::tests {
 		ti->focus();
 		term.start_input();
 	}
+
+	void maintest::test_key(terminal &term) {
+		key k;
+		term.cbreak();
+		while (term >> k) {
+			std::cout <<  "\r"  << std::setw(3) << std::left << std::setfill(' ')
+			          << int(k) <<  " "  <<  k  << std::endl;
+			if (k == '\\')
+				break;
+			else if (k == '.')
+				term.raw = !term.raw;
+		}
+	}
 }
 
 int main(int, char **) {
@@ -89,14 +102,5 @@ int main(int, char **) {
 
 	// haunted::tests::maintest::test_csiu();
 	haunted::tests::maintest::test_textinput(term);
-
-	// key k;
-	// while (term >> k) {
-	// 	std::cout <<  "\r"  << std::setw(3) << std::left << std::setfill(' ')
-	// 	          << int(k) <<  " "  <<  k  << std::endl;
-	// 	if (k == '\\')
-	// 		break;
-	// 	else if (k == '.')
-	// 		term.raw = !term.raw;
-	// }
+	// haunted::tests::maintest::test_key(term);
 }

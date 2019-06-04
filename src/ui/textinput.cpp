@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "lib/ansi.h"
 #include "lib/utf8.h"
 
 #include "core/terminal.h"
@@ -180,12 +181,24 @@ namespace haunted::ui {
 		// std::cout << "type={" << k.type << "}, mod={" << k.mod << "}, k={" << k << "}\n";
 		key_type type = k.type;
 		switch (type) {
-			case backspace: erase();   break;
-			case left_arrow: left();   break;
+			case backspace:   erase(); break;
+			case left_arrow:   left(); break;
 			case right_arrow: right(); break;
+			case up_arrow:    start(); break;
+			case down_arrow:    end(); break;
+			case enter:       clear(); break;
 			default:
-				if (k.mod == none)
+				if (k == key(key_type::w, true, false)) {
+					erase_word();
+				} else if (k == key(key_type::u, true, false)) {
+					clear();
+				} else if (k == key(key_type::b, false, true)) {
+					prev_word();
+				} else if (k == key(key_type::f, false, true)) {
+					next_word();
+				} else if (k.mod == none) {
 					insert(char(k));
+				}
 		}
 
 		term->redraw();
@@ -194,12 +207,13 @@ namespace haunted::ui {
 	}
 
 	void textinput::draw() {
-		size_t remaining = buffer.length() - prefix.length();
+		// size_t remaining = buffer.length() - prefix.length();
 		size_t width = pos.width;
 
 		if (size() <= width - prefix.length()) {
 			jump();
 			std::cout << prefix << buffer;
+			ansi::jump(pos.top + 1, pos.left + 1 + prefix.length() + cursor);
 			return;
 		}
 	}
