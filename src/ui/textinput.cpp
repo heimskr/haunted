@@ -1,7 +1,9 @@
 #include <iostream>
 
-#include "ui/textinput.h"
 #include "lib/utf8.h"
+
+#include "core/terminal.h"
+#include "ui/textinput.h"
 
 namespace haunted::ui {
 	std::unordered_set<unsigned char> textinput::whitelist = {9, 10, 11, 13};
@@ -169,8 +171,20 @@ namespace haunted::ui {
 		return cursor;
 	}
 
-	bool textinput::on_key(key k) {
-		std::cout << "received " << k << "\n";
+	bool textinput::on_key(key &k) {
+		// std::cout << "type={" << k.type << "}, mod={" << k.mod << "}, k={" << k << "}\n";
+		key_type type = k.type;
+		switch (type) {
+			case backspace: erase();   break;
+			case left_arrow: left();   break;
+			case right_arrow: right(); break;
+			default:
+				if (k.mod == none)
+					insert(char(k));
+		}
+
+		term->redraw();
+		std::cout.flush();
 		return true;
 	}
 

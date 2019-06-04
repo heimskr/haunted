@@ -69,7 +69,7 @@ namespace haunted::ui {
 			char next_char() const;
 			size_t get_cursor() const;
 
-			bool on_key(key) override;
+			bool on_key(key &) override;
 			void draw() override;
 
 			std::string dbg_render(bool = true) const;
