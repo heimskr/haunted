@@ -2,11 +2,15 @@
 #define HAUNTED_UI_CONTROL_H_
 
 #include "../core/defs.h"
+#include "../core/key.h"
 #include "container.h"
 #include "control.h"
 
+namespace haunted {
+	class terminal;
+}
+
 namespace haunted::ui {
-	class terminal: public virtual container;
 
 	/**
 	 * Represents a control.
@@ -30,6 +34,7 @@ namespace haunted::ui {
 			
 			virtual void draw() = 0;
 			virtual void resize(const haunted::position &);
+			virtual bool on_key(key &);
 			void jump();
 
 			friend class container;

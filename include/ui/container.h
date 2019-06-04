@@ -3,7 +3,9 @@
 
 #include <vector>
 
-#include "core/terminal.h"
+namespace haunted {
+	class terminal;
+}
 
 namespace haunted::ui {
 	class control;
@@ -21,7 +23,7 @@ namespace haunted::ui {
 			virtual bool add_child(control *);
 			virtual int max_children() const;
 			virtual int child_count() const;
-			virtual terminal * get_term() const = 0;
+			virtual haunted::terminal * get_term() = 0;
 
 			control * operator[](size_t);
 	};

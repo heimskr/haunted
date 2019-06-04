@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <memory>
+#include <mutex>
+#include <thread>
 #include <vector>
 
 #include <termios.h>
@@ -21,7 +23,12 @@ namespace haunted {
 	class terminal: public virtual ui::container {
 		private:
 			std::istream &in_stream;
+			std::mutex render_mx;
+			std::thread input_thread;
+
 			ui::control *root = nullptr;
+
+			// Input is sent to the focused control.
 			ui::control *focused = nullptr;
 
 			int rows, cols;
@@ -32,6 +39,7 @@ namespace haunted {
 			termios original;
 			void apply();
 			void reset();
+			void work_input();
 
 			// signal() takes a pointer to a static function.
 			// To get around this, every terminal object whose watch_size()
@@ -57,9 +65,10 @@ namespace haunted {
 			void redraw();
 			void set_root(ui::control *);
 			void draw();
+			void start_input();
 
 			bool add_child(ui::control *) override;
-			terminal * get_term() const override;
+			terminal * get_term() override;
 
 			operator bool() const;
 			terminal & operator>>(int &);

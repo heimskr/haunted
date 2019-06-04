@@ -25,6 +25,8 @@ namespace haunted {
 
 	terminal::~terminal() {
 		reset();
+		if (input_thread.joinable())
+			input_thread.join();
 	}
 
 
@@ -79,6 +81,10 @@ namespace haunted {
 	void terminal::reset() {
 		setattr(original);
 		attrs = original;
+	}
+
+	void terminal::work_input() {
+
 	}
 
 	/**
@@ -140,12 +146,16 @@ namespace haunted {
 			root->draw();
 	}
 
+	void terminal::start_input() {
+		input_thread = std::thread(&terminal::work_input, this);
+	}
+
 	bool terminal::add_child(ui::control *child) {
 		set_root(child);
 		return true;
 	}
 
-	terminal * terminal::get_term() const {
+	terminal * terminal::get_term() {
 		return this;
 	}
 
