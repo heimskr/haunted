@@ -17,8 +17,10 @@ namespace haunted::ui {
 		protected:
 			terminal *term;
 			haunted::position pos;
-			control(const haunted::position &pos_):
-				child(nullptr), pos(pos_) {}
+			control(container *parent, const haunted::position &pos):
+				child(parent), pos(pos) {}
+			control(const haunted::position &pos):
+				control(nullptr, pos) {}
 
 		public:
 			control(container *parent, terminal *term):
