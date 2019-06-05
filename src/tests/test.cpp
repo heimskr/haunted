@@ -78,6 +78,7 @@ namespace haunted::tests {
 		term.set_root(ti);
 		ti->focus();
 		ti->resize({0, 0, term.get_cols(), 1});
+		term.cbreak();
 		term.start_input();
 	}
 

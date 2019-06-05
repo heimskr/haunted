@@ -369,7 +369,6 @@ namespace haunted::ui {
 	}
 
 	bool textinput::on_key(key &k) {
-		// std::cout << "type={" << k.type << "}, mod={" << k.mod << "}, k={" << k << "}\n";
 		key_type type = k.type;
 		key_modifier mod = k.mod;
 
@@ -391,18 +390,19 @@ namespace haunted::ui {
 				break;
 			case ctrl:
 				switch (type) {
-					case a:      start(); break;
-					case e:        end(); break;
-					case u:      clear(); return true;
-					case w: erase_word(); break;
+					case 'a':      start(); break;
+					case 'e':        end(); break;
+					case 'u':      clear(); return true;
+					case 'w': erase_word(); break;
 					default: break;
 				}
 				break;
 			case alt:
 				switch (type) {
 					case backspace: erase_word(); break;
-					case b: prev_word(); break;
-					case f: next_word(); break;
+					case 'b': prev_word(); break;
+					case 'f': next_word(); break;
+					case '~': /* TODO: erase forward */ break;
 					default: break;
 				}
 				break;

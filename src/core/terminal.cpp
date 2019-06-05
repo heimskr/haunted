@@ -257,6 +257,7 @@ namespace haunted {
 		if (raw) {
 			*this >> c;
 			k = c;
+			std::cout << k.type << std::endl;
 			return *this;
 		}
 
@@ -316,12 +317,12 @@ namespace haunted {
 				}
 
 				// At this point, we haven't yet determined what the input is.
-				// If I understand correctly, a CSI sequence ends with an upper-
-				// or lower-case letter. Let's read until we encounter one.
+				// A CSI sequence ends with a character in the range [0x40, 0x7e].
+				// Let's read until we encounter one.
 				static std::string buffer;
 				buffer = c;
 
-				while (!util::is_alpha(c)) {
+				while (!util::is_finalchar(c)) {
 					if (!(*this >> c))
 						return *this;
 
