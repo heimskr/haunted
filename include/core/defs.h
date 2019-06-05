@@ -3,13 +3,15 @@
 
 #include <cstddef>
 
+#define DBG(x) std::cerr << "\e[2m[" << __FILE__ << ":" << __LINE__ << "]\e[0m " << x << std::endl
+
 namespace haunted {
 	enum side {left, right, top, bottom};
 
 	struct point {
 		int x, y;
 
-		point(int x_, int y_): x(x_), y(y_) {}
+		point(int x, int y): x(x), y(y) {}
 		point(): point(-1, -1) {}
 
 		operator bool() const;

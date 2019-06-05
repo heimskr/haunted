@@ -27,6 +27,7 @@ namespace haunted::ui {
 			virtual int child_count() const;
 			virtual haunted::terminal * get_term() = 0;
 
+			/** Returns the nth child (indexes `children`). */
 			control * operator[](size_t);
 	};
 }

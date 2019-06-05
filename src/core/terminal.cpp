@@ -92,6 +92,9 @@ namespace haunted {
 	 */
 	void terminal::work_input() {
 		key k;
+		// Sometimes, calling cbreak() once doesn't seem to properly set all the flags (e.g., arrow
+		// keys produce strings like "^[[C"). Calling it twice appears to work, but it's not pretty.
+		cbreak();
 		cbreak();
 		while (*this >> k) {
 			if (k == key(key_type::c, true, false))
@@ -146,6 +149,7 @@ namespace haunted {
 	void terminal::cbreak() {
 		attrs.c_lflag &= ~(ECHO | ICANON | ISIG);
 		attrs.c_iflag &= ~IXON;
+		std::cerr << "About to apply cbreak flags." << std::endl;
 		apply();
 	}
 
@@ -203,6 +207,10 @@ namespace haunted {
 
 	terminal * terminal::get_term() {
 		return this;
+	}
+
+	bool terminal::has_focus(const ui::control *ctrl) const {
+		return focused == ctrl;
 	}
 
 	int terminal::get_rows() const {

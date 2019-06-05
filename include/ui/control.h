@@ -33,6 +33,7 @@ namespace haunted::ui {
 			
 			virtual void draw() = 0;
 			virtual void resize(const haunted::position &);
+			virtual void focus();
 
 			/** Moves the cursor on the screen to the top-left corner of the control. */
 			void jump();
@@ -40,7 +41,14 @@ namespace haunted::ui {
 			/** Erases the portion of the display that this control occupies. */
 			void clear_rect();
 
-			virtual void focus();
+			/** Returns true if the control is its terminal's focused control. */
+			inline bool has_focus() const;
+
+			/** Returns true if the control's right edge is at the right edge of the screen. */
+			inline bool at_right() const;
+
+			/** Returns true if the control's left edge is at the left edge of the screen. */
+			inline bool at_left() const;
 
 			friend class container;
 	};

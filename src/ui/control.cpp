@@ -11,6 +11,10 @@ namespace haunted::ui {
 		pos = new_pos;
 	}
 
+	void control::focus() {
+		term->focus(this);
+	}
+
 	void control::jump() {
 		pos.jump();
 	}
@@ -27,19 +31,19 @@ namespace haunted::ui {
 			// clear-left otherwise.
 			if (pos.width == term->get_cols()) {
 				for (int i = 0; i < pos.height; ++i) {
-					ansi::jump(pos.top + i, 0);
+					ansi::jump(0, pos.top + i);
 					ansi::clear_line();
 				}
 			} else {
 				for (int i = 0; i < pos.height; ++i) {
-					ansi::jump(pos.top + i, pos.width);
+					ansi::jump(pos.width, pos.top + i);
 					ansi::clear_left();
 				}
 			}
 		} else if (pos.left + pos.width == term->get_cols()) {
 			// If we're at the right edge of the screen, we can clear-right.
 			for (int i = 0; i < pos.height; ++i) {
-				ansi::jump(pos.top + i, pos.left);
+				ansi::jump(pos.left, pos.top + i);
 				ansi::clear_right();
 			}
 		} else {
@@ -47,7 +51,7 @@ namespace haunted::ui {
 			// of spaces.
 			std::string spaces(pos.width, ' ');
 			for (int i = 0; i < pos.height; ++i) {
-				ansi::jump(pos.top + i, pos.left);
+				ansi::jump(pos.left, pos.top + i);
 				std::cout << spaces;
 			}
 		}
@@ -55,7 +59,15 @@ namespace haunted::ui {
 		ansi::restore();
 	}
 
-	void control::focus() {
-		term->focus(this);
+	bool control::has_focus() const {
+		return term->has_focus(this);
+	}
+
+	bool control::at_right() const {
+		return pos.left + pos.width == term->get_cols();
+	}
+
+	bool control::at_left() const {
+		return pos.left == 0;
 	}
 }

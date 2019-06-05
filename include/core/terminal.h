@@ -109,6 +109,9 @@ namespace haunted {
 			/** Returns the terminal. Required by haunted::ui::container. */
 			terminal * get_term() override;
 
+			/** Returns true if a given control is the focused control. */
+			bool has_focus(const ui::control *) const;
+
 			/** Returns the height (in rows) of the terminal. */
 			int get_rows() const;
 			/** Returns the width (in columns) of the terminal. */

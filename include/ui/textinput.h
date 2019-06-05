@@ -158,11 +158,21 @@ namespace haunted::ui {
 			/** Partially re-renders the control onto the terminal in response to an insertion. */
 			void draw_insert();
 
+			/** Blanks out the spaces to the right of the buffer. */
+			void clear_line();
+
 			/** Renders the control onto the terminal. */
 			void draw() override;
 
 			/** Moves the terminal cursor to the position of the textinput cursor. */
 			void jump_cursor();
+
+			/** Returns a point representing the position of the textinput cursor on the screen. */
+			point find_cursor() const;
+
+			/** Adjusts the scroll if the input is too long and a character has been inserted, based
+			 *  on the cursor's current position. */
+			void check_scroll();
 
 			/** Returns the width of the buffer area (i.e., the width of the control minus the
 			 *  prefix length). */

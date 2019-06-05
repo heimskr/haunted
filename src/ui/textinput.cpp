@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 
 #include "lib/ansi.h"
 #include "lib/utf8.h"
@@ -180,6 +181,7 @@ namespace haunted::ui {
 	bool textinput::on_key(key &k) {
 		// std::cout << "type={" << k.type << "}, mod={" << k.mod << "}, k={" << k << "}\n";
 		key_type type = k.type;
+
 		switch (type) {
 			case backspace:   erase(); break;
 			case left_arrow:   left(); break;
@@ -192,22 +194,32 @@ namespace haunted::ui {
 					erase_word();
 				} else if (k == key(key_type::u, true, false)) {
 					clear();
+					draw();
+					std::cout.flush(); return true;
 				} else if (k == key(key_type::b, false, true)) {
 					prev_word();
 				} else if (k == key(key_type::f, false, true)) {
 					next_word();
 				} else if (k.mod == none) {
 					insert(char(k));
+					check_scroll();
 					draw_insert();
+					std::cout.flush(); return true;
 				}
 		}
 
 		draw_cursor();
-		std::cout.flush();
-		return true;
+		std::cout.flush(); return true;
+	}
+
+	void textinput::draw_cursor() {
+		if (term->has_focus(this))
+			jump_cursor();
 	}
 
 	void textinput::draw_insert() {
+		DBG("twidth = " << text_width() << ", length = " << length() << ", cursor = " << cursor << ", scroll = " << scroll);
+
 		// It's assumed that the cursor has just been moved to the right from the insertion.
 		// We need to account for that by using a decremented copy of the cursor.
 		size_t cur = cursor - 1;
@@ -216,6 +228,7 @@ namespace haunted::ui {
 			// If, for whatever reason, the cursor is to the right of the bounds of the textinput,
 			// there's no visible change to render because the change in text occurs entirely
 			// offscreen. We can just give up now if that's the case.
+			DBG("text_width() <= cur - scroll   ~   " << text_width() << " <= " << cur << " - " << scroll);
 			return;
 		}
 
@@ -233,25 +246,55 @@ namespace haunted::ui {
 		if (right_edge < right_bound)
 			right_bound = right_edge;
 
-		*term << buffer.substr(cur);
+		jump_cursor();
+		ansi::save();
+		ansi::left();
+		point cpos = find_cursor();
+		// Print only enough text to reach the right edge. Printing more would cause wrapping or
+		// text being printed out of bounds.
+		*term << buffer.substr(cur, right_edge - cpos.x);
+		ansi::restore();
+	}
+
+	void textinput::clear_line() {
+		size_t buffer_end = pos.left + prefix.length() + length() - scroll;
+		// if
 	}
 
 	void textinput::draw() {
-		// size_t remaining = buffer.length() - prefix.length();
-		size_t width = pos.width;
+		size_t twidth = text_width();
 
-		if (size() <= width - prefix.length()) {
-			
-			clear_rect();
-			jump();
-			std::cout << prefix << buffer;
-			ansi::jump(pos.top, pos.left + prefix.length() + cursor);
-			return;
-		}
+		clear_line();
+		jump();
+		if (scroll < 0)
+			throw std::domain_error("Scroll value cannot be negative.");
+		*term << prefix << buffer.substr(scroll, twidth);
+		jump_cursor();
 	}
 
 	void textinput::jump_cursor() {
-		ansi::jump(pos.top, pos.left + prefix.length() + cursor - scroll);
+		point cpos = find_cursor();
+		ansi::jump(cpos.x, cpos.y);
+	}
+
+	point textinput::find_cursor() const {
+		return {static_cast<int>(pos.left + prefix.length() + cursor - scroll), pos.top};
+	}
+
+	void textinput::check_scroll() {
+		const size_t len = length();
+
+		if (len <= text_width()) {
+			// If there's enough text to fit inside the non-prefix portion, there's nothing to do.
+			return;
+		}
+
+		if (cursor == len) {
+			// If the cursor is at the end of the input, increment the scroll. This keeps the cursor
+			// at the right edge of the control and pushes the other text to the left, truncating
+			// the first character.
+			++scroll;
+		}
 	}
 
 	size_t textinput::text_width() {
