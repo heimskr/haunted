@@ -93,6 +93,15 @@ namespace haunted::tests {
 				term.raw = !term.raw;
 		}
 	}
+
+	void maintest::test_cursor(terminal &term) {
+		ansi::clear();
+		ansi::jump(180, 0);
+		term << "0";
+		ansi::jump(181, 1);
+		term << "1";
+		term.flush();
+	}
 }
 
 int main(int, char **) {
@@ -102,6 +111,7 @@ int main(int, char **) {
 	term.watch_size();
 
 	// haunted::tests::maintest::test_csiu();
-	haunted::tests::maintest::test_textinput(term);
 	// haunted::tests::maintest::test_key(term);
+	haunted::tests::maintest::test_textinput(term);
+	// haunted::tests::maintest::test_cursor(term);
 }

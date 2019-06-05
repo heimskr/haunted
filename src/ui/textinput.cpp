@@ -39,6 +39,7 @@ namespace haunted::ui {
 		// We need to account for that by using a decremented copy of the cursor.
 		size_t cur = cursor - 1;
 
+
 		if (text_width() <= cur - scroll) {
 			// If, for whatever reason, the cursor is to the right of the bounds of the textinput,
 			// there's no visible change to render because the change in text occurs entirely
@@ -54,20 +55,17 @@ namespace haunted::ui {
 			return;
 		}
 
-		// This is the x-coordinate of the last character in the buffer.
-		size_t right_bound = pos.left + prefix.length() + buffer.length() - scroll - cur;
-		size_t right_edge = pos.left + pos.width;
-		if (right_edge < right_bound)
-			right_bound = right_edge;
-
-		jump_cursor();
 		ansi::save();
+		jump_cursor();
 		ansi::left();
 		point cpos = find_cursor();
 		// Print only enough text to reach the right edge. Printing more would cause wrapping or
 		// text being printed out of bounds.
-		*term << buffer.substr(cur, right_edge - cpos.x);
+		*term << buffer.substr(cur, pos.right() - cpos.x + 2);
 		ansi::restore();
+		if (has_focus())
+			jump_cursor();
+		flush();
 	}
 
 	void textinput::clear_line() {
@@ -167,9 +165,8 @@ namespace haunted::ui {
 		} else {
 			size_t width = utf8::width(ch);
 			if (width < 2) {
-				// It seems we've received a plain old ASCII
-				// character or an invalid UTF8 start byte.
-				// Either way, ppend it to the buffer.
+				// It seems we've received a plain old ASCII character or an
+				// invalid UTF8 start byte. Either way, append it to the buffer.
 				buffer.insert(cursor++, ch);
 				draw_insert();
 				update();
@@ -388,28 +385,26 @@ namespace haunted::ui {
 				} else if (k == key(key_type::u, true, false)) {
 					clear();
 					draw();
-					std::cout.flush(); return true;
+					flush(); return true;
 				} else if (k == key(key_type::b, false, true)) {
 					prev_word();
 				} else if (k == key(key_type::f, false, true)) {
 					next_word();
 				} else if (k.mod == none) {
 					insert(char(k));
-					if (check_scroll())
+					if (check_scroll()) {
 						draw();
-					else
-						draw_insert();
+					}
 					return true;
 				}
 		}
 
 		draw_cursor();
-		std::cout.flush(); return true;
+		flush(); return true;
 	}
 
 	void textinput::draw() {
 		size_t twidth = text_width();
-		DBG("twidth = " << twidth << "   cursor = " << cursor << "   scroll = " << scroll << "   length = " << length());
 
 		clear_line();
 		jump();

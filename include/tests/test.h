@@ -107,6 +107,7 @@ namespace haunted::tests {
 			static void test_csiu();
 			static void test_textinput(terminal &);
 			static void test_key(terminal &);
+			static void test_cursor(terminal &);
 	};
 }
 
