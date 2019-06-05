@@ -152,6 +152,9 @@ namespace haunted::ui {
 			/** Handles key presses. */
 			bool on_key(key &) override;
 
+			/** Partially re-renders the control onto the terminal in response to an cursor move. */
+			void draw_cursor();
+
 			/** Partially re-renders the control onto the terminal in response to an insertion. */
 			void draw_insert();
 
