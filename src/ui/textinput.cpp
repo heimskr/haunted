@@ -35,8 +35,6 @@ namespace haunted::ui {
 	}
 
 	void textinput::draw_insert() {
-		DBG("twidth = " << text_width() << ", length = " << length() << ", cursor = " << cursor << ", scroll = " << scroll);
-
 		// It's assumed that the cursor has just been moved to the right from the insertion.
 		// We need to account for that by using a decremented copy of the cursor.
 		size_t cur = cursor - 1;
@@ -45,7 +43,6 @@ namespace haunted::ui {
 			// If, for whatever reason, the cursor is to the right of the bounds of the textinput,
 			// there's no visible change to render because the change in text occurs entirely
 			// offscreen. We can just give up now if that's the case.
-			DBG("text_width() <= cur - scroll   ~   " << text_width() << " <= " << cur << " - " << scroll);
 			return;
 		}
 
@@ -202,6 +199,7 @@ namespace haunted::ui {
 		for (; prev_char() != '\0' && prev_char() != ' '; --cursor)
 			to_erase++;
 		buffer.erase(cursor, to_erase);
+		check_scroll();
 		draw_right();
 		update();
 	}
@@ -229,7 +227,7 @@ namespace haunted::ui {
 		ansi::save();
 		clear_line();
 		jump_cursor();
-		*term << buffer.substr(cursor - scroll, text_width() - cursor + scroll);
+		*term << buffer.substr(cursor, text_width() - cursor + scroll);
 		ansi::restore();
 	}
 
@@ -411,6 +409,7 @@ namespace haunted::ui {
 
 	void textinput::draw() {
 		size_t twidth = text_width();
+		DBG("twidth = " << twidth << "   cursor = " << cursor << "   scroll = " << scroll << "   length = " << length());
 
 		clear_line();
 		jump();
