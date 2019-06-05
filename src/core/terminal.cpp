@@ -101,11 +101,6 @@ namespace haunted {
 		}
 	}
 
-	/**
-	 * Sends a key press to whichever control is most appropriate and willing
-	 * to receive it. Returns a pointer to the control or container that ended
-	 * up handling the key press.
-	 */
 	ui::keyhandler * terminal::send_key(key k) {
 		// If the root is null, there are no controls
 		// and nothing to send key presses to.
@@ -136,20 +131,6 @@ namespace haunted {
 		return ptr;
 	}
 
-	/**
-	 * Returns the focused control. If none is currently selected,
-	 * this function focuses the root control.
-	 */
-	ui::control * terminal::get_focused() {
-		if (focused)
-			return focused;
-		focused = root;
-		return root;
-	}
-
-	/**
-	 * Handles window resizes.
-	 */
 	void terminal::winch(int new_rows, int new_cols) {
 		bool changed = rows != new_rows || cols != new_cols;
 		rows = new_rows;
@@ -162,27 +143,18 @@ namespace haunted {
 // Public instance methods
 
 
-	/**
-	 * Activates cbreak mode.
-	 */
 	void terminal::cbreak() {
 		attrs.c_lflag &= ~(ECHO | ICANON | ISIG);
 		attrs.c_iflag &= ~IXON;
 		apply();
 	}
 
-	/**
-	 * Sets a handler for SIGWINCH to detect terminal resizes.
-	 */
 	void terminal::watch_size() {
 		if (winch_targets.empty())
 			signal(SIGWINCH, &terminal::winch_handler);
 		winch_targets.push_back(this);
 	}
 
-	/**
-	 * Redraws the root control.
-	 */
 	void terminal::redraw() {
 		if (root) {
 			ansi::clear();
@@ -192,9 +164,6 @@ namespace haunted {
 		}
 	}
 
-	/**
-	 * Sets the terminal's root control.
-	 */
 	void terminal::set_root(ui::control *new_root) {
 		// If new_root is already the root, we need to return here.
 		// Otherwise, we'd set the root to a dangling pointer and
@@ -220,6 +189,13 @@ namespace haunted {
 		focused = to_focus;
 	}
 
+	ui::control * terminal::get_focused() {
+		if (focused)
+			return focused;
+		focused = root;
+		return root;
+	}
+
 	bool terminal::add_child(ui::control *child) {
 		set_root(child);
 		return true;
@@ -241,25 +217,16 @@ namespace haunted {
 // Public operators
 
 
-	/**
-	 * Returns true if in_stream is in a valid state.
-	 */
 	terminal::operator bool() const {
 		return bool(in_stream);
 	}
 
-	/**
-	 * Reads a single raw character from the terminal as an int.
-	 */
 	terminal & terminal::operator>>(int &ch) {
 		if (int c = in_stream.get())
 			ch = c;
 		return *this;
 	}
 
-	/**
-	 * Reads a single raw character from the terminal.
-	 */
 	terminal & terminal::operator>>(char &ch) {
 		char c = 0;
 		if (in_stream.get(c))
@@ -267,10 +234,6 @@ namespace haunted {
 		return *this;
 	}
 
-	/**
-	 * Reads a key from the terminal. This conveniently handles much of the
-	 * weirdness of terminal input.
-	 */
 	terminal & terminal::operator>>(key &k) {
 		// If we receive an escape followed by a [ and another escape,
 		// we return Alt+[ after receiving the second escape, but this
