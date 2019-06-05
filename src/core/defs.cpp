@@ -10,6 +10,14 @@ namespace haunted {
 		ansi::jump(left + inner_offset_left, top + inner_offset_top);
 	}
 
+	int position::right() const {
+		return left + width - 1;
+	}
+
+	int position::bottom() const {
+		return top + height - 1;
+	}
+
 	position::operator bool() const {
 		return 0 <= width && 0 <= height;
 	}

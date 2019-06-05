@@ -30,6 +30,12 @@ namespace haunted {
 		/** Moves the cursor to a given offset from the top-left corner of the position. */
 		void jump(int offset_left = 0, int offset_top = 0);
 
+		/** Returns the rightmost column of the position. */
+		int right() const;
+
+		/** Returns the bottommost column of the position. */
+		int bottom() const;
+
 		/** Returns whether this is a valid (i.e., not default-constructed) position. */
 		operator bool() const;
 	};

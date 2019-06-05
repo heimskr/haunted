@@ -59,6 +59,10 @@ namespace haunted::ui {
 		ansi::restore();
 	}
 
+	void control::flush() {
+		term->flush();
+	}
+
 	bool control::has_focus() const {
 		return term->has_focus(this);
 	}

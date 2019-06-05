@@ -56,6 +56,54 @@ namespace haunted::ui {
 			 *  or cursor has changed. */
 			void update();
 
+			/** Partially re-renders the control onto the terminal in response to an cursor move. */
+			void draw_cursor();
+
+			/** Partially re-renders the control onto the terminal in response to an insertion. */
+			void draw_insert();
+
+			/** Partially re-renders the control onto the terminal in response to a deletion. */
+			void draw_erase();
+
+			/** Clears the space to the right of the cursor and redraws the text. */
+			void draw_right();
+
+			/** Blanks out the spaces to the right of the buffer. */
+			void clear_line();
+
+			/** Blanks out the non-prefix portion of the textinput. */
+			void clear_text();
+
+			/** Blanks out the non-prefix portion of the textinput starting at a given offset past
+			 *  the left edge of the non-prefix portion. */
+			void clear_right(size_t);
+
+			/** Returns a point representing the position of the textinput cursor on the screen. */
+			point find_cursor() const;
+
+			/** Adjusts the scroll if the input is too long and a character has been inserted, based
+			 *  on the cursor's current position. Returns true if the scroll was changed. */
+			bool check_scroll();
+
+			/** Returns the character to the left of the cursor. */
+			utf8char prev_char() const;
+
+			/** Returns the character to the right of the cursor. */
+			utf8char next_char() const;
+
+			/** Returns the width of the buffer area (i.e., the width of the control minus the
+			 *  prefix length). */
+			inline size_t text_width() const;
+
+			/** Returns the cursor's offset. */
+			size_t get_cursor() const;
+
+			/** Returns true if the cursor is at the right edge of the textinput. */
+			bool cursor_at_right() const;
+
+			/** Returns true if the cursor is at the left edge of the textinput. */
+			bool cursor_at_left() const;
+
 		public:
 			/** When a multibyte UTF-8 codepoint is being received, the individual bytes are
 			 *  stored in this buffer. */
@@ -140,26 +188,8 @@ namespace haunted::ui {
 			size_t length() const;
 			size_t size() const;
 
-			/** Returns the character to the left of the cursor. */
-			utf8char prev_char() const;
-
-			/** Returns the character to the right of the cursor. */
-			utf8char next_char() const;
-
-			/** Returns the cursor's offset. */
-			size_t get_cursor() const;
-
 			/** Handles key presses. */
 			bool on_key(key &) override;
-
-			/** Partially re-renders the control onto the terminal in response to an cursor move. */
-			void draw_cursor();
-
-			/** Partially re-renders the control onto the terminal in response to an insertion. */
-			void draw_insert();
-
-			/** Blanks out the spaces to the right of the buffer. */
-			void clear_line();
 
 			/** Renders the control onto the terminal. */
 			void draw() override;
@@ -167,16 +197,9 @@ namespace haunted::ui {
 			/** Moves the terminal cursor to the position of the textinput cursor. */
 			void jump_cursor();
 
-			/** Returns a point representing the position of the textinput cursor on the screen. */
-			point find_cursor() const;
-
-			/** Adjusts the scroll if the input is too long and a character has been inserted, based
-			 *  on the cursor's current position. */
-			void check_scroll();
-
-			/** Returns the width of the buffer area (i.e., the width of the control minus the
-			 *  prefix length). */
-			inline size_t text_width();
+			/** Moves the terminal cursor to the position of the textinput cursor if the textinput
+			 *  is focused. Returns true if the textinput is focused and the cursor was moved. */
+			bool try_jump();
 
 			/** Writes the contents of the buffer to an output stream. */
 			friend std::ostream & operator<<(std::ostream &os, const textinput &input);

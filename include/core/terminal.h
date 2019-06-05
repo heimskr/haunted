@@ -97,6 +97,9 @@ namespace haunted {
 			/** Starts the input-reading thread. */
 			void start_input();
 
+			/** Flushes the output stream. */
+			void flush();
+
 			/** Focuses a control. */
 			void focus(ui::control *);
 			/** Returns the focused control. If none is currently selected, * this function focuses

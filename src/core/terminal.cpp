@@ -189,6 +189,10 @@ namespace haunted {
 		input_thread = std::thread(&terminal::work_input, this);
 	}
 
+	void terminal::flush() {
+		out_stream.flush();
+	}
+
 	void terminal::focus(ui::control *to_focus) {
 		focused = to_focus;
 	}
