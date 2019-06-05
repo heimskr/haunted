@@ -376,11 +376,11 @@ namespace haunted::ui {
 		switch (mod) {
 			case none:
 				switch (type) {
-					case backspace:   erase(); break;
-					case left_arrow:   left(); break;
 					case right_arrow: right(); break;
-					case up_arrow:    start(); break;
+					case left_arrow:   left(); break;
 					case down_arrow:    end(); break;
+					case up_arrow:    start(); break;
+					case backspace:   erase(); break;
 					case enter:       clear(); break;
 					default:
 						insert(char(k));
@@ -400,6 +400,7 @@ namespace haunted::ui {
 				break;
 			case alt:
 				switch (type) {
+					case backspace: erase_word(); break;
 					case b: prev_word(); break;
 					case f: next_word(); break;
 					default: break;
