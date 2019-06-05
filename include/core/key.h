@@ -51,12 +51,28 @@ namespace haunted {
 			key(int t): key(key_type(t), none) {}
 			key(): key(key_type('\0'), none) {}
 
+			/** Returns true if this key's type is equal to a given key type and this key's only
+			 *  modifier is control. */
+			bool is_ctrl(key_type) const;
+			/** Returns true if this key's type is equal to a given key type and this key's only
+			 *  modifier is alt. */
+			bool is_alt(key_type) const;
+
+			/** Returns false if the key is null/invalid. */
 			operator bool() const;
+			/** Converts the key to a char. If the key is greater than 127, this returns zero. */
 			operator char() const;
+			/** Returns the key's value. */
 			operator int() const;
+			/** Returns a string representation of the key and its modifiers. Useful mostly for
+			 *  debugging purposes. */
 			operator std::string() const;
+			/** Returns whether the key is equal to a character, but case-insensitively. */
 			bool operator%(char) const;
+			/** Returns whether the key is identical to another key. The key type and modifiers
+			 *  must match. */
 			bool operator==(const key &) const;
+			/** Returns whether the key matches a character. Case sensitive. */
 			bool operator==(char) const;
 
 			friend std::ostream & operator<<(std::ostream &, const key &);

@@ -7,33 +7,27 @@ namespace haunted {
 		                  | (ctrl  * key_modifier::ctrl));
 	}
 
-	/**
-	 * Returns whether the key is null/invalid.
-	 */
+	bool key::is_ctrl(key_type other) const {
+		return type == other && mod == ctrl;
+	}
+
+	bool key::is_alt(key_type other) const {
+		return type == other && mod == alt;
+	}
+
 	key::operator bool() const {
 		return type != '\0';
 	}
 
-	/**
-	 * Converts the key to a character.
-	 * If the key is greater than 127, this returns zero.
-	 */
 	key::operator char() const {
 		char c = static_cast<char>(type);
 		return 127 < c? 0 : c;
 	}
 
-	/**
-	 * Returns the key's value.
-	 */
 	key::operator int() const {
 		return type;
 	}
 
-	/**
-	 * Returns a string representation of the key and its modifiers.
-	 * Useful mostly for debugging purposes.
-	 */
 	key::operator std::string() const {
 		std::string out;
 		if (mod & ctrl) out.append("⌃");
@@ -46,9 +40,6 @@ namespace haunted {
 		return out;
 	}
 
-	/**
-	 * Returns whether the key is equal to a character, but case-insensitively.
-	 */
 	bool key::operator%(char right) const {
 		char left = *this;
 		if (left == right) return true;
@@ -57,16 +48,10 @@ namespace haunted {
 		return false;
 	}
 
-	/**
-	 * Returns whether the key is identical to another key. The key type and modifiers must match.
-	 */
 	bool key::operator==(const key &right) const {
 		return type == right.type && mod == right.mod;
 	}
 
-	/**
-	 * Returns whether the key matches a character. Case sensitive.
-	 */
 	bool key::operator==(char right) const {
 		return type == right;
 	}

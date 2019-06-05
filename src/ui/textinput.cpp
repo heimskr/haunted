@@ -371,36 +371,46 @@ namespace haunted::ui {
 	bool textinput::on_key(key &k) {
 		// std::cout << "type={" << k.type << "}, mod={" << k.mod << "}, k={" << k << "}\n";
 		key_type type = k.type;
+		key_modifier mod = k.mod;
 
-		switch (type) {
-			case backspace:   erase(); break;
-			case left_arrow:   left(); break;
-			case right_arrow: right(); break;
-			case up_arrow:    start(); break;
-			case down_arrow:    end(); break;
-			case enter:       clear(); break;
-			default:
-				if (k == key(key_type::w, true, false)) {
-					erase_word();
-				} else if (k == key(key_type::u, true, false)) {
-					clear();
-					draw();
-					flush(); return true;
-				} else if (k == key(key_type::b, false, true)) {
-					prev_word();
-				} else if (k == key(key_type::f, false, true)) {
-					next_word();
-				} else if (k.mod == none) {
-					insert(char(k));
-					if (check_scroll()) {
-						draw();
-					}
-					return true;
+		switch (mod) {
+			case none:
+				switch (type) {
+					case backspace:   erase(); break;
+					case left_arrow:   left(); break;
+					case right_arrow: right(); break;
+					case up_arrow:    start(); break;
+					case down_arrow:    end(); break;
+					case enter:       clear(); break;
+					default:
+						insert(char(k));
+						if (check_scroll())
+							draw();
+						return true;
 				}
+				break;
+			case ctrl:
+				switch (type) {
+					case a:      start(); break;
+					case e:        end(); break;
+					case u:      clear(); return true;
+					case w: erase_word(); break;
+					default: break;
+				}
+				break;
+			case alt:
+				switch (type) {
+					case b: prev_word(); break;
+					case f: next_word(); break;
+					default: break;
+				}
+				break;
+			default: break;
 		}
 
 		draw_cursor();
-		flush(); return true;
+		flush();
+		return true;
 	}
 
 	void textinput::draw() {
