@@ -5,6 +5,9 @@
 #include <string>
 #include <unordered_map>
 
+#include <iostream>
+#include "core/defs.h"
+
 namespace haunted {
 	/**
 	 * Represents a key code.
@@ -30,7 +33,7 @@ namespace haunted {
 	 */
 	enum class kmod {none = 0, shift = 1, alt = 2, ctrl = 4};
 
-	using modset = std::bitset<4>;
+	using modset = std::bitset<3>;
 
 	/**
 	 * Represents a keypress, including any modifiers.
@@ -38,6 +41,7 @@ namespace haunted {
 	struct key {
 		private:
 			static std::unordered_map<ktype, std::string> keymap;
+			static modset get_modset(kmod);
 
 		public:
 			ktype type;
@@ -45,7 +49,7 @@ namespace haunted {
 			int extra; // For sequences like ^[#~, where # is any number. -1 by default.
 
 			key(ktype type, modset mods, int extra): type(type), mods(mods), extra(extra) {}
-			key(ktype type, kmod mod, int extra):    key(type, modset(int(mod)), extra) {}
+			key(ktype type, kmod mod, int extra):    key(type, get_modset(mod), extra) {}
 			key(ktype type, kmod mod):               key(type, mod,    -1) {}
 			key(ktype type):                         key(type, kmod::none) {}
 

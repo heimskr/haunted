@@ -1,4 +1,7 @@
+#include <iostream>
+
 #include "core/key.h"
+#include "core/defs.h"
 
 namespace haunted {
 	bool key::is_ctrl(ktype other) const {
@@ -51,11 +54,19 @@ namespace haunted {
 	}
 
 	bool key::operator==(kmod mod) const {
-		return mods.to_ulong() == static_cast<unsigned long>(mod);
+		return mods == get_modset(mod);
 	}
 
 	bool key::operator&(kmod mod) const {
-		return mods.test(int(mod));
+
+		DBG("Testing " << mods.to_string() << " vs. " << int(mod) << " on " << int(type));
+
+		switch (int(mod)) {
+			case int(kmod::shift): return mods.test(0);
+			case int(kmod::alt):   return mods.test(1);
+			case int(kmod::ctrl):  return mods.test(2);
+			default: return !mods.any();;
+		}
 	}
 
 	std::ostream & operator<<(std::ostream &os, const key &k) {
@@ -75,4 +86,13 @@ namespace haunted {
 		{ktype::backspace,   "⌫"},
 		{ktype::space,       "␣"},
 	};
+
+	modset key::get_modset(kmod mod) {
+		switch (int(mod)) {
+			case int(kmod::shift): return modset().set(0);
+			case int(kmod::alt):   return modset().set(1);
+			case int(kmod::ctrl):  return modset().set(2);
+			default: return modset();
+		}
+	}
 }
