@@ -17,10 +17,8 @@
 
 namespace haunted {
 	/**
-	 * This class enables interaction with terminals.
-	 * It uses termios to change terminal modes.
-	 * When the destructor is called, it resets
-	 * the modes to their original values.
+	 * This class enables interaction with terminals. It uses termios to change terminal modes.
+	 * When the destructor is called, it resets the modes to their original values.
 	 */
 	class terminal: public virtual ui::container {
 		private:
@@ -28,6 +26,7 @@ namespace haunted {
 			ansi::ansistream out_stream;
 			std::mutex render_mx;
 			std::thread input_thread;
+			termios original;
 
 			ui::control *root = nullptr;
 
@@ -36,31 +35,30 @@ namespace haunted {
 
 			int rows, cols;
 
+			/** Returns the terminal attributes from tcgetaddr. */
 			static termios getattr();
-			static void setattr(const termios &);
 
-			termios original;
+			/** Sets the terminal attributes with tcsetaddr. */
+			static void setattr(const termios &);
 
 			/** Applies the attributes in `attrs` to the terminal. */
 			void apply();
 
-			/** Restores the original terminal attributes. */
+			/** Restores the terminal attributes to what they were before any changes were applied. */
 			void reset();
 
-			/** Reads and dispatches key presses in a loop. */
+			/** Repeatedly reads from the terminal in a loop and dispatches the key presses to the focused control. */
 			void work_input();
 			
-			/** Sends a key press to whichever control is most appropriate and willing to receive
-			 *  it. Returns a pointer to the control or container that ended up handling the key
-			 *  press. */
+			/** Sends a key press to whichever control is most appropriate and willing to receive it.
+			 *  Returns a pointer to the control or container that ended up handling the key press. */
 			ui::keyhandler * send_key(key);
 
-			// signal() takes a pointer to a static function.
-			// To get around this, every terminal object whose watch_size()
-			// method is called adds itself to a static vector of terminal
-			// pointers. When the WINCH signal handler is called, it notifies
-			// all the listening terminal objects of the terminal's new
-			// dimensions.
+			// signal() takes a pointer to a static function. To get around this, every terminal object whose
+			// watch_size() method is called adds itself to a static vector of terminal pointers. When the WINCH signal
+			// handler is called, it notifies all the listening terminal objects of the terminal's new dimensions.
+
+			/** Notifies terminal objects of a window resize. */
 			static void winch_handler(int);
 			static std::vector<terminal *> winch_targets;
 
@@ -83,12 +81,12 @@ namespace haunted {
 			/** Sets a handler to respond to SIGWINCH signals. */
 			void watch_size();
 
-			/** Redraws the entire screen if a root control exists. This also adjusts the size and
-			 *  position of the root control to match the terminal. */
+			/** Redraws the entire screen if a root control exists. This also adjusts the size and position of the root
+			 *  control to match the terminal. */
 			void redraw();
 
-			/** Sets the terminal's root control. If the new root isn't the same as the old root,
-			 *  this function deletes the old root. */
+			/** Sets the terminal's root control. If the new root isn't the same as the old root, this function deletes
+			 *  the old root. */
 			void set_root(ui::control *);
 			
 			/** Draws the root control if one exists. */
@@ -102,8 +100,7 @@ namespace haunted {
 
 			/** Focuses a control. */
 			void focus(ui::control *);
-			/** Returns the focused control. If none is currently selected, * this function focuses
-			 *  the root control. */
+			/** Returns the focused control. If none is currently selected, this function focuses the root control. */
 			ui::control * get_focused();
 
 			/** Adds a child to the terminal by setting its root to the child. */
@@ -126,8 +123,7 @@ namespace haunted {
 			terminal & operator>>(int &);
 			/** Reads a single raw character from the terminal. */
 			terminal & operator>>(char &);
-			/** Reads a key from the terminal. This conveniently handles much of the weirdness of
-			 *  terminal input. */
+			/** Reads a key from the terminal. This conveniently handles much of the weirdness of terminal input. */
 			terminal & operator>>(key &);
 
 			/** Writes pretty much anything to the terminal. */

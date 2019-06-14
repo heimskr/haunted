@@ -20,15 +20,13 @@ namespace haunted::ui {
 	}
 
 	void control::clear_rect() {
-		// There are four different ways to clear text on a row: erase the entire row, erase
-		// everything to the left of the cursor, erase everything to the right of the cursor and
-		// simply writing spaces. The first is ideal, the next two are okay and the last is the
-		// worst option. Which option we can use depends on the left-offset and width of the
-		// control.
+		// There are four different ways to clear text on a row: erase the entire row, erase everything to the left of
+		// the cursor, erase everything to the right of the cursor and simply writing spaces. The first is ideal, the
+		// next two are okay and the last is the worst option. Which option we can use depends on the left-offset and
+		// width of the control.
 		ansi::save();
 		if (pos.left == 0) {
-			// If we're at the left edge of the screen, we can clear-line if the width is full, or
-			// clear-left otherwise.
+			// If we're at the left edge of the screen, we can clear-line if the width is full, or clear-left otherwise.
 			if (pos.width == term->get_cols()) {
 				for (int i = 0; i < pos.height; ++i) {
 					ansi::jump(0, pos.top + i);
@@ -47,8 +45,7 @@ namespace haunted::ui {
 				ansi::clear_right();
 			}
 		} else {
-			// If the control doesn't reach either end of the screen, we have to print a bunch
-			// of spaces.
+			// If the control doesn't reach either end of the screen, we have to print a bunch of spaces.
 			std::string spaces(pos.width, ' ');
 			for (int i = 0; i < pos.height; ++i) {
 				ansi::jump(pos.left, pos.top + i);

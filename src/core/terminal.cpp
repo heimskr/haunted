@@ -33,9 +33,6 @@ namespace haunted {
 // Private static methods
 
 
-	/**
-	 * Returns the terminal attributes from tcgetaddr.
-	 */
 	termios terminal::getattr() {
 		termios out;
 		int result;
@@ -46,9 +43,6 @@ namespace haunted {
 		return out;
 	}
 
-	/**
-	 * Sets the terminal attributes with tcsetaddr.
-	 */
 	void terminal::setattr(const termios &new_attrs) {
 		int result;
 		if ((result = tcsetattr(STDIN_FILENO, TCSAFLUSH, &new_attrs)) < 0)
@@ -56,9 +50,6 @@ namespace haunted {
 				std::to_string(result));
 	}
 
-	/**
-	 * Notifies terminal objects of a window resize.
-	 */
 	void terminal::winch_handler(int) {
 		winsize new_size;
 		ioctl(STDIN_FILENO, TIOCGWINSZ, &new_size);
@@ -70,26 +61,15 @@ namespace haunted {
 // Private instance methods
 
 
-	/**
-	 * Applies the terminal attribute settings.
-	 */
 	void terminal::apply() {
 		setattr(attrs);
 	}
 
-	/**
-	 * Resets the terminal attributes to what they were before any changes were
-	 * applied.
-	 */
 	void terminal::reset() {
 		setattr(original);
 		attrs = original;
 	}
 
-	/**
-	 * Repeatedly reads from the terminal and sends the key press
-	 * to the focused control.
-	 */
 	void terminal::work_input() {
 		key k;
 		// Sometimes, calling cbreak() once doesn't seem to properly set all the flags (e.g., arrow
@@ -120,8 +100,7 @@ namespace haunted {
 
 		ui::container *ptr = ctrl->get_parent();
 		
-		// Keep trying on_key, going up to the root as long as
-		// we keep getting false. If we're at the root and on_key
+		// Keep trying on_key, going up to the root as long as we keep getting false. If we're at the root and on_key
 		// still returns false, give up.
 		while (!ptr->on_key(k) && dynamic_cast<ui::control *>(ptr) != root) {
 			if (ui::child *cptr = dynamic_cast<ui::child *>(ptr)) {
@@ -169,9 +148,8 @@ namespace haunted {
 	}
 
 	void terminal::set_root(ui::control *new_root) {
-		// If new_root is already the root, we need to return here.
-		// Otherwise, we'd set the root to a dangling pointer and
-		// then try to call methods on it from terminal::redraw().
+		// If new_root is already the root, we need to return here. Otherwise, we'd set the root to a dangling pointer
+		// and then try to call methods on it from terminal::redraw().
 		if (root == new_root)
 			return;
 
@@ -247,10 +225,9 @@ namespace haunted {
 	}
 
 	terminal & terminal::operator>>(key &k) {
-		// If we receive an escape followed by a [ and another escape,
-		// we return Alt+[ after receiving the second escape, but this
-		// discards the second escape. To make up for this, we use a
-		// static bool to indicate that this weird sequence has occurred.
+		// If we receive an escape followed by a [ and another escape, we return Alt+[ after receiving the second
+		// escape, but this discards the second escape. To make up for this, we use a static bool to indicate that this
+		// weird sequence has occurred.
 		static bool partial_escape = false;
 
 		char c;
@@ -266,25 +243,21 @@ namespace haunted {
 		if (!(*this >> c))
 			return *this;
 
-		// It's important to reset the partial_escape flag. Resetting it right
-		// after reading it prevents me from having to insert a reset before
-		// every return statement.
+		// It's important to reset the partial_escape flag. Resetting it right after reading it prevents me from having
+		// to insert a reset before every return statement.
 		bool escape = partial_escape || c == key_type::escape;
 		partial_escape = false;
 
 		if (escape) {
-			// If we read an escape byte, that means something interesting is
-			// about to happen.
+			// If we read an escape byte, that means something interesting is about to happen.
 
 			if (!(*this >> c))
 				return *this;
 
 			if (c == key_type::escape) {
-				// We can't tell the difference between an actual press of the
-				// escape key and the beginning of a CSI. Perhaps it would be
-				// possible with the use of some timing trickery, but I don't
-				// consider that necessary right now. Instead, the user will
-				// have to press the escape key twice.
+				// We can't tell the difference between an actual press of the/ escape key and the beginning of a CSI.
+				// Perhaps it would be possible with the use of some timing trickery, but I don't consider that
+				// necessary right now (YAGNI!). Instead, the user will have to press the escape key twice.
 				k = {c, none};
 				return *this;
 			} else if (c == key_type::open_square) {
@@ -292,33 +265,28 @@ namespace haunted {
 					return *this;
 
 				switch (c) {
-					// To input an actual Alt+[, the user has to press the
-					// [ key again. Otherwise, we wouldn't be able to tell the
-					// difference between an actual Alt+[ and the beginning of
-					// a CSI.
+					// To input an actual Alt+[, the user has to press the [ key again. Otherwise, we wouldn't be able
+					// to tell the difference between an actual Alt+[ and the beginning of a CSI.
 					case '[':
 						k = {c, alt};
 						return *this;
 
-					// If there's another escape immediately after "^[", we'll
-					// assume the user typed an actual Alt+[ and then input
-					// another escape sequence.
+					// If there's another escape immediately after "^[", we'll assume the user typed an actual Alt+[ and
+					// then input another escape sequence.
 					case key_type::escape:
 						partial_escape = false;
 						k = {'[', alt};
 						return *this;
 
-					// If the first character after the [ is A, B, C or D,
-					// it's an arrow key.
+					// If the first character after the [ is A, B, C or D, it's an arrow key.
 					case 'A': k = key_type::up_arrow;    return *this;
 					case 'B': k = key_type::down_arrow;  return *this;
 					case 'C': k = key_type::right_arrow; return *this;
 					case 'D': k = key_type::left_arrow;  return *this;
 				}
 
-				// At this point, we haven't yet determined what the input is.
-				// A CSI sequence ends with a character in the range [0x40, 0x7e].
-				// Let's read until we encounter one.
+				// At this point, we haven't yet determined what the input is. A CSI sequence ends with a character in
+				// the range [0x40, 0x7e]. Let's read until we encounter one.
 				static std::string buffer;
 				buffer = c;
 

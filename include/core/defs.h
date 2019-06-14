@@ -21,11 +21,8 @@ namespace haunted {
 	struct position {
 		int left, top, width, height;
 		
-		position(int l, int t, int w, int h):
-			left(l), top(t), width(w), height(h) {}
-		
-		position():
-			left(-1), top(-1), width(-1), height(-1) {}
+		position(int l, int t, int w, int h): left(l), top(t), width(w), height(h) {}
+		position(): position(-1, -1, -1, -1) {}
 		
 		/** Moves the cursor to a given offset from the top-left corner of the position. */
 		void jump(int offset_left = 0, int offset_top = 0);

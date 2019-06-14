@@ -14,30 +14,22 @@
 #include "ui/textinput.h"
 
 namespace haunted::tests {
-	/**
-	 * Stringifies a pair of integers.
-	 */
+	/** Stringifies a pair of integers. */
 	std::string testing::stringify(const std::pair<int, int> &p) {
 		return "{" + std::to_string(p.first) + ", " + std::to_string(p.second) + "}";
 	}
 
-	/**
-	 * Stringifies a string by surrounding it with double quotes.
-	 */
+	/** Stringifies a string by surrounding it with double quotes. */
 	std::string testing::stringify(const std::string &str) {
 		return "\"" + str + "\"";
 	}
 
-	/**
-	 * Stringifies a bool into a single letter (T or F).
-	 */
+	/** Stringifies a bool into a single letter (T or F). */
 	std::string testing::stringify(bool b) {
 		return b? "T" : "F";
 	}
 
-	/**
-	 * Runs some tests for the CSI u functions.
-	 */
+	/** Runs some tests for the CSI u functions. */
 	void maintest::test_csiu() {
 		ansi::out << "\nTesting CSI u validation.\n";
 		testing::check<std::string, bool>({

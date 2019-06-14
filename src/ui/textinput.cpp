@@ -41,16 +41,15 @@ namespace haunted::ui {
 
 
 		if (text_width() <= cur - scroll) {
-			// If, for whatever reason, the cursor is to the right of the bounds of the textinput,
-			// there's no visible change to render because the change in text occurs entirely
-			// offscreen. We can just give up now if that's the case.
+			// If, for whatever reason, the cursor is to the right of the bounds of the textinput, there's no visible
+			// change to render because the change in text occurs entirely offscreen. We can just give up now if that's
+			// the case.
 			return;
 		}
 
 		if (cur < scroll) {
-			// Things will turn out weird if we use this approach when the cursor is to the left of
-			// the bounds of the textinput, so when that's the case we just rerender the whole
-			// thing. TODO: improve this?
+			// Things will turn out weird if we use this approach when the cursor is to the left of the bounds of the
+			// textinput, so when that's the case we just rerender the whole thing. TODO: improve this?
 			draw();
 			return;
 		}
@@ -60,8 +59,8 @@ namespace haunted::ui {
 		jump_cursor();
 		ansi::left();
 		point cpos = find_cursor();
-		// Print only enough text to reach the right edge. Printing more would cause wrapping or
-		// text being printed out of bounds.
+		// Print only enough text to reach the right edge. Printing more would cause wrapping or text being printed out
+		// of bounds.
 		*term << buffer.substr(cur, pos.right() - cpos.x + 2);
 		ansi::restore();
 		if (has_focus())
@@ -82,8 +81,7 @@ namespace haunted::ui {
 	void textinput::clear_right(size_t offset) {
 		ansi::jump(pos.left + prefix.length() + offset, pos.top);
 		if (at_right()) {
-			// If we're bordering the right edge of the screen, we can clear everything to the
-			// right.
+			// If we're bordering the right edge of the screen, we can clear everything to the right.
 			ansi::clear_right();
 		} else {
 			*term << std::string(pos.width - (prefix.length() + offset), ' ');
@@ -99,14 +97,13 @@ namespace haunted::ui {
 		const size_t len = length();
 
 		if (text_width() < len && cursor == len) {
-			// If the cursor is at the end of the input, increment the scroll. This keeps the cursor
-			// at the right edge of the control and pushes the other text to the left, truncating
-			// the first character.
+			// If the cursor is at the end of the input, increment the scroll. This keeps the cursor at the right edge
+			// of the control and pushes the other text to the left, truncating the first character.
 			++scroll;
 			return true;
 		} else if (cursor < scroll) {
-			// If the cursor is to the left of the screen, decrement the scroll to align the cursor
-			// with the start of the non-prefix portion.
+			// If the cursor is to the left of the screen, decrement the scroll to align the cursor with the start of
+			// the non-prefix portion.
 			scroll = cursor;
 			return true;
 		}
@@ -114,13 +111,33 @@ namespace haunted::ui {
 		return false;
 	}
 
-	utf8char textinput::prev_char() const { return cursor > 0? buffer[cursor - 1]  : utf8char(); }
-	utf8char textinput::next_char() const { return cursor < size()? buffer[cursor] : utf8char(); }
-	size_t   textinput::text_width()      const { return pos.width - prefix.length();            }
-	size_t   textinput::get_cursor()      const { return cursor;                                 }
-	bool     textinput::cursor_at_right() const { return cursor - scroll == text_width();        }
-	bool     textinput::cursor_at_left()  const { return cursor == scroll;                       }
-	bool     textinput::at_end() const { return cursor == size(); }
+	utf8char textinput::prev_char() const {
+		return cursor > 0? buffer[cursor - 1]  : utf8char();
+	}
+
+	utf8char textinput::next_char() const {
+		return cursor < size()? buffer[cursor] : utf8char();
+	}
+
+	size_t textinput::text_width() const {
+		return pos.width - prefix.length();
+	}
+
+	size_t textinput::get_cursor() const {
+		return cursor;
+	}
+
+	bool textinput::cursor_at_right() const {
+		return cursor - scroll == text_width();
+	}
+
+	bool textinput::cursor_at_left() const {
+		return cursor == scroll;
+	}
+
+	bool textinput::at_end() const {
+		return cursor == size();
+	}
 
 
 // Public instance methods
@@ -155,8 +172,7 @@ namespace haunted::ui {
 		if (!unicode_buffer.empty()) {
 			unicode_buffer.push_back(ch);
 			if (unicode_buffer.size() == bytes_expected) {
-				// The Unicode buffer now contains a complete and valid codepoint
-				// (the first byte is valid, at least).
+				// The Unicode buffer now contains a complete and valid codepoint (the first byte is valid, at least).
 				// Insert the buffer's contents into the primary buffer.
 				buffer.insert(cursor++, unicode_buffer);
 				unicode_buffer.clear();
@@ -167,14 +183,14 @@ namespace haunted::ui {
 		} else {
 			size_t width = utf8::width(ch);
 			if (width < 2) {
-				// It seems we've received a plain old ASCII character or an
-				// invalid UTF8 start byte. Either way, append it to the buffer.
+				// It seems we've received a plain old ASCII character or an invalid UTF8 start byte.
+				// Either way, append it to the buffer.
 				buffer.insert(cursor++, ch);
 				draw_insert();
 				update();
 			} else {
-				// This byte is the first of a multi-byte codepoint.
-				// Set the expected width and initialize the Unicode buffer with the byte.
+				// This byte is the first of a multi-byte codepoint. Set the expected width and initialize the Unicode
+				// buffer with the byte.
 				bytes_expected = width;
 				unicode_buffer.push_back(ch);
 			}
@@ -207,8 +223,8 @@ namespace haunted::ui {
 		if (cursor > 0) {
 			buffer.erase(--cursor, 1);
 			if (cursor == length() && scroll < cursor && cursor - scroll < text_width()) {
-				// If there's no text after the cursor and the cursor is in bounds,
-				// it should be sufficient to erase the old character from the screen.
+				// If there's no text after the cursor and the cursor is in bounds, it should be sufficient to erase the
+				// old character from the screen.
 				ansi::save();
 				jump_cursor();
 				*term << ' ';
@@ -255,8 +271,7 @@ namespace haunted::ui {
 			ansi::restore();
 			flush();
 		} else {
-			// If the cursor is somewhere between the two edges, clear part of the line and print part
-			// of the buffer.
+			// If the cursor is somewhere between the two edges, clear part of the line and print part of the buffer.
 			clear_right(cursor - scroll);
 			jump_cursor();
 			*term << buffer.substr(cursor, text_width() - cursor + scroll);
@@ -299,8 +314,7 @@ namespace haunted::ui {
 		// Because there's text to the right, we increment the cursor.
 
 		if (cursor++ - scroll == text_width()) {
-			// If we were at the right edge of the textinput, we need to increment the scroll
-			// and redraw too.
+			// If we were at the right edge of the textinput, we need to increment the scroll and redraw too.
 			++scroll;
 			draw();
 		}
@@ -361,8 +375,8 @@ namespace haunted::ui {
 		for (; next_char() != '\0' && next_char() != ' '; ++cursor);
 		if (cursor != old_cursor) {
 			if (cursor - scroll > text_width()) {
-				// If we've moved beyond the right edge, we need to adjust the scroll to align the
-				// cursor with the right edge.
+				// If we've moved beyond the right edge, we need to adjust the scroll to align the cursor with the right
+				// edge.
 				scroll = cursor - text_width();
 				draw();
 			}
@@ -411,9 +425,9 @@ namespace haunted::ui {
 			case alt:
 				switch (type) {
 					case backspace: erase_word(); break;
-					case 'b': prev_word(); break;
-					case 'f': next_word(); break;
-					case '~': erase_forward(); break;
+					case 'b': prev_word();        break;
+					case 'f': next_word();        break;
+					case '~': erase_forward();    break;
 					default: break;
 				}
 				break;
@@ -432,6 +446,7 @@ namespace haunted::ui {
 		jump();
 		if (scroll < 0)
 			throw std::domain_error("Scroll value cannot be negative.");
+
 		*term << prefix << buffer.substr(scroll, twidth);
 		jump_cursor();
 	}

@@ -5,8 +5,7 @@
 
 namespace haunted::ui {
 	/**
-	 * A child is anything that has a parent. This includes controls and all
-	 * containers except terminals.
+	 * A child is anything that has a parent. This includes controls and all containers except terminals.
 	 */
 	class child {
 		protected:
