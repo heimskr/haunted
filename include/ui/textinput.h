@@ -104,6 +104,9 @@ namespace haunted::ui {
 			/** Returns true if the cursor is at the left edge of the textinput. */
 			bool cursor_at_left() const;
 
+			/** Returns true if the cursor is at the end of the buffer. */
+			bool at_end() const;
+
 		public:
 			/** When a multibyte UTF-8 codepoint is being received, the individual bytes are
 			 *  stored in this buffer. */
@@ -154,6 +157,9 @@ namespace haunted::ui {
 
 			/** Erases the first character before the cursor. */
 			void erase();
+
+			/** Erases the first character after the cursor. */
+			void erase_forward();
 
 			/** Returns the contents of the buffer. */
 			std::string get_text() const;

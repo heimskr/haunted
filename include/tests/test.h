@@ -38,10 +38,10 @@ namespace haunted::tests {
 			template <typename I, typename O>
 			static bool check(const std::vector<std::pair<I, O>> &pairs, std::function<O(const I &)> fn,
 			                  const std::string &fn_name) {
-				using namespace formicine;
+				using namespace ansi;
 
 				if (pairs.size() == 0) {
-					ansi::out << ansi::warn << "No tests given." << ansi::endl;
+					out << warn << "No tests given." << endl;
 					return false;
 				}
 
@@ -63,41 +63,41 @@ namespace haunted::tests {
 					const O &actual = fn(input);
 					size_t length = stringify(input).size();
 					if (expected == actual) {
-						ansi::out << ansi::good << prefix << ansi::parens << ansi::wrap(stringify(input), bold)
+						out << good << prefix << parens << wrap(stringify(input), bold)
 						          << padding.substr(0, max_length - length)
-						    << ansi::wrap(" == ", dim) << ansi::wrap(stringify(actual), green) << ansi::endl;
+						    << wrap(" == ", dim) << wrap(stringify(actual), green) << endl;
 						passed++;
 					} else {
-						ansi::out << ansi::bad << prefix << ansi::parens << ansi::wrap(stringify(input), bold)
+						out << bad << prefix << parens << wrap(stringify(input), bold)
 						          << padding.substr(0, max_length - length)
-						          << ansi::wrap(" == ", dim) << ansi::wrap(stringify(actual), red)
-						          << " (expected " << ansi::wrap(stringify(expected), bold) << ")"
-						          << ansi::endl;
+						          << wrap(" == ", dim) << wrap(stringify(actual), red)
+						          << " (expected " << wrap(stringify(expected), bold) << ")"
+						          << endl;
 						failed++;
 					}
 				}
 
-				ansi::out << "\n";
+				out << "\n";
 
 				if (failed == 0 && passed == 0) {
-					ansi::out << ansi::warn << "No tests were run.\n";
+					out << warn << "No tests were run.\n";
 				} else if (failed == 0) {
 					if (passed == 1)
-						ansi::out << ansi::good << "Test passed.\n";
+						out << good << "Test passed.\n";
 					else
-						ansi::out << ansi::good << "All " << passed << " tests passed.\n";
+						out << good << "All " << passed << " tests passed.\n";
 				} else if (passed == 0) {
 					if (failed == 1)
-						ansi::out << ansi::bad << "Test failed.\n";
+						out << bad << "Test failed.\n";
 					else
-						ansi::out << ansi::bad << "All " << failed << " tests failed.\n";
+						out << bad << "All " << failed << " tests failed.\n";
 				} else {
-					ansi::out << ansi::warn
-					          << "Passed " << ansi::wrap(std::to_string(passed), green)
-					          << ", failed " << ansi::wrap(std::to_string(failed), red)
+					out << warn
+					          << "Passed " << wrap(std::to_string(passed), green)
+					          << ", failed " << wrap(std::to_string(failed), red)
 					          << " (" << bold << std::setprecision(4)
 							  << (passed * 100.0 / (passed + failed)) << "%" >> bold
-					          << ")" << std::defaultfloat << ansi::endl;
+					          << ")" << std::defaultfloat << endl;
 				}
 
 				return failed == 0;

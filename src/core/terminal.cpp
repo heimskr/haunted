@@ -14,7 +14,7 @@
 namespace haunted {
 	std::vector<terminal *> terminal::winch_targets {};
 
-	terminal::terminal(std::istream &in_stream, formicine::ansistream out_stream):
+	terminal::terminal(std::istream &in_stream, ansi::ansistream out_stream):
 	in_stream(in_stream), out_stream(out_stream) {
 		original = attrs = getattr();
 		winsize size;
@@ -161,8 +161,8 @@ namespace haunted {
 
 	void terminal::redraw() {
 		if (root) {
-			formicine::ansi::clear();
-			formicine::ansi::jump();
+			ansi::clear();
+			ansi::jump();
 			root->resize({0, 0, cols, rows});
 			root->draw();
 		}
