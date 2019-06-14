@@ -39,7 +39,7 @@ namespace haunted::tests {
 	 * Runs some tests for the CSI u functions.
 	 */
 	void maintest::test_csiu() {
-		ansi::out << "\nTesting CSI u validation.\n";
+		formicine::ansi::out << "\nTesting CSI u validation.\n";
 		testing::check<std::string, bool>({
 			{"1;1u",   true},
 			{"1;1a",  false},
@@ -55,7 +55,7 @@ namespace haunted::tests {
 			{"5;5U",  false},
 		}, &util::is_csiu, "is_csiu");
 
-		ansi::out << "\nTesting CSI u parsing.\n";
+		formicine::ansi::out << "\nTesting CSI u parsing.\n";
 		testing::check<std::string, std::pair<int, int>>({
 			{"1;1u",    { 1,   1}},
 			{"42;0u",   {42,   0}},
@@ -96,10 +96,10 @@ namespace haunted::tests {
 	}
 
 	void maintest::test_cursor(terminal &term) {
-		ansi::clear();
-		ansi::jump(180, 0);
+		formicine::ansi::clear();
+		formicine::ansi::jump(180, 0);
 		term << "0";
-		ansi::jump(181, 1);
+		formicine::ansi::jump(181, 1);
 		term << "1";
 		term.flush();
 	}

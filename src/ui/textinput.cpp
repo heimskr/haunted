@@ -55,14 +55,14 @@ namespace haunted::ui {
 			return;
 		}
 
-		ansi::save();
+		formicine::ansi::save();
 		jump_cursor();
-		ansi::left();
+		formicine::ansi::left();
 		point cpos = find_cursor();
 		// Print only enough text to reach the right edge. Printing more would cause wrapping or
 		// text being printed out of bounds.
 		*term << buffer.substr(cur, pos.right() - cpos.x + 2);
-		ansi::restore();
+		formicine::ansi::restore();
 		if (has_focus())
 			jump_cursor();
 		flush();
@@ -79,11 +79,11 @@ namespace haunted::ui {
 	}
 
 	void textinput::clear_right(size_t offset) {
-		ansi::jump(pos.left + prefix.length() + offset, pos.top);
+		formicine::ansi::jump(pos.left + prefix.length() + offset, pos.top);
 		if (at_right()) {
 			// If we're bordering the right edge of the screen, we can clear everything to the
 			// right.
-			ansi::clear_right();
+			formicine::ansi::clear_right();
 		} else {
 			*term << std::string(pos.width - (prefix.length() + offset), ' ');
 			flush();
@@ -207,10 +207,10 @@ namespace haunted::ui {
 			if (cursor == length() && scroll < cursor && cursor - scroll < text_width()) {
 				// If there's no text after the cursor and the cursor is in bounds,
 				// it should be sufficient to erase the old character from the screen.
-				ansi::save();
+				formicine::ansi::save();
 				jump_cursor();
 				*term << ' ';
-				ansi::restore();
+				formicine::ansi::restore();
 			} else {
 				// Otherwise, we need draw_erase() to handle things.
 				draw_erase();
@@ -221,11 +221,11 @@ namespace haunted::ui {
 	}
 
 	void textinput::draw_right() {
-		ansi::save();
+		formicine::ansi::save();
 		clear_line();
 		jump_cursor();
 		*term << buffer.substr(cursor, text_width() - cursor + scroll);
-		ansi::restore();
+		formicine::ansi::restore();
 	}
 
 	void textinput::draw_erase() {
@@ -234,14 +234,14 @@ namespace haunted::ui {
 			return;
 		}
 
-		ansi::save();
+		formicine::ansi::save();
 
 		if (cursor <= scroll) {
 			// If the cursor is at or beyond the left edge, redraw the entire line.
 			clear_text();
-			ansi::jump(pos.left + prefix.length(), pos.top);
+			formicine::ansi::jump(pos.left + prefix.length(), pos.top);
 			*term << buffer.substr(scroll, text_width());
-			ansi::restore();
+			formicine::ansi::restore();
 			flush();
 		} else {
 			// If the cursor is somewhere between the two edges, clear part of the line and print part
@@ -251,7 +251,7 @@ namespace haunted::ui {
 			*term << buffer.substr(cursor, text_width() - cursor + scroll);
 		}
 
-		ansi::restore();
+		formicine::ansi::restore();
 		flush();
 	}
 
@@ -427,7 +427,7 @@ namespace haunted::ui {
 
 	void textinput::jump_cursor() {
 		point cpos = find_cursor();
-		ansi::jump(cpos.x, cpos.y);
+		formicine::ansi::jump(cpos.x, cpos.y);
 	}
 
 	bool textinput::try_jump() {

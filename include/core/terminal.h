@@ -25,7 +25,7 @@ namespace haunted {
 	class terminal: public virtual ui::container {
 		private:
 			std::istream &in_stream;
-			ansi::ansistream out_stream;
+			formicine::ansistream out_stream;
 			std::mutex render_mx;
 			std::thread input_thread;
 
@@ -71,8 +71,8 @@ namespace haunted {
 			termios attrs;
 			bool raw = false;
 
-			terminal(std::istream &, ansi::ansistream);
-			terminal(std::istream &in_stream): terminal(in_stream, ansi::ansistream()) {}
+			terminal(std::istream &, formicine::ansistream);
+			terminal(std::istream &in_stream): terminal(in_stream, formicine::ansistream()) {}
 			terminal(): terminal(std::cin) {}
 
 			~terminal();
