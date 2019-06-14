@@ -428,6 +428,8 @@ namespace haunted::ui {
 					case 'b': prev_word();        break;
 					case 'f': next_word();        break;
 					case '~': erase_forward();    break;
+					case 'H': start();            break;
+					case 'F': end();              break;
 					default: break;
 				}
 				break;
