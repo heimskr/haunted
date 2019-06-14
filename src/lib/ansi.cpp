@@ -1,1 +1,0 @@
-../../formicine/ansi.cpp

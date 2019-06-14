@@ -9,7 +9,7 @@
 
 #include <cassert>
 
-#include "lib/ansi.h"
+#include "formicine/ansi.h"
 #include "core/terminal.h"
 
 namespace haunted::tests {

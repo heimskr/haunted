@@ -1,5 +1,5 @@
-#include "lib/utf8.h"
-#include "unicode/unistr.h"
+#include "utf8.h"
+#include "icu/unicode/unistr.h"
 
 namespace haunted {
 	/**

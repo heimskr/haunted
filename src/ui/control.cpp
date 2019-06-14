@@ -1,4 +1,4 @@
-#include "lib/ansi.h"
+#include "formicine/ansi.h"
 
 #include "core/terminal.h"
 #include "ui/control.h"

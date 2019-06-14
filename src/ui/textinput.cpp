@@ -1,8 +1,8 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "lib/ansi.h"
-#include "lib/utf8.h"
+#include "formicine/ansi.h"
+#include "utf8.h"
 
 #include "core/terminal.h"
 #include "ui/textinput.h"
@@ -56,6 +56,7 @@ namespace haunted::ui {
 		}
 
 		formicine::ansi::save();
+
 		jump_cursor();
 		formicine::ansi::left();
 		point cpos = find_cursor();

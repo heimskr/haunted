@@ -8,7 +8,7 @@
 #include "core/terminal.h"
 #include "core/key.h"
 #include "core/util.h"
-#include "lib/ansi.h"
+#include "formicine/ansi.h"
 #include "ui/child.h"
 
 namespace haunted {

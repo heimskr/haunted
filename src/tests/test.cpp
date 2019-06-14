@@ -6,7 +6,7 @@
 
 #include <cassert>
 
-#include "lib/ansi.h"
+#include "formicine/ansi.h"
 #include "tests/test.h"
 #include "core/key.h"
 #include "core/util.h"
@@ -107,12 +107,12 @@ namespace haunted::tests {
 
 int main(int, char **) {
 	using namespace haunted;
-	
+
 	terminal term;
 	term.watch_size();
 
 	// haunted::tests::maintest::test_csiu();
-	// haunted::tests::maintest::test_key(term);
-	haunted::tests::maintest::test_textinput(term);
+	haunted::tests::maintest::test_key(term);
+	// haunted::tests::maintest::test_textinput(term);
 	// haunted::tests::maintest::test_cursor(term);
 }

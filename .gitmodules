@@ -1,6 +1,6 @@
 [submodule "icu"]
-	path = icu
+	path = lib/icu
 	url = https://github.com/unicode-org/icu.git
 [submodule "formicine"]
-	path = formicine
+	path = lib/formicine
 	url = https://github.com/kaitamkun/formicine.git

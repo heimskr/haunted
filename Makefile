@@ -1,5 +1,5 @@
 COMPILER		:= clang++
-CFLAGS			:= -std=c++2a -stdlib=libc++ -g -O0 -Wall -Wextra -fdiagnostics-color=always
+CFLAGS			:= -std=c++2a -stdlib=libc++ -g -O0 -Wall -Wextra
 CFLAGS_ORIG		:= $(CFLAGS)
 LDFLAGS			:=
 INCLUDE			:=
@@ -18,12 +18,12 @@ endif
 all: Makefile
 
 # Peter Miller, "Recursive Make Considered Harmful" (http://aegis.sourceforge.net/auug97.pdf)
-MODULES			:= core lib ui ui/boxes tests
+MODULES			:= src/core src/ui lib src/ui/boxes src/tests
 COMMONSRC		:=
 SRC				:=
 CFLAGS			+= -Iinclude
 LDFLAGS			+= 
-include $(patsubst %,src/%/module.mk,$(MODULES))
+include $(patsubst %,%/module.mk,$(MODULES))
 SRC				+= $(COMMONSRC)
 COMMONOBJ		:= $(patsubst src/%.cpp,build/%.o, $(filter %.cpp,$(COMMONSRC)))
 OBJ				:= $(patsubst src/%.cpp,build/%.o, $(filter %.cpp,$(SRC)))
@@ -31,7 +31,7 @@ OBJ				:= $(patsubst src/%.cpp,build/%.o, $(filter %.cpp,$(SRC)))
 OBJ_ALL			:= $(OBJ) $(OBJ_PP)
 SRC_ALL			:= $(SRC) $(SRC_PP)
 
-sinclude $(patsubst %,src/%/targets.mk,$(MODULES))
+sinclude $(patsubst %,%/targets.mk,$(MODULES))
 
 all: $(COMMONOBJ)
 

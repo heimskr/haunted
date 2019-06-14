@@ -9,7 +9,7 @@
 
 #include <termios.h>
 
-#include "lib/ansi.h"
+#include "formicine/ansi.h"
 
 #include "core/key.h"
 #include "ui/container.h"
