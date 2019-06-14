@@ -12,6 +12,8 @@
 #include "ui/child.h"
 
 namespace haunted {
+	using uchar = unsigned char;
+
 	std::vector<terminal *> terminal::winch_targets {};
 
 	terminal::terminal(std::istream &in_stream, ansi::ansistream out_stream):
@@ -77,7 +79,7 @@ namespace haunted {
 		cbreak();
 		cbreak();
 		while (*this >> k) {
-			if (k == key(key_type::c, true, false))
+			if (k == key(ktype::c, kmod::ctrl))
 				break;
 
 			send_key(k);
@@ -234,7 +236,6 @@ namespace haunted {
 		if (raw) {
 			*this >> c;
 			k = c;
-			std::cout << k.type << std::endl;
 			return *this;
 		}
 
@@ -245,7 +246,7 @@ namespace haunted {
 
 		// It's important to reset the partial_escape flag. Resetting it right after reading it prevents me from having
 		// to insert a reset before every return statement.
-		bool escape = partial_escape || c == key_type::escape;
+		bool escape = partial_escape || c == uchar(ktype::escape);
 		partial_escape = false;
 
 		if (escape) {
@@ -254,13 +255,13 @@ namespace haunted {
 			if (!(*this >> c))
 				return *this;
 
-			if (c == key_type::escape) {
+			if (c == uchar(ktype::escape)) {
 				// We can't tell the difference between an actual press of the/ escape key and the beginning of a CSI.
 				// Perhaps it would be possible with the use of some timing trickery, but I don't consider that
 				// necessary right now (YAGNI!). Instead, the user will have to press the escape key twice.
-				k = {c, none};
+				k = {c, kmod::none};
 				return *this;
-			} else if (c == key_type::open_square) {
+			} else if (c == uchar(ktype::open_square)) {
 				if (!(*this >> c))
 					return *this;
 
@@ -268,21 +269,21 @@ namespace haunted {
 					// To input an actual Alt+[, the user has to press the [ key again. Otherwise, we wouldn't be able
 					// to tell the difference between an actual Alt+[ and the beginning of a CSI.
 					case '[':
-						k = {c, alt};
+						k = {c, kmod::alt};
 						return *this;
 
 					// If there's another escape immediately after "^[", we'll assume the user typed an actual Alt+[ and
 					// then input another escape sequence.
-					case key_type::escape:
+					case int(ktype::escape):
 						partial_escape = false;
-						k = {'[', alt};
+						k = {'[', kmod::alt};
 						return *this;
 
 					// If the first character after the [ is A, B, C or D, it's an arrow key.
-					case 'A': k = key_type::up_arrow;    return *this;
-					case 'B': k = key_type::down_arrow;  return *this;
-					case 'C': k = key_type::right_arrow; return *this;
-					case 'D': k = key_type::left_arrow;  return *this;
+					case 'A': k = ktype::up_arrow;    return *this;
+					case 'B': k = ktype::down_arrow;  return *this;
+					case 'C': k = ktype::right_arrow; return *this;
+					case 'D': k = ktype::left_arrow;  return *this;
 				}
 
 				// At this point, we haven't yet determined what the input is. A CSI sequence ends with a character in
@@ -305,16 +306,16 @@ namespace haunted {
 				}
 			}
 
-			k = {c, alt};
+			k = {c, kmod::alt};
 		} else if (c == 9) {
-			k = {key_type::tab};
+			k = {ktype::tab};
 		} else if (c == 10) {
-			k = {key_type::enter};
+			k = {ktype::enter};
 		} else if (c == 13) {
-			k = {key_type::carriage_return};
+			k = {ktype::carriage_return};
 		} else if (0 < c && c < 27) {
 			// 1..26 corresponds to ^a..^z.
-			k = {key_type::a + c - 1, ctrl};
+			k = {uchar(ktype::a) + c - 1, kmod::ctrl};
 		} else {
 			k = c;
 		}

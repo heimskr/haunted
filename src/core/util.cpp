@@ -50,11 +50,11 @@ namespace haunted {
 	}
 
 	bool util::is_alpha(char c) {
-		return (key_type::A <= c && c <= key_type::Z) || (key_type::a <= c && c <= key_type::z);
+		return (int(ktype::A) <= c && c <= int(ktype::Z)) || (int(ktype::a) <= c && c <= int(ktype::z));
 	}
 
 	bool util::is_numeric(char c) {
-		return key_type::_0 <= c && c <= key_type::_9;
+		return int(ktype::_0) <= c && c <= int(ktype::_9);
 	}
 
 	bool util::is_alphanum(char c) {

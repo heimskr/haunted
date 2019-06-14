@@ -1,22 +1,16 @@
 #include "core/key.h"
 
 namespace haunted {
-	key_modifier key::make_modifier(bool shift, bool alt, bool ctrl) {
-		return key_modifier((shift * key_modifier::shift)
-		                  | (alt   * key_modifier::alt)
-		                  | (ctrl  * key_modifier::ctrl));
+	bool key::is_ctrl(ktype other) const {
+		return type == other && *this == kmod::ctrl;
 	}
 
-	bool key::is_ctrl(key_type other) const {
-		return type == other && mod == ctrl;
-	}
-
-	bool key::is_alt(key_type other) const {
-		return type == other && mod == alt;
+	bool key::is_alt(ktype other) const {
+		return type == other && *this == kmod::alt;
 	}
 
 	key::operator bool() const {
-		return type != '\0';
+		return int(type) != '\0';
 	}
 
 	key::operator char() const {
@@ -25,13 +19,13 @@ namespace haunted {
 	}
 
 	key::operator int() const {
-		return type;
+		return int(type);
 	}
 
 	key::operator std::string() const {
 		std::string out;
-		if (mod & ctrl) out.append("⌃");
-		if (mod & alt)  out.append("⎇ ");
+		if (*this & kmod::ctrl) out.append("⌃");
+		if (*this & kmod::alt)  out.append("⎇ ");
 		auto found = keymap.find(type);
 		if (found != keymap.end())
 			out += found->second;
@@ -40,20 +34,28 @@ namespace haunted {
 		return out;
 	}
 
-	bool key::operator%(char right) const {
+	bool key::operator%(int right) const {
 		char left = *this;
 		if (left == right) return true;
-		if (key_type::A <= right && right <= key_type::Z) return left == right + 32;
-		if (key_type::a <= right && right <= key_type::z) return left == right - 32;
+		if (int(ktype::A) <= right && right <= int(ktype::Z)) return left == right + 32;
+		if (int(ktype::a) <= right && right <= int(ktype::z)) return left == right - 32;
 		return false;
 	}
 
 	bool key::operator==(const key &right) const {
-		return type == right.type && mod == right.mod;
+		return type == right.type && mods == right.mods;
 	}
 
 	bool key::operator==(char right) const {
-		return type == right;
+		return char(type) == right;
+	}
+
+	bool key::operator==(kmod mod) const {
+		return mods.to_ulong() == static_cast<unsigned long>(mod);
+	}
+
+	bool key::operator&(kmod mod) const {
+		return mods.test(int(mod));
 	}
 
 	std::ostream & operator<<(std::ostream &os, const key &k) {
@@ -61,16 +63,16 @@ namespace haunted {
 		return os;
 	}
 
-	std::unordered_map<key_type, std::string> key::keymap = {
-		{key_type::carriage_return, "↩"},
-		{key_type::up_arrow,    "↑"},
-		{key_type::down_arrow,  "↓"},
-		{key_type::right_arrow, "→"},
-		{key_type::left_arrow,  "←"},
-		{key_type::enter,       "⌅"},
-		{key_type::tab,         "⇥"},
-		{key_type::escape,      "⎋"},
-		{key_type::backspace,   "⌫"},
-		{key_type::space,       "␣"},
+	std::unordered_map<ktype, std::string> key::keymap = {
+		{ktype::carriage_return, "↩"},
+		{ktype::up_arrow,    "↑"},
+		{ktype::down_arrow,  "↓"},
+		{ktype::right_arrow, "→"},
+		{ktype::left_arrow,  "←"},
+		{ktype::enter,       "⌅"},
+		{ktype::tab,         "⇥"},
+		{ktype::escape,      "⎋"},
+		{ktype::backspace,   "⌫"},
+		{ktype::space,       "␣"},
 	};
 }

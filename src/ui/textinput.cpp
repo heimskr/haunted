@@ -394,18 +394,18 @@ namespace haunted::ui {
 	}
 
 	bool textinput::on_key(key &k) {
-		key_type type = k.type;
-		key_modifier mod = k.mod;
+		int type = int(k.type);
+		modset mods = k.mods;
 
-		switch (mod) {
-			case none:
+		switch (kmod(mods.to_ulong())) {
+			case kmod::none:
 				switch (type) {
-					case right_arrow: right(); break;
-					case left_arrow:   left(); break;
-					case down_arrow:    end(); break;
-					case up_arrow:    start(); break;
-					case backspace:   erase(); break;
-					case enter:       clear(); break;
+					case int(ktype::right_arrow): right(); break;
+					case int(ktype::left_arrow):   left(); break;
+					case int(ktype::down_arrow):    end(); break;
+					case int(ktype::up_arrow):    start(); break;
+					case int(ktype::backspace):   erase(); break;
+					case int(ktype::enter):       clear(); break;
 					default:
 						insert(char(k));
 						if (check_scroll())
@@ -413,7 +413,7 @@ namespace haunted::ui {
 						return true;
 				}
 				break;
-			case ctrl:
+			case kmod::ctrl:
 				switch (type) {
 					case 'a':      start(); break;
 					case 'e':        end(); break;
@@ -422,14 +422,13 @@ namespace haunted::ui {
 					default: break;
 				}
 				break;
-			case alt:
+			case kmod::alt:
 				switch (type) {
-					case backspace: erase_word(); break;
-					case 'b': prev_word();        break;
-					case 'f': next_word();        break;
-					case '~': erase_forward();    break;
-					case 'H': start();            break;
-					case 'F': end();              break;
+					case int(ktype::backspace): erase_word(); break;
+					case 'b': prev_word(); break;
+					case 'f': next_word(); break;
+					case 'H': start();     break;
+					case 'F': end();       break;
 					default: break;
 				}
 				break;

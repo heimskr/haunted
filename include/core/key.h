@@ -1,6 +1,7 @@
 #ifndef HAUNTED_CORE_KEYS_H_
 #define HAUNTED_CORE_KEYS_H_
 
+#include <bitset>
 #include <string>
 #include <unordered_map>
 
@@ -8,7 +9,7 @@ namespace haunted {
 	/**
 	 * Represents a key code.
 	 */
-	enum key_type: int {
+	enum class ktype: int {
 		       bell =   7,        bs,          tab,  enter,
 		      space =  32,      bang,       dquote,   hash,      dollar,  percent, ampersand, squote,
 		     oparen =  40,    cparen,         star,   plus,       comma,    minus,    period,  slash,
@@ -27,35 +28,39 @@ namespace haunted {
 	/**
 	 * Represents a keyboard modifier in the CSI u representation (but 0-based).
 	 */
-	enum key_modifier {none = 0, shift = 1, alt = 2, ctrl = 4};
+	enum class kmod {none = 0, shift = 1, alt = 2, ctrl = 4};
+
+	using modset = std::bitset<4>;
 
 	/**
 	 * Represents a keypress, including any modifiers.
 	 */
 	struct key {
 		private:
-			static std::unordered_map<key_type, std::string> keymap;
-			static key_modifier make_modifier(bool shift, bool alt, bool ctrl);
+			static std::unordered_map<ktype, std::string> keymap;
 
 		public:
-			key_type type;
-			key_modifier mod;
+			ktype type;
+			modset mods;
+			int extra; // For sequences like ^[#~, where # is any number. -1 by default.
 
-			key(key_type type, key_modifier mod): type(type), mod(mod) {}
-			key(key_type t, bool ctrl, bool alt):
-				key(t, key_modifier(make_modifier(false, alt, ctrl))) {}
-			key(key_type t): key(t, none) {}
+			key(ktype type, modset mods, int extra): type(type), mods(mods), extra(extra) {}
+			key(ktype type, kmod mod, int extra):    key(type, modset(int(mod)), extra) {}
+			key(ktype type, kmod mod):               key(type, mod,    -1) {}
+			key(ktype type):                         key(type, kmod::none) {}
 
-			key(int t, key_modifier mod): key(key_type(t), mod) {}
-			key(int t, int mod): key(t, key_modifier(mod)) {}
-			key(int t): key(key_type(t), none) {}
-			key(): key(key_type('\0'), none) {}
+			key(int t, modset mods, int extra): key(ktype(t), mods, extra) {}
+			key(int t, kmod mod, int extra):    key(ktype(t), mod,  extra) {}
+			key(int t, modset mods):            key(t,        mods,    -1) {}
+			key(int t, kmod mod):               key(t,        mod,     -1) {}
+			key(int t):                         key(t,        kmod::none)  {}
+			key():                              key('\0',     kmod::none)  {}
 
 			/** Returns true if this key's type is equal to a given key type and this key's only modifier is control. */
-			bool is_ctrl(key_type) const;
+			bool is_ctrl(ktype) const;
 
 			/** Returns true if this key's type is equal to a given key type and this key's only modifier is alt. */
-			bool is_alt(key_type) const;
+			bool is_alt(ktype) const;
 
 			/** Returns false if the key is null/invalid. */
 			operator bool() const;
@@ -70,13 +75,17 @@ namespace haunted {
 			operator std::string() const;
 
 			/** Returns whether the key is equal to a character, but case-insensitively. */
-			bool operator%(char) const;
+			bool operator%(int) const;
 
 			/** Returns whether the key is identical to another key. The key type and modifiers must match. */
 			bool operator==(const key &) const;
 
 			/** Returns whether the key matches a character. Case sensitive. */
 			bool operator==(char) const;
+
+			bool operator==(kmod) const;
+
+			bool operator&(kmod) const;
 
 			friend std::ostream & operator<<(std::ostream &, const key &);
 	};
