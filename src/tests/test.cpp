@@ -112,7 +112,7 @@ int main(int, char **) {
 	term.watch_size();
 
 	// haunted::tests::maintest::test_csiu();
-	haunted::tests::maintest::test_key(term);
-	// haunted::tests::maintest::test_textinput(term);
+	// haunted::tests::maintest::test_key(term);
+	haunted::tests::maintest::test_textinput(term);
 	// haunted::tests::maintest::test_cursor(term);
 }

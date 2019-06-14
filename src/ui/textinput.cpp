@@ -413,7 +413,7 @@ namespace haunted::ui {
 					case backspace: erase_word(); break;
 					case 'b': prev_word(); break;
 					case 'f': next_word(); break;
-					case '~': /* TODO: erase forward */ break;
+					case '~': erase_forward(); break;
 					default: break;
 				}
 				break;
