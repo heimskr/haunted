@@ -97,14 +97,27 @@ namespace haunted::tests {
 	}
 }
 
-int main(int, char **) {
+int main(int argc, char **argv) {
 	using namespace haunted;
 
 	terminal term;
 	term.watch_size();
 
-	// haunted::tests::maintest::test_csiu();
-	haunted::tests::maintest::test_key(term);
-	// haunted::tests::maintest::test_textinput(term);
-	// haunted::tests::maintest::test_cursor(term);
+	if (argc < 2) {
+		haunted::tests::maintest::test_key(term);
+		return EXIT_SUCCESS;
+	}
+	
+	std::string arg(argv[1]);
+	if (arg == "key") {
+		haunted::tests::maintest::test_key(term);
+	} else if (arg == "csiu") {
+		haunted::tests::maintest::test_csiu();
+	} else if (arg == "input") {
+		haunted::tests::maintest::test_textinput(term);
+	} else if (arg == "cursor") {
+		haunted::tests::maintest::test_cursor(term);
+	} else {
+		haunted::tests::maintest::test_key(term);
+	}
 }

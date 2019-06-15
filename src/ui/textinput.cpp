@@ -168,13 +168,23 @@ namespace haunted::ui {
 	void textinput::insert(unsigned char ch) {
 		if (ch < 0x20 && whitelist.find(ch) == whitelist.end())
 			return;
+		
+		if (ch == '*') {
+			DBG("Buffer length: " << size());
+			for (size_t i = 0; i < buffer.length(); ++i)
+				DBG(" " << i << ": " << std::hex << int32_t(buffer[i]) << std::dec << ", '" << buffer[i] << "'");
+			return;
+		}
 
 		if (!unicode_buffer.empty()) {
 			unicode_buffer.push_back(ch);
 			if (unicode_buffer.size() == bytes_expected) {
 				// The Unicode buffer now contains a complete and valid codepoint (the first byte is valid, at least).
 				// Insert the buffer's contents into the primary buffer.
+				DBG("Length before: " << buffer.length());
 				buffer.insert(cursor++, unicode_buffer);
+				DBG("Length after: " << buffer.length());
+				DBG("Inserting character from Unicode buffer: \"" << unicode_buffer << "\"");
 				unicode_buffer.clear();
 				bytes_expected = 0;
 				draw_insert();
@@ -182,6 +192,7 @@ namespace haunted::ui {
 			}
 		} else {
 			size_t width = utf8::width(ch);
+			DBG("Width for " << static_cast<int>(ch) << ": " << width);
 			if (width < 2) {
 				// It seems we've received a plain old ASCII character or an invalid UTF8 start byte.
 				// Either way, append it to the buffer.
@@ -406,6 +417,8 @@ namespace haunted::ui {
 					case int(ktype::up_arrow):    start(); break;
 					case int(ktype::backspace):   erase(); break;
 					case int(ktype::enter):       clear(); break;
+					case int(ktype::home):        start(); break;
+					case int(ktype::end):           end(); break;
 					default:
 						insert(char(k));
 						if (check_scroll())

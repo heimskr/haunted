@@ -169,6 +169,7 @@ namespace haunted {
 				// If the length is 1, then the CSI consists entirely of the suffix and
 				// the keycode and modifier are both implicitly 1.
 				first = second = 1;
+				return;
 			} else if (len != 4) {
 				throw std::invalid_argument("Invalid length for \"really special\" CSI: " + std::to_string(len));
 			}
