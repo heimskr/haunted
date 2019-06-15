@@ -32,37 +32,37 @@ namespace haunted::tests {
 	/** Runs some tests for the CSI u functions. */
 	void maintest::test_csiu() {
 		ansi::out << "\nTesting CSI u validation.\n";
-		testing::check<std::string, bool>({
-			{"1;1u",   true},
-			{"1;1a",  false},
-			{";1u",   false},
-			{"1;u",   false},
-			{"4u",    false},
-			{"1;u1",  false},
-			{"1u;1",  false},
-			{";1u",   false},
-			{"u1;1",  false},
-			{"42;0u",  true},
-			{"3;911u", true},
-			{"5;5U",  false},
-		}, &util::is_csiu, "is_csiu");
+		// testing::check<std::string, bool>({
+		// 	{"1;1u",   true},
+		// 	{"1;1a",  false},
+		// 	{";1u",   false},
+		// 	{"1;u",   false},
+		// 	{"4u",    false},
+		// 	{"1;u1",  false},
+		// 	{"1u;1",  false},
+		// 	{";1u",   false},
+		// 	{"u1;1",  false},
+		// 	{"42;0u",  true},
+		// 	{"3;911u", true},
+		// 	{"5;5U",  false},
+		// }, &util::is_csiu, "is_csiu");
 
-		ansi::out << "\nTesting CSI u parsing.\n";
-		testing::check<std::string, std::pair<int, int>>({
-			{"1;1u",    { 1,   1}},
-			{"42;0u",   {42,   0}},
-			{"3;911u",  { 3, 911}},
-			{"55;555u", {55, 555}},
-			{"1;1a",    {-1,  -2}},
-			{";1u",     {-1,  -1}},
-			{"1;u",     {-1,  -1}},
-			{"4u",      {-1,  -1}},
-			{"1;u1",    {-1,  -2}},
-			{"1u;1",    {-1,  -2}},
-			{";1u",     {-1,  -1}},
-			{"u1;1",    {-1,  -1}},
-			{"5;5U",    {-1,  -2}},
-		}, &util::parse_csiu, "parse_csiu");
+		// ansi::out << "\nTesting CSI u parsing.\n";
+		// testing::check<std::string, std::pair<int, int>>({
+		// 	{"1;1u",    { 1,   1}},
+		// 	{"42;0u",   {42,   0}},
+		// 	{"3;911u",  { 3, 911}},
+		// 	{"55;555u", {55, 555}},
+		// 	{"1;1a",    {-1,  -2}},
+		// 	{";1u",     {-1,  -1}},
+		// 	{"1;u",     {-1,  -1}},
+		// 	{"4u",      {-1,  -1}},
+		// 	{"1;u1",    {-1,  -2}},
+		// 	{"1u;1",    {-1,  -2}},
+		// 	{";1u",     {-1,  -1}},
+		// 	{"u1;1",    {-1,  -1}},
+		// 	{"5;5U",    {-1,  -2}},
+		// }, &util::parse_csiu, "parse_csiu");
 	}
 
 	void maintest::test_textinput(terminal &term) {

@@ -35,12 +35,6 @@ namespace haunted {
 
 			int rows, cols;
 
-			/** Returns the terminal attributes from tcgetaddr. */
-			static termios getattr();
-
-			/** Sets the terminal attributes with tcsetaddr. */
-			static void setattr(const termios &);
-
 			/** Applies the attributes in `attrs` to the terminal. */
 			void apply();
 
@@ -54,6 +48,18 @@ namespace haunted {
 			 *  Returns a pointer to the control or container that ended up handling the key press. */
 			ui::keyhandler * send_key(key);
 
+			/** Handles window resizes. */
+			void winch(int, int);
+
+			/** Returns the terminal attributes from tcgetaddr. */
+			static termios getattr();
+
+			/** Sets the terminal attributes with tcsetaddr. */
+			static void setattr(const termios &);
+
+			/** Returns whether the parent terminal is iTerm. */
+			static bool is_iterm();
+
 			// signal() takes a pointer to a static function. To get around this, every terminal object whose
 			// watch_size() method is called adds itself to a static vector of terminal pointers. When the WINCH signal
 			// handler is called, it notifies all the listening terminal objects of the terminal's new dimensions.
@@ -61,9 +67,6 @@ namespace haunted {
 			/** Notifies terminal objects of a window resize. */
 			static void winch_handler(int);
 			static std::vector<terminal *> winch_targets;
-
-			/** Handles window resizes. */
-			void winch(int, int);
 
 		public:
 			termios attrs;

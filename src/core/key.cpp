@@ -65,7 +65,7 @@ namespace haunted {
 			case int(kmod::shift): return mods.test(0);
 			case int(kmod::alt):   return mods.test(1);
 			case int(kmod::ctrl):  return mods.test(2);
-			default: return !mods.any();;
+			default: return !mods.any();
 		}
 	}
 
@@ -85,6 +85,23 @@ namespace haunted {
 		{ktype::escape,      "⎋"},
 		{ktype::backspace,   "⌫"},
 		{ktype::space,       "␣"},
+		{ktype::home,        "⭶"},
+		{ktype::end,         "⭸"},
+		{ktype::insert,      "Ins"},
+		{ktype::page_up,     "⭻"},
+		{ktype::page_down,   "⭽"},
+		{ktype::f1,          "F1"},
+		{ktype::f2,          "F2"},
+		{ktype::f3,          "F3"},
+		{ktype::f4,          "F4"},
+		{ktype::f5,          "F5"},
+		{ktype::f6,          "F6"},
+		{ktype::f7,          "F7"},
+		{ktype::f8,          "F8"},
+		{ktype::f9,          "F9"},
+		{ktype::f10,         "F10"},
+		{ktype::f11,         "F11"},
+		{ktype::f12,         "F12"},
 	};
 
 	modset key::get_modset(kmod mod) {

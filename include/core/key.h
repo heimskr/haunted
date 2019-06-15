@@ -25,7 +25,9 @@ namespace haunted {
 		carriage_return = 13, escape = 27, less_than = 60,  greater_than = 62, backspace = 127,
 
 		// Here be dragons.
-		up_arrow = 128, down_arrow, right_arrow, left_arrow
+		home = 128, end, insert,
+		f1 = 131, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12,
+		up_arrow, down_arrow, right_arrow, left_arrow, page_up, page_down
 	};
 
 	/**
@@ -46,19 +48,15 @@ namespace haunted {
 		public:
 			ktype type;
 			modset mods;
-			int extra; // For sequences like ^[#~, where # is any number. -1 by default.
 
-			key(ktype type, modset mods, int extra): type(type), mods(mods), extra(extra) {}
-			key(ktype type, kmod mod, int extra):    key(type, get_modset(mod), extra) {}
-			key(ktype type, kmod mod):               key(type, mod,    -1) {}
-			key(ktype type):                         key(type, kmod::none) {}
+			key(ktype type, modset mods): type(type), mods(mods) { DBG("Hey."); }
+			key(ktype type, kmod mod):    key(type, get_modset(mod)) { DBG("Hey."); }
+			key(ktype type):              key(type, kmod::none) { DBG("Hey."); }
 
-			key(int t, modset mods, int extra): key(ktype(t), mods, extra) {}
-			key(int t, kmod mod, int extra):    key(ktype(t), mod,  extra) {}
-			key(int t, modset mods):            key(t,        mods,    -1) {}
-			key(int t, kmod mod):               key(t,        mod,     -1) {}
-			key(int t):                         key(t,        kmod::none)  {}
-			key():                              key('\0',     kmod::none)  {}
+			key(int t, modset mods): key(ktype(t), mods) { DBG("Hey."); }
+			key(int t, kmod mod):    key(ktype(t), mod) { DBG("Hey."); }
+			key(int t):              key(t,        kmod::none)  { DBG("Hey."); }
+			key():                   key('\0',     kmod::none)  { DBG("Hey."); }
 
 			/** Returns true if this key's type is equal to a given key type and this key's only modifier is control. */
 			bool is_ctrl(ktype) const;

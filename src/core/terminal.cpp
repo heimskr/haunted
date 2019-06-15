@@ -2,11 +2,13 @@
 #include <stdexcept>
 #include <string>
 
+#include <cstdlib>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#include "core/terminal.h"
+#include "core/csi.h"
 #include "core/key.h"
+#include "core/terminal.h"
 #include "core/util.h"
 #include "formicine/ansi.h"
 #include "ui/child.h"
@@ -39,8 +41,7 @@ namespace haunted {
 		termios out;
 		int result;
 		if ((result = tcgetattr(STDIN_FILENO, &out)) < 0)
-			throw std::runtime_error("tcgetattr returned " +
-				std::to_string(result));
+			throw std::runtime_error("tcgetattr returned " + std::to_string(result));
 
 		return out;
 	}
@@ -48,8 +49,11 @@ namespace haunted {
 	void terminal::setattr(const termios &new_attrs) {
 		int result;
 		if ((result = tcsetattr(STDIN_FILENO, TCSAFLUSH, &new_attrs)) < 0)
-			throw std::runtime_error("tcsetattr returned " +
-				std::to_string(result));
+			throw std::runtime_error("tcsetattr returned " + std::to_string(result));
+	}
+
+	bool terminal::is_iterm() {
+		return std::string(std::getenv("TERM_PROGRAM")) == "iTerm.app";
 	}
 
 	void terminal::winch_handler(int) {
@@ -74,8 +78,8 @@ namespace haunted {
 
 	void terminal::work_input() {
 		key k;
-		// Sometimes, calling cbreak() once doesn't seem to properly set all the flags (e.g., arrow
-		// keys produce strings like "^[[C"). Calling it twice appears to work, but it's not pretty.
+		// Sometimes, calling cbreak() once doesn't seem to properly set all the flags (e.g., arrow keys produce strings
+		// like "^[[C"). Calling it twice appears to work, but it's not pretty.
 		cbreak();
 		cbreak();
 		while (*this >> k) {
@@ -87,8 +91,7 @@ namespace haunted {
 	}
 
 	ui::keyhandler * terminal::send_key(key k) {
-		// If the root is null, there are no controls
-		// and nothing to send key presses to.
+		// If the root is null, there are no controls and nothing to send key presses to.
 		if (root == nullptr)
 			return nullptr;
 
@@ -298,10 +301,12 @@ namespace haunted {
 					buffer += c;
 				}
 
-				std::pair<int, int> csiu_pair = util::parse_csiu(buffer);
-				int codepoint = csiu_pair.first, mods = csiu_pair.second;
-				if (codepoint >= 0) {
-					k = {codepoint, (mods - 1) & 7};
+				csi parsed = csi::parse(buffer);
+				csi_type type = parsed.type;
+				int mods = parsed.second;
+
+				if (parsed.first >= 0) {
+					k = key(parsed.get_key(), modset((mods - 1) & 7));
 					return *this;
 				}
 			}
