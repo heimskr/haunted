@@ -297,7 +297,8 @@ namespace haunted::ui {
 	}
 
 	void textinput::set_text(const std::string &str) {
-		buffer = icu::UnicodeString::fromUTF8(str);
+		// buffer = icu::UnicodeString::fromUTF8(str);
+		buffer = str;
 		cursor = str.size();
 		if (cursor > text_width())
 			scroll = text_width() - cursor;

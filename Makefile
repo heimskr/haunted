@@ -33,7 +33,7 @@ SRC_ALL			:= $(SRC) $(SRC_PP)
 
 sinclude $(patsubst %,%/targets.mk,$(MODULES))
 
-all: $(COMMONOBJ)
+all: $(COMMONOBJ) build/test
 
 build/tests: build/tests/tests.o $(COMMONOBJ)
 	@ $(MKBUILD)
