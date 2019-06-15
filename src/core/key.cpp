@@ -27,8 +27,9 @@ namespace haunted {
 
 	key::operator std::string() const {
 		std::string out;
-		if (*this & kmod::ctrl) out.append("⌃");
-		if (*this & kmod::alt)  out.append("⎇ ");
+		if (*this & kmod::shift) out.append("⇧");
+		if (*this & kmod::ctrl)  out.append("⌃");
+		if (*this & kmod::alt)   out.append("⎇ ");
 		auto found = keymap.find(type);
 		if (found != keymap.end())
 			out += found->second;
@@ -58,9 +59,6 @@ namespace haunted {
 	}
 
 	bool key::operator&(kmod mod) const {
-
-		DBG("Testing " << mods.to_string() << " vs. " << int(mod) << " on " << int(type));
-
 		switch (int(mod)) {
 			case int(kmod::shift): return mods.test(0);
 			case int(kmod::alt):   return mods.test(1);

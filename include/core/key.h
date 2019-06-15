@@ -49,14 +49,14 @@ namespace haunted {
 			ktype type;
 			modset mods;
 
-			key(ktype type, modset mods): type(type), mods(mods) { DBG("Hey."); }
-			key(ktype type, kmod mod):    key(type, get_modset(mod)) { DBG("Hey."); }
-			key(ktype type):              key(type, kmod::none) { DBG("Hey."); }
+			key(ktype type, modset mods): type(type), mods(mods) {}
+			key(ktype type, kmod mod):    key(type, get_modset(mod)) {}
+			key(ktype type):              key(type, kmod::none) {}
 
-			key(int t, modset mods): key(ktype(t), mods) { DBG("Hey."); }
-			key(int t, kmod mod):    key(ktype(t), mod) { DBG("Hey."); }
-			key(int t):              key(t,        kmod::none)  { DBG("Hey."); }
-			key():                   key('\0',     kmod::none)  { DBG("Hey."); }
+			key(int t, modset mods): key(ktype(t), mods) {}
+			key(int t, kmod mod):    key(ktype(t), mod) {}
+			key(int t):              key(t,        kmod::none) {}
+			key():                   key('\0',     kmod::none) {}
 
 			/** Returns true if this key's type is equal to a given key type and this key's only modifier is control. */
 			bool is_ctrl(ktype) const;

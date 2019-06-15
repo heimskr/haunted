@@ -1,11 +1,100 @@
 #include <stdexcept>
-#include <string>
 
 #include "core/csi.h"
 #include "core/terminal.h"
 #include "core/util.h"
 
 namespace haunted {
+	void csi::scan_number(int &target, ssize_t &i, const std::string &str) {
+		for (ssize_t p = 1; 0 <= i && util::is_numeric(str[i]); --i) {
+			target += p * (str[i] - '0');
+			p *= 10;
+		}
+	}
+
+	void csi::parse_u(const std::string &str) {
+		// Format for CSI u: "CSI [number];[modifier] u"
+
+		first = second = suffix = 0;
+		const ssize_t len = str.size();
+		ssize_t i = len - 2;
+		suffix = str[len - 1];
+
+		if (!util::is_numeric(str[0]))
+			throw std::invalid_argument("CSI u: first character isn't numeric");
+
+		if (str[len - 3] != ';')
+			throw std::invalid_argument("CSI u: semicolon not in expected position");
+
+		const char penult = str[len - 2];
+		if (!util::in_range(penult, '1', '8'))
+			throw std::invalid_argument("CSI u: invalid penultimate character: '" + std::string(penult, 1) + "'");
+
+		second = penult - '0';
+
+		scan_number(first, i = len - 4, str);
+		
+		if (i != -1)
+			throw std::invalid_argument("CSI u: parsing failed for \"" + str + "\"");
+	}
+
+	void csi::parse_special(const std::string &str) {
+		// Format for CSI ~ (special): "CSI [number];[modifier] ~" or "CSI [number] ~"
+		// Prior to commit 246667c, the number/modifier is backwards in iTerm.
+
+		first = second = suffix = 0;
+		const ssize_t len = str.size();
+		ssize_t i = len - 2;
+		suffix = str[len - 1];
+
+		// Although it can have either one or two components, the first character is always a number.
+		if (!util::is_numeric(str[0]))
+			throw std::invalid_argument("CSI ~: first character isn't numeric");
+
+		ssize_t semicolon_pos = str.find(';');
+
+		if (static_cast<size_t>(semicolon_pos) == std::string::npos) {DBG("~: single component: \"" + str + "\"");
+			// If there's no semicolon, it's just one component, so we just scan from the end of the string and
+			// assume everything's numeric. The modifier is 1 (none) by default.
+			second = 1;
+			scan_number(first, i, str);
+
+#ifdef ITERM_HACK
+		} else if (terminal::is_iterm()) {DBG("parsing backwards: \"" + str + "\"");
+			// Because the current (beta) version of iTerm incorrectly orders the modifier before the keycode as of June
+			// 15, 2019, we need to accommodate the bug by parsing the numbers backwards.
+			if (semicolon_pos != 1)
+				throw std::invalid_argument("CSI ~ (backwards): invalid semicolon position");
+
+			second = str[0] - '0';
+			scan_number(first, i, str);
+			if (i != semicolon_pos)
+				throw std::invalid_argument("CSI ~ (backwards): parsing failed for \"" + str + "\"");
+
+			return;
+#endif
+
+		} else if (semicolon_pos == len - 2) {
+			// If the second-to-last character is a semicolon, then there's nothing between the semicolon and the
+			// final character. That's invalid.
+			throw std::invalid_argument("CSI ~: missing number after semicolon");
+
+		} else if (!util::in_range(str[len - 2], '1', '8')) {
+			// If the semicolon isn't incorrect, then the character after it has to represent a valid modifier.
+			throw std::invalid_argument("CSI ~: invalid character after semicolon");
+
+		} else {DBG("parsing obverse: \"" + str + "\"");
+			// If the semicolon and modifier are valid, take the modifier and scan the string starting right before
+			// the semicolon.
+			second = str[len - 2] - '0';
+			scan_number(first, i = semicolon_pos - 1, str);
+		}
+
+		// The scan needs to end at the beginning of the string; otherwise, the first number is invalid.
+		if (i != -1)
+			throw std::invalid_argument("CSI ~: parsing failed for \"" + str + "\" at " + std::to_string(i));
+	}
+
 	csi::csi(int first, int second, char suffix): first(first), second(second), suffix(suffix) {
 		switch (suffix) {
 			case 'u': type = csi_type::u;
@@ -53,110 +142,45 @@ namespace haunted {
 		}
 	}
 	
-	csi csi::parse(const std::string &str) {
+	csi::csi(const std::string &str): first(0), second(0) {
 		static const std::string endings = "u~ABCDFHPQRS";
-
-		const ssize_t len = str.size();
+		size_t len = str.length();
 
 		// If the string is empty, we need to give up immediately.
 		if (len == 0)
 			throw std::invalid_argument("CSI string is empty");
 
-		const char last = str[len - 1];
+		suffix = str[len - 1];
 
 		// There's a specific set of characters that can serve as the final character in a CSI sequence. If the last
 		// character of this string isn't among them, it's invalid.
-		if (endings.find(last) == std::string::npos)
-			throw std::invalid_argument("Invalid CSI ending: '" + std::string(last, 1) + "'");
+		if (endings.find(suffix) == std::string::npos)
+			throw std::invalid_argument("Invalid CSI ending: '" + std::string(suffix, 1) + "'");
 		
-		ssize_t p, i = len - 2;
-		int first = 0, second = 0;
-
-		if (last == 'u') {
-			// A valid CSI u is "CSI [number];[modifier] u". If at any point the input fails to match that format, we
-			// need to return an error.
-
-			if (!util::is_numeric(str[0]))
-				throw std::invalid_argument("CSI u: first character isn't numeric");
-
-			if (str[len - 3] != ';')
-				throw std::invalid_argument("CSI u: semicolon not in expected position");
-
-			const char penult = str[len - 2];
-			if (!util::in_range(penult, '1', '8'))
-				throw std::invalid_argument("CSI u: invalid penultimate character: '" + std::string(penult, 1) + "'");
-
-			second = penult - '0';
-				
-			for (p = 1, i = len - 4; 0 <= i && util::is_numeric(str[i]); --i) {
-				first += p * (str[i] - '0');
-				p *= 10;
+		if (suffix == 'u') {
+			DBG("parsing u");
+			parse_u(str);
+		} else if (suffix == '~') {
+			DBG("parsing special");
+			parse_special(str);
+		} else {
+			DBG("parsing really special");
+			// At this point, the sequence must be a "really special" type. That means it's either
+			// "CSI 1;[modifier] {ABCDFHPQRS}" or "CSI {ABCDFHPQRS}".
+			// The length (which includes the suffix) has to be either 1 or 4.
+			if (len == 1) {
+				// If the length is 1, then the CSI consists entirely of the suffix and
+				// the keycode and modifier are both implicitly 1.
+				first = second = 1;
+			} else if (len != 4) {
+				throw std::invalid_argument("Invalid length for \"really special\" CSI: " + std::to_string(len));
 			}
 
-			if (i == -1)
-				return {first, second, last};
-
-			throw std::invalid_argument("CSI u: parsing failed for \"" + str + "\"");
-		} else if (last == '~') {
-			// A valid CSI ~ can be either "CSI [number];[modifier] ~" or "CSI [number] ~".
-			// Although it can have either one or two components, the first character is always a number.
-			if (!util::is_numeric(str[0]))
-				throw std::invalid_argument("CSI ~: first character isn't numeric");
-
-			DBG("csi. sup");
-
-			size_t semicolon_pos = str.find(';');
-			if (semicolon_pos == std::string::npos) {
-				// If there's no semicolon, it's just one component, so we just scan from the end of the string and
-				// assume everything's numeric. The modifier is 1 (none) by default.
-				second = 1;
-				for (p = 1; 0 <= i && util::is_numeric(str[i]); --i) {
-					first += p * (str[i] - '0');
-					p *= 10;
-				}
-
-				// If we're not at the end of the string after the loop, then that means there's a non-numeric character
-				// where there shouldn't be one.
-				if (i != -1)
-					throw std::invalid_argument("CSI ~: parsing failed for \"" + str + "\"");
-			} else if (static_cast<ssize_t>(semicolon_pos) == len - 2) {
-				// If the second-to-last character is a semicolon, then there's nothing between the semicolon and the
-				// final character. That's invalid.
-				throw std::invalid_argument("CSI ~: missing number after semicolon");
-			} else if (!util::in_range(str[len - 2], '1', '8')) {
-				// If the semicolon isn't incorrect, then the character after it has to represent a valid modifier.
-				throw std::invalid_argument("CSI ~: invalid character after semicolon");
-			} else {
-				// If the semicolon and modifier are valid, take the modifier and scan the string starting right before
-				// the semicolon.
-				second = str[len - 2] - '0';
-				for (p = 1, i = semicolon_pos - 1; 0 <= i && util::is_numeric(str[i]); --i) {
-					first += p * (str[i] - '0');
-					p *= 10;
-				}
-			}
-
-			// The scan needs to end at the beginning of the string; otherwise, the first number is invalid.
-			if (i == -1)
-				return {first, second, last};
-			throw std::invalid_argument("CSI ~: parsing failed for \"" + str + "\"");
+			// This part is really easy; we know that the part before the suffix is exactly three characters long, that
+			// the first two characters are "1;" and that the third character is a number between 1 and 8 (inclusive).
+			if (str[0] != '1' || str[1] != ';' || !util::in_range(str[2], '1', '8'))
+				throw std::invalid_argument("Parsing failed for \"really special\" CSI: \"" + str + "\"");
 		}
-
-		// At this point, the sequence must be a "really special" type. That means it's either
-		// "CSI 1;[modifier] {ABCDFHPQRS}" or "CSI {ABCDFHPQRS}".
-		// The length (which includes the suffix) has to be either 1 or 4.
-		if (len == 1) {
-			return {1, 1, last};
-		} else if (len != 4) {
-			throw std::invalid_argument("Invalid length for \"really special\" CSI: " + std::to_string(len));
-		}
-
-		// This part is really easy; we know that the part before the suffix is exactly three characters long, that the
-		// first two characters are "1;" and that the third character is a number between 1 and 8 (inclusive).
-		if (str[0] == '1' && str[1] == ';' && util::in_range(str[2], '1', '8'))
-			return {1, str[2] - '0', last};
-
-		throw std::invalid_argument("Parsing failed for \"really special\" CSI: \"" + str + "\"");
 	}
 
 	bool csi::is_csiu(const std::string &str) {
