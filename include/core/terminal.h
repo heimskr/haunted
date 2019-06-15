@@ -57,9 +57,6 @@ namespace haunted {
 			/** Sets the terminal attributes with tcsetaddr. */
 			static void setattr(const termios &);
 
-			/** Returns whether the parent terminal is iTerm. */
-			static bool is_iterm();
-
 			// signal() takes a pointer to a static function. To get around this, every terminal object whose
 			// watch_size() method is called adds itself to a static vector of terminal pointers. When the WINCH signal
 			// handler is called, it notifies all the listening terminal objects of the terminal's new dimensions.
@@ -135,6 +132,9 @@ namespace haunted {
 				out_stream << t;
 				return *this;
 			}
+
+			/** Returns whether the parent terminal is iTerm. */
+			static bool is_iterm();
 	};
 }
 

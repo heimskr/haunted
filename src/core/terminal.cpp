@@ -52,10 +52,6 @@ namespace haunted {
 			throw std::runtime_error("tcsetattr returned " + std::to_string(result));
 	}
 
-	bool terminal::is_iterm() {
-		return std::string(std::getenv("TERM_PROGRAM")) == "iTerm.app";
-	}
-
 	void terminal::winch_handler(int) {
 		winsize new_size;
 		ioctl(STDIN_FILENO, TIOCGWINSZ, &new_size);
@@ -302,7 +298,7 @@ namespace haunted {
 				}
 
 				csi parsed = csi::parse(buffer);
-				csi_type type = parsed.type;
+				// csi_type type = parsed.type;
 				int mods = parsed.second;
 
 				if (parsed.first >= 0) {
@@ -326,5 +322,13 @@ namespace haunted {
 		}
 
 		return *this;
+	}
+
+
+// Public static methods
+
+
+	bool terminal::is_iterm() {
+		return std::string(std::getenv("TERM_PROGRAM")) == "iTerm.app";
 	}
 }
