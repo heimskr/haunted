@@ -53,14 +53,14 @@ namespace haunted {
 
 		ssize_t semicolon_pos = str.find(';');
 
-		if (static_cast<size_t>(semicolon_pos) == std::string::npos) {DBG("~: single component: \"" + str + "\"");
+		if (static_cast<size_t>(semicolon_pos) == std::string::npos) {
 			// If there's no semicolon, it's just one component, so we just scan from the end of the string and
 			// assume everything's numeric. The modifier is 1 (none) by default.
 			second = 1;
 			scan_number(first, i, str);
 
 #ifdef ITERM_HACK
-		} else if (terminal::is_iterm()) {DBG("parsing backwards: \"" + str + "\"");
+		} else if (terminal::is_iterm()) {
 			// Because the current (beta) version of iTerm incorrectly orders the modifier before the keycode as of June
 			// 15, 2019, we need to accommodate the bug by parsing the numbers backwards.
 			if (semicolon_pos != 1)
@@ -83,7 +83,7 @@ namespace haunted {
 			// If the semicolon isn't incorrect, then the character after it has to represent a valid modifier.
 			throw std::invalid_argument("CSI ~: invalid character after semicolon");
 
-		} else {DBG("parsing obverse: \"" + str + "\"");
+		} else {
 			// If the semicolon and modifier are valid, take the modifier and scan the string starting right before
 			// the semicolon.
 			second = str[len - 2] - '0';
@@ -158,13 +158,10 @@ namespace haunted {
 			throw std::invalid_argument("Invalid CSI ending: '" + std::string(suffix, 1) + "'");
 		
 		if (suffix == 'u') {
-			DBG("parsing u");
 			parse_u(str);
 		} else if (suffix == '~') {
-			DBG("parsing special");
 			parse_special(str);
 		} else {
-			DBG("parsing really special");
 			// At this point, the sequence must be a "really special" type. That means it's either
 			// "CSI 1;[modifier] {ABCDFHPQRS}" or "CSI {ABCDFHPQRS}".
 			// The length (which includes the suffix) has to be either 1 or 4.

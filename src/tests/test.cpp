@@ -103,8 +103,6 @@ int main(int, char **) {
 	terminal term;
 	term.watch_size();
 
-	std::cout << "Using iTerm?: " << (terminal::is_iterm()? "yes" : "no") << std::endl;
-
 	// haunted::tests::maintest::test_csiu();
 	haunted::tests::maintest::test_key(term);
 	// haunted::tests::maintest::test_textinput(term);

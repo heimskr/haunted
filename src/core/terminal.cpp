@@ -297,13 +297,9 @@ namespace haunted {
 					buffer += c;
 				}
 
-				csi parsed = buffer;
-				csi_type type = parsed.type;
-				int mods = parsed.second;
-				DBG("first = " << parsed.first << ", mods = " << mods << ", type = " << static_cast<int>(type) << ", key = " << static_cast<int>(parsed.get_key()));
-
+				const csi parsed = buffer;
 				if (parsed.first >= 0) {
-					k = key(parsed.get_key(), modset((mods - 1) & 7));
+					k = key(parsed.get_key(), modset((parsed.second - 1) & 7));
 					return *this;
 				}
 			}
