@@ -1,6 +1,10 @@
 #include "utf8.h"
 #include "unicode/unistr.h"
 
+#include <iostream>
+#include <sstream>
+#include "core/defs.h"
+
 namespace haunted {
 	/**
 	 * Determines the expected codepoint width for a given start byte.
@@ -104,7 +108,14 @@ namespace haunted {
 	}
 
 	void utf8str::insert(ssize_t pos, const std::string &str) {
-		unistr.insert(pos, icu::UnicodeString::fromUTF8(str));
+		std::stringstream ss("");
+		ss << std::hex;
+		for (char ch: str) ss << static_cast<int>(ch) << " ";
+
+		auto ustr = icu::UnicodeString::fromUTF8(str);
+
+		DBG("Length of UnicodeString ( " << ss.str() << "): " << ustr.countChar32());
+		unistr.insert(pos, ustr);
 	}
 
 	void utf8str::insert(ssize_t pos, char ch) {
@@ -119,8 +130,8 @@ namespace haunted {
 		unistr.remove(start);
 	}
 
-	size_t utf8str::size()   const { return unistr.length();  }
-	size_t utf8str::length() const { return unistr.length();  }
+	size_t utf8str::size()   const { return unistr.countChar32();  }
+	size_t utf8str::length() const { return size();  }
 	bool   utf8str::empty()  const { return unistr.isEmpty(); }
 	void   utf8str::clear()        { unistr.remove(); }
 
