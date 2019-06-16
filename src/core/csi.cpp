@@ -178,6 +178,9 @@ namespace haunted {
 			// the first two characters are "1;" and that the third character is a number between 1 and 8 (inclusive).
 			if (str[0] != '1' || str[1] != ';' || !util::in_range(str[2], '1', '8'))
 				throw std::invalid_argument("Parsing failed for \"really special\" CSI: \"" + str + "\"");
+
+			first = str[0] - '0';
+			second = str[2] - '0';
 		}
 	}
 
