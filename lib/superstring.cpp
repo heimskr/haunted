@@ -117,8 +117,9 @@ namespace haunted {
 	superstring::iterator superstring::begin() { return chunks.begin(); }
 	superstring::iterator superstring::end()   { return chunks.end();   }
 	size_t superstring::size()   const { return chunks.size();  }
+	size_t superstring::length() const { return chunks.size();  }
 	
-	size_t superstring::length() const {
+	size_t superstring::text_length() const {
 		size_t out = 0;
 		for (const superchar &sc: chunks)
 			out += sc.length();

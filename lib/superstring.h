@@ -41,9 +41,10 @@ namespace haunted {
 
 			/** Returns the number of substrings. */
 			size_t size() const;
+			size_t length() const;
 
 			/** Returns the sum of all the substrings' lengths. */
-			size_t length() const;
+			size_t text_length() const;
 
 			void clear();
 	};
