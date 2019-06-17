@@ -172,7 +172,7 @@ namespace haunted::ui {
 		if (ch == '*') {
 			DBG("Buffer length: " << size());
 			for (size_t i = 0; i < buffer.length(); ++i)
-				DBG(" " << i << ": " << std::hex << int32_t(buffer[i]) << std::dec << ", '" << buffer[i] << "'");
+				DBG(" " << i << ": 0x" << std::hex << uint32_t(buffer[i]) << std::dec << ", '" << buffer[i] << "'");
 			return;
 		}
 

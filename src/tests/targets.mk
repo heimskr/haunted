@@ -6,4 +6,4 @@ test: build/test
 	./$^ 2>> .log
 
 itest: build/test
-	./$^ input
+	./$^ input 2>> .log
