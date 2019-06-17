@@ -1,6 +1,10 @@
 #ifndef HAUNTED_LIB_UTF8_H_
 #define HAUNTED_LIB_UTF8_H_
 
+#include <cstdlib>
+
+#include "superstring.h"
+
 namespace haunted {
 	class utf8 {
 		public:

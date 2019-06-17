@@ -14,12 +14,12 @@ namespace haunted::ui {
 // Private instance methods
 
 
-	textinput::textinput(container *parent, position pos, const std::string &buffer, size_t cur):
+	textinput::textinput(container *parent, position pos, const superstring &buffer, size_t cur):
 	control(parent, pos), buffer(buffer), cursor(cur) {
 		parent->add_child(this);
 	}
 
-	textinput::textinput(container *parent, const std::string &buffer, size_t cursor):
+	textinput::textinput(container *parent, const superstring &buffer, size_t cursor):
 	control(parent), buffer(buffer), cursor(cursor) {
 		parent->add_child(this);
 	}
@@ -111,12 +111,12 @@ namespace haunted::ui {
 		return false;
 	}
 
-	utf8char textinput::prev_char() const {
-		return cursor > 0? buffer[cursor - 1]  : utf8char();
+	superchar textinput::prev_char() {
+		return cursor > 0? buffer[cursor - 1]  : superchar();
 	}
 
-	utf8char textinput::next_char() const {
-		return cursor < size()? buffer[cursor] : utf8char();
+	superchar textinput::next_char() {
+		return cursor < size()? buffer[cursor] : superchar();
 	}
 
 	size_t textinput::text_width() const {
@@ -159,7 +159,7 @@ namespace haunted::ui {
 	}
 
 	void textinput::insert(const std::string &str) {
-		utf8str newstr = str;
+		superstring newstr = str;
 		buffer.insert(cursor, newstr);
 		cursor += newstr.size();
 		update();
@@ -171,8 +171,8 @@ namespace haunted::ui {
 		
 		if (ch == '*') {
 			DBG("Buffer length: " << size());
-			for (size_t i = 0; i < buffer.length(); ++i)
-				DBG(" " << i << ": 0x" << std::hex << uint32_t(buffer[i]) << std::dec << ", '" << buffer[i] << "'");
+			// for (size_t i = 0; i < buffer.length(); ++i)
+				// DBG(" " << i << ": 0x" << std::hex << uint32_t(buffer[i]) << std::dec << ", '" << buffer[i] << "'");
 			return;
 		}
 
@@ -220,9 +220,9 @@ namespace haunted::ui {
 		if (cursor == 0)
 			return;
 		size_t to_erase = 0;
-		for (; prev_char() == ' '; --cursor)
+		for (; prev_char() == " "; --cursor)
 			to_erase++;
-		for (; prev_char() != '\0' && prev_char() != ' '; --cursor)
+		for (; prev_char() != "" && prev_char() != " "; --cursor)
 			to_erase++;
 		buffer.erase(cursor, to_erase);
 		check_scroll();
@@ -367,8 +367,8 @@ namespace haunted::ui {
 		if (cursor == 0)
 			return;
 		size_t old_cursor = cursor;
-		for (; prev_char() == ' '; --cursor);
-		for (; prev_char() != '\0' && prev_char() != ' '; --cursor);
+		for (; prev_char() == " "; --cursor);
+		for (; !next_char().empty() && prev_char() != " "; --cursor);
 		if (cursor != old_cursor) {
 			if (cursor < scroll) {
 				scroll = cursor;
@@ -383,8 +383,8 @@ namespace haunted::ui {
 		if (cursor == size())
 			return;
 		size_t old_cursor = cursor;
-		for (; next_char() == ' '; ++cursor);
-		for (; next_char() != '\0' && next_char() != ' '; ++cursor);
+		for (; next_char() == " "; ++cursor);
+		for (; !next_char().empty() && next_char() != " "; ++cursor);
 		if (cursor != old_cursor) {
 			if (cursor - scroll > text_width()) {
 				// If we've moved beyond the right edge, we need to adjust the scroll to align the cursor with the right

@@ -20,7 +20,7 @@ namespace haunted::ui {
 	 * any rows below the first will be unused.
 	 */
 	class textinput: public virtual control {
-		using update_fn = std::function<void(const utf8str &, int)>;
+		using update_fn = std::function<void(const superstring &, int)>;
 
 		private:
 			/** By default, all characters below 0x20 are ignored by insert(). However, if the character is contained in
@@ -31,7 +31,7 @@ namespace haunted::ui {
 			std::string prefix;
 
 			/** The text that the user has entered so far. */
-			utf8str buffer;
+			superstring buffer;
 
 			/** The offset within the text where new input will be inserted. */
 			size_t cursor = 0;
@@ -84,10 +84,10 @@ namespace haunted::ui {
 			bool check_scroll();
 
 			/** Returns the character to the left of the cursor. */
-			utf8char prev_char() const;
+			superchar prev_char();
 
 			/** Returns the character to the right of the cursor. */
-			utf8char next_char() const;
+			superchar next_char();
 
 			/** Returns the width of the buffer area (i.e., the width of the control minus the prefix length). */
 			inline size_t text_width() const;
@@ -109,10 +109,10 @@ namespace haunted::ui {
 			std::string unicode_buffer;
 
 			/** Constructs a textinput with a parent and a position and an initial buffer and cursor. */
-			textinput(container *parent, position pos, const std::string &buffer, size_t cursor);
+			textinput(container *parent, position pos, const superstring &buffer, size_t cursor);
 
 			/** Constructs a textinput with a parent and a position and an initial buffer and a default cursor. */
-			textinput(container *parent, position pos, const std::string &buffer):
+			textinput(container *parent, position pos, const superstring &buffer):
 				textinput(parent, pos, buffer, 0) {}
 
 			/** Constructs a textinput with a parent and position and a default buffer and cursor. */
@@ -120,10 +120,10 @@ namespace haunted::ui {
 				textinput(parent, pos, "") {}
 
 			/** Constructs a textinput with a parent, a default position and an initial buffer and cursor. */
-			textinput(container *parent, const std::string &buffer, size_t cursor);
+			textinput(container *parent, const superstring &buffer, size_t cursor);
 
 			/** Constructs a textinput with a parent, a default position and an initial buffer and default cursor. */
-			textinput(container *parent, const std::string &buffer):
+			textinput(container *parent, const superstring &buffer):
 				textinput(parent, buffer, 0) {}
 
 			/** Constructs a textinput with a parent and a default position, buffer and cursor. */

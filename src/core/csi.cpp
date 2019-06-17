@@ -28,7 +28,7 @@ namespace haunted {
 
 		const char penult = str[len - 2];
 		if (!util::in_range(penult, '1', '8'))
-			throw std::invalid_argument("CSI u: invalid penultimate character: '" + std::string(penult, 1) + "'");
+			throw std::invalid_argument("CSI u: invalid penultimate character: '" + std::string(1, penult) + "'");
 
 		second = penult - '0';
 
@@ -138,7 +138,7 @@ namespace haunted {
 					case 24: return ktype::f12;
 					default: throw std::invalid_argument("Unexpected special key: " + std::to_string(first));
 				}
-			default: throw std::invalid_argument("Unexpected suffix: '" + std::string(suffix, 1) + "'");
+			default: throw std::invalid_argument("Unexpected suffix: '" + std::string(1, suffix) + "'");
 		}
 	}
 	
@@ -155,7 +155,7 @@ namespace haunted {
 		// There's a specific set of characters that can serve as the final character in a CSI sequence. If the last
 		// character of this string isn't among them, it's invalid.
 		if (endings.find(suffix) == std::string::npos)
-			throw std::invalid_argument("Invalid CSI ending: '" + std::string(suffix, 1) + "'");
+			throw std::invalid_argument("Invalid CSI ending: '" + std::string(1, suffix) + "'");
 		
 		if (suffix == 'u') {
 			parse_u(str);
