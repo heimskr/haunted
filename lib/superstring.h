@@ -15,14 +15,7 @@ namespace haunted {
 			std::list<superchar> chunks;
 			using iterator = decltype(chunks)::iterator;
 
-			// std::list doesn't support random access, so we have to move through the list manually. After one access,
-			// the next access will probably happen somewhere close by. If we remember the index of the last access and
-			// an iterator pointing to it, we can start there instead of the beginning of the list when searching while
-			// doing the next access.
-			size_t index = 0;
-			iterator cursor;
-			iterator & move(size_t = 0);
-			void next();
+			iterator nth(size_t);
 
 		public:
 			/** Assembles a new superstring from a UTF-8 string. */
@@ -45,8 +38,13 @@ namespace haunted {
 
 			iterator begin();
 			iterator end();
+
+			/** Returns the number of substrings. */
 			size_t size() const;
+
+			/** Returns the sum of all the substrings' lengths. */
 			size_t length() const;
+
 			void clear();
 	};
 }

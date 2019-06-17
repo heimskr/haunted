@@ -19,38 +19,12 @@ namespace haunted {
 				chunks.push_back(str.substr(i, utf8::width(c)));
 			}
 		}
-
-		cursor = chunks.begin();
 	}
 
-	superstring::iterator & superstring::move(size_t pos) {
-		DBG("move(" << pos << "): index = " << index << ", begin = " << &*begin() << "(" << *begin() << "), cursor = " << &*cursor << ", end = " << &*end());
-		if (pos == 0) {
-			DBG("    pos == 0");
-			index = 0;
-			cursor = chunks.begin();
-		} else if (index < pos) {
-			DBG("    index < pos");
-			for (; index < pos; ++index) {
-				void *old = &*cursor;
-				void *neu = &*++cursor;
-				DBG("    (cursor: ++" << old << " → " << neu << ")");
-			}
-		} else if (pos < index) {
-			DBG("    pos < index");
-			for (; pos < index; --index) {
-				void *old = &*cursor;
-				void *neu = &*--cursor;
-				DBG("    (cursor: --" << old << " → " << neu << ")");
-			}
-		}
-
-		DBG("--- index = " << index << ", begin = " << &*begin() << "(" << *begin() << "), cursor = " << &*cursor << ", end = " << &*end());
-		return cursor;
-	}
-
-	void superstring::next() {
-		++index, ++cursor;
+	superstring::iterator superstring::nth(size_t pos) {
+		iterator iter = begin();
+		for (size_t i = 0; i < pos; ++i, ++iter);
+		return iter;
 	}
 
 	superstring::operator std::string() const {
@@ -64,25 +38,21 @@ namespace haunted {
 		if (pos < 0) {
 			for (ssize_t i = 0; pos < i; --i)
 				chunks.push_front({});
-			move();
+			return *chunks.begin();
 		} else if (size() <= size_t(pos)) {
-			for (ssize_t i = size(); i <= pos; ++i) {
+			for (ssize_t i = size(); i <= pos; ++i)
 				chunks.push_back({});
-				next();
-			}
-		} else {
-			move(pos);
+			return *--chunks.end();
 		}
 
-		return *cursor;
+		return *nth(pos);
 	}
 
 	superchar & superstring::at(size_t pos) {
 		if (size() <= pos)
 			throw std::out_of_range("superstring");
 
-		move(pos);
-		return *cursor;
+		return *nth(pos);
 	}
 
 	std::string superstring::substr(size_t pos, size_t n) const {
@@ -91,23 +61,18 @@ namespace haunted {
 	}
 
 	void superstring::insert(size_t pos, const superchar &item) {
-		DBG("insert(" << pos << ", \"" << item << "\"): [" << size() << "] index = " << index);
+		DBG("insert(" << pos << ", \"" << item << "\"): [" << size() << "]");
 		if (pos == size()) {
 			DBG("    pos == size(" << size() << ")");
-			index = size();
 			chunks.push_back(item);
-			cursor = chunks.end();
-			--cursor;
 		} else if (pos == 0) {
 			DBG("    pos == 0");
-			index = 0;
 			chunks.push_front(item);
-			cursor = chunks.begin();
 		} else {
 			DBG("    pos != size(" << size() << "), pos != 0");
-			move(pos);
-			chunks.insert(++cursor, item);
+			chunks.insert(nth(pos + 1), item);
 		}
+
 		dbg();
 	}
 
@@ -129,56 +94,21 @@ namespace haunted {
 	}
 
 	superstring & superstring::erase(size_t pos, size_t len) {
-		// static std::ofstream log("erase.log");
-		dbg();
-
 		if (size() == 0 && pos == 0)
 			return *this;
-
-		
-		superstring::iterator prev = cursor;
-		DBG("((erase: [begin, cursor, end] = [" << &*begin() << ", " << &*cursor << ", " << &*end() << "]))");
-		--prev;
-		size_t old_index = index;
 
 		// ansi::jump(0, 4 - x);
 		// std::cout << "[" << size() << " @ " << index << "] erase(" << pos << ", " << len << ")";
 
 
+		DBG("[" << size() << "] erase(" << pos << ", " << len << ")");
 
+		// DBG("--- begin = " << &*begin() << ", cursor = " << &*cursor << ", last = " << &*last << ", index = " << index << ", end = " << &*end());
+		iterator iter = nth(pos);
+		iterator last = iter;
+		for (size_t i = 0; i < len; ++i, ++last);
 
-
-
-		DBG("[" << size() << " @ " << index << "] erase(" << pos << ", " << len << "): begin = " << &*begin() << ", cursor = " << &*cursor << ", index = " << index << ", end = " << &*end());
-
-		superstring::iterator last = move(pos);
-
-		DBG("    cursor: " << &*cursor << ", index = " << index << ", last: " << &*last);
-
-		if (len == std::string::npos || size() < pos + len) {
-			last = chunks.end();
-		} else {
-			// for (size_t i = 0; i < len; ++i, ++last);
-			for (size_t i = 0; i < len; ) {
-				DBG("    (i: " << i << " → " << i + 1 << ")");
-				++i;
-				DBG("    last: " << &*last);
-				++last;
-				DBG("        → " << &*last);
-			}
-		}
-
-		if (pos == old_index) {
-			cursor = prev;
-			index = old_index - 1;
-		} else if (pos < old_index) {
-			move(0);
-		}
-
-
-		DBG("--- begin = " << &*begin() << ", cursor = " << &*cursor << ", last = " << &*last << ", index = " << index << ", end = " << &*end());
-
-		chunks.erase(cursor, last);
+		chunks.erase(iter, last);
 
 		return *this;
 	}
