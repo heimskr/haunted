@@ -192,7 +192,7 @@ namespace haunted::ui {
 			}
 		} else {
 			size_t width = utf8::width(ch);
-			DBG("Width for " << static_cast<int>(ch) << ": " << width);
+			// DBG("Width for " << static_cast<int>(ch) << ": " << width);
 			if (width < 2) {
 				// It seems we've received a plain old ASCII character or an invalid UTF8 start byte.
 				// Either way, append it to the buffer.

@@ -37,9 +37,11 @@ namespace haunted {
 			superchar & at(size_t);
 
 			std::string substr(size_t, size_t) const;
-			superchar & insert(size_t, const superchar &);
-			superchar & insert(size_t, char);
+			void insert(size_t, const superchar &);
+			void insert(size_t, char);
 			superstring & erase(size_t = 0, size_t = std::string::npos);
+
+			void dbg();
 
 			iterator begin();
 			iterator end();

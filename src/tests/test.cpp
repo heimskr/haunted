@@ -5,6 +5,8 @@
 #include <utility>
 
 #include <cassert>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "formicine/ansi.h"
 #include "tests/test.h"
@@ -102,6 +104,9 @@ int main(int argc, char **argv) {
 
 	terminal term;
 	term.watch_size();
+
+	int fd = open(".log", O_RDWR | O_APPEND);
+	dup2(fd, 2);
 
 	if (argc < 2) {
 		haunted::tests::maintest::test_key(term);

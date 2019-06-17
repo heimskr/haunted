@@ -129,7 +129,6 @@ namespace haunted {
 	void terminal::cbreak() {
 		attrs.c_lflag &= ~(ECHO | ICANON | ISIG);
 		attrs.c_iflag &= ~IXON;
-		std::cerr << "About to apply cbreak flags." << std::endl;
 		apply();
 	}
 
