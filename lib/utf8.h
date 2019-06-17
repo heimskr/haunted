@@ -1,12 +1,6 @@
 #ifndef HAUNTED_LIB_UTF8_H_
 #define HAUNTED_LIB_UTF8_H_
 
-#include <string>
-#include <vector>
-
-#include "utf8char.h"
-#include "utf8str.h"
-
 namespace haunted {
 	class utf8 {
 		public:

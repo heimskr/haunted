@@ -1,9 +1,4 @@
 #include "utf8.h"
-#include "unicode/unistr.h"
-
-#include <iostream>
-#include <sstream>
-#include "core/defs.h"
 
 namespace haunted {
 	size_t utf8::width(unsigned char uch) {

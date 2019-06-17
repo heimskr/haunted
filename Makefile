@@ -53,17 +53,10 @@ vars:
 	@ echo SRC: $(SRC); echo
 
 clean:
-	rm -f .log
-	@ tmpdir=".build.$$RANDOM"; mkdir "$$tmpdir";                                \
-	  if [ -e build/lib/unicode ]; then echo "Saving Unicode directory.";        \
-	      mv build/lib/unicode "$$tmpdir/unicode";  fi;                          \
-	  rm -rf build;                                                              \
-	  if [ -e "$$tmpdir/unicode" ];  then echo "Restoring Unicode directory.";   \
-	      mkdir -p build/lib;      mv "$$tmpdir/unicode"  build/lib/unicode; fi; \
-	  rm -rf "$$tmpdir";
+	rm -rf build .log
 
 spotless:
-	rm -rf build $(DEPFILE)
+	rm -rf build .log $(DEPFILE)
 
 DEPFILE  = .dep
 DEPTOKEN = "\# MAKEDEPENDS"
