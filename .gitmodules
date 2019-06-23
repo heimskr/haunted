@@ -1,6 +1,4 @@
 [submodule "formicine"]
 	path = lib/formicine
 	url = https://github.com/kaitamkun/formicine.git
-[submodule "unilib"]
-	path = unilib
-	url = https://github.com/ufal/unilib.git
+
