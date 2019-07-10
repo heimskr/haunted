@@ -56,6 +56,9 @@ namespace haunted::ui {
 			/** Sets the terminal's scrollable region with DECSLRM and DECSTBM to fit the control. */
 			void set_margins();
 
+			/** Resets the scrollable region. */
+			void reset_margins();
+
 			friend class container;
 	};
 }

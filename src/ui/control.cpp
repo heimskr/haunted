@@ -75,5 +75,11 @@ namespace haunted::ui {
 	void control::set_margins() {
 		term->enable_hmargins();
 		term->margins(pos.top, pos.bottom(), pos.left, pos.right());
+		term->set_origin();
+	}
+
+	void control::reset_margins() {
+		term->reset_origin();
+		term->margins();
 	}
 }

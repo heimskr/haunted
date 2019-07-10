@@ -237,6 +237,14 @@ namespace haunted {
 		out_stream << "\e[?69l";
 	}
 
+	void terminal::set_origin() {
+		out_stream << "\e[?6h";
+	}
+
+	void terminal::reset_origin() {
+		out_stream << "\e[?6l";
+	}
+
 
 // Public operators
 

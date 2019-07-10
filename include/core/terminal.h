@@ -131,6 +131,10 @@ namespace haunted {
 			void margins();
 			void enable_hmargins();
 			void disable_hmargins();
+			/** Enables origin mode: the home position is set to the top-left corner of the margins. */
+			void set_origin();
+			/** Disables origin mode. */
+			void reset_origin();
 
 			/** Returns true if in_stream is in a valid state. */
 			operator bool() const;
