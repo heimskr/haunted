@@ -53,6 +53,9 @@ namespace haunted::ui {
 			/** Returns true if the control's left edge is at the left edge of the screen. */
 			bool at_left() const;
 
+			/** Sets the terminal's scrollable region with DECSLRM and DECSTBM to fit the control. */
+			void set_margins();
+
 			friend class container;
 	};
 }

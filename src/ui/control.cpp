@@ -71,4 +71,9 @@ namespace haunted::ui {
 	bool control::at_left() const {
 		return pos.left == 0;
 	}
+
+	void control::set_margins() {
+		term->enable_hmargins();
+		term->margins(pos.top, pos.bottom(), pos.left, pos.right());
+	}
 }

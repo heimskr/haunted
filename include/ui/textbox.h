@@ -5,6 +5,7 @@
 #include <deque>
 
 #include "ui/control.h"
+#include "core/terminal.h"
 
 namespace haunted::ui {
 	/**
@@ -37,6 +38,10 @@ namespace haunted::ui {
 			/** Empties the buffer and replaces it with 0-continuation lines from a vector of string. */
 			void set_lines(const std::vector<std::string> &);
 
+			/** When a new line is added, it's usually not necessary to completely redraw the component. Instead,
+			 *  scrolling the component and printing only the new line is sufficient. */
+			void draw_new_line(const textline &);
+
 		public:
 			/** Constructs a textbox with a parent and a position and initial contents and scroll offset. */
 			textbox(container *parent, position pos, const std::vector<std::string> &contents, int offset_);
@@ -55,6 +60,9 @@ namespace haunted::ui {
 
 			/** Constructs a textbox with a parent and a default position, contents and scroll offset. */
 			textbox(container *parent): textbox(parent, std::vector<std::string> {}) {}
+
+			void clear();
+			void draw();
 
 			textbox & operator+=(const std::string &);
 			textbox & operator+=(const textline &);
