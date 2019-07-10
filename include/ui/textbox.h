@@ -55,6 +55,10 @@ namespace haunted::ui {
 
 			/** Constructs a textbox with a parent and a default position, contents and scroll offset. */
 			textbox(container *parent): textbox(parent, std::vector<std::string> {}) {}
+
+			textbox & operator+=(const std::string &);
+			textbox & operator+=(const textline &);
+			operator std::string() const;
 	};
 }
 
