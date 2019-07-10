@@ -25,8 +25,12 @@ namespace haunted::ui {
 
 	void textbox::draw_new_line(const textline &) {
 		set_margins();
+		in_margins = true;
+
+		// TODO: implement
 
 		reset_margins();
+		in_margins = false;
 	}
 
 	size_t textbox::line_rows(const textline &line) const {
@@ -44,11 +48,48 @@ namespace haunted::ui {
 		return length / (width - line.continuation) + (length % (width - line.continuation)? 2 : 1);
 	}
 
+	size_t textbox::total_rows() const {
+		if (!wrap)
+			return lines.size();
+
+		size_t out = 0;
+		for (const textline &line: lines)
+			out += line_rows(line);
+		return out;
+	}
+
+	std::pair<textline &, size_t> textbox::line_at_row(size_t row) {
+		if (!wrap)
+			return {lines[row], 0};
+
+		size_t index, row_count, last_count;
+		for (index = 0, row_count = 0; row_count < row; ++index)
+			row_count += last_count = line_rows(lines[index]);
+		
+		return {lines[index], row - row_count - last_count};
+	}
+
+	void textbox::clear() {
+		bool should_reset_margins = false;
+		if (!in_margins) {
+			set_margins();
+			should_reset_margins = true;
+		}
+
+		for (int i = 0; i < pos.height; ++i) {
+			if (i) ansi::down();
+			ansi::delete_chars(pos.width);
+		}
+
+		if (should_reset_margins)
+			reset_margins();
+	}
+
 
 // Public instance methods
 
 
-	void textbox::clear() {
+	void textbox::clear_lines() {
 		lines.clear();
 		draw();
 	}
@@ -57,8 +98,17 @@ namespace haunted::ui {
 		// It's assumed that the terminal is already in cbreak mode. If it's not, DECSLRM won't work and the left and
 		// right margins won't be set.
 		set_margins();
+		in_margins = true;
+		clear();
 
+		if (0 <= voffset && total_rows() <= static_cast<size_t>(voffset)) {
+			// There's no need to draw anything if the box has been scrolled down beyond all its contents.
+		} else {
+
+		}
+		
 		reset_margins();
+		in_margins = false;
 	}
 
 	textbox & textbox::operator+=(const std::string &line) {

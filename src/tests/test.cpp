@@ -117,12 +117,18 @@ namespace haunted::tests {
 		sleep(1); std::cerr << "Scrolling down.\n";
 		ansi::scroll_down(1);
 
-		sleep(1); std::cerr << "Jumping and printing.\n";
+		sleep(2); std::cerr << "Jumping and printing.\n";
 		ansi::jump(5, 2);
 		term << "Hello";
 		term.flush();
 
-		sleep(1); std::cerr << "Clearing line.\n";
+		sleep(2); std::cerr << "Setting origin, jumping and printing.\n";
+		term.set_origin();
+		ansi::jump();
+		term << "Hi :)";
+		term.flush();
+
+		sleep(2); std::cerr << "Clearing line.\n";
 		ansi::clear_line();
 
 		sleep(1); std::cerr << "Clearing all.\n";
@@ -145,7 +151,7 @@ int main(int argc, char **argv) {
 	terminal term;
 	term.watch_size();
 
-	int fd = open(".log", O_RDWR | O_APPEND);
+	int fd = open(".log", O_RDWR | O_APPEND | O_CREAT);
 	dup2(fd, 2);
 
 	if (argc < 2) {

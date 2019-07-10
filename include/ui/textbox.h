@@ -1,8 +1,9 @@
 #ifndef HAUNTED_UI_TEXTBOX_H_
 #define HAUNTED_UI_TEXTBOX_H_
 
-#include <string>
 #include <deque>
+#include <string>
+#include <utility>
 
 #include "ui/control.h"
 #include "core/terminal.h"
@@ -42,6 +43,9 @@ namespace haunted::ui {
 			/** Whether to wrap long lines based on the continuation column. */
 			bool wrap = true;
 
+			/** Whether margins have been set. */
+			bool in_margins = false;
+
 			/** Empties the buffer and replaces it with 0-continuation lines from a vector of string. */
 			void set_lines(const std::vector<std::string> &);
 
@@ -51,6 +55,17 @@ namespace haunted::ui {
 
 			/** Returns the number of rows on the terminal a line of text would occupy. */
 			size_t line_rows(const textline &line) const;
+
+			/** Returns the total number of rows occupied by all the lines in the text box. */
+			size_t total_rows() const;
+
+			/** Returns a pair of the line at a given row (ignoring voffset and zero-based) and the number of rows past
+			 *  the start of the line. For example, if the textbox contains one line that occupies a single row and a
+			 *  second line that spans 5 rows, then calling this function with 4 will return {lines[1], 3}. */
+			std::pair<textline &, size_t> line_at_row(size_t);
+
+			/** Clears the region of the screen occupied by the textbox. */
+			void clear();
 
 		public:
 			/** Constructs a textbox with a parent, a position and initial contents. */
@@ -65,7 +80,7 @@ namespace haunted::ui {
 			/** Constructs a textbox with a parent, a default position and empty contents. */
 			textbox(container *parent): textbox(parent, std::vector<std::string> {}) {}
 
-			void clear();
+			void clear_lines();
 			void draw();
 
 			textbox & operator+=(const std::string &);
