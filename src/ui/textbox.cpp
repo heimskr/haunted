@@ -2,13 +2,12 @@
 #include "formicine/ansi.h"
 
 namespace haunted::ui {
-	textbox::textbox(container *parent, position pos, const std::vector<std::string> &contents, int offset):
-	control(parent, pos), offset(offset) {
+	textbox::textbox(container *parent, position pos, const std::vector<std::string> &contents): control(parent, pos) {
 		parent->add_child(this);
 		set_lines(contents);
 	}
 
-	textbox::textbox(container *parent, const std::vector<std::string> &contents, int offset): control(parent), offset(offset) {
+	textbox::textbox(container *parent, const std::vector<std::string> &contents): control(parent) {
 		parent->add_child(this);
 		set_lines(contents);
 	}
@@ -27,7 +26,7 @@ namespace haunted::ui {
 	void textbox::draw_new_line(const textline &) {
 		set_margins();
 
-		term->margins();
+		reset_margins();
 	}
 
 
@@ -44,9 +43,7 @@ namespace haunted::ui {
 		// right margins won't be set.
 		set_margins();
 
-
-
-		term->margins();
+		reset_margins();
 	}
 
 	textbox & textbox::operator+=(const std::string &line) {

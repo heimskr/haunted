@@ -109,15 +109,31 @@ namespace haunted::tests {
 
 		sleep(1); std::cerr << "Setting margins.\n";
 		term.enable_hmargins();
-		term.margins(2, 10, 5, 10);
+		term.margins(2, 10, 5, 15);
+		
 		sleep(1); std::cerr << "Scrolling up.\n";
 		ansi::scroll_up(2);
+		
 		sleep(1); std::cerr << "Scrolling down.\n";
 		ansi::scroll_down(1);
+
+		sleep(1); std::cerr << "Jumping and printing.\n";
+		ansi::jump(5, 2);
+		term << "Hello";
+		term.flush();
+
+		sleep(1); std::cerr << "Clearing line.\n";
+		ansi::clear_line();
+
+		sleep(1); std::cerr << "Clearing all.\n";
+		ansi::clear();
+
 		sleep(1); std::cerr << "Resetting margins.\n";
 		term.margins();
+
 		sleep(5); std::cerr << "Scrolling up.\n";
 		ansi::scroll_up(2);
+
 		sleep(5); std::cerr << "Done.\n";
 		term.disable_hmargins();
 	}

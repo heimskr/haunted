@@ -30,10 +30,16 @@ namespace haunted::ui {
 		private:
 			std::deque<textline> lines;
 
-			/** The number of lines the container has been scrolled. If -1, the textbox will always scroll to the bottom 
-			 *  whenever a new line is added. For values >= 0, the textbox won't scroll, even if the new text is outside
-			 *  the visible region. */
-			int offset;
+			/** The number of lines the container has been scrolled vertically. If -1, the textbox will always scroll to
+			 *  the bottom whenever a new line is added. For values >= 0, the textbox won't scroll, even if the new text
+			 *  is outside the visible region. */
+			int voffset = -1;
+
+			/** The number of columns the container has been scrolled horizontally. */
+			int hoffset = 0;
+
+			/** Whether to wrap long lines based on the continuation column. */
+			bool wrap = true;
 
 			/** Empties the buffer and replaces it with 0-continuation lines from a vector of string. */
 			void set_lines(const std::vector<std::string> &);
@@ -43,22 +49,16 @@ namespace haunted::ui {
 			void draw_new_line(const textline &);
 
 		public:
-			/** Constructs a textbox with a parent and a position and initial contents and scroll offset. */
-			textbox(container *parent, position pos, const std::vector<std::string> &contents, int offset_);
+			/** Constructs a textbox with a parent, a position and initial contents. */
+			textbox(container *parent, position pos, const std::vector<std::string> &contents);
 
-			textbox(container *parent, position pos, const std::vector<std::string> &contents):
-				textbox(parent, pos, contents, -1) {}
-
-			/** Constructs a textbox with a parent and position and a default buffer and cursor. */
+			/** Constructs a textbox with a parent and position and empty contents. */
 			textbox(container *parent, position pos): textbox(parent, pos, {}) {}
 
-			/** Constructs a textbox with a parent, initial content and a default position and scroll offset. */
-			textbox(container *parent, const std::vector<std::string> &contents, int offset_);
+			/** Constructs a textbox with a parent, initial contents and a default position. */
+			textbox(container *parent, const std::vector<std::string> &contents);
 
-			/** Constructs a textbox with a parent, initial contents and a default position and scroll offset. */
-			textbox(container *parent, const std::vector<std::string> &contents): textbox(parent, contents, 0) {}
-
-			/** Constructs a textbox with a parent and a default position, contents and scroll offset. */
+			/** Constructs a textbox with a parent, a default position and empty contents. */
 			textbox(container *parent): textbox(parent, std::vector<std::string> {}) {}
 
 			void clear();
