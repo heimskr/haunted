@@ -29,6 +29,21 @@ namespace haunted::ui {
 		reset_margins();
 	}
 
+	size_t textbox::line_rows(const textline &line) const {
+		// TODO: support doublewide characters.
+		if (!wrap)
+			return 1;
+		
+		size_t length = ansi::strip(line.text).length();
+		const size_t width = pos.width;
+
+		if (length <= width)
+			return 1;
+
+		length -= width; // Ignore all the text on the first line because it's not affected by continuation.
+		return length / (width - line.continuation) + (length % (width - line.continuation)? 2 : 1);
+	}
+
 
 // Public instance methods
 

@@ -13,6 +13,7 @@ namespace haunted::ui {
 	 * In irssi, messages that are too wide for a single line are wrapped; each new line begins at the same column as
 	 * the message did, after the timestamp and nick indicator. This wrapper makes a generalized version of that feature
 	 * possible in textbox.
+	 * Note that the text is assumed to contain no newlines.
 	 */
 	struct textline {
 		std::string text = "";
@@ -47,6 +48,9 @@ namespace haunted::ui {
 			/** When a new line is added, it's usually not necessary to completely redraw the component. Instead,
 			 *  scrolling the component and printing only the new line is sufficient. */
 			void draw_new_line(const textline &);
+
+			/** Returns the number of rows on the terminal a line of text would occupy. */
+			size_t line_rows(const textline &line) const;
 
 		public:
 			/** Constructs a textbox with a parent, a position and initial contents. */
