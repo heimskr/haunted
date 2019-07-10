@@ -203,6 +203,40 @@ namespace haunted {
 		return cols;
 	}
 
+	void terminal::hmargins(size_t left, size_t right) {
+		out_stream << "\e[" + std::to_string(left + 1) + ";" + std::to_string(right + 1) + "s";
+	}
+
+	void terminal::hmargins() {
+		out_stream << "\e[s";
+	}
+
+	void terminal::vmargins(size_t top, size_t bottom) {
+		out_stream << "\e[" + std::to_string(top + 1) + ";" + std::to_string(bottom + 1) + "r";
+	}
+
+	void terminal::vmargins() {
+		out_stream << "\e[r";
+	}
+
+	void terminal::margins(size_t top, size_t bottom, size_t left, size_t right) {
+		vmargins(top, bottom);
+		hmargins(left, right);
+	}
+
+	void terminal::margins() {
+		hmargins();
+		vmargins();
+	}
+
+	void terminal::enable_hmargins() { // DECLRMM: Left Right Margin Mode
+		out_stream << "\e[?69h";
+	}
+
+	void terminal::disable_hmargins() {
+		out_stream << "\e[?69l";
+	}
+
 
 // Public operators
 

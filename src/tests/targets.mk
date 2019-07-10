@@ -15,5 +15,8 @@ iltest: build/test
 itest: build/test
 	./$^ input
 
+mtest: build/test
+	./$^ margins
+
 debug: build/test
 	lldb build/test

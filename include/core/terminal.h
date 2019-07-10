@@ -117,6 +117,21 @@ namespace haunted {
 			/** Returns the width (in columns) of the terminal. */
 			int get_cols() const;
 
+			/** Sets the horizontal margins of the scrollable area. Zero-based. */
+			void hmargins(size_t, size_t);
+			/** Resets the horizontal margins of the scrollable area. */
+			void hmargins();
+			/** Sets the vertical margins of the scrollable area. Zero-based. */
+			void vmargins(size_t, size_t);
+			/** Resets the vertical margins of the scrollable area. */
+			void vmargins();
+			/** Sets the vertical and horizontal margins of the scrollable area. Zero-based. */
+			void margins(size_t top, size_t bottom, size_t left, size_t right);
+			/** Resets the vertical and horizontal margins of the scrollable area. */
+			void margins();
+			void enable_hmargins();
+			void disable_hmargins();
+
 			/** Returns true if in_stream is in a valid state. */
 			operator bool() const;
 			/** Reads a single raw character from the terminal as an int. */

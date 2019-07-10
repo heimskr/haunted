@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "formicine/ansi.h"
+#include "../lib/formicine/ansi.h"
 #include "tests/test.h"
 #include "core/key.h"
 #include "core/util.h"
@@ -97,6 +97,29 @@ namespace haunted::tests {
 		term << "1";
 		term.flush();
 	}
+
+	void maintest::test_margins(terminal &term) {
+		term.cbreak();
+		ansi::clear();
+		ansi::jump();
+		const std::string spam = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		for (int i = 0; i < 40; ++i) {
+			std::cout << spam.substr(i % spam.length(), std::string::npos) << spam.substr(0, i % spam.length()) << "\n";
+		}
+
+		sleep(1); std::cerr << "Setting margins.\n";
+		term.enable_hmargins();
+		term.margins(1, 10, 0, 5);
+		sleep(1); std::cerr << "Scrolling up.\n";
+		ansi::scroll_up(2);
+		std::cout << "S";
+		sleep(1); std::cerr << "Resetting margins.\n";
+		term.margins();
+		sleep(1); std::cerr << "Scrolling up.\n";
+		ansi::scroll_up(2);
+		sleep(1); std::cerr << "Done.\n";
+		term.disable_hmargins();
+	}
 }
 
 int main(int argc, char **argv) {
@@ -122,6 +145,8 @@ int main(int argc, char **argv) {
 		haunted::tests::maintest::test_textinput(term);
 	} else if (arg == "cursor") {
 		haunted::tests::maintest::test_cursor(term);
+	} else if (arg == "margins") {
+		haunted::tests::maintest::test_margins(term);
 	} else {
 		haunted::tests::maintest::test_key(term);
 	}
