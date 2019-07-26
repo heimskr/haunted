@@ -21,7 +21,7 @@ all: Makefile
 MODULES			:= src/core src/ui lib src/ui/boxes src/tests
 COMMONSRC		:=
 SRC				:=
-CFLAGS			+= -Iinclude
+CFLAGS			+= -Iinclude -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 LDFLAGS			+= 
 include $(patsubst %,%/module.mk,$(MODULES))
 SRC				+= $(COMMONSRC)
