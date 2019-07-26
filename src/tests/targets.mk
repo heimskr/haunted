@@ -13,10 +13,13 @@ iltest: build/test
 	./$^ input 2>> .log
 
 itest: build/test
-	./$^ input
+	./$^ input 2>> .log
 
 mtest: build/test
 	./$^ margins
 
 debug: build/test
 	lldb build/test
+
+ttest: build/test
+	./$^ textbox 2> .log

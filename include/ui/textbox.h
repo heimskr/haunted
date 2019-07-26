@@ -17,12 +17,18 @@ namespace haunted::ui {
 	 * Note that the text is assumed to contain no newlines.
 	 */
 	struct textline {
+		/** The raw text of the line. */
 		std::string text = "";
+
+		/** The number of blank spaces at the beginning of a row to use when the line is longer than the width of its
+		 *  container and has to be wrapped. The first row of the line isn't padded, but all subsequent rows are. */
 		int continuation = 0;
+
 		textline(std::string text, int continuation): text(text), continuation(continuation) {}
 		textline(std::string text): text(text) {}
 		textline(int continuation): continuation(continuation) {}
 		textline(): textline("", 0) {}
+		operator std::string() const;
 	};
 
 	/**
@@ -38,7 +44,7 @@ namespace haunted::ui {
 			int voffset = -1;
 
 			/** The number of columns the container has been scrolled horizontally. */
-			int hoffset = 0;
+			// int hoffset = 0;
 
 			/** Whether to wrap long lines based on the continuation column. */
 			bool wrap = true;
@@ -67,6 +73,10 @@ namespace haunted::ui {
 			/** Clears the region of the screen occupied by the textbox. */
 			void clear();
 
+			/** Returns the string to print on a given row (zero-based) of the textbox. Handles text wrapping and
+			 *  scrolling automatically. */
+			std::string text_at_row(size_t);
+
 		public:
 			/** Constructs a textbox with a parent, a position and initial contents. */
 			textbox(container *parent, position pos, const std::vector<std::string> &contents);
@@ -80,11 +90,30 @@ namespace haunted::ui {
 			/** Constructs a textbox with a parent, a default position and empty contents. */
 			textbox(container *parent): textbox(parent, std::vector<std::string> {}) {}
 
+			/** Deletes all lines in the textbox. */
 			void clear_lines();
+
+			/** Scrolls the textbox down (positive argument) or up (negative argument). */
+			void vscroll(int);
+
+			/** Returns the vertical offset. */
+			int get_voffset() const;
+
+			/** Returns the effective vertical offset, accounting for forced scrolling (voffset = -1). */
+			int effective_voffset() const;
+
+			/** Sets the vertical offset. */
+			void set_voffset(int);
+
+			/** Draws the textbox on the terminal. */
 			void draw();
 
+			/** Adds a string to the end of the textbox. */
 			textbox & operator+=(const std::string &);
+			/** Adds a line to the end of the textbox. */
 			textbox & operator+=(const textline &);
+
+			/** Returns the textbox's contents. */
 			operator std::string() const;
 	};
 }

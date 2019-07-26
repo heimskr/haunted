@@ -31,6 +31,7 @@ namespace haunted::ui {
 
 			virtual ~control() = 0;
 			
+			/** Renders the component on the terminal. */
 			virtual void draw() = 0;
 			virtual void resize(const haunted::position &);
 			virtual void focus();

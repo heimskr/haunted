@@ -64,15 +64,15 @@ namespace haunted::tests {
 					size_t length = stringify(input).size();
 					if (expected == actual) {
 						out << good << prefix << parens << wrap(stringify(input), bold)
-						          << padding.substr(0, max_length - length)
+						    << padding.substr(0, max_length - length)
 						    << wrap(" == ", dim) << wrap(stringify(actual), green) << endl;
 						passed++;
 					} else {
 						out << bad << prefix << parens << wrap(stringify(input), bold)
-						          << padding.substr(0, max_length - length)
-						          << wrap(" == ", dim) << wrap(stringify(actual), red)
-						          << " (expected " << wrap(stringify(expected), bold) << ")"
-						          << endl;
+						           << padding.substr(0, max_length - length)
+						           << wrap(" == ", dim) << wrap(stringify(actual), red)
+						           << " (expected " << wrap(stringify(expected), bold) << ")"
+						           << endl;
 						failed++;
 					}
 				}
@@ -93,11 +93,11 @@ namespace haunted::tests {
 						out << bad << "All " << failed << " tests failed.\n";
 				} else {
 					out << warn
-					          << "Passed " << wrap(std::to_string(passed), green)
-					          << ", failed " << wrap(std::to_string(failed), red)
-					          << " (" << bold << std::setprecision(4)
-							  << (passed * 100.0 / (passed + failed)) << "%" >> bold
-					          << ")" << std::defaultfloat << endl;
+					    << "Passed " << wrap(std::to_string(passed), green)
+					    << ", failed " << wrap(std::to_string(failed), red)
+					    << " (" << bold << std::setprecision(4)
+					    << (passed * 100.0 / (passed + failed)) << "%" >> bold
+					    << ")" << std::defaultfloat << endl;
 				}
 
 				return failed == 0;
@@ -111,6 +111,7 @@ namespace haunted::tests {
 			static void test_key(terminal &);
 			static void test_cursor(terminal &);
 			static void test_margins(terminal &);
+			static void test_textbox(terminal &);
 	};
 }
 

@@ -8,11 +8,12 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "../lib/formicine/ansi.h"
+#include "../../lib/formicine/ansi.h"
 #include "tests/test.h"
 #include "core/key.h"
 #include "core/util.h"
 #include "core/terminal.h"
+#include "ui/textbox.h"
 #include "ui/textinput.h"
 
 namespace haunted::tests {
@@ -143,6 +144,30 @@ namespace haunted::tests {
 		sleep(5); std::cerr << "Done.\n";
 		term.disable_hmargins();
 	}
+
+	void maintest::test_textbox(terminal &term) {
+		term.cbreak();
+		haunted::ui::textbox *tb = new haunted::ui::textbox(&term);
+		*tb += "hi";
+		*tb += "what's up :)";
+		*tb += "third line.";
+		term.draw();
+		key k;
+		while (term >> k) {
+			if (k == '\\')
+				break;
+			if (k == ktype::up_arrow) {
+				tb->vscroll(1);
+			} else if (k == ktype::down_arrow) {
+				tb->vscroll(-1);
+			} else if (k == ktype::left_arrow) {
+				tb->set_voffset(-1);
+			} else {
+				*tb += "Key: [" + std::string(k) + "]";
+			}
+			tb->draw();
+		}
+	}
 }
 
 int main(int argc, char **argv) {
@@ -170,6 +195,8 @@ int main(int argc, char **argv) {
 		haunted::tests::maintest::test_cursor(term);
 	} else if (arg == "margins") {
 		haunted::tests::maintest::test_margins(term);
+	} else if (arg == "textbox") {
+		haunted::tests::maintest::test_textbox(term);
 	} else {
 		haunted::tests::maintest::test_key(term);
 	}
