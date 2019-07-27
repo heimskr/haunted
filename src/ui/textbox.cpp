@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 
@@ -144,11 +145,17 @@ namespace haunted::ui {
 
 	void textbox::vscroll(int delta) {
 		if (voffset == -1) {
-			voffset = delta;
+			voffset = effective_voffset() + delta;
 		} else if (voffset + delta < 0) {
 			voffset = 0;
 		} else {
 			voffset += delta;
+		}
+
+		voffset = std::max(voffset, 0);
+		int total = total_rows();
+		if (pos.height < total) {
+			voffset = std::min(voffset, total - pos.height);
 		}
 	}
 

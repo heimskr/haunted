@@ -157,9 +157,9 @@ namespace haunted::tests {
 			if (k == '\\')
 				break;
 			if (k == ktype::up_arrow) {
-				tb->vscroll(1);
-			} else if (k == ktype::down_arrow) {
 				tb->vscroll(-1);
+			} else if (k == ktype::down_arrow) {
+				tb->vscroll(1);
 			} else if (k == ktype::left_arrow) {
 				tb->set_voffset(-1);
 			} else {
