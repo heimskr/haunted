@@ -12,9 +12,11 @@
 #include "../../lib/formicine/ansi.h"
 #include "tests/test.h"
 #include "core/csi.h"
+#include "core/dummy_terminal.h"
 #include "core/key.h"
 #include "core/util.h"
 #include "core/terminal.h"
+#include "ui/boxes/simplebox.h"
 #include "ui/textbox.h"
 #include "ui/textinput.h"
 
@@ -188,10 +190,14 @@ namespace haunted::tests {
 
 	void maintest::unittest_textbox(terminal &term) {
 		using haunted::ui::textbox, haunted::ui::textline;
+		
+		dummy_terminal dummy;
 
 		testing utests;
+
+		haunted::ui::boxes::simplebox wrapper(&dummy);
 		
-		textbox *tb = new textbox(&term, {0, 0, 20, 10});
+		textbox *tb = new textbox(&wrapper, {0, 0, 20, 10});
 
 		textline t1("Hello", 4);
 		textline t2("This line is longer than the control's width of 20 characters. Its continuation should align with the third word.", 10);

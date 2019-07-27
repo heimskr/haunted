@@ -7,9 +7,8 @@
 
 namespace haunted::ui::boxes {
 	/**
-	 * Base class representing boxes, which are controls that contain two subcontrols and provide resize them
-	 * as appropriate. This base class can contain one child. When the box is moved or resized, the child is moved to
-	 * the same position as the box but not resized.
+	 * Base class representing boxes, which are controls that contain
+	 * two subcontrols and provide resize them as appropriate.
 	 */
 	class box: public virtual container, public virtual control {
 		protected:
@@ -19,13 +18,7 @@ namespace haunted::ui::boxes {
 		public:
 			haunted::side side;
 
-			virtual int max_children() const override {
-				// A regular box can hold one child.
-				return 1;
-			}
-
-			virtual void resize(const position &) override;
-			virtual void move(int, int) override;
+			virtual int max_children() const = 0;
 	};
 }
 

@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <string>
 
+#include <csignal>
 #include <cstdlib>
 #include <sys/ioctl.h>
 #include <unistd.h>
