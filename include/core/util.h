@@ -3,6 +3,7 @@
 
 #include <string>
 #include <utility>
+#include <cxxabi.h>
 
 namespace haunted {
 	class util {
@@ -21,6 +22,19 @@ namespace haunted {
 
 			/** Returns true if the character is in a closed interval. */
 			static bool in_range(char, char min, char max);
+
+			/** Returns the demangled name of an object. */
+			template <typename T>
+			static std::string demangle(const T &object) {
+				const char * const name = typeid(object).name();
+				int status = 0;
+
+				std::unique_ptr<char, void(*)(void *)> result = {
+					abi::__cxa_demangle(name, nullptr, nullptr, &status), std::free
+				};
+
+				return status == 0? result.get() : name;
+			}
 	};
 }
 

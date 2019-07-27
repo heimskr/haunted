@@ -11,6 +11,7 @@
 
 #include "formicine/ansi.h"
 #include "core/terminal.h"
+#include "core/util.h"
 
 namespace haunted::tests {
 	/**
@@ -36,7 +37,8 @@ namespace haunted::tests {
 
 			template <typename A, typename B>
 			static std::string stringify(const std::pair<A, B> &p) {
-				return "{" + stringify(p.first) + ", " + stringify(p.second) + "}";
+				using namespace ansi;
+				return wrap("{", dim) + stringify(p.first) + wrap(", ", dim) + stringify(p.second) + wrap("}", dim);
 			}
 
 		public:
@@ -140,8 +142,8 @@ namespace haunted::tests {
 							failed++;
 						}
 					} catch (std::exception &err) {
-						display_failed(stringify(input), "\e[31mException:\e[0m " + std::string(err.what()),
-						               stringify(expected), prefix, padding.substr(0, max_length - length));
+						display_failed(stringify(input), "\e[31;1m" + util::demangle(err) + "\e[22m: " + std::string(err.what()) +
+						               "\e[0m", stringify(expected), prefix, padding.substr(0, max_length - length));
 						failed++;
 					}
 				}
@@ -153,8 +155,8 @@ namespace haunted::tests {
 
 			/** Used for testing a single expected value with 
 			 */
-			template <typename A, typename E>
-			bool check(const A &actual, const E &expected, const std::string &fn_name) {
+			template <typename T>
+			bool check(const T &actual, const T &expected, const std::string &fn_name) {
 				using namespace ansi;
 				bool result = actual == expected;
 				if (result) {

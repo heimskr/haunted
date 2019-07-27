@@ -190,7 +190,7 @@ namespace haunted::tests {
 
 		(*tb += t1) += t2;
 
-		utests.check(tb->total_rows(), 12, "total_rows");
+		utests.check(tb->total_rows(), 12UL, "total_rows");
 
 		utests.check({
 			{0, {t1, 0}},
@@ -227,8 +227,8 @@ namespace haunted::tests {
 	void testing::display_failed(const std::string &input,  const std::string &actual, const std::string &expected,
 			                     const std::string &prefix, const std::string &padding) {
 		using namespace ansi;
-		out << bad << prefix << parens << wrap(input, bold) << padding << wrap(" == ", dim) << wrap(actual, red)
-		    << " (expected " << wrap(expected, bold) << ")" << endl;
+		out << bad << prefix << parens << wrap(input, bold) << padding << wrap(" == ", dim) << wrap(actual, red) << endl
+		    << wrap("    Expected: ", dim) << wrap(expected, yellow) << endl;
 	}
 
 	void testing::display_passed(const std::string &input, const std::string &actual, const std::string &prefix,
@@ -239,8 +239,10 @@ namespace haunted::tests {
 	}
 
 	testing::~testing() {
-		if (autodisplay)
+		if (autodisplay) {
+			ansi::out << ansi::endl;
 			display_results();
+		}
 	}
 }
 
