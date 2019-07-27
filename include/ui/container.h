@@ -3,7 +3,6 @@
 
 #include <vector>
 
-#include "core/fix.h"
 #include "ui/keyhandler.h"
 
 namespace haunted {

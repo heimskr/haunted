@@ -1,4 +1,4 @@
-COMPILER		:= g++-9
+COMPILER		:= clang++
 CFLAGS			:= -std=c++2a -g -O0 -Wall -Wextra
 CFLAGS_ORIG		:= $(CFLAGS)
 LDFLAGS			:=
@@ -8,7 +8,7 @@ MKBUILD			:= mkdir -p build
 CHECK			:= asan
 OUTPUT			:= build/tests
 VALGRIND		:= valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=no
-# SDKFLAGS		:= --sysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+SDKFLAGS		:= --sysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 
 ifeq ($(CHECK), asan)
 	CHECKFLAGS := -fsanitize=address -fno-common

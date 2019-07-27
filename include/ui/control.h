@@ -1,7 +1,6 @@
 #ifndef HAUNTED_UI_CONTROL_H_
 #define HAUNTED_UI_CONTROL_H_
 
-#include "core/fix.h"
 #include "../core/defs.h"
 #include "../core/key.h"
 #include "child.h"

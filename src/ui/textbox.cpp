@@ -1,5 +1,3 @@
-#include "core/fix.h"
-
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>

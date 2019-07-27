@@ -1,5 +1,3 @@
-#include "core/fix.h"
-
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
