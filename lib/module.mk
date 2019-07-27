@@ -4,4 +4,4 @@ SRC			+= lib/formicine/ansi.cpp
 
 build/lib/%.o: lib/%.cpp
 	@ mkdir -p "$(shell dirname "$@")"
-	$(CC) $(strip $(INCLUDE)) -c $< -o $@
+	$(CC) $(SDKFLAGS) $(strip $(INCLUDE)) -c $< -o $@

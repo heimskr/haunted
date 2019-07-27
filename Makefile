@@ -7,6 +7,8 @@ CC				 = $(COMPILER) $(CFLAGS) $(CHECKFLAGS)
 MKBUILD			:= mkdir -p build
 CHECK			:= asan
 OUTPUT			:= build/tests
+VALGRIND		:= valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=no
+SDKFLAGS		:= -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 
 ifeq ($(CHECK), asan)
 	CHECKFLAGS := -fsanitize=address -fno-common
@@ -21,7 +23,7 @@ all: Makefile
 MODULES			:= src/core src/ui lib src/ui/boxes src/tests
 COMMONSRC		:=
 SRC				:=
-CFLAGS			+= -Iinclude -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+CFLAGS			+= -Iinclude
 LDFLAGS			+= 
 include $(patsubst %,%/module.mk,$(MODULES))
 SRC				+= $(COMMONSRC)
@@ -37,20 +39,20 @@ all: $(COMMONOBJ) build/test
 
 build/tests: build/tests/tests.o $(COMMONOBJ)
 	@ $(MKBUILD)
-	$(CC) $< $(filter-out $<,$+) -o $@ $(LDFLAGS) $(LDLIBS)
+	$(CC) $(SDKFLAGS) $< $(filter-out $<,$+) -o $@ $(LDFLAGS) $(LDLIBS)
 
 build/%.o: src/%.cpp
 	@ mkdir -p "$(shell dirname "$@")"
-	$(CC) $(strip $(INCLUDE)) -c $< -o $@
+	$(CC) $(SDKFLAGS) $(strip $(INCLUDE)) -c $< -o $@
 
 grind: $(OUTPUT)
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=no ./$(OUTPUT)
+	$(VALGRIND) ./$(OUTPUT)
 
 vars:
-	@ echo COMMONOBJ: $(COMMONOBJ); echo
-	@ echo OBJ: $(OBJ); echo
-	@ echo COMMONSRC: $(COMMONSRC); echo
-	@ echo SRC: $(SRC); echo
+	@ echo $(DEPTOKEN) > $(DEPFILE)
+	makedepend $(DEPFLAGS) -- $(CC) -- $(SRC_ALL) 2>/dev/null
+	@ sed -i .sed 's/^src\//build\//' $(DEPFILE)
+	@ rm $(DEPFILE).bak $(DEPFILE).sed
 
 clean:
 	rm -rf build .log
