@@ -78,21 +78,17 @@ namespace haunted::ui {
 			return {lines[row], 0};
 
 		size_t line_count = lines.size();
-
 		size_t index = 0, row_count = 0, last_count = 0;
+
 		for (index = 0, row_count = 0; row_count < row; ++index) {
 			if (line_count <= index)
 				throw std::out_of_range("Line index too large: " + std::to_string(index));
 			row_count += last_count = line_rows(lines[index]);
-			// DBG("last_count[" << index << "] = " << last_count);
 		}
 		
-		// std::cerr << row << " - " << row_count << " - " << last_count << "\n";
-		// return {lines[index], row - row_count - last_count};
 		if (line_count <= index)
 			throw std::out_of_range("Line index too large: " + std::to_string(index));
 		
-		// DBG("row(" << row << "), row_count(" << row_count << ")");
 		return {lines[index], row - row_count};
 	}
 
@@ -118,21 +114,18 @@ namespace haunted::ui {
 		textline line;
 		size_t offset;
 		std::tie(line, offset) = line_at_row(row + effective_voffset());
-		DBG("line(" << line << "), offset(" << offset << ")");
+
 		if (offset == 0)
 			return line.text.length() <= cols? line.text : line.text.substr(0, cols);
 
 		// Number of chars visible per row on a continued line
 		size_t continuation_chars = cols - line.continuation;
 
-		std::string str;
-
 		// Ignore the first line. 
-		str = line.text.substr(cols);
+		std::string str = line.text.substr(cols);
 
 		// Erase the continued lines after the first line and before the continuation at the given row
 		str.erase(0, (offset - 1) * continuation_chars);
-
 		// and all characters after the continuation.
 		str.erase(continuation_chars, std::string::npos);
 
@@ -190,22 +183,14 @@ namespace haunted::ui {
 			// There's no need to draw anything if the box has been scrolled down beyond all its contents.
 		} else {
 			DBG("effective = " << effective << " (" << total_rows() << " - " << pos.height << ")");
-			for (int i = 0; i < pos.height; ++i) {
-				// textline line;
-				// size_t offset;
-				std::string text;
-				try {
-					text = text_at_row(i);
-					// std::tie(line, offset) = line_at_row(i);
-					*term << text << "\n";
-					DBG("text(" << text << ")");
-					// DBG("line(" << line << "), offset(" << offset << ")");
-
-				} catch (std::out_of_range &err) {
-					DBG("OOR(" << i << "): " << err.what());
-					break;
+			try {
+				for (int i = 0; i < pos.height; ++i) {
+					*term << text_at_row(i);
+					if (i != pos.height -1) {
+						*term << "\n";
+					}
 				}
-			}
+			} catch (std::out_of_range &err) {}
 		}
 		
 		reset_margins();
