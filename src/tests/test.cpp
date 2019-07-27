@@ -180,6 +180,8 @@ namespace haunted::tests {
 
 	void maintest::unittest_textbox(terminal &term) {
 		using haunted::ui::textbox, haunted::ui::textline;
+
+		testing utests;
 		
 		textbox *tb = new textbox(&term, {0, 0, 20, 10});
 
@@ -188,34 +190,36 @@ namespace haunted::tests {
 
 		(*tb += t1) += t2;
 
-		testing::check({
+		utests.check(tb->total_rows(), 12, "total_rows");
+
+		utests.check({
 			{0, {t1, 0}},
 			{1, {t2, 0}},
 			{2, {t2, 1}},
 		}, &textbox::line_at_row, tb, "line_at_row");
 	}
 
-	void testing::display_results(size_t passed, size_t failed) {
+	void testing::display_results() const {
 		using namespace ansi;
 
-		if (failed == 0 && passed == 0) {
+		if (total_failed == 0 && total_passed == 0) {
 			out << warn << "No tests were run.\n";
-		} else if (failed == 0) {
-			if (passed == 1)
+		} else if (total_failed == 0) {
+			if (total_passed == 1)
 				out << good << "Test passed.\n";
 			else
-				out << good << "All " << passed << " tests passed.\n";
-		} else if (passed == 0) {
-			if (failed == 1)
+				out << good << "All " << total_passed << " tests passed.\n";
+		} else if (total_passed == 0) {
+			if (total_failed == 1)
 				out << bad << "Test failed.\n";
 			else
-				out << bad << "All " << failed << " tests failed.\n";
+				out << bad << "All " << total_failed << " tests failed.\n";
 		} else {
 			out << warn
-			    << "Passed " << wrap(std::to_string(passed), green)
-			    << ", failed " << wrap(std::to_string(failed), red)
+			    << "Passed " << wrap(std::to_string(total_passed), green)
+			    << ", failed " << wrap(std::to_string(total_failed), red)
 			    << " (" << bold << std::setprecision(4)
-			    << (passed * 100.0 / (passed + failed)) << "%" >> bold
+			    << (total_passed * 100.0 / (total_passed + total_failed)) << "%" >> bold
 			    << ")" << std::defaultfloat << endl;
 		}
 	}
@@ -233,6 +237,11 @@ namespace haunted::tests {
 		out << good << prefix << parens << wrap(input, bold) << padding << wrap(" == ", dim)
 		    << wrap(actual, green) << endl;
 	}
+
+	testing::~testing() {
+		if (autodisplay)
+			display_results();
+	}
 }
 
 int main(int argc, char **argv) {
@@ -246,7 +255,7 @@ int main(int argc, char **argv) {
 
 	if (argc < 2) {
 		haunted::tests::maintest::test_key(term);
-		return EXIT_SUCCESS;
+		return 0;
 	}
 	
 	std::string arg(argv[1]);

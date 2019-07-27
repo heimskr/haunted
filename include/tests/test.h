@@ -18,6 +18,8 @@ namespace haunted::tests {
 	 */
 	class testing {
 		private:
+			size_t total_passed = 0, total_failed = 0;
+
 			static std::string stringify(const std::pair<int, int> &p);
 			static std::string stringify(const std::string &);
 			static std::string stringify(bool);
@@ -38,6 +40,14 @@ namespace haunted::tests {
 			}
 
 		public:
+			/** Whether to display results on destruction. */
+			bool autodisplay;
+
+			testing(bool autodisplay_): autodisplay(autodisplay_) {}
+			testing(): testing(true) {}
+
+			~testing();
+
 			/**
 			 * Runs a set of tests and displays the results.
 			 * @param  pairs    A vector of {input data, expected results} pairs.
@@ -46,7 +56,7 @@ namespace haunted::tests {
 			 * @return True if no tests failed.
 			 */
 			template <typename I, typename O>
-			static bool check(const std::vector<std::pair<I, O>> &pairs, std::function<O(I)> fn,
+			bool check(const std::vector<std::pair<I, O>> &pairs, std::function<O(I)> fn,
 			                  const std::string &fn_name) {
 				using namespace ansi;
 
@@ -81,9 +91,8 @@ namespace haunted::tests {
 					}
 				}
 
-				out << "\n";
-				display_results(passed, failed);
-
+				total_passed += passed;
+				total_failed += failed;
 				return failed == 0;
 			}
 
@@ -95,7 +104,7 @@ namespace haunted::tests {
 			 * @return True if no tests failed.
 			 */
 			template <typename I, typename O, typename T>
-			static bool check(const std::vector<std::pair<I, O>> &pairs, O(T::*fn)(I), T *target, const std::string &fn_name) {
+			bool check(const std::vector<std::pair<I, O>> &pairs, O(T::*fn)(I), T *target, const std::string &fn_name) {
 				using namespace ansi;
 
 				if (pairs.size() == 0) {
@@ -137,13 +146,30 @@ namespace haunted::tests {
 					}
 				}
 
-				out << "\n";
-				display_results(passed, failed);
-
+				total_passed += passed;
+				total_failed += failed;
 				return failed == 0;
 			}
 
-			static void display_results(size_t passed, size_t failed);
+			/** Used for testing a single expected value with 
+			 */
+			template <typename A, typename E>
+			bool check(const A &actual, const E &expected, const std::string &fn_name) {
+				using namespace ansi;
+				bool result = actual == expected;
+				if (result) {
+					++total_passed;
+					out << good << fn_name << "() " << wrap("== ", dim) << wrap(stringify(actual), green) << endl;
+				} else {
+					++total_failed;
+					out << bad << fn_name << "() " << wrap("== ", dim) << wrap(stringify(actual), red)
+					    << " (expected " << wrap(stringify(expected), bold) << ")" << endl;
+				}
+
+				return result;
+			}
+
+			void display_results() const;
 			static void display_failed(const std::string &input, const std::string &actual, const std::string &expected,
 			                           const std::string &prefix, const std::string &padding);
 			static void display_passed(const std::string &input, const std::string &actual, const std::string &prefix,
