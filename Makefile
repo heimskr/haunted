@@ -25,13 +25,14 @@ COMMONSRC		:=
 SRC				:=
 CFLAGS			+= -Iinclude
 LDFLAGS			+= 
+EXTRASRC		:=
 include $(patsubst %,%/module.mk,$(MODULES))
 SRC				+= $(COMMONSRC)
 COMMONOBJ		:= $(patsubst src/%.cpp,build/%.o, $(patsubst lib/%.cpp,build/lib/%.o, $(filter %.cpp,$(COMMONSRC))))
 OBJ				:= $(patsubst src/%.cpp,build/%.o, $(patsubst lib/%.cpp,build/lib/%.o, $(filter %.cpp,$(SRC))))
 
-OBJ_ALL			:= $(OBJ) $(OBJ_PP)
-SRC_ALL			:= $(SRC) $(SRC_PP)
+OBJ_ALL			= $(OBJ) $(OBJ_PP)
+SRC_ALL			= $(SRC) $(SRC_PP)
 
 sinclude $(patsubst %,%/targets.mk,$(MODULES))
 
@@ -65,8 +66,10 @@ DEPTOKEN = "\# MAKEDEPENDS"
 DEPFLAGS = -Y -f $(DEPFILE) -s $(DEPTOKEN)
 
 depend:
+	@ echo $(SRC_ALL); echo
+
 	@ echo $(DEPTOKEN) > $(DEPFILE)
-	makedepend $(DEPFLAGS) -- $(CC) -- $(SRC_ALL) 2>/dev/null
+	makedepend $(DEPFLAGS) -- $(CC) -- $(SRC_ALL) $(EXTRASRC) 2>/dev/null
 	@ sed -i .sed 's/^src\//build\//' $(DEPFILE)
 	@ rm $(DEPFILE).bak $(DEPFILE).sed
 
