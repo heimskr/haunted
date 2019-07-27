@@ -169,10 +169,10 @@ namespace haunted::tests {
 				bool result = actual == expected;
 				if (result) {
 					++total_passed;
-					out << good << fn_name << "() " << wrap("== ", dim) << wrap(stringify(actual), green) << endl;
+					out << good << fn_name << " " << wrap("== ", dim) << wrap(stringify(actual), green) << endl;
 				} else {
 					++total_failed;
-					out << bad << fn_name << "() " << wrap("== ", dim) << wrap(stringify(actual), red)
+					out << bad << fn_name << " " << wrap("== ", dim) << wrap(stringify(actual), red)
 					    << " (expected " << wrap(stringify(expected), bold) << ")" << endl;
 				}
 

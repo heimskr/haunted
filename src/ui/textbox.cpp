@@ -22,6 +22,7 @@ namespace haunted::ui {
 	textbox::textbox(container *parent, position pos, const std::vector<std::string> &contents): control(parent, pos) {
 		parent->add_child(this);
 		set_lines(contents);
+		this->pos = pos; // add_child can modify the position.
 	}
 
 	textbox::textbox(container *parent, const std::vector<std::string> &contents): control(parent) {
@@ -58,8 +59,10 @@ namespace haunted::ui {
 		size_t length = ansi::strip(line.text).length();
 		const size_t width = pos.width;
 
-		if (length <= width)
+		if (length <= width) {
+			DBG(length << " <= " << width << ": returning 1"); 
 			return 1;
+		}
 
 		length -= width; // Ignore all the text on the first line because it's not affected by continuation.
 		return length / (width - line.continuation) + (length % (width - line.continuation)? 2 : 1);

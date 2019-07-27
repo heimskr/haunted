@@ -9,13 +9,13 @@ infer: build/tests/test.o $(OBJ)
 	infer run -- $(CC) $(INCLUDE) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 
 test: build/test
-	./$^ 2>> .log
+	./$^ 2> .log
 
 iltest: build/test
-	./$^ input 2>> .log
+	./$^ input 2> .log
 
 itest: build/test
-	./$^ input 2>> .log
+	./$^ input 2> .log
 
 mtest: build/test
 	./$^ margins
@@ -27,4 +27,4 @@ ttest: build/test
 	./$^ textbox 2> .log
 
 utest: build/test
-	./$^ unittextbox
+	./$^ unittextbox 2> .log
