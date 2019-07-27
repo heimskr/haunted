@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -146,6 +147,8 @@ namespace haunted::tests {
 	}
 
 	void maintest::test_textbox(terminal &term) {
+		using haunted::ui::textline;
+
 		term.cbreak();
 		haunted::ui::textbox *tb = new haunted::ui::textbox(&term);
 		*tb += "hi";
@@ -162,11 +165,73 @@ namespace haunted::tests {
 				tb->vscroll(1);
 			} else if (k == ktype::left_arrow) {
 				tb->set_voffset(-1);
+			} else if (k == ktype::hash) {
+				*tb += textline("This is a very long line. Its purpose is to test the continuation of lines in a textbox. Its continuation value is set to 26, so the wrapped text should line up with the start of the second sentence in the line.", 26);
+			} else if (k == ktype::star) {
+				for (const textline &line : *tb) {
+					DBG(line.continuation << "[" << line.text << "]");
+				}
 			} else {
 				*tb += "Key: [" + std::string(k) + "]";
 			}
 			tb->draw();
 		}
+	}
+
+	void maintest::unittest_textbox(terminal &term) {
+		using haunted::ui::textbox, haunted::ui::textline;
+		
+		textbox *tb = new textbox(&term, {0, 0, 20, 10});
+
+		textline t1("Hello", 4);
+		textline t2("This line is longer than the control's width of 20 characters. Its continuation should align with the third word.", 10);
+
+		(*tb += t1) += t2;
+
+		testing::check({
+			{0, {t1, 0}},
+			{1, {t2, 0}},
+			{2, {t2, 1}},
+		}, &textbox::line_at_row, tb, "line_at_row");
+	}
+
+	void testing::display_results(size_t passed, size_t failed) {
+		using namespace ansi;
+
+		if (failed == 0 && passed == 0) {
+			out << warn << "No tests were run.\n";
+		} else if (failed == 0) {
+			if (passed == 1)
+				out << good << "Test passed.\n";
+			else
+				out << good << "All " << passed << " tests passed.\n";
+		} else if (passed == 0) {
+			if (failed == 1)
+				out << bad << "Test failed.\n";
+			else
+				out << bad << "All " << failed << " tests failed.\n";
+		} else {
+			out << warn
+			    << "Passed " << wrap(std::to_string(passed), green)
+			    << ", failed " << wrap(std::to_string(failed), red)
+			    << " (" << bold << std::setprecision(4)
+			    << (passed * 100.0 / (passed + failed)) << "%" >> bold
+			    << ")" << std::defaultfloat << endl;
+		}
+	}
+
+	void testing::display_failed(const std::string &input,  const std::string &actual, const std::string &expected,
+			                     const std::string &prefix, const std::string &padding) {
+		using namespace ansi;
+		out << bad << prefix << parens << wrap(input, bold) << padding << wrap(" == ", dim) << wrap(actual, red)
+		    << " (expected " << wrap(expected, bold) << ")" << endl;
+	}
+
+	void testing::display_passed(const std::string &input, const std::string &actual, const std::string &prefix,
+	                             const std::string &padding) {
+		using namespace ansi;
+		out << good << prefix << parens << wrap(input, bold) << padding << wrap(" == ", dim)
+		    << wrap(actual, green) << endl;
 	}
 }
 
@@ -197,6 +262,8 @@ int main(int argc, char **argv) {
 		haunted::tests::maintest::test_margins(term);
 	} else if (arg == "textbox") {
 		haunted::tests::maintest::test_textbox(term);
+	} else if (arg == "unittextbox") {
+		haunted::tests::maintest::unittest_textbox(term);
 	} else {
 		haunted::tests::maintest::test_key(term);
 	}

@@ -10,6 +10,10 @@ namespace haunted::ui {
 		return text;
 	}
 
+	bool textline::operator==(const textline &other) const {
+		return continuation == other.continuation && text == other.text;
+	}
+
 	std::ostream & operator<<(std::ostream &os, const textline &line) {
 		os << line.text;
 		return os;
@@ -116,8 +120,12 @@ namespace haunted::ui {
 		size_t offset;
 		std::tie(line, offset) = line_at_row(row + effective_voffset());
 
-		if (offset == 0)
+		if (offset == 0) {
+			DBG(line.text.length() << ": \"" << line.text << "\" (" << line.continuation << ")");
 			return line.text.length() <= cols? line.text : line.text.substr(0, cols);
+		}
+
+		DBG("! <" << offset << "> \"" << line.text << "\"");
 
 		// Number of chars visible per row on a continued line
 		size_t continuation_chars = cols - line.continuation;
@@ -131,7 +139,7 @@ namespace haunted::ui {
 		str.erase(continuation_chars, std::string::npos);
 
 		// Return the continuation padding plus the segment of text visible on the row.
-		return std::string(line.continuation, ' ') + str;
+		return std::string(line.continuation, ' ') + "!" + str;
 	}
 
 

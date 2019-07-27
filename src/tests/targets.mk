@@ -25,3 +25,6 @@ debug: build/test
 
 ttest: build/test
 	./$^ textbox 2> .log
+
+utest: build/test
+	./$^ unittextbox

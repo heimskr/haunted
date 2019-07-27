@@ -8,6 +8,10 @@
 #include "ui/control.h"
 #include "core/terminal.h"
 
+namespace haunted::tests {
+	class maintest;
+}
+
 namespace haunted::ui {
 	/**
 	 * Represents a line of text. This is a thin wrapper over a regular string that also includes a continuation column.
@@ -29,12 +33,15 @@ namespace haunted::ui {
 		textline(int continuation): continuation(continuation) {}
 		textline(): textline("", 0) {}
 		operator std::string() const;
+		bool operator==(const textline &) const;
 	};
 
 	/**
 	 * Represents a multiline box of text.
 	 */
 	class textbox: public virtual control {
+		friend class haunted::tests::maintest;
+
 		private:
 			std::deque<textline> lines;
 
@@ -115,6 +122,21 @@ namespace haunted::ui {
 
 			/** Returns the textbox's contents. */
 			operator std::string() const;
+
+			using iterator = std::deque<textline>::iterator;
+			using reverse_iterator = std::deque<textline>::reverse_iterator;
+			using const_iterator = std::deque<textline>::const_iterator;
+			using const_reverse_iterator = std::deque<textline>::const_reverse_iterator;
+
+			              iterator   begin() { return lines.begin();   }
+			      reverse_iterator  rbegin() { return lines.rbegin();  }
+			        const_iterator  cbegin() { return lines.cbegin();  }
+			const_reverse_iterator crbegin() { return lines.crbegin(); }
+			              iterator     end() { return lines.end();     }
+			      reverse_iterator    rend() { return lines.rend();    }
+			        const_iterator    cend() { return lines.cend();    }
+			const_reverse_iterator   crend() { return lines.crend();   }
+			size_t size() const { return lines.size(); }
 	};
 }
 
