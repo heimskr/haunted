@@ -34,6 +34,7 @@ namespace haunted::ui {
 			/** Renders the component on the terminal. */
 			virtual void draw() = 0;
 			virtual void resize(const haunted::position &);
+			virtual void move(int left, int top);
 			virtual void focus();
 
 			/** Moves the cursor on the screen to the top-left corner of the control. */

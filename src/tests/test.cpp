@@ -199,7 +199,7 @@ namespace haunted::tests {
 		(*tb += t1) += t2;
 
 		utests.check(tb->line_rows(t2), 11UL, "line_rows(" + ansi::wrap("t2", ansi::bold) + ")");
-		utests.check(tb->total_rows(), 12UL, "total_rows()");
+		utests.check(tb->total_rows(),  12UL, "total_rows()");
 
 		utests.check({
 			{0, {t1, 0}},

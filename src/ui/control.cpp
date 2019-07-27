@@ -11,6 +11,11 @@ namespace haunted::ui {
 		pos = new_pos;
 	}
 
+	void control::move(int left, int top) {
+		pos.left = left;
+		pos.top = top;
+	}
+
 	void control::focus() {
 		term->focus(this);
 	}
