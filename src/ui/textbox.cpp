@@ -1,3 +1,5 @@
+#include "core/fix.h"
+
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
@@ -80,7 +82,7 @@ namespace haunted::ui {
 	}
 
 	std::pair<textline &, size_t> textbox::line_at_row(size_t row) {
-		if (lines.empty() || row >= lines.size())
+		if (lines.empty() || row >= total_rows())
 			throw std::out_of_range("Invalid row index: " + std::to_string(row));
 
 		if (!wrap)
@@ -89,14 +91,15 @@ namespace haunted::ui {
 		size_t line_count = lines.size();
 		size_t index = 0, row_count = 0, last_count = 0;
 
-		for (index = 0, row_count = 0; row_count < row; ++index) {
-			if (line_count <= index)
-				throw std::out_of_range("Line index too large: " + std::to_string(index));
-			row_count += last_count = line_rows(lines[index]);
+		for (index = 0, row_count = 0; row_count < row && index < line_count; ++index) {
+			last_count = line_rows(lines[index]);
+			row_count += last_count;
 		}
 		
-		if (line_count <= index)
+		if (line_count <= index) {
+			DBG("\e[31m" << line_count << " <= " << index << "\e[0m");
 			throw std::out_of_range("Line index too large: " + std::to_string(index));
+		}
 		
 		return {lines[index], row - row_count};
 	}

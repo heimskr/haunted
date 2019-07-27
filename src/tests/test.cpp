@@ -1,3 +1,5 @@
+#include "core/fix.h"
+
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
@@ -188,7 +190,7 @@ namespace haunted::tests {
 		}
 	}
 
-	void maintest::unittest_textbox(terminal &term) {
+	void maintest::unittest_textbox(terminal &) {
 		using haunted::ui::textbox, haunted::ui::textline;
 		
 		dummy_terminal dummy;
@@ -196,8 +198,9 @@ namespace haunted::tests {
 		testing utests;
 
 		haunted::ui::boxes::simplebox wrapper(&dummy);
+		wrapper.resize({0, 0, 20, 10});
 		
-		textbox *tb = new textbox(&wrapper, {0, 0, 20, 10});
+		textbox *tb = new textbox(&wrapper, wrapper.get_position());
 
 		textline t1("Hello", 4);
 		textline t2("This line is longer than the control's width of 20 characters. Its continuation should align with the third word.", 10);

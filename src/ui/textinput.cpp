@@ -461,8 +461,6 @@ namespace haunted::ui {
 
 		clear_line();
 		jump();
-		if (scroll < 0)
-			throw std::domain_error("Scroll value cannot be negative.");
 
 		*term << prefix << buffer.substr(scroll, twidth);
 		jump_cursor();

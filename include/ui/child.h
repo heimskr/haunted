@@ -1,6 +1,7 @@
 #ifndef HAUNTED_UI_CHILD_H_
 #define HAUNTED_UI_CHILD_H_
 
+#include "core/fix.h"
 #include "ui/container.h"
 
 namespace haunted::ui {

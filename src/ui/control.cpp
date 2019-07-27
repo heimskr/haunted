@@ -20,6 +20,10 @@ namespace haunted::ui {
 		term->focus(this);
 	}
 
+	haunted::position control::get_position() const {
+		return pos;
+	}
+
 	void control::jump() {
 		pos.jump();
 	}

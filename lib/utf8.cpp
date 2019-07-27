@@ -1,3 +1,5 @@
+#include "core/fix.h"
+
 #include "utf8.h"
 
 namespace haunted {

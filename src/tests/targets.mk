@@ -28,3 +28,6 @@ ttest: build/test
 
 utest: build/test
 	./$^ unittextbox 2> .log
+
+vutest: build/test
+	$(VALGRIND) ./$^ unittextbox

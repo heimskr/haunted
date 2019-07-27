@@ -17,8 +17,7 @@ namespace haunted {
 	}
 
 	key::operator char() const {
-		char c = static_cast<char>(type);
-		return 127 < c? 0 : c;
+		return static_cast<char>(type);
 	}
 
 	key::operator int() const {

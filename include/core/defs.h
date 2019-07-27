@@ -1,6 +1,8 @@
 #ifndef HAUNTED_CORE_DEFS_H_
 #define HAUNTED_CORE_DEFS_H_
 
+#include "core/fix.h"
+
 #include <cstddef>
 
 #define DBGX(x) "\e[2m[" << __FILE__ << ":" << __LINE__ << "]\e[0m " << x << std::endl

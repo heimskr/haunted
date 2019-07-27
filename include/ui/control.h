@@ -1,6 +1,7 @@
 #ifndef HAUNTED_UI_CONTROL_H_
 #define HAUNTED_UI_CONTROL_H_
 
+#include "core/fix.h"
 #include "../core/defs.h"
 #include "../core/key.h"
 #include "child.h"
@@ -36,6 +37,8 @@ namespace haunted::ui {
 			virtual void resize(const haunted::position &);
 			virtual void move(int left, int top);
 			virtual void focus();
+
+			haunted::position get_position() const;
 
 			/** Moves the cursor on the screen to the top-left corner of the control. */
 			void jump();

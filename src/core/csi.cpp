@@ -97,8 +97,8 @@ namespace haunted {
 
 	csi::csi(int first, int second, char suffix): first(first), second(second), suffix(suffix) {
 		switch (suffix) {
-			case 'u': type = csi_type::u;
-			case '~': type = csi_type::special;
+			case 'u': type = csi_type::u; break;
+			case '~': type = csi_type::special; break;
 			default: type = csi_type::really_special;
 		}
 	}
