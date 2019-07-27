@@ -80,15 +80,23 @@ namespace haunted::tests {
 				const std::string padding(max_length, ' ');
 
 				for (const std::pair<I, O> &p: pairs) {
-					I &input = p.first;
-					O &expected = p.second;
-					O &actual = fn(input);
+					const I &input = p.first;
+					const O &expected = p.second;
 					size_t length = stringify(input).size();
-					if (expected == actual) {
-						display_passed(input, actual, prefix, padding.substr(0, max_length - length));
-						passed++;
-					} else {
-						display_failed(input, actual, expected, prefix, padding.substr(0, max_length - length));
+					try {
+						const O &actual = fn(input);
+						if (expected == actual) {
+							display_passed(stringify(input), stringify(actual), prefix,
+							               padding.substr(0, max_length - length));
+							passed++;
+						} else {
+							display_failed(stringify(input), stringify(actual), stringify(expected), prefix,
+							               padding.substr(0, max_length - length));
+							failed++;
+						}
+					} catch (std::exception &err) {
+						display_failed(stringify(input), "\e[31;1m" + util::demangle(err) + "\e[22m: " + std::string(err.what()) +
+						               "\e[0m", stringify(expected), prefix, padding.substr(0, max_length - length));
 						failed++;
 					}
 				}
@@ -173,13 +181,15 @@ namespace haunted::tests {
 
 			void display_results() const;
 			static void display_failed(const std::string &input, const std::string &actual, const std::string &expected,
-			                           const std::string &prefix, const std::string &padding);
+			                           const std::string &prefix, const std::string &padding,
+			                           const std::exception *err = nullptr);
 			static void display_passed(const std::string &input, const std::string &actual, const std::string &prefix,
 			                           const std::string &padding);
 	};
 
 	class maintest {
 		public:
+			static std::pair<int, int> parse_csi(const std::string &);
 			static void test_csiu();
 			static void test_textinput(terminal &);
 			static void test_key(terminal &);

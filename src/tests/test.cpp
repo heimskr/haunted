@@ -11,6 +11,7 @@
 
 #include "../../lib/formicine/ansi.h"
 #include "tests/test.h"
+#include "core/csi.h"
 #include "core/key.h"
 #include "core/util.h"
 #include "core/terminal.h"
@@ -33,40 +34,47 @@ namespace haunted::tests {
 		return b? "T" : "F";
 	}
 
+	std::pair<int, int> maintest::parse_csi(const std::string &input) {
+		haunted::csi testcsi(input);
+		return {testcsi.first, testcsi.second};
+	}
+
 	/** Runs some tests for the CSI u functions. */
 	void maintest::test_csiu() {
 		ansi::out << "\nTesting CSI u validation.\n";
-		// testing::check<std::string, bool>({
-		// 	{"1;1u",   true},
-		// 	{"1;1a",  false},
-		// 	{";1u",   false},
-		// 	{"1;u",   false},
-		// 	{"4u",    false},
-		// 	{"1;u1",  false},
-		// 	{"1u;1",  false},
-		// 	{";1u",   false},
-		// 	{"u1;1",  false},
-		// 	{"42;0u",  true},
-		// 	{"3;911u", true},
-		// 	{"5;5U",  false},
-		// }, &util::is_csiu, "is_csiu");
+		testing utests;
 
-		// ansi::out << "\nTesting CSI u parsing.\n";
-		// testing::check<std::string, std::pair<int, int>>({
-		// 	{"1;1u",    { 1,   1}},
-		// 	{"42;0u",   {42,   0}},
-		// 	{"3;911u",  { 3, 911}},
-		// 	{"55;555u", {55, 555}},
-		// 	{"1;1a",    {-1,  -2}},
-		// 	{";1u",     {-1,  -1}},
-		// 	{"1;u",     {-1,  -1}},
-		// 	{"4u",      {-1,  -1}},
-		// 	{"1;u1",    {-1,  -2}},
-		// 	{"1u;1",    {-1,  -2}},
-		// 	{";1u",     {-1,  -1}},
-		// 	{"u1;1",    {-1,  -1}},
-		// 	{"5;5U",    {-1,  -2}},
-		// }, &util::parse_csiu, "parse_csiu");
+		utests.check<std::string, bool>({
+			{"1;1u",   true},
+			{"1;1a",  false},
+			{";1u",   false},
+			{"1;u",   false},
+			{"4u",    false},
+			{"1;u1",  false},
+			{"1u;1",  false},
+			{";1u",   false},
+			{"u1;1",  false},
+			{"42;0u",  true},
+			{"3;911u", true},
+			{"5;5U",  false},
+		}, &csi::is_csiu, "is_csiu");
+
+		ansi::out << "\nTesting CSI u parsing.\n";
+		utests.check<std::string, std::pair<int, int>>({
+			{"1;1u",    { 1,   1}},
+			{"42;0u",   {42,   0}},
+			{"3;911u",  { 3, 911}},
+			{"55;555u", {55, 555}},
+			{"1;1a",    {-1,  -2}},
+			{";1u",     {-1,  -1}},
+			{"1;u",     {-1,  -1}},
+			{"4u",      {-1,  -1}},
+			{"1;u1",    {-1,  -2}},
+			{"1u;1",    {-1,  -2}},
+			{";1u",     {-1,  -1}},
+			{"u1;1",    {-1,  -1}},
+			{"5;5U",    {-1,  -2}},
+		}, &parse_csi, "parse_csiu");
 	}
 
 	void maintest::test_textinput(terminal &term) {
@@ -225,10 +233,16 @@ namespace haunted::tests {
 	}
 
 	void testing::display_failed(const std::string &input,  const std::string &actual, const std::string &expected,
-			                     const std::string &prefix, const std::string &padding) {
+	                             const std::string &prefix, const std::string &padding, const std::exception *err) {
 		using namespace ansi;
-		out << bad << prefix << parens << wrap(input, bold) << padding << wrap(" == ", dim) << wrap(actual, red) << endl
-		    << wrap("    Expected: ", dim) << wrap(expected, yellow) << endl;
+		out << bad << prefix << parens << wrap(input, bold) << padding << wrap(" == ", dim);
+
+		if (err != nullptr)
+			out << wrap(wrap(util::demangle(err), bold) + ": " + std::string(err->what()), red);
+		else
+			out << wrap(actual, red);
+		
+		out << wrap(" Expected: ", dim) << wrap(expected, yellow) << endl;
 	}
 
 	void testing::display_passed(const std::string &input, const std::string &actual, const std::string &prefix,

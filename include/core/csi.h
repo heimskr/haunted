@@ -30,6 +30,8 @@ namespace haunted {
 
 			ktype get_key() const;
 
+			operator std::pair<int, int>() const;
+
 
 			/** Determines whether a string looks like a CSI u sequence (numbers, semicolon, numbers, letter). */
 			static bool is_csiu(const std::string &);

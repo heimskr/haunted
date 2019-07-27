@@ -1,8 +1,10 @@
 #ifndef HAUNTED_CORE_UTIL_H_
 #define HAUNTED_CORE_UTIL_H_
 
+#include <memory>
 #include <string>
 #include <utility>
+
 #include <cxxabi.h>
 
 namespace haunted {

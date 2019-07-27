@@ -198,4 +198,8 @@ namespace haunted {
 		for (; i < len && util::is_numeric(str[i]); ++i);
 		return i == len - 1 && str[i] == 'u';
 	}
+
+	csi::operator std::pair<int, int>() const {
+		return {first, second};
+	}
 }
