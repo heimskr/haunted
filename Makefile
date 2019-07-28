@@ -56,7 +56,8 @@ vars:
 	@ rm $(DEPFILE).bak $(DEPFILE).sed
 
 clean:
-	rm -rf build .log
+	rm -rf build
+	if [ -e .log ]; then > .log; fi
 
 spotless:
 	rm -rf build .log $(DEPFILE)
