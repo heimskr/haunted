@@ -214,14 +214,18 @@ namespace haunted::tests {
 		textline t1("Hello", 4);
 		textline t2("This line is longer than the control's width of 20 characters. Its continuation should align with the third word.", 10);
 		textline t3("Another line.", 1);
+		textline t4("This is another long line with a continuation of 0.");
 
 		*tb += t1;
 		*tb += t2;
 		*tb += t3;
 		*tb += t3;
+		*tb += t4;
+
+		int rows = tb->total_rows();
 
 		utests.check(tb->line_rows(t2), 11, "line_rows(" + ansi::wrap("t2", ansi::bold) + ")");
-		utests.check(tb->total_rows(),  14, "total_rows()");
+		utests.check(rows,  17, "total_rows()");
 
 		utests.check({
 			{0,  {t1, 0}},
@@ -240,8 +244,8 @@ namespace haunted::tests {
 			{13, {t3, 0}},
 		}, &textbox::line_at_row, tb, "line_at_row");
 
-		utests.check("line_at_row(14)", typeid(std::out_of_range), &textbox::line_at_row, tb, "Invalid row index: 14",
-			14);
+		utests.check("line_at_row(" + std::to_string(rows) + ")", typeid(std::out_of_range), &textbox::line_at_row, tb,
+			"Invalid row index: " + std::to_string(rows), rows);
 
 		utests.check({
 			{0, "Hello"},
@@ -256,6 +260,11 @@ namespace haunted::tests {
 			{9, std::string(10, ' ') + t2.text.substr(90, 10)},
 			{10, std::string(10, ' ') + t2.text.substr(100, 10)},
 			{11, std::string(10, ' ') + t2.text.substr(110, 10) + "       "},
+			{12, t3.text},
+			{13, t3.text},
+			{14, t4.text.substr(0,  20)},
+			{15, t4.text.substr(20, 20)},
+			{16, t4.text.substr(40, 11) + std::string(9, ' ')},
 		}, &textbox::text_at_row, tb, "text_at_row");
 	}
 
