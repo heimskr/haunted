@@ -4,6 +4,7 @@
 
 #include "ui/textbox.h"
 #include "../../lib/formicine/ansi.h"
+#include "tests/test.h"
 
 namespace haunted::ui {
 	textline::operator std::string() const {
@@ -121,18 +122,15 @@ namespace haunted::ui {
 	}
 
 	std::string textbox::text_at_row(int row) {
-		size_t cols = term->get_cols();
+		const size_t cols = pos.width;
 		
 		textline line;
 		size_t offset;
+
 		std::tie(line, offset) = line_at_row(row + effective_voffset());
 
-		if (offset == 0) {
-			DBG(line.text.length() << ": \"" << line.text << "\" (" << line.continuation << ")");
+		if (offset == 0)
 			return line.text.length() <= cols? line.text : line.text.substr(0, cols);
-		}
-
-		DBG("! <" << offset << "> \"" << line.text << "\"");
 
 		// Number of chars visible per row on a continued line
 		size_t continuation_chars = cols - line.continuation;
@@ -140,13 +138,17 @@ namespace haunted::ui {
 		// Ignore the first line. 
 		std::string str = line.text.substr(cols);
 
-		// Erase the continued lines after the first line and before the continuation at the given row
+		// Erase the continued lines after the first line and before the continuation at the given row.
 		str.erase(0, (offset - 1) * continuation_chars);
-		// and all characters after the continuation.
-		str.erase(continuation_chars, std::string::npos);
+
+		// Erase all characters after the continuation if any remain.
+		if (continuation_chars < str.length())
+			str.erase(continuation_chars, std::string::npos);
 
 		// Return the continuation padding plus the segment of text visible on the row.
-		return std::string(line.continuation, ' ') + "!" + str;
+		if (line.continuation + str.length() < cols)
+			return std::string(line.continuation, ' ') + str + std::string(cols - line.continuation - str.size(), ' ');
+		return std::string(line.continuation, ' ') + str;
 	}
 
 

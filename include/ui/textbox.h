@@ -48,7 +48,7 @@ namespace haunted::ui {
 			/** The number of lines the container has been scrolled vertically. If -1, the textbox will always scroll to
 			 *  the bottom whenever a new line is added. For values >= 0, the textbox won't scroll, even if the new text
 			 *  is outside the visible region. */
-			int voffset = -1;
+			int voffset = 0;
 
 			/** The number of columns the container has been scrolled horizontally. */
 			// int hoffset = 0;

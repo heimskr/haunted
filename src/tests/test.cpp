@@ -224,16 +224,16 @@ namespace haunted::tests {
 		utests.check(tb->total_rows(),  14, "total_rows()");
 
 		utests.check({
-			{0, {t1, 0}},
-			{1, {t2, 0}},
-			{2, {t2, 1}},
-			{3, {t2, 2}},
-			{4, {t2, 3}},
-			{5, {t2, 4}},
-			{6, {t2, 5}},
-			{7, {t2, 6}},
-			{8, {t2, 7}},
-			{9, {t2, 8}},
+			{0,  {t1, 0}},
+			{1,  {t2, 0}},
+			{2,  {t2, 1}},
+			{3,  {t2, 2}},
+			{4,  {t2, 3}},
+			{5,  {t2, 4}},
+			{6,  {t2, 5}},
+			{7,  {t2, 6}},
+			{8,  {t2, 7}},
+			{9,  {t2, 8}},
 			{10, {t2, 9}},
 			{11, {t2, 10}},
 			{12, {t3, 0}},
@@ -242,6 +242,21 @@ namespace haunted::tests {
 
 		utests.check("line_at_row(14)", typeid(std::out_of_range), &textbox::line_at_row, tb, "Invalid row index: 14",
 			14);
+
+		utests.check({
+			{0, "Hello"},
+			{1, t2.text.substr(0, 20)},
+			{2, std::string(10, ' ') + t2.text.substr(20, 10)},
+			{3, std::string(10, ' ') + t2.text.substr(30, 10)},
+			{4, std::string(10, ' ') + t2.text.substr(40, 10)},
+			{5, std::string(10, ' ') + t2.text.substr(50, 10)},
+			{6, std::string(10, ' ') + t2.text.substr(60, 10)},
+			{7, std::string(10, ' ') + t2.text.substr(70, 10)},
+			{8, std::string(10, ' ') + t2.text.substr(80, 10)},
+			{9, std::string(10, ' ') + t2.text.substr(90, 10)},
+			{10, std::string(10, ' ') + t2.text.substr(100, 10)},
+			{11, std::string(10, ' ') + t2.text.substr(110, 10) + "       "},
+		}, &textbox::text_at_row, tb, "text_at_row");
 	}
 
 	void testing::display_results() const {
