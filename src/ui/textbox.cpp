@@ -130,7 +130,8 @@ namespace haunted::ui {
 		std::tie(line, offset) = line_at_row(row + effective_voffset());
 
 		if (offset == 0)
-			return line.text.length() <= cols? line.text : line.text.substr(0, cols);
+			return line.text.length() <= cols? line.text + std::string(cols - line.text.length(), ' ')
+				: line.text.substr(0, cols);
 
 		// Number of chars visible per row on a continued line
 		size_t continuation_chars = cols - line.continuation;
