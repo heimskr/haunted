@@ -28,7 +28,18 @@ namespace haunted::tests {
 
 	/** Stringifies a string by surrounding it with double quotes. */
 	std::string testing::stringify(const std::string &str) {
-		return "\"" + str + "\"";
+		std::string escaped("");
+		for (char c: str) {
+			switch (c) {
+				case '"':  escaped += "\\\""; break;
+				case '\n': escaped += "\\n";  break;
+				case '\r': escaped += "\\r";  break;
+				case '\t': escaped += "\\t";  break;
+				default:   escaped += c;
+			}
+		}
+
+		return "\"" + escaped + "\"";
 	}
 
 	/** Stringifies a bool into a single letter (T or F). */
