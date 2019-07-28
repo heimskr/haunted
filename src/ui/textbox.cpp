@@ -127,7 +127,11 @@ namespace haunted::ui {
 		textline line;
 		size_t offset;
 
-		std::tie(line, offset) = line_at_row(row + effective_voffset());
+		try {
+			std::tie(line, offset) = line_at_row(row + effective_voffset());
+		} catch (std::out_of_range &) {
+			return std::string(cols, ' ');
+		}
 
 		if (offset == 0)
 			return line.text.length() <= cols? line.text + std::string(cols - line.text.length(), ' ')

@@ -272,6 +272,7 @@ namespace haunted::tests {
 			{15, " line with a continu"},
 			{16, "ation of 0.         "},
 			{17, "Exactly 20 chars :^)"},
+			{18, "                    "},
 		}, &textbox::text_at_row, tb, "text_at_row");
 	}
 
