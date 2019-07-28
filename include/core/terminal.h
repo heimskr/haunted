@@ -152,6 +152,13 @@ namespace haunted {
 				return *this;
 			}
 
+			/** Deactivates a formicine style or color.. */
+			template <typename T>
+			terminal & operator>>(const T &t) {
+				out_stream >> t;
+				return *this;
+			}
+
 			/** Returns whether the parent terminal is iTerm. */
 			static bool is_iterm();
 	};

@@ -127,6 +127,9 @@ namespace haunted::ui {
 		textline line;
 		size_t offset;
 
+		if (pos.height <= row || row < 0)
+			return "";
+
 		try {
 			std::tie(line, offset) = line_at_row(row + effective_voffset());
 		} catch (std::out_of_range &) {

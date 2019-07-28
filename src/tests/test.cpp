@@ -199,7 +199,7 @@ namespace haunted::tests {
 		}
 	}
 
-	void maintest::unittest_textbox(terminal &) {
+	void maintest::unittest_textbox(terminal &term) {
 		using haunted::ui::textbox, haunted::ui::textline;
 		
 		dummy_terminal dummy;
@@ -264,15 +264,26 @@ namespace haunted::tests {
 			{7,  "          tinuation "},
 			{8,  "          should ali"},
 			{9,  "          gn with th"},
-			{10, "          e third wo"},
-			{11, "          rd.       "},
-			{12, "Another line.       "},
-			{13, "Another line.       "},
-			{14, "This is another long"},
-			{15, " line with a continu"},
-			{16, "ation of 0.         "},
-			{17, "Exactly 20 chars :^)"},
-			{18, "                    "},
+			{10, ""},
+		}, &textbox::text_at_row, tb, "text_at_row");
+
+		term << ansi::info << "Trying to scroll 10 lines down (current voffset is "
+		     << ansi::wrap(std::to_string(tb->voffset), ansi::bold) << ")." << ansi::endl;
+		tb->vscroll(10);
+		utests.check(tb->voffset, 8, "voffset");
+
+		utests.check({
+			{0,  "          should ali"},
+			{1,  "          gn with th"},
+			{2,  "          e third wo"},
+			{3,  "          rd.       "},
+			{4,  "Another line.       "},
+			{5,  "Another line.       "},
+			{6,  "This is another long"},
+			{7,  " line with a continu"},
+			{8,  "ation of 0.         "},
+			{9,  "Exactly 20 chars :^)"},
+			{10, ""},
 		}, &textbox::text_at_row, tb, "text_at_row");
 	}
 
