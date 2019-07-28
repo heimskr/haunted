@@ -67,22 +67,22 @@ namespace haunted::ui {
 			void draw_new_line(const textline &);
 
 			/** Returns the number of rows on the terminal a line of text would occupy. */
-			size_t line_rows(const textline &line) const;
+			int line_rows(const textline &line) const;
 
 			/** Returns the total number of rows occupied by all the lines in the text box. */
-			size_t total_rows() const;
+			int total_rows() const;
 
 			/** Returns a pair of the line at a given row (ignoring voffset and zero-based) and the number of rows past
 			 *  the start of the line. For example, if the textbox contains one line that occupies a single row and a
 			 *  second line that spans 5 rows, then calling this function with 4 will return {lines[1], 3}. */
-			std::pair<textline &, size_t> line_at_row(size_t);
+			std::pair<textline &, int> line_at_row(int);
 
 			/** Clears the region of the screen occupied by the textbox. */
 			void clear();
 
 			/** Returns the string to print on a given row (zero-based) of the textbox. Handles text wrapping and
 			 *  scrolling automatically. */
-			std::string text_at_row(size_t);
+			std::string text_at_row(int);
 
 		public:
 			/** Constructs a textbox with a parent, a position and initial contents. */

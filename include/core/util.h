@@ -25,10 +25,9 @@ namespace haunted {
 			/** Returns true if the character is in a closed interval. */
 			static bool in_range(char, char min, char max);
 
-			/** Returns the demangled name of an object. */
-			template <typename T>
-			static std::string demangle(const T &object) {
-				const char * const name = typeid(object).name();
+			/** Demangles a type name. */
+			static std::string demangle(const std::string &mangled) {
+				const char * const name = mangled.c_str();
 				int status = 0;
 
 				std::unique_ptr<char, void(*)(void *)> result = {
@@ -36,6 +35,12 @@ namespace haunted {
 				};
 
 				return status == 0? result.get() : name;
+			}
+
+			/** Returns the demangled name of an object. */
+			template <typename T>
+			static std::string demangle_object(const T &object) {
+				return demangle(std::string(typeid(object).name()));
 			}
 	};
 }

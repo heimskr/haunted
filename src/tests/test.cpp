@@ -202,17 +202,35 @@ namespace haunted::tests {
 
 		textline t1("Hello", 4);
 		textline t2("This line is longer than the control's width of 20 characters. Its continuation should align with the third word.", 10);
+		textline t3("Another line.", 1);
 
-		(*tb += t1) += t2;
+		*tb += t1;
+		*tb += t2;
+		*tb += t3;
+		*tb += t3;
 
-		utests.check(tb->line_rows(t2), 11UL, "line_rows(" + ansi::wrap("t2", ansi::bold) + ")");
-		utests.check(tb->total_rows(),  12UL, "total_rows()");
+		utests.check(tb->line_rows(t2), 11, "line_rows(" + ansi::wrap("t2", ansi::bold) + ")");
+		utests.check(tb->total_rows(),  14, "total_rows()");
 
 		utests.check({
 			{0, {t1, 0}},
 			{1, {t2, 0}},
 			{2, {t2, 1}},
+			{3, {t2, 2}},
+			{4, {t2, 3}},
+			{5, {t2, 4}},
+			{6, {t2, 5}},
+			{7, {t2, 6}},
+			{8, {t2, 7}},
+			{9, {t2, 8}},
+			{10, {t2, 9}},
+			{11, {t2, 10}},
+			{12, {t3, 0}},
+			{13, {t3, 0}},
 		}, &textbox::line_at_row, tb, "line_at_row");
+
+		utests.check("line_at_row(14)", typeid(std::out_of_range), &textbox::line_at_row, tb, "Invalid row index: 14",
+			14);
 	}
 
 	void testing::display_results() const {
@@ -246,7 +264,7 @@ namespace haunted::tests {
 		out << bad << prefix << parens << wrap(input, bold) << padding << wrap(" == ", dim);
 
 		if (err != nullptr)
-			out << wrap(wrap(util::demangle(err), bold) + ": " + std::string(err->what()), red);
+			out << wrap(wrap(util::demangle_object(err), bold) + ": " + std::string(err->what()), red);
 		else
 			out << wrap(actual, red);
 		

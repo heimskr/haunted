@@ -21,6 +21,7 @@ namespace haunted::tests {
 		private:
 			size_t total_passed = 0, total_failed = 0;
 
+		public:
 			static std::string stringify(const std::pair<int, int> &p);
 			static std::string stringify(const std::string &);
 			static std::string stringify(bool);
@@ -41,7 +42,6 @@ namespace haunted::tests {
 				return wrap("{", dim) + stringify(p.first) + wrap(", ", dim) + stringify(p.second) + wrap("}", dim);
 			}
 
-		public:
 			/** Whether to display results on destruction. */
 			bool autodisplay;
 
@@ -95,8 +95,9 @@ namespace haunted::tests {
 							failed++;
 						}
 					} catch (std::exception &err) {
-						display_failed(stringify(input), "\e[31;1m" + util::demangle(err) + "\e[22m: " + std::string(err.what()) +
-						               "\e[0m", stringify(expected), prefix, padding.substr(0, max_length - length));
+						display_failed(stringify(input), "\e[31;1m" + util::demangle_object(err) + "\e[22m: " +
+						               std::string(err.what()) + "\e[0m", stringify(expected), prefix,
+						               padding.substr(0, max_length - length));
 						failed++;
 					}
 				}
@@ -150,8 +151,9 @@ namespace haunted::tests {
 							failed++;
 						}
 					} catch (std::exception &err) {
-						display_failed(stringify(input), "\e[31;1m" + util::demangle(err) + "\e[22m: " + std::string(err.what()) +
-						               "\e[0m", stringify(expected), prefix, padding.substr(0, max_length - length));
+						display_failed(stringify(input), "\e[31;1m" + util::demangle_object(err) + "\e[22m: " +
+						               std::string(err.what()) + "\e[0m", stringify(expected), prefix,
+						               padding.substr(0, max_length - length));
 						failed++;
 					}
 				}
@@ -161,8 +163,7 @@ namespace haunted::tests {
 				return failed == 0;
 			}
 
-			/** Used for testing a single expected value with 
-			 */
+			/** Used for testing a single expected value with an actual value. */
 			template <typename T>
 			bool check(const T &actual, const T &expected, const std::string &fn_name) {
 				using namespace ansi;
@@ -177,6 +178,41 @@ namespace haunted::tests {
 				}
 
 				return result;
+			}
+
+			/** Used to check whether a function throws an exception of a given type. */
+			template <typename T, typename R, typename... A>
+			bool check(const std::string &fn_name, const std::type_info &errtype, R(T::*fn)(A...), T *target, const std::string &what, A... args) {
+				using namespace ansi;
+				const std::string demangled = util::demangle(std::string(errtype.name()));
+
+				try {
+					const std::string returned = stringify((target->*fn)(args...));
+					out << bad << fn_name << wrap(" == ", dim) << wrap(returned, red) << " (expected "
+						<< demangled;
+					if (!what.empty())
+						out << ", \"" << what << "\"";
+					out << ")";
+				} catch (std::exception &exc) {
+					std::string message = exc.what();
+					if (typeid(exc) == errtype && (what.empty() || what == std::string(exc.what()))) {
+						out << good << fn_name << wrap(" throws ", dim) << wrap(demangled, green);
+						if (!message.empty())
+							out << " (" << (what.empty()? message : wrap(message, green)) << ")";
+						out << endl;
+						++total_passed;
+						return true;
+					}
+
+					out << bad << fn_name << wrap(" throws ", dim)
+					    << wrap(demangled, typeid(exc) == errtype? green : red);
+					if (!message.empty())
+						out << " (" << wrap(message, message == what? green : red) << ")";
+				}
+
+				out << endl;
+				++total_failed;
+				return false;
 			}
 
 			void display_results() const;

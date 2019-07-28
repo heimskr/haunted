@@ -3,8 +3,10 @@
 
 #include <cstddef>
 
+#include "../../lib/formicine/ansi.h"
+
 #define DBGX(x) "\e[2m[" << __FILE__ << ":" << __LINE__ << "]\e[0m " << x << std::endl
-#define DBG(x) std::cerr << DBGX(x)
+#define DBG(x) ansi::ansistream::err() << DBGX(x) << ansi::reset
 
 namespace haunted {
 	enum class side {left, right, top, bottom};

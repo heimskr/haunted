@@ -52,54 +52,56 @@ namespace haunted::ui {
 		in_margins = false;
 	}
 
-	size_t textbox::line_rows(const textline &line) const {
+	int textbox::line_rows(const textline &line) const {
 		// TODO: support doublewide characters.
 		if (!wrap)
 			return 1;
 		
-		size_t length = ansi::strip(line.text).length();
-		const size_t width = pos.width;
+		int length = ansi::strip(line.text).length();
+		const int width = pos.width;
 
-		if (length <= width) {
-			DBG(length << " <= " << width << ": returning 1"); 
+		if (length <= width)
 			return 1;
-		}
 
-		length -= width; // Ignore all the text on the first line because it's not affected by continuation.
+		// Ignore all the text on the first line because it's not affected by continuation.
+		length -= width;
+		
 		return length / (width - line.continuation) + (length % (width - line.continuation)? 2 : 1);
 	}
 
-	size_t textbox::total_rows() const {
+	int textbox::total_rows() const {
 		if (!wrap)
 			return lines.size();
 
-		size_t out = 0;
+		int rows = 0;
 		for (const textline &line: lines)
-			out += line_rows(line);
-		return out;
+			rows += line_rows(line);
+		return rows;
 	}
 
-	std::pair<textline &, size_t> textbox::line_at_row(size_t row) {
+	std::pair<textline &, int> textbox::line_at_row(int row) {
 		if (lines.empty() || row >= total_rows())
 			throw std::out_of_range("Invalid row index: " + std::to_string(row));
 
 		if (!wrap)
 			return {lines[row], 0};
 
-		size_t line_count = lines.size();
-		size_t index = 0, row_count = 0, last_count = 0;
+		int line_count = lines.size(), index = 0, row_count = 0, last_count = 0, offset = -1;
 
-		for (index = 0, row_count = 0; row_count < row && index < line_count; ++index) {
+		for (index = 0, row_count = 0;; ++index) {
 			last_count = line_rows(lines[index]);
-			row_count += last_count;
+			if (row_count <= row && row < row_count + last_count) {
+				offset = row - row_count;
+				break;
+			} else {
+				row_count += last_count;
+			}
 		}
 		
-		if (line_count <= index) {
-			DBG("\e[31m" << line_count << " <= " << index << "\e[0m");
+		if (line_count <= index)
 			throw std::out_of_range("Line index too large: " + std::to_string(index));
-		}
-		
-		return {lines[index], row - row_count};
+
+ 		return {lines[index], offset == -1? row - row_count : offset};
 	}
 
 	void textbox::clear() {
@@ -118,7 +120,7 @@ namespace haunted::ui {
 			reset_margins();
 	}
 
-	std::string textbox::text_at_row(size_t row) {
+	std::string textbox::text_at_row(int row) {
 		size_t cols = term->get_cols();
 		
 		textline line;
@@ -199,7 +201,7 @@ namespace haunted::ui {
 
 		int effective = effective_voffset();
 
-		if (0 <= effective && total_rows() <= static_cast<size_t>(effective)) {
+		if (0 <= effective && total_rows() <= effective) {
 			// There's no need to draw anything if the box has been scrolled down beyond all its contents.
 		} else {
 			DBG("effective = " << effective << " (" << total_rows() << " - " << pos.height << ")");
