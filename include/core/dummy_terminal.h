@@ -18,6 +18,10 @@ namespace haunted {
 			void setattr(const termios &) override;
 
 		public:
+			dummy_terminal() {
+				suppress_output = true;
+			}
+
 			void cbreak() override;
 			void watch_size() override;
 			void redraw() override;

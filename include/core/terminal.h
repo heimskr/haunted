@@ -68,6 +68,7 @@ namespace haunted {
 		public:
 			termios attrs;
 			bool raw = false;
+			bool suppress_output = false;
 
 			terminal(std::istream &, ansi::ansistream);
 			terminal(std::istream &in_stream): terminal(in_stream, ansi::ansistream()) {}
@@ -148,11 +149,12 @@ namespace haunted {
 			/** Writes pretty much anything to the terminal. */
 			template <typename T>
 			terminal & operator<<(const T &t) {
-				out_stream << t;
+				if (!suppress_output)
+					out_stream << t;
 				return *this;
 			}
 
-			/** Deactivates a formicine style or color.. */
+			/** Deactivates a formicine style or color. */
 			template <typename T>
 			terminal & operator>>(const T &t) {
 				out_stream >> t;

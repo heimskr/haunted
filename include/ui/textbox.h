@@ -66,6 +66,9 @@ namespace haunted::ui {
 			 *  scrolling the component and printing only the new line is sufficient. */
 			void draw_new_line(const textline &);
 
+			/** Returns the row on which the next line should be drawn or -1 if it's out of bounds. */
+			int next_row() const;
+
 			/** Returns the number of rows on the terminal a line of text would occupy. */
 			int line_rows(const textline &line) const;
 
@@ -101,7 +104,7 @@ namespace haunted::ui {
 			void clear_lines();
 
 			/** Scrolls the textbox down (positive argument) or up (negative argument). */
-			void vscroll(int);
+			void vscroll(int = 1);
 
 			/** Returns the vertical offset. */
 			int get_voffset() const;
@@ -136,6 +139,7 @@ namespace haunted::ui {
 			      reverse_iterator    rend() { return lines.rend();    }
 			        const_iterator    cend() { return lines.cend();    }
 			const_reverse_iterator   crend() { return lines.crend();   }
+
 			size_t size() const { return lines.size(); }
 	};
 }

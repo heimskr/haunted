@@ -47,7 +47,7 @@ namespace haunted::tests {
 			/** Whether to display results on destruction. */
 			bool autodisplay;
 
-			testing(bool autodisplay_): autodisplay(autodisplay_) {}
+			testing(bool autodisplay): autodisplay(autodisplay) {}
 			testing(): testing(true) {}
 
 			~testing();

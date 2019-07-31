@@ -285,6 +285,32 @@ namespace haunted::tests {
 			{9,  "Exactly 20 chars :^)"},
 			{10, ""},
 		}, &textbox::text_at_row, tb, "text_at_row");
+
+		utests.check(tb->next_row(), -1, "next_row()");
+		term << ansi::info << "Resetting textbox." << ansi::endl;
+		tb->clear_lines();
+		utests.check("line_at_row(0)", typeid(std::out_of_range), &textbox::line_at_row, tb, "Invalid row index: 0", 0);
+		utests.check(tb->voffset, 0, "voffset");
+		utests.check(tb->total_rows(), 0, "total_rows()");
+		utests.check(tb->effective_voffset(), 0, "effective_voffset()");
+		utests.check(tb->pos.height, 10, "pos.height");
+		utests.check(tb->next_row(), 0, "next_row()");
+		*tb += t1;
+		utests.check(tb->next_row(), 1, "next_row()");
+		*tb += t1;
+		utests.check(tb->next_row(), 2, "next_row()");
+		*tb += t4;
+		utests.check(tb->next_row(), 5, "next_row()");
+		*tb += t1;
+		utests.check(tb->next_row(), 6, "next_row()");
+		*tb += t1;
+		utests.check(tb->next_row(), 7, "next_row()");
+		*tb += t1;
+		utests.check(tb->next_row(), 8, "next_row()");
+		*tb += t1;
+		utests.check(tb->next_row(), 9, "next_row()");
+		*tb += t1;
+		utests.check(tb->next_row(), -1, "next_row()");
 	}
 
 	void testing::display_results() const {

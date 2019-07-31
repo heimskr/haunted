@@ -47,10 +47,21 @@ namespace haunted::ui {
 		set_margins();
 		in_margins = true;
 
-		// TODO: implement
+		// int effective = effective_voffset();
 
 		reset_margins();
 		in_margins = false;
+	}
+
+	int textbox::next_row() const {
+		int offset = effective_voffset();
+		int total = total_rows();
+
+		// Return -1 if the next row is below the visible area.
+		if (pos.height <= total - offset)
+			return -1;
+
+		return total - offset;
 	}
 
 	int textbox::line_rows(const textline &line) const {
@@ -106,6 +117,9 @@ namespace haunted::ui {
 	}
 
 	void textbox::clear() {
+		if (term->suppress_output)
+			return;
+
 		bool should_reset_margins = false;
 		if (!in_margins) {
 			set_margins();
@@ -165,6 +179,8 @@ namespace haunted::ui {
 
 	void textbox::clear_lines() {
 		lines.clear();
+		if (0 < voffset)
+			voffset = 0;
 		draw();
 	}
 
@@ -189,10 +205,13 @@ namespace haunted::ui {
 	}
 
 	int textbox::effective_voffset() const {
-		if (voffset == -1) {
-			size_t total = total_rows();
-			return static_cast<int>(total) <= pos.height? 0 : total - pos.height;
-		}
+		int total = total_rows();
+
+		if (total <= pos.height)
+			return 0;
+
+		if (voffset == -1)
+			return total <= pos.height? 0 : total - pos.height;
 
 		return voffset;
 	}
@@ -202,6 +221,9 @@ namespace haunted::ui {
 	}
 
 	void textbox::draw() {
+		if (term->suppress_output)
+			return;
+
 		// It's assumed that the terminal is already in cbreak mode. If it's not, DECSLRM won't work and the left and
 		// right margins won't be set.
 		set_margins();
