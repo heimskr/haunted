@@ -284,7 +284,7 @@ namespace haunted::tests {
 			{8,  "ation of 0.         "},
 			{9,  "Exactly 20 chars :^)"},
 			{10, ""},
-		}, &textbox::text_at_row, tb, "text_at_row");
+		}, &textbox::text_at_row, tb, "textbox::text_at_row");
 
 		utests.check(tb->next_row(), -1, "next_row()");
 		term << ansi::info << "Resetting textbox." << ansi::endl;
@@ -311,6 +311,19 @@ namespace haunted::tests {
 		utests.check(tb->next_row(), 9, "next_row()");
 		*tb += t1;
 		utests.check(tb->next_row(), -1, "next_row()");
+
+
+		using namespace std::string_literals;
+		utests.check(t1.text_at_row(tb->pos.width, 0), "Hello               "s, "t1.text_at_row(0)");
+		utests.check(t2.text_at_row(tb->pos.width, 0), "This line is longer "s, "t2.text_at_row(0)");
+		utests.check(t2.text_at_row(tb->pos.width, 1), "          than the c"s, "t2.text_at_row(1)");
+		utests.check(t2.text_at_row(tb->pos.width, 2), "          ontrol's w"s, "t2.text_at_row(2)");
+		utests.check(t2.text_at_row(tb->pos.width, 3), "          idth of 20"s, "t2.text_at_row(3)");
+		utests.check(t2.text_at_row(tb->pos.width, 4), "           character"s, "t2.text_at_row(4)");
+		utests.check(t2.text_at_row(tb->pos.width, 5), "          s. Its con"s, "t2.text_at_row(5)");
+		utests.check(t2.text_at_row(tb->pos.width, 6), "          tinuation "s, "t2.text_at_row(6)");
+		utests.check(t2.text_at_row(tb->pos.width, 7), "          should ali"s, "t2.text_at_row(7)");
+		utests.check(t2.text_at_row(tb->pos.width, 8), "          gn with th"s, "t2.text_at_row(8)");
 	}
 
 	void testing::display_results() const {

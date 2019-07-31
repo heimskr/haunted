@@ -32,6 +32,10 @@ namespace haunted::ui {
 		textline(std::string text): text(text) {}
 		textline(int continuation): continuation(continuation) {}
 		textline(): textline("", 0) {}
+
+		/** Returns the text for a given row relative to the line for a given textbox width. */
+		std::string text_at_row(size_t width, int row) const;
+
 		operator std::string() const;
 		bool operator==(const textline &) const;
 	};

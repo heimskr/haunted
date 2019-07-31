@@ -204,6 +204,28 @@ namespace haunted {
 		return cols;
 	}
 
+	void terminal::jump(int x, int y) {
+		if (0 <= x && 0 <= y) {
+			*this << "\e[" << (y + 1) << ";" << (x + 1) << "H";
+		} else if (0 <= x) {
+			*this << "\e[" << (x + 1) << "G";
+		} else if (0 <= y) {
+			*this << "\e[999999A";
+			if (0 < y)
+				*this << "\e[" + std::to_string(y) + "B";
+		} else {
+			throw std::runtime_error("Invalid jump: (" + std::to_string(x) + ", " + std::to_string(y) + ")");
+		}
+	}
+
+	void terminal::vscroll(int rows) {
+		if (0 < rows) {
+			*this << "\e[" + std::to_string(rows) + "T";
+		} else if (rows < 0) {
+			*this << "\e[" + std::to_string(-rows) + "U";
+		}
+	}
+
 	void terminal::hmargins(size_t left, size_t right) {
 		out_stream << "\e[" + std::to_string(left + 1) + ";" + std::to_string(right + 1) + "s";
 	}

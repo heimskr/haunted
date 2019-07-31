@@ -118,12 +118,18 @@ namespace haunted {
 			/** Returns the width (in columns) of the terminal. */
 			virtual int get_cols() const;
 
+			/** Jumps to a position on the screen. */
+			virtual void jump(int x, int y = -1);
+
+			/** Scrolls the screen vertically. Negative numbers scroll up, positive numbers scroll down. */
+			virtual void vscroll(int rows = 1);
+
 			/** Sets the horizontal margins of the scrollable area. Zero-based. */
-			virtual void hmargins(size_t, size_t);
+			virtual void hmargins(size_t left, size_t right);
 			/** Resets the horizontal margins of the scrollable area. */
 			virtual void hmargins();
 			/** Sets the vertical margins of the scrollable area. Zero-based. */
-			virtual void vmargins(size_t, size_t);
+			virtual void vmargins(size_t top, size_t bottom);
 			/** Resets the vertical margins of the scrollable area. */
 			virtual void vmargins();
 			/** Sets the vertical and horizontal margins of the scrollable area. Zero-based. */

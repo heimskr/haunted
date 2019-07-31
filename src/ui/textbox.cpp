@@ -7,6 +7,23 @@
 #include "tests/test.h"
 
 namespace haunted::ui {
+	std::string textline::text_at_row(size_t width, int row) const {
+		if (row == 0) {
+			return text.length() < width? text.substr(0, width) + std::string(width - text.length(), ' ')
+				: text.substr(0, width);
+		}
+
+		size_t index = continuation + row * (width - continuation);
+		if (index >= text.length())
+			return std::string(width, ' ');
+
+		std::string chunk = std::string(continuation, ' ') + text.substr(index, width - continuation);
+		if (chunk.length() < width)
+			return chunk + std::string(width - chunk.length(), ' ');
+
+		return chunk;
+	}
+
 	textline::operator std::string() const {
 		return text;
 	}
@@ -43,11 +60,23 @@ namespace haunted::ui {
 		}
 	}
 
-	void textbox::draw_new_line(const textline &) {
+	void textbox::draw_new_line(const textline &line) {
+		int new_lines = line_rows(line);
+		if (voffset == -1)
+			term->vscroll(new_lines);
+
+		int next = next_row();
+		if (voffset != -1 && next == -1)
+			return;
+
 		set_margins();
 		in_margins = true;
 
-		// int effective = effective_voffset();
+		term->jump(0, next);
+		// size_t height = pos.height;
+		// for (int row = next, i = 0; row < height && i < new_lines; ++row) {
+			// *term << 
+		// }
 
 		reset_margins();
 		in_margins = false;
