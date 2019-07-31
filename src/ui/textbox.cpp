@@ -63,7 +63,7 @@ namespace haunted::ui {
 	void textbox::draw_new_line(const textline &line) {
 		int new_lines = line_rows(line);
 		if (voffset == -1)
-			term->vscroll(new_lines);
+			term->vscroll(-new_lines);
 
 		int next = next_row();
 		if (voffset != -1 && next == -1)
@@ -73,10 +73,12 @@ namespace haunted::ui {
 		in_margins = true;
 
 		term->jump(0, next);
-		// size_t height = pos.height;
-		// for (int row = next, i = 0; row < height && i < new_lines; ++row) {
-			// *term << 
-		// }
+		size_t height = pos.height;
+		for (int row = next, i = 0; row < height && i < new_lines; ++row, ++i) {
+			if (i > 0)
+				*term << "\n";
+			*term << line.text_at_row(pos.width, i);
+		}
 
 		reset_margins();
 		in_margins = false;
@@ -214,6 +216,8 @@ namespace haunted::ui {
 	}
 
 	void textbox::vscroll(int delta) {
+		// TODO: scroll the terminal and fill in the empty lines.
+
 		if (voffset == -1) {
 			voffset = effective_voffset() + delta;
 		} else if (voffset + delta < 0) {

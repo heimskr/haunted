@@ -182,10 +182,13 @@ namespace haunted::tests {
 				break;
 			if (k == ktype::up_arrow) {
 				tb->vscroll(-1);
+				tb->draw();
 			} else if (k == ktype::down_arrow) {
 				tb->vscroll(1);
+				tb->draw();
 			} else if (k == ktype::left_arrow) {
 				tb->set_voffset(-1);
+				tb->draw();
 			} else if (k == ktype::hash) {
 				*tb += textline("This is a very long line. Its purpose is to test the continuation of lines in a textbox. Its continuation value is set to 26, so the wrapped text should line up with the start of the second sentence in the line.", 26);
 			} else if (k == ktype::star) {
@@ -195,7 +198,6 @@ namespace haunted::tests {
 			} else {
 				*tb += "Key: [" + std::string(k) + "]";
 			}
-			tb->draw();
 		}
 	}
 
@@ -311,7 +313,6 @@ namespace haunted::tests {
 		utests.check(tb->next_row(), 9, "next_row()");
 		*tb += t1;
 		utests.check(tb->next_row(), -1, "next_row()");
-
 
 		using namespace std::string_literals;
 		utests.check(t1.text_at_row(tb->pos.width, 0), "Hello               "s, "t1.text_at_row(0)");
