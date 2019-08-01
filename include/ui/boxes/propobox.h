@@ -18,7 +18,7 @@ namespace haunted::ui::boxes {
 	 * 
 	 *     size_two = size_box/(1 + ratio)
 	 */
-	class propobox: public virtual dualbox {
+	class propobox: public dualbox {
 		protected:
 			propobox(const position &, double);
 			propobox(const position &pos_): propobox(pos_, 1) {}

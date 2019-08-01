@@ -21,8 +21,6 @@ namespace haunted::ui::boxes {
 			/** Returns the maximum number of children the box can contain (-1 for unlimited). */
 			virtual int max_children() const = 0;
 	};
-
-	enum box_orientation {horizontal, vertical};
 }
 
 #endif
