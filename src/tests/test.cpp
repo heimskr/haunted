@@ -202,7 +202,7 @@ namespace haunted::tests {
 		}
 	}
 
-	void maintest::unittest_expandobox(terminal &) {
+	void maintest::unittest_expandobox(terminal &term) {
 		using namespace haunted::ui::boxes;
 
 		testing unit;
@@ -213,6 +213,8 @@ namespace haunted::tests {
 
 		ui::textbox tb1(&wrapper);
 		ui::textbox tb2(&wrapper);
+		ui::textbox tb3(&wrapper);
+		ui::textbox tb4(&wrapper);
 
 		expandobox *expando = new expandobox(&wrapper, wrapper.get_position(), horizontal, {{&tb1, 10}, {&tb2, -1}});
 
@@ -220,9 +222,22 @@ namespace haunted::tests {
 		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando position");
 		unit.check(tb1.get_position(), {-1, -1, -1, -1}, "tb1 position");
 		unit.check(tb2.get_position(), {-1, -1, -1, -1}, "tb2 position");
+		term << ansi::info << "Expanding children." << ansi::endl;
 		expando->resize();
 		unit.check(tb1.get_position(), {10, 10, 10,  100}, "tb1 position");
 		unit.check(tb2.get_position(), {20, 10, 490, 100}, "tb2 position");
+		term << ansi::info << "Adding tb3 and expanding." << ansi::endl;
+		(*expando += {&tb3, 90}).resize();
+		unit.check(tb1.get_position(), {10,  10, 10,  100}, "tb1 position");
+		unit.check(tb2.get_position(), {20,  10, 400, 100}, "tb2 position");
+		unit.check(tb3.get_position(), {420, 10, 90,  100}, "tb3 position");
+		term << ansi::info << "Adding tb4 and expanding." << ansi::endl;
+		(*expando += {&tb4, -1}).resize();
+		unit.check(tb1.get_position(), {10,  10, 10,  100}, "tb1 position");
+		unit.check(tb2.get_position(), {20,  10, 200, 100}, "tb2 position");
+		unit.check(tb3.get_position(), {220, 10, 90,  100}, "tb3 position");
+		unit.check(tb4.get_position(), {310, 10, 200, 100}, "tb4 position");
+
 	}
 
 	void maintest::unittest_textbox(terminal &term) {
