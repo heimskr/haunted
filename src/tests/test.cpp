@@ -168,7 +168,7 @@ namespace haunted::tests {
 
 	/** Runs some tests for the CSI u functions. */
 	void maintest::unittest_csiu(testing &unit) {
-		INFO("Testing CSI u validation.\n");
+		INFO(wrap("Testing CSI u validation.\n", ansi::bold));
 
 		unit.check<std::string, bool>({
 			{"1;1u",   true},
@@ -201,9 +201,12 @@ namespace haunted::tests {
 		// 	{"u1;1",    {-1,  -1}},
 		// 	{"5;5U",    {-1,  -2}},
 		// }, &parse_csi, "parse_csiu");
+
+		ansi::out << ansi::endl;
 	}
 
 	void maintest::unittest_textbox(testing &unit) {
+		INFO(wrap("Testing haunted::ui::textbox.\n", ansi::bold));
 		using namespace haunted::ui;
 		
 		dummy_terminal dummy;
@@ -325,9 +328,12 @@ namespace haunted::tests {
 		unit.check(t2.text_at_row(tb->pos.width, 6), "          tinuation "s, "t2.text_at_row(6)");
 		unit.check(t2.text_at_row(tb->pos.width, 7), "          should ali"s, "t2.text_at_row(7)");
 		unit.check(t2.text_at_row(tb->pos.width, 8), "          gn with th"s, "t2.text_at_row(8)");
+
+		ansi::out << ansi::endl;
 	}
 
 	void maintest::unittest_expandobox(testing &unit) {
+		INFO(wrap("Testing haunted::ui::boxes::expandobox.\n", ansi::bold));
 		using namespace haunted::ui::boxes;
 
 		dummy_terminal dummy;
@@ -361,6 +367,8 @@ namespace haunted::tests {
 		unit.check(tb2.get_position(), {20,  10, 200, 100}, "tb2 position");
 		unit.check(tb3.get_position(), {220, 10, 90,  100}, "tb3 position");
 		unit.check(tb4.get_position(), {310, 10, 200, 100}, "tb4 position");
+
+		ansi::out << ansi::endl;
 	}
 
 	void testing::display_results() const {
@@ -451,6 +459,7 @@ int main(int argc, char **argv) {
 	} else if (arg == "unitexpandobox") {
 		haunted::tests::maintest::unittest_expandobox(unit);
 	} else if (arg == "unit") {
+		ansi::out << ansi::endl;
 		haunted::tests::maintest::unittest_csiu(unit);
 		haunted::tests::maintest::unittest_textbox(unit);
 		haunted::tests::maintest::unittest_expandobox(unit);
