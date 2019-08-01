@@ -17,6 +17,7 @@
 #include "core/util.h"
 #include "core/terminal.h"
 #include "ui/boxes/simplebox.h"
+#include "ui/boxes/expandobox.h"
 #include "ui/textbox.h"
 #include "ui/textinput.h"
 
@@ -55,9 +56,9 @@ namespace haunted::tests {
 	/** Runs some tests for the CSI u functions. */
 	void maintest::test_csiu() {
 		ansi::out << "\nTesting CSI u validation.\n";
-		testing utests;
+		testing unit;
 
-		utests.check<std::string, bool>({
+		unit.check<std::string, bool>({
 			{"1;1u",   true},
 			{"1;1a",  false},
 			{";1u",   false},
@@ -73,7 +74,7 @@ namespace haunted::tests {
 		}, &csi::is_csiu, "is_csiu");
 
 		ansi::out << "\nTesting CSI u parsing.\n";
-		utests.check<std::string, std::pair<int, int>>({
+		unit.check<std::string, std::pair<int, int>>({
 			{"1;1u",    { 1,   1}},
 			{"42;0u",   {42,   0}},
 			{"3;911u",  { 3, 911}},
@@ -201,18 +202,27 @@ namespace haunted::tests {
 		}
 	}
 
-	void maintest::test_expandobox(terminal &) {
-		
+	void maintest::unittest_expandobox(terminal &) {
+		using namespace haunted::ui::boxes;
+
+		testing unit;
+		dummy_terminal dummy;
+
+		simplebox wrapper(&dummy);
+		wrapper.resize({10, 10, 500, 100});
+
+		expandobox *expando = new expandobox(&wrapper, wrapper.get_position());
+
+		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando->pos");
 	}
 
 	void maintest::unittest_textbox(terminal &term) {
-		using haunted::ui::textbox, haunted::ui::textline;
+		using namespace haunted::ui;
 		
+		testing unit;
 		dummy_terminal dummy;
 
-		testing utests;
-
-		haunted::ui::boxes::simplebox wrapper(&dummy);
+		boxes::simplebox wrapper(&dummy);
 		wrapper.resize({0, 0, 20, 10});
 		
 		textbox *tb = new textbox(&wrapper, wrapper.get_position());
@@ -232,10 +242,10 @@ namespace haunted::tests {
 
 		int rows = tb->total_rows();
 
-		utests.check(tb->line_rows(t2), 11, "line_rows(" + ansi::wrap("t2", ansi::bold) + ")");
-		utests.check(rows, 18, "total_rows()");
+		unit.check(tb->line_rows(t2), 11, "line_rows(" + ansi::wrap("t2", ansi::bold) + ")");
+		unit.check(rows, 18, "total_rows()");
 
-		utests.check({
+		unit.check({
 			{0,  {t1, 0}},
 			{1,  {t2, 0}},
 			{2,  {t2, 1}},
@@ -256,10 +266,10 @@ namespace haunted::tests {
 			{17, {t5, 0}},
 		}, &textbox::line_at_row, tb, "line_at_row");
 
-		utests.check("line_at_row(" + std::to_string(rows) + ")", typeid(std::out_of_range), &textbox::line_at_row, tb,
+		unit.check("line_at_row(" + std::to_string(rows) + ")", typeid(std::out_of_range), &textbox::line_at_row, tb,
 			"Invalid row index: " + std::to_string(rows), rows);
 
-		utests.check({
+		unit.check({
 			{0,  "Hello               "},
 			{1,  "This line is longer "},
 			{2,  "          than the c"},
@@ -276,9 +286,9 @@ namespace haunted::tests {
 		term << ansi::info << "Trying to scroll 10 lines down (current voffset is "
 		     << ansi::wrap(std::to_string(tb->voffset), ansi::bold) << ")." << ansi::endl;
 		tb->vscroll(10);
-		utests.check(tb->voffset, 8, "voffset");
+		unit.check(tb->voffset, 8, "voffset");
 
-		utests.check({
+		unit.check({
 			{0,  "          should ali"},
 			{1,  "          gn with th"},
 			{2,  "          e third wo"},
@@ -292,43 +302,43 @@ namespace haunted::tests {
 			{10, ""},
 		}, &textbox::text_at_row, tb, "textbox::text_at_row");
 
-		utests.check(tb->next_row(), -1, "next_row()");
+		unit.check(tb->next_row(), -1, "next_row()");
 		term << ansi::info << "Resetting textbox." << ansi::endl;
 		tb->clear_lines();
-		utests.check("line_at_row(0)", typeid(std::out_of_range), &textbox::line_at_row, tb, "Invalid row index: 0", 0);
-		utests.check(tb->voffset, 0, "voffset");
-		utests.check(tb->total_rows(), 0, "total_rows()");
-		utests.check(tb->effective_voffset(), 0, "effective_voffset()");
-		utests.check(tb->pos.height, 10, "pos.height");
-		utests.check(tb->next_row(), 0, "next_row()");
+		unit.check("line_at_row(0)", typeid(std::out_of_range), &textbox::line_at_row, tb, "Invalid row index: 0", 0);
+		unit.check(tb->voffset, 0, "voffset");
+		unit.check(tb->total_rows(), 0, "total_rows()");
+		unit.check(tb->effective_voffset(), 0, "effective_voffset()");
+		unit.check(tb->pos.height, 10, "pos.height");
+		unit.check(tb->next_row(), 0, "next_row()");
 		*tb += t1;
-		utests.check(tb->next_row(), 1, "next_row()");
+		unit.check(tb->next_row(), 1, "next_row()");
 		*tb += t1;
-		utests.check(tb->next_row(), 2, "next_row()");
+		unit.check(tb->next_row(), 2, "next_row()");
 		*tb += t4;
-		utests.check(tb->next_row(), 5, "next_row()");
+		unit.check(tb->next_row(), 5, "next_row()");
 		*tb += t1;
-		utests.check(tb->next_row(), 6, "next_row()");
+		unit.check(tb->next_row(), 6, "next_row()");
 		*tb += t1;
-		utests.check(tb->next_row(), 7, "next_row()");
+		unit.check(tb->next_row(), 7, "next_row()");
 		*tb += t1;
-		utests.check(tb->next_row(), 8, "next_row()");
+		unit.check(tb->next_row(), 8, "next_row()");
 		*tb += t1;
-		utests.check(tb->next_row(), 9, "next_row()");
+		unit.check(tb->next_row(), 9, "next_row()");
 		*tb += t1;
-		utests.check(tb->next_row(), -1, "next_row()");
+		unit.check(tb->next_row(), -1, "next_row()");
 
 		using namespace std::string_literals;
-		utests.check(t1.text_at_row(tb->pos.width, 0), "Hello               "s, "t1.text_at_row(0)");
-		utests.check(t2.text_at_row(tb->pos.width, 0), "This line is longer "s, "t2.text_at_row(0)");
-		utests.check(t2.text_at_row(tb->pos.width, 1), "          than the c"s, "t2.text_at_row(1)");
-		utests.check(t2.text_at_row(tb->pos.width, 2), "          ontrol's w"s, "t2.text_at_row(2)");
-		utests.check(t2.text_at_row(tb->pos.width, 3), "          idth of 20"s, "t2.text_at_row(3)");
-		utests.check(t2.text_at_row(tb->pos.width, 4), "           character"s, "t2.text_at_row(4)");
-		utests.check(t2.text_at_row(tb->pos.width, 5), "          s. Its con"s, "t2.text_at_row(5)");
-		utests.check(t2.text_at_row(tb->pos.width, 6), "          tinuation "s, "t2.text_at_row(6)");
-		utests.check(t2.text_at_row(tb->pos.width, 7), "          should ali"s, "t2.text_at_row(7)");
-		utests.check(t2.text_at_row(tb->pos.width, 8), "          gn with th"s, "t2.text_at_row(8)");
+		unit.check(t1.text_at_row(tb->pos.width, 0), "Hello               "s, "t1.text_at_row(0)");
+		unit.check(t2.text_at_row(tb->pos.width, 0), "This line is longer "s, "t2.text_at_row(0)");
+		unit.check(t2.text_at_row(tb->pos.width, 1), "          than the c"s, "t2.text_at_row(1)");
+		unit.check(t2.text_at_row(tb->pos.width, 2), "          ontrol's w"s, "t2.text_at_row(2)");
+		unit.check(t2.text_at_row(tb->pos.width, 3), "          idth of 20"s, "t2.text_at_row(3)");
+		unit.check(t2.text_at_row(tb->pos.width, 4), "           character"s, "t2.text_at_row(4)");
+		unit.check(t2.text_at_row(tb->pos.width, 5), "          s. Its con"s, "t2.text_at_row(5)");
+		unit.check(t2.text_at_row(tb->pos.width, 6), "          tinuation "s, "t2.text_at_row(6)");
+		unit.check(t2.text_at_row(tb->pos.width, 7), "          should ali"s, "t2.text_at_row(7)");
+		unit.check(t2.text_at_row(tb->pos.width, 8), "          gn with th"s, "t2.text_at_row(8)");
 	}
 
 	void testing::display_results() const {
@@ -413,8 +423,8 @@ int main(int argc, char **argv) {
 		haunted::tests::maintest::test_textbox(term);
 	} else if (arg == "unittextbox") {
 		haunted::tests::maintest::unittest_textbox(term);
-	} else if (arg == "expandobox") {
-		haunted::tests::maintest::test_expandobox(term);
+	} else if (arg == "unitexpandobox") {
+		haunted::tests::maintest::unittest_expandobox(term);
 	} else {
 		haunted::tests::maintest::test_key(term);
 	}

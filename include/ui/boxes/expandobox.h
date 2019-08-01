@@ -55,42 +55,19 @@ namespace haunted::ui::boxes {
 			typedef std::pair<control *, int> child_pair;
 			typedef pair_iterator<control *, int> iterator;
 
-			expandobox(std::initializer_list<child_pair> pairs);
+			expandobox(container *, const position &, std::initializer_list<child_pair>);
+			expandobox(container *parent, const position &pos): expandobox(parent, pos, {}) {}
+
 			virtual void resize(const position &) override;
+			virtual void draw() override;
 			virtual int max_children() const override;
+			virtual haunted::terminal * get_term() override;
 
 			expandobox & operator+=(child_pair);
 
 			iterator begin();
 			iterator end();
 	};
-
-	template <>
-	std::pair<control *&, int &> expandobox::iterator::operator*() const {
-		return {*child_iterator, *size_iterator};
-	}
-
-	template <>
-	expandobox::iterator & expandobox::iterator::operator++() {
-		++child_iterator;
-		++size_iterator;
-		return *this;
-	}
-
-	template <>
-	expandobox::iterator expandobox::iterator::operator++(int) {
-		std::vector<control *>::iterator new_child_iterator(child_iterator);
-		std::vector<int>::iterator new_size_iterator(size_iterator);
-		return {++new_child_iterator, ++new_size_iterator};
-	}
-
-	bool operator==(expandobox::iterator a, expandobox::iterator b) {
-		return a.child_iterator == b.child_iterator && a.size_iterator == b.size_iterator;
-	}
-
-	bool operator!=(expandobox::iterator a, expandobox::iterator b) {
-		return a.child_iterator != b.child_iterator || a.size_iterator != b.size_iterator;
-	}
 }
 
 #endif

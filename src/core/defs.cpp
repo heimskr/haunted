@@ -18,7 +18,16 @@ namespace haunted {
 		return top + height - 1;
 	}
 
+	bool position::operator==(const position &other) const {
+		return left == other.left && top == other.top && width == other.width && height == other.height;
+	}
+
 	position::operator bool() const {
 		return 0 <= width && 0 <= height;
+	}
+
+	position::operator std::string() const {
+		return "{" + std::to_string(left) + ", " + std::to_string(top) + " / " + std::to_string(width) + "x" +
+			std::to_string(height) + "}";
 	}
 }

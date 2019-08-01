@@ -3,7 +3,35 @@
 #include "ui/boxes/expandobox.h"
 
 namespace haunted::ui::boxes {
-	expandobox::expandobox(std::initializer_list<std::pair<control *, int>> pairs) {
+	template <>
+	std::pair<control *&, int &> expandobox::iterator::operator*() const {
+		return {*child_iterator, *size_iterator};
+	}
+
+	template <>
+	expandobox::iterator & expandobox::iterator::operator++() {
+		++child_iterator;
+		++size_iterator;
+		return *this;
+	}
+
+	template <>
+	expandobox::iterator expandobox::iterator::operator++(int) {
+		std::vector<control *>::iterator new_child_iterator(child_iterator);
+		std::vector<int>::iterator new_size_iterator(size_iterator);
+		return {++new_child_iterator, ++new_size_iterator};
+	}
+
+	bool operator==(expandobox::iterator a, expandobox::iterator b) {
+		return a.child_iterator == b.child_iterator && a.size_iterator == b.size_iterator;
+	}
+
+	bool operator!=(expandobox::iterator a, expandobox::iterator b) {
+		return a.child_iterator != b.child_iterator || a.size_iterator != b.size_iterator;
+	}
+
+	expandobox::expandobox(container *parent, const position &pos_, std::initializer_list<std::pair<control *, int>> pairs): orientedbox(pos_) {
+		parent->add_child(this);
 		for (const std::pair<control *, int> &p: pairs) {
 			children.push_back(p.first);
 			sizes.push_back(p.second);
@@ -71,8 +99,17 @@ namespace haunted::ui::boxes {
 		}
 	}
 
+	void expandobox::draw() {
+		for (control *child: children)
+			child->draw();
+	}
+
 	int expandobox::max_children() const {
 		return -1;
+	}
+
+	haunted::terminal * expandobox::get_term() {
+		return term;
 	}
 
 	expandobox & expandobox::operator+=(expandobox::child_pair p) {

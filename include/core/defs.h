@@ -36,8 +36,13 @@ namespace haunted {
 		/** Returns the bottommost column of the position. */
 		int bottom() const;
 
+		bool operator==(const position &other) const;
+
 		/** Returns whether this is a valid (i.e., not default-constructed) position. */
-		operator bool() const;
+		explicit operator bool() const;
+
+		/** Returns a string representation of the position. */
+		operator std::string() const;
 	};
 }
 
