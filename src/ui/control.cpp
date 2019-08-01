@@ -11,6 +11,10 @@ namespace haunted::ui {
 		pos = new_pos;
 	}
 
+	void control::resize() {
+		resize(pos);
+	}
+
 	void control::move(int left, int top) {
 		pos.left = left;
 		pos.top = top;

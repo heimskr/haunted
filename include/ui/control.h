@@ -33,10 +33,20 @@ namespace haunted::ui {
 			
 			/** Renders the component on the terminal. */
 			virtual void draw() = 0;
+
+			/** Resizes the component to fit a new position. */
 			virtual void resize(const haunted::position &);
+
+			/** Reassigns the component's current position to itself. Useful for container. */
+			virtual void resize();
+
+			/** Moves the component to a given coordinate. */
 			virtual void move(int left, int top);
+
+			/** Focuses the component. */
 			virtual void focus();
 
+			/** Returns the component's position. */
 			haunted::position get_position() const;
 
 			/** Moves the cursor on the screen to the top-left corner of the control. */

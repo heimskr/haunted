@@ -11,6 +11,7 @@ namespace haunted {
 
 namespace haunted::ui {
 	class control;
+	class child;
 
 	/**
 	 * Containers contain controls.
@@ -23,6 +24,7 @@ namespace haunted::ui {
 			virtual ~container() = 0;
 
 			virtual bool add_child(control *);
+			virtual bool remove_child(child *);
 			virtual int max_children() const;
 			virtual int child_count() const;
 			virtual haunted::terminal * get_term() = 0;

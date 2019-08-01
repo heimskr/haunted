@@ -14,6 +14,7 @@ namespace haunted::ui {
 
 		public:
 			container * get_parent();
+			virtual void set_parent(container *);
 	};
 }
 
