@@ -235,6 +235,7 @@ namespace haunted::tests {
 			static void test_margins(terminal &);
 			static void test_textbox(terminal &);
 			static void unittest_textbox(terminal &);
+			static void test_vbox(terminal &);
 	};
 }
 

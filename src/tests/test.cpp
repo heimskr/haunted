@@ -201,6 +201,10 @@ namespace haunted::tests {
 		}
 	}
 
+	void maintest::test_vbox(terminal &term) {
+		
+	}
+
 	void maintest::unittest_textbox(terminal &term) {
 		using haunted::ui::textbox, haunted::ui::textline;
 		
@@ -409,6 +413,8 @@ int main(int argc, char **argv) {
 		haunted::tests::maintest::test_textbox(term);
 	} else if (arg == "unittextbox") {
 		haunted::tests::maintest::unittest_textbox(term);
+	} else if (arg == "vbox") {
+		haunted::tests::maintest::test_vbox(term);
 	} else {
 		haunted::tests::maintest::test_key(term);
 	}
