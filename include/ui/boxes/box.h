@@ -7,8 +7,8 @@
 
 namespace haunted::ui::boxes {
 	/**
-	 * Base class representing boxes, which are controls that contain
-	 * two subcontrols and provide resize them as appropriate.
+	 * Base class representing boxes, which are controls that contain at least two subcontrols
+	 * and resize them as appropriate.
 	 */
 	class box: public virtual container, public virtual control {
 		protected:
@@ -20,6 +20,8 @@ namespace haunted::ui::boxes {
 
 			virtual int max_children() const = 0;
 	};
+
+	enum box_orientation {horizontal, vertical};
 }
 
 #endif
