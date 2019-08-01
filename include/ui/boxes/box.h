@@ -18,6 +18,7 @@ namespace haunted::ui::boxes {
 		public:
 			haunted::side side;
 
+			/** Returns the maximum number of children the box can contain (-1 for unlimited). */
 			virtual int max_children() const = 0;
 	};
 

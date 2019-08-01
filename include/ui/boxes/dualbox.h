@@ -1,5 +1,5 @@
-#ifndef HAUNTED_UI_BOXES_BOX_DUAL_H_
-#define HAUNTED_UI_BOXES_BOX_DUAL_H_
+#ifndef HAUNTED_UI_BOXES_DUALBOX_H_
+#define HAUNTED_UI_BOXES_DUALBOX_H_
 
 #include "ui/boxes/box.h"
 
@@ -7,7 +7,7 @@ namespace haunted::ui::boxes {
 	/**
 	 * Base class for boxes that contain exactly two children.
 	 */
-	class box_dual: public virtual box {
+	class dualbox: public virtual box {
 		protected:
 			using box::box;
 			box_orientation orientation;

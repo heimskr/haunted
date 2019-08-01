@@ -1,7 +1,7 @@
-#include "ui/boxes/box_dual.h"
+#include "ui/boxes/dualbox.h"
 
 namespace haunted::ui::boxes {
-	void box_dual::resize(const position &new_pos) {
+	void dualbox::resize(const position &new_pos) {
 		if (orientation == horizontal) {
 			if (control *left = (*this)[0])
 				left->resize({new_pos.left, new_pos.top, size_one(), new_pos.height});
@@ -17,7 +17,7 @@ namespace haunted::ui::boxes {
 		}
 	}
 
-	int box_dual::max_children() const {
+	int dualbox::max_children() const {
 		return 2;
 	}
 }
