@@ -27,8 +27,8 @@ namespace haunted {
 	}
 
 	position::operator std::string() const {
-		return "{" + std::to_string(left) + ", " + std::to_string(top) + " / " + std::to_string(width) + "x" +
-			std::to_string(height) + "}";
+		return "[(" + std::to_string(left) + ", " + std::to_string(top) + "), " + std::to_string(width) + " x " +
+			std::to_string(height) + "]";
 	}
 
 	std::ostream & operator<<(std::ostream &os, const position &pos) {

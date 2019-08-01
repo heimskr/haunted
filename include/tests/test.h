@@ -228,14 +228,14 @@ namespace haunted::tests {
 	class maintest {
 		public:
 			static std::pair<int, int> parse_csi(const std::string &);
-			static void test_csiu();
 			static void test_textinput(terminal &);
 			static void test_key(terminal &);
 			static void test_cursor(terminal &);
 			static void test_margins(terminal &);
 			static void test_textbox(terminal &);
-			static void unittest_textbox(terminal &);
-			static void unittest_expandobox(terminal &);
+			static void unittest_csiu(testing &);
+			static void unittest_textbox(testing &);
+			static void unittest_expandobox(testing &);
 	};
 }
 

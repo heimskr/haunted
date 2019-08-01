@@ -26,11 +26,11 @@ debug: build/test
 ttest: build/test
 	./$^ textbox 2> .log
 
-utest: build/test
+uttest: build/test
 	./$^ unittextbox 2> .log
-
-vutest: build/test
-	$(VALGRIND) ./$^ unittextbox
 
 uetest: build/test
 	./$^ unitexpandobox 2> .log
+
+utest: build/test
+	./$^ unit 2> .log

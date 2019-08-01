@@ -21,6 +21,8 @@
 #include "ui/textbox.h"
 #include "ui/textinput.h"
 
+#define INFO(x) ansi::out << ansi::info << x << ansi::endl
+
 namespace haunted::tests {
 	/** Stringifies a pair of integers. */
 	std::string testing::stringify(const std::pair<int, int> &p) {
@@ -51,44 +53,6 @@ namespace haunted::tests {
 	std::pair<int, int> maintest::parse_csi(const std::string &input) {
 		haunted::csi testcsi(input);
 		return {testcsi.first, testcsi.second};
-	}
-
-	/** Runs some tests for the CSI u functions. */
-	void maintest::test_csiu() {
-		ansi::out << "\nTesting CSI u validation.\n";
-		testing unit;
-
-		unit.check<std::string, bool>({
-			{"1;1u",   true},
-			{"1;1a",  false},
-			{";1u",   false},
-			{"1;u",   false},
-			{"4u",    false},
-			{"1;u1",  false},
-			{"1u;1",  false},
-			{";1u",   false},
-			{"u1;1",  false},
-			{"42;0u",  true},
-			{"3;911u", true},
-			{"5;5U",  false},
-		}, &csi::is_csiu, "is_csiu");
-
-		ansi::out << "\nTesting CSI u parsing.\n";
-		unit.check<std::string, std::pair<int, int>>({
-			{"1;1u",    { 1,   1}},
-			{"42;0u",   {42,   0}},
-			{"3;911u",  { 3, 911}},
-			{"55;555u", {55, 555}},
-			{"1;1a",    {-1,  -2}},
-			{";1u",     {-1,  -1}},
-			{"1;u",     {-1,  -1}},
-			{"4u",      {-1,  -1}},
-			{"1;u1",    {-1,  -2}},
-			{"1u;1",    {-1,  -2}},
-			{";1u",     {-1,  -1}},
-			{"u1;1",    {-1,  -1}},
-			{"5;5U",    {-1,  -2}},
-		}, &parse_csi, "parse_csiu");
 	}
 
 	void maintest::test_textinput(terminal &term) {
@@ -202,48 +166,46 @@ namespace haunted::tests {
 		}
 	}
 
-	void maintest::unittest_expandobox(terminal &term) {
-		using namespace haunted::ui::boxes;
+	/** Runs some tests for the CSI u functions. */
+	void maintest::unittest_csiu(testing &unit) {
+		INFO("Testing CSI u validation.\n");
 
-		testing unit;
-		dummy_terminal dummy;
+		unit.check<std::string, bool>({
+			{"1;1u",   true},
+			{"1;1a",  false},
+			{";1u",   false},
+			{"1;u",   false},
+			{"4u",    false},
+			{"1;u1",  false},
+			{"1u;1",  false},
+			{";1u",   false},
+			{"u1;1",  false},
+			{"42;0u",  true},
+			{"3;911u", true},
+			{"5;5U",  false},
+		}, &csi::is_csiu, "is_csiu");
 
-		simplebox wrapper(&dummy);
-		wrapper.resize({10, 10, 500, 100});
-
-		ui::textbox tb1(&wrapper);
-		ui::textbox tb2(&wrapper);
-		ui::textbox tb3(&wrapper);
-		ui::textbox tb4(&wrapper);
-
-		expandobox *expando = new expandobox(&wrapper, wrapper.get_position(), horizontal, {{&tb1, 10}, {&tb2, -1}});
-
-		unit.check(wrapper.get_position(),  {10, 10, 500, 100}, "wrapper position");
-		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando position");
-		unit.check(tb1.get_position(), {-1, -1, -1, -1}, "tb1 position");
-		unit.check(tb2.get_position(), {-1, -1, -1, -1}, "tb2 position");
-		term << ansi::info << "Expanding children." << ansi::endl;
-		expando->resize();
-		unit.check(tb1.get_position(), {10, 10, 10,  100}, "tb1 position");
-		unit.check(tb2.get_position(), {20, 10, 490, 100}, "tb2 position");
-		term << ansi::info << "Adding tb3 and expanding." << ansi::endl;
-		(*expando += {&tb3, 90}).resize();
-		unit.check(tb1.get_position(), {10,  10, 10,  100}, "tb1 position");
-		unit.check(tb2.get_position(), {20,  10, 400, 100}, "tb2 position");
-		unit.check(tb3.get_position(), {420, 10, 90,  100}, "tb3 position");
-		term << ansi::info << "Adding tb4 and expanding." << ansi::endl;
-		(*expando += {&tb4, -1}).resize();
-		unit.check(tb1.get_position(), {10,  10, 10,  100}, "tb1 position");
-		unit.check(tb2.get_position(), {20,  10, 200, 100}, "tb2 position");
-		unit.check(tb3.get_position(), {220, 10, 90,  100}, "tb3 position");
-		unit.check(tb4.get_position(), {310, 10, 200, 100}, "tb4 position");
-
+		// ansi::out << "\nTesting CSI u parsing.\n";
+		// unit.check<std::string, std::pair<int, int>>({
+		// 	{"1;1u",    { 1,   1}},
+		// 	{"42;0u",   {42,   0}},
+		// 	{"3;911u",  { 3, 911}},
+		// 	{"55;555u", {55, 555}},
+		// 	{"1;1a",    {-1,  -2}},
+		// 	{";1u",     {-1,  -1}},
+		// 	{"1;u",     {-1,  -1}},
+		// 	{"4u",      {-1,  -1}},
+		// 	{"1;u1",    {-1,  -2}},
+		// 	{"1u;1",    {-1,  -2}},
+		// 	{";1u",     {-1,  -1}},
+		// 	{"u1;1",    {-1,  -1}},
+		// 	{"5;5U",    {-1,  -2}},
+		// }, &parse_csi, "parse_csiu");
 	}
 
-	void maintest::unittest_textbox(terminal &term) {
+	void maintest::unittest_textbox(testing &unit) {
 		using namespace haunted::ui;
 		
-		testing unit;
 		dummy_terminal dummy;
 
 		boxes::simplebox wrapper(&dummy);
@@ -307,8 +269,8 @@ namespace haunted::tests {
 			{10, ""},
 		}, &textbox::text_at_row, tb, "text_at_row");
 
-		term << ansi::info << "Trying to scroll 10 lines down (current voffset is "
-		     << ansi::wrap(std::to_string(tb->voffset), ansi::bold) << ")." << ansi::endl;
+		INFO("Trying to scroll 10 lines down (current voffset is " << ansi::wrap(std::to_string(tb->voffset),
+			ansi::bold) << ").");
 		tb->vscroll(10);
 		unit.check(tb->voffset, 8, "voffset");
 
@@ -327,7 +289,7 @@ namespace haunted::tests {
 		}, &textbox::text_at_row, tb, "textbox::text_at_row");
 
 		unit.check(tb->next_row(), -1, "next_row()");
-		term << ansi::info << "Resetting textbox." << ansi::endl;
+		INFO("Resetting textbox.");
 		tb->clear_lines();
 		unit.check("line_at_row(0)", typeid(std::out_of_range), &textbox::line_at_row, tb, "Invalid row index: 0", 0);
 		unit.check(tb->voffset, 0, "voffset");
@@ -363,6 +325,42 @@ namespace haunted::tests {
 		unit.check(t2.text_at_row(tb->pos.width, 6), "          tinuation "s, "t2.text_at_row(6)");
 		unit.check(t2.text_at_row(tb->pos.width, 7), "          should ali"s, "t2.text_at_row(7)");
 		unit.check(t2.text_at_row(tb->pos.width, 8), "          gn with th"s, "t2.text_at_row(8)");
+	}
+
+	void maintest::unittest_expandobox(testing &unit) {
+		using namespace haunted::ui::boxes;
+
+		dummy_terminal dummy;
+
+		simplebox wrapper(&dummy);
+		wrapper.resize({10, 10, 500, 100});
+
+		ui::textbox tb1(&wrapper);
+		ui::textbox tb2(&wrapper);
+		ui::textbox tb3(&wrapper);
+		ui::textbox tb4(&wrapper);
+
+		expandobox *expando = new expandobox(&wrapper, wrapper.get_position(), horizontal, {{&tb1, 10}, {&tb2, -1}});
+
+		unit.check(wrapper.get_position(),  {10, 10, 500, 100}, "wrapper position");
+		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando position");
+		unit.check(tb1.get_position(), {-1, -1, -1, -1}, "tb1 position");
+		unit.check(tb2.get_position(), {-1, -1, -1, -1}, "tb2 position");
+		INFO("Expanding children.");
+		expando->resize();
+		unit.check(tb1.get_position(), {10, 10, 10,  100}, "tb1 position");
+		unit.check(tb2.get_position(), {20, 10, 490, 100}, "tb2 position");
+		INFO("Adding tb3 and expanding.");
+		(*expando += {&tb3, 90}).resize();
+		unit.check(tb1.get_position(), {10,  10, 10,  100}, "tb1 position");
+		unit.check(tb2.get_position(), {20,  10, 400, 100}, "tb2 position");
+		unit.check(tb3.get_position(), {420, 10, 90,  100}, "tb3 position");
+		INFO("Adding tb4 and expanding.");
+		(*expando += {&tb4, -1}).resize();
+		unit.check(tb1.get_position(), {10,  10, 10,  100}, "tb1 position");
+		unit.check(tb2.get_position(), {20,  10, 200, 100}, "tb2 position");
+		unit.check(tb3.get_position(), {220, 10, 90,  100}, "tb3 position");
+		unit.check(tb4.get_position(), {310, 10, 200, 100}, "tb4 position");
 	}
 
 	void testing::display_results() const {
@@ -433,10 +431,11 @@ int main(int argc, char **argv) {
 	}
 	
 	std::string arg(argv[1]);
+
+	haunted::tests::testing unit;
+
 	if (arg == "key") {
 		haunted::tests::maintest::test_key(term);
-	} else if (arg == "csiu") {
-		haunted::tests::maintest::test_csiu();
 	} else if (arg == "input") {
 		haunted::tests::maintest::test_textinput(term);
 	} else if (arg == "cursor") {
@@ -445,10 +444,16 @@ int main(int argc, char **argv) {
 		haunted::tests::maintest::test_margins(term);
 	} else if (arg == "textbox") {
 		haunted::tests::maintest::test_textbox(term);
+	} else if (arg == "unitcsiu") {
+		haunted::tests::maintest::unittest_csiu(unit);
 	} else if (arg == "unittextbox") {
-		haunted::tests::maintest::unittest_textbox(term);
+		haunted::tests::maintest::unittest_textbox(unit);
 	} else if (arg == "unitexpandobox") {
-		haunted::tests::maintest::unittest_expandobox(term);
+		haunted::tests::maintest::unittest_expandobox(unit);
+	} else if (arg == "unit") {
+		haunted::tests::maintest::unittest_csiu(unit);
+		haunted::tests::maintest::unittest_textbox(unit);
+		haunted::tests::maintest::unittest_expandobox(unit);
 	} else {
 		haunted::tests::maintest::test_key(term);
 	}
