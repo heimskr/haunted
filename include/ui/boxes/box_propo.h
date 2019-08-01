@@ -26,8 +26,9 @@ namespace haunted::ui::boxes {
 		public:
 			double ratio;
 
-			virtual int size_one() const;
-			virtual int size_two() const;
+			virtual int size_one() const override;
+			virtual int size_two() const override;
+			virtual int get_size() const override;
 	};
 }
 

@@ -73,7 +73,7 @@ namespace haunted::ui {
 		in_margins = true;
 
 		term->jump(0, next);
-		size_t height = pos.height;
+		int height = pos.height;
 		for (int row = next, i = 0; row < height && i < new_lines; ++row, ++i) {
 			if (i > 0)
 				*term << "\n";
@@ -272,7 +272,7 @@ namespace haunted::ui {
 			DBG("effective = " << effective << " (" << total_rows() << " - " << pos.height << ")");
 			try {
 				for (int i = 0; i < pos.height; ++i) {
-					*term << text_at_row(i);
+					*term << ansi::bg(ansi::green) << text_at_row(i);
 					if (i != pos.height -1) {
 						*term << "\n";
 					}

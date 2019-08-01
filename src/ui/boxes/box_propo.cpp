@@ -16,5 +16,8 @@ namespace haunted::ui::boxes {
 	int box_propo::size_two() const {
 		return get_size() / (1.0 + ratio);
 	}
-	
+
+	int box_propo::get_size() const {
+		return orientation == horizontal? pos.width : pos.height;
+	}
 }
