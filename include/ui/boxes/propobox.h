@@ -21,7 +21,7 @@ namespace haunted::ui::boxes {
 	class propobox: public dualbox {
 		protected:
 			propobox(const position &, double);
-			propobox(const position &pos_): propobox(pos_, 1) {}
+			propobox(const position &pos): propobox(pos, 1) {}
 			double ratio;
 
 		public:

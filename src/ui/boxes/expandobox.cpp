@@ -30,7 +30,8 @@ namespace haunted::ui::boxes {
 		return a.child_iterator != b.child_iterator || a.size_iterator != b.size_iterator;
 	}
 
-	expandobox::expandobox(container *parent, const position &pos_, std::initializer_list<std::pair<control *, int>> pairs): orientedbox(pos_) {
+	expandobox::expandobox(container *parent, const position &pos, std::initializer_list<std::pair<control *, int>>
+	pairs): orientedbox(pos) {
 		parent->add_child(this);
 		for (const std::pair<control *, int> &p: pairs) {
 			children.push_back(p.first);

@@ -213,6 +213,7 @@ namespace haunted::tests {
 
 		expandobox *expando = new expandobox(&wrapper, wrapper.get_position());
 
+		unit.check(wrapper.get_position(),  {10, 10, 500, 100}, "wrapper.pos");
 		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando->pos");
 	}
 

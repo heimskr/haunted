@@ -4,8 +4,8 @@
 #include "ui/boxes/propobox.h"
 
 namespace haunted::ui::boxes {
-	propobox::propobox(const position &pos_, double ratio_): control(pos_), dualbox(pos_), ratio(ratio_) {
-		if (ratio_ < 0)
+	propobox::propobox(const position &pos, double ratio): dualbox(pos), ratio(ratio) {
+		if (ratio < 0)
 			throw std::domain_error("Box ratio cannot be negative");
 	}
 
