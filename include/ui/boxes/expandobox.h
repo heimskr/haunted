@@ -59,6 +59,8 @@ namespace haunted::ui::boxes {
 			virtual void resize(const position &) override;
 			virtual int max_children() const override;
 
+			expandobox & operator+=(child_pair);
+
 			iterator begin();
 			iterator end();
 	};

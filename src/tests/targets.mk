@@ -31,3 +31,6 @@ utest: build/test
 
 vutest: build/test
 	$(VALGRIND) ./$^ unittextbox
+
+etest: build/test
+	./$^ expandobox 2> .log

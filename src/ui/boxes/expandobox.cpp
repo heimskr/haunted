@@ -75,6 +75,12 @@ namespace haunted::ui::boxes {
 		return -1;
 	}
 
+	expandobox & expandobox::operator+=(expandobox::child_pair p) {
+		children.push_back(p.first);
+		sizes.push_back(p.second);
+		return *this;
+	}
+
 	expandobox::iterator expandobox::begin() {
 		return {children.begin(), sizes.begin()};
 	}

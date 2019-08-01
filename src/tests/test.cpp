@@ -201,7 +201,7 @@ namespace haunted::tests {
 		}
 	}
 
-	void maintest::test_vbox(terminal &term) {
+	void maintest::test_expandobox(terminal &) {
 		
 	}
 
@@ -413,8 +413,8 @@ int main(int argc, char **argv) {
 		haunted::tests::maintest::test_textbox(term);
 	} else if (arg == "unittextbox") {
 		haunted::tests::maintest::unittest_textbox(term);
-	} else if (arg == "vbox") {
-		haunted::tests::maintest::test_vbox(term);
+	} else if (arg == "expandobox") {
+		haunted::tests::maintest::test_expandobox(term);
 	} else {
 		haunted::tests::maintest::test_key(term);
 	}
