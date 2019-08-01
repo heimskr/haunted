@@ -24,6 +24,12 @@ namespace haunted::ui {
 		term->focus(this);
 	}
 
+	void control::set_parent(container *new_parent) {
+		child::set_parent(new_parent);
+		if (new_parent != nullptr)
+			term = new_parent->get_term();
+	}
+
 	haunted::position control::get_position() const {
 		return pos;
 	}

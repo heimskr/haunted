@@ -46,6 +46,9 @@ namespace haunted::ui {
 			/** Focuses the component. */
 			virtual void focus();
 
+			/** Sets the parent and adopts its terminal. */
+			virtual void set_parent(container *) override;
+
 			/** Returns the component's position. */
 			haunted::position get_position() const;
 
