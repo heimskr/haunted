@@ -30,10 +30,11 @@ namespace haunted::ui::boxes {
 		return a.child_iterator != b.child_iterator || a.size_iterator != b.size_iterator;
 	}
 
-	expandobox::expandobox(container *parent, const position &pos, std::initializer_list<std::pair<control *, int>>
-	pairs): orientedbox(pos) {
+	expandobox::expandobox(container *parent, const position &pos, const box_orientation orientation,
+	std::initializer_list<std::pair<control *, int>> pairs): orientedbox(pos, orientation) {
 		parent->add_child(this);
 		for (const std::pair<control *, int> &p: pairs) {
+			p.first->set_parent(this);
 			children.push_back(p.first);
 			sizes.push_back(p.second);
 		}
@@ -60,9 +61,18 @@ namespace haunted::ui::boxes {
 		// there's no room for the expanding children.
 		if (length <= sum)
 			return 0;
+
+		int expanding_count = 0;
+		for (const int size: sizes) {
+			if (size == -1)
+				++expanding_count;
+		}
 		
-		const int quotient  = (length - sum) / children.size();
-		const int remainder = (length - sum) % children.size();
+		if (expanding_count == 0)
+			return 0;
+		
+		const int quotient  = (length - sum) / expanding_count;
+		const int remainder = (length - sum) % expanding_count;
 
 		return quotient + (order < remainder? 1 : 0);
 	}
@@ -93,7 +103,7 @@ namespace haunted::ui::boxes {
 				// If there's no space left, assign the child a size of zero and place it at the far edge.
 				resize_child(child, get_size(), 0);
 			} else {
-				const int assigned = size == -1? expanded_size(expanded++) : std::min(child_size, size - offset);
+				const int assigned = child_size == -1? expanded_size(expanded++) : std::min(child_size, size - offset);
 				resize_child(child, offset, assigned);
 				offset += assigned;
 			}

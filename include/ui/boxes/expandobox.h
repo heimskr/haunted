@@ -55,10 +55,12 @@ namespace haunted::ui::boxes {
 			typedef std::pair<control *, int> child_pair;
 			typedef pair_iterator<control *, int> iterator;
 
-			expandobox(container *, const position &, std::initializer_list<child_pair>);
-			expandobox(container *parent, const position &pos): expandobox(parent, pos, {}) {}
+			expandobox(container *, const position &, const box_orientation, std::initializer_list<child_pair>);
+			expandobox(container *parent, const position &pos, const box_orientation orientation):
+				expandobox(parent, pos, orientation, {}) {}
 
 			virtual void resize(const position &) override;
+			using control::resize;
 			virtual void draw() override;
 			virtual int max_children() const override;
 			virtual haunted::terminal * get_term() override;

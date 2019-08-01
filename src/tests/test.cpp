@@ -211,14 +211,18 @@ namespace haunted::tests {
 		simplebox wrapper(&dummy);
 		wrapper.resize({10, 10, 500, 100});
 
-		expandobox *expando = new expandobox(&wrapper, wrapper.get_position());
+		ui::textbox tb1(&wrapper);
+		ui::textbox tb2(&wrapper);
 
-		unit.check(wrapper.get_position(),  {10, 10, 500, 100}, "wrapper.pos");
-		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando->pos");
+		expandobox *expando = new expandobox(&wrapper, wrapper.get_position(), horizontal, {{&tb1, 10}, {&tb2, -1}});
 
-		ui::textbox tb1(expando);
-
-		std::cout << tb1.get_position() << "\n";
+		unit.check(wrapper.get_position(),  {10, 10, 500, 100}, "wrapper posiution");
+		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando posiution");
+		unit.check(tb1.get_position(), {-1, -1, -1, -1}, "tb1 position");
+		unit.check(tb2.get_position(), {-1, -1, -1, -1}, "tb2 position");
+		expando->resize();
+		unit.check(tb1.get_position(), {10, 10, 10,  100}, "tb1 position");
+		unit.check(tb2.get_position(), {20, 10, 490, 100}, "tb2 position");
 	}
 
 	void maintest::unittest_textbox(terminal &term) {
