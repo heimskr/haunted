@@ -216,8 +216,8 @@ namespace haunted::tests {
 
 		expandobox *expando = new expandobox(&wrapper, wrapper.get_position(), horizontal, {{&tb1, 10}, {&tb2, -1}});
 
-		unit.check(wrapper.get_position(),  {10, 10, 500, 100}, "wrapper posiution");
-		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando posiution");
+		unit.check(wrapper.get_position(),  {10, 10, 500, 100}, "wrapper position");
+		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando position");
 		unit.check(tb1.get_position(), {-1, -1, -1, -1}, "tb1 position");
 		unit.check(tb2.get_position(), {-1, -1, -1, -1}, "tb2 position");
 		expando->resize();
