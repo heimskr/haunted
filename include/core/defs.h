@@ -43,6 +43,8 @@ namespace haunted {
 
 		/** Returns a string representation of the position. */
 		operator std::string() const;
+
+		friend std::ostream & operator<<(std::ostream &, const position &);
 	};
 }
 

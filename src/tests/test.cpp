@@ -215,6 +215,10 @@ namespace haunted::tests {
 
 		unit.check(wrapper.get_position(),  {10, 10, 500, 100}, "wrapper.pos");
 		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando->pos");
+
+		ui::textbox tb1(expando);
+
+		std::cout << tb1.get_position() << "\n";
 	}
 
 	void maintest::unittest_textbox(terminal &term) {
