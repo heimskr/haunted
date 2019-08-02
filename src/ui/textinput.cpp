@@ -474,6 +474,7 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
+		auto lock = term->lock_render();
 		size_t twidth = text_width();
 
 		clear_line();

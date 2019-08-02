@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include "core/terminal.h"
 #include "ui/boxes/expandobox.h"
 
 namespace haunted::ui::boxes {
@@ -31,7 +32,7 @@ namespace haunted::ui::boxes {
 	}
 
 	expandobox::expandobox(container *parent, const position &pos, const box_orientation orientation,
-	std::initializer_list<std::pair<control *, int>> pairs): orientedbox(pos, orientation) {
+	std::initializer_list<std::pair<control *, int>> pairs): orientedbox(parent, pos, orientation) {
 		if (parent != nullptr) {
 			parent->add_child(this);
 			term = parent->get_terminal();
@@ -116,6 +117,10 @@ namespace haunted::ui::boxes {
 	}
 
 	void expandobox::draw() {
+		if (!can_draw())
+			return;
+
+		auto lock = term->lock_render();
 		for (control *child: children)
 			child->draw();
 	}

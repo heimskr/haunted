@@ -24,6 +24,7 @@ namespace haunted {
 		private:
 			std::istream &in_stream;
 			std::mutex output_mutex;
+			std::recursive_mutex render_mutex;
 			std::thread input_thread;
 			termios original;
 
@@ -150,6 +151,8 @@ namespace haunted {
 			/** Disables origin mode. */
 			virtual void reset_origin();
 
+			virtual std::unique_lock<std::recursive_mutex> lock_render();
+
 			/** Returns true if in_stream is in a valid state. */
 			virtual operator bool() const;
 			/** Reads a single raw character from the terminal as an int. */
@@ -158,6 +161,7 @@ namespace haunted {
 			virtual terminal & operator>>(char &);
 			/** Reads a key from the terminal. This conveniently handles much of the weirdness of terminal input. */
 			virtual terminal & operator>>(key &);
+
 
 			/** Writes pretty much anything to the terminal. */
 			template <typename T>

@@ -1,3 +1,4 @@
+#include "core/terminal.h"
 #include "ui/boxes/simplebox.h"
 
 namespace haunted::ui::boxes {
@@ -14,8 +15,10 @@ namespace haunted::ui::boxes {
 	}
 
 	void simplebox::draw() {
-		if (!children.empty())
+		if (can_draw() && !children.empty()) {
+			auto lock = term->lock_render();
 			children.at(0)->draw();
+		}
 	}
 
 	haunted::terminal * simplebox::get_terminal() {

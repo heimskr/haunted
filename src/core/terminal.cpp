@@ -283,6 +283,10 @@ namespace haunted {
 		out_stream.style_out << "\e[?6l";
 	}
 
+	std::unique_lock<std::recursive_mutex> terminal::lock_render() {
+		return std::unique_lock(render_mutex);
+	}
+
 
 // Public operators
 

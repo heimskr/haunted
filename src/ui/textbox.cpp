@@ -263,6 +263,8 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
+		auto lock = term->lock_render();
+
 		// It's assumed that the terminal is already in cbreak mode. If it's not, DECSLRM won't work and the left and
 		// right margins won't be set.
 		set_margins();
