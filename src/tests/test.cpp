@@ -1,4 +1,4 @@
-#define NODEBUG
+// #define NODEBUG
 
 #include <cstdlib>
 #include <iomanip>
@@ -163,9 +163,9 @@ namespace haunted::tests {
 			} else if (k == ktype::hash) {
 				*tb += textline("This is a very long line. Its purpose is to test the continuation of lines in a textbox. Its continuation value is set to 26, so the wrapped text should line up with the start of the second sentence in the line.", 26);
 			} else if (k == ktype::star) {
-				// for (const textline &line: *tb) {
-				// 	DBG(line.continuation << "[" << line.text << "]");
-				// }
+				for (const textline &line: *tb) {
+					DBG(line.continuation << "[" << line.text << "]");
+				}
 			} else {
 				*tb += "Key: [" + std::string(k) + "]";
 			}
@@ -470,7 +470,8 @@ int main(int argc, char **argv) {
 	const std::string arg(argv[1]);
 
 	// terminal term(std::cin, ansi::ansistream(std::cout, arg == "expandobox"? std::cerr : std::cout));
-	terminal term(std::cin, ansi::ansistream());
+	terminal term(std::cin, ansi::ansistream(std::cout, std::cout));
+	// terminal term(std::cin, ansi::ansistream());
 	term.watch_size();
 
 	// int fd = open(".log", O_RDWR | O_APPEND | O_CREAT);
