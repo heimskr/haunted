@@ -39,7 +39,6 @@ namespace haunted::ui {
 	}
 
 	void control::set_terminal(terminal *term_) {
-		DBG(this << ": control::set_terminal(" << term_ << ")");
 		term = term_;
 	}
 

@@ -70,8 +70,9 @@ namespace haunted::ui {
 		if (voffset == -1)
 			term->vscroll(-new_lines);
 
-		int next = next_row();
-		if (voffset != -1 && next == -1)
+		// We need to subtract one to account for the fact that the new line is already in the buffer.
+		int next = next_row() - 1;
+		if (voffset != -1 && next < 0)
 			return;
 
 		set_margins();
@@ -277,14 +278,11 @@ namespace haunted::ui {
 		if (0 <= effective && total_rows() <= effective) {
 			// There's no need to draw anything if the box has been scrolled down beyond all its contents.
 		} else {
-			DBG("effective = " << effective << " (" << total_rows() << " - " << pos.height << ")");
 			try {
 				for (int i = 0; i < pos.height; ++i) {
-					// *term << ansi::bg(ansi::green) << text_at_row(i) << ansi::reset;
 					*term << text_at_row(i);
-					if (i != pos.height -1) {
+					if (i != pos.height - 1)
 						*term << "\n";
-					}
 				}
 			} catch (std::out_of_range &err) {}
 		}
@@ -298,6 +296,9 @@ namespace haunted::ui {
 	}
 
 	textbox & textbox::operator+=(const std::string &line) {
+		if (!line.empty() && line.back() == '\n')
+			lines.pop_back();
+
 		lines.push_back({line, 0});
 		draw_new_line(lines.back());
 		return *this;
