@@ -18,7 +18,7 @@ namespace haunted::ui {
 			terminal *term;
 			haunted::position pos;
 			control(container *parent, const haunted::position &pos):
-				child(parent), term(parent->get_term()), pos(pos) {}
+				child(parent), term(parent->get_terminal()), pos(pos) {}
 			control(const haunted::position &pos):
 				child(nullptr), term(nullptr), pos(pos) {}
 
@@ -26,7 +26,7 @@ namespace haunted::ui {
 			control(container *parent, terminal *term):
 				child(parent), term(term) {}
 			control(container *parent):
-				control(parent, parent == nullptr? nullptr : parent->get_term()) {}
+				control(parent, parent == nullptr? nullptr : parent->get_terminal()) {}
 			control(): control(nullptr, nullptr) {}
 
 			virtual ~control() = 0;
@@ -51,6 +51,9 @@ namespace haunted::ui {
 
 			/** Sets the parent and adopts its terminal. */
 			virtual void set_parent(container *) override;
+
+			terminal * get_terminal() const;
+			void set_terminal(terminal *);
 
 			/** Returns the component's position. */
 			haunted::position get_position() const;

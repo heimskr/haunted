@@ -32,9 +32,14 @@ namespace haunted::ui::boxes {
 
 	expandobox::expandobox(container *parent, const position &pos, const box_orientation orientation,
 	std::initializer_list<std::pair<control *, int>> pairs): orientedbox(pos, orientation) {
-		parent->add_child(this);
+		if (parent != nullptr) {
+			parent->add_child(this);
+			term = parent->get_terminal();
+		}
+
 		for (const std::pair<control *, int> &p: pairs) {
 			p.first->set_parent(this);
+			p.first->set_terminal(term);
 			children.push_back(p.first);
 			sizes.push_back(p.second);
 		}
@@ -119,7 +124,7 @@ namespace haunted::ui::boxes {
 		return -1;
 	}
 
-	haunted::terminal * expandobox::get_term() {
+	haunted::terminal * expandobox::get_terminal() {
 		return term;
 	}
 

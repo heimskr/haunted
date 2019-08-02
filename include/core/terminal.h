@@ -42,10 +42,6 @@ namespace haunted {
 
 			/** Repeatedly reads from the terminal in a loop and dispatches the key presses to the focused control. */
 			virtual void work_input();
-			
-			/** Sends a key press to whichever control is most appropriate and willing to receive it.
-			 *  Returns a pointer to the control or container that ended up handling the key press. */
-			virtual ui::keyhandler * send_key(key);
 
 			/** Handles window resizes. */
 			virtual void winch(int, int);
@@ -92,6 +88,10 @@ namespace haunted {
 			
 			/** Draws the root control if one exists. */
 			virtual void draw();
+			
+			/** Sends a key press to whichever control is most appropriate and willing to receive it.
+			 *  Returns a pointer to the control or container that ended up handling the key press. */
+			virtual ui::keyhandler * send_key(key);
 
 			/** Starts the input-reading thread. */
 			virtual void start_input();
@@ -108,7 +108,7 @@ namespace haunted {
 			virtual bool add_child(ui::control *) override;
 
 			/** Returns the terminal. Required by haunted::ui::container. */
-			virtual terminal * get_term() override;
+			virtual terminal * get_terminal() override;
 
 			/** Returns true if a given control is the focused control. */
 			virtual bool has_focus(const ui::control *) const;

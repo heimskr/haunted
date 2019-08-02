@@ -1,12 +1,19 @@
 #ifndef HAUNTED_CORE_DEFS_H_
 #define HAUNTED_CORE_DEFS_H_
 
+#define NODEBUG
+
 #include <cstddef>
 
 #include "../../lib/formicine/ansi.h"
 
+#ifdef NODEBUG
+#define DBGX(x)
+#define DBG(x)
+#else
 #define DBGX(x) "\e[2m[" << __FILE__ << ":" << __LINE__ << "]\e[0m " << x << std::endl
 #define DBG(x) ansi::ansistream::err() << DBGX(x) << ansi::reset
+#endif
 
 namespace haunted {
 	enum class side {left, right, top, bottom};

@@ -1,3 +1,5 @@
+#define NODEBUG
+
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
@@ -21,7 +23,11 @@
 #include "ui/textbox.h"
 #include "ui/textinput.h"
 
+#ifdef NODEBUG
+#define INFO(x)
+#else
 #define INFO(x) ansi::out << ansi::info << x << ansi::endl
+#endif
 
 namespace haunted::tests {
 	/** Stringifies a pair of integers. */
@@ -169,11 +175,26 @@ namespace haunted::tests {
 	void maintest::test_expandobox(terminal &term) {
 		using namespace haunted::ui;
 		using namespace haunted::ui::boxes;
+
+		term.cbreak();
 		textbox *tb = new textbox();
 		textinput *ti = new textinput();
 		expandobox *expando = new expandobox(&term, term.get_position(), vertical, {{tb, -1}, {ti, 1}});
 		expando->resize();
+		ti->focus();
 		term.redraw();
+
+		key k;
+		while (term >> k) {
+			if (k == key(ktype::c, kmod::ctrl))
+				break;
+			
+			if (k == key(ktype::l, kmod::ctrl)) {
+				term.redraw();
+			} else {
+				term.send_key(k);
+			}
+		}
 	}
 
 	/** Runs some tests for the CSI u functions. */
@@ -444,8 +465,11 @@ namespace haunted::tests {
 
 int main(int argc, char **argv) {
 	using namespace haunted;
+	
+	const std::string arg(argv[1]);
 
-	terminal term;
+	// terminal term(std::cin, ansi::ansistream(std::cout, arg == "expandobox"? std::cerr : std::cout));
+	terminal term(std::cin, ansi::ansistream());
 	term.watch_size();
 
 	int fd = open(".log", O_RDWR | O_APPEND | O_CREAT);
@@ -455,8 +479,6 @@ int main(int argc, char **argv) {
 		haunted::tests::maintest::test_key(term);
 		return 0;
 	}
-	
-	std::string arg(argv[1]);
 
 	haunted::tests::testing unit;
 

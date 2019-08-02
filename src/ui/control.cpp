@@ -28,10 +28,19 @@ namespace haunted::ui {
 		term->focus(this);
 	}
 
-	void control::set_parent(container *new_parent) {
-		child::set_parent(new_parent);
-		if (new_parent != nullptr)
-			term = new_parent->get_term();
+	void control::set_parent(container *parent_) {
+		child::set_parent(parent_);
+		if (parent_ != nullptr)
+			set_terminal(parent_->get_terminal());
+	}
+
+	terminal * control::get_terminal() const {
+		return term;
+	}
+
+	void control::set_terminal(terminal *term_) {
+		DBG(this << ": control::set_terminal(" << term_ << ")");
+		term = term_;
 	}
 
 	haunted::position control::get_position() const {

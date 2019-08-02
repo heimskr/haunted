@@ -63,7 +63,7 @@ namespace haunted::ui::boxes {
 			using control::resize;
 			virtual void draw() override;
 			virtual int max_children() const override;
-			virtual haunted::terminal * get_term() override;
+			virtual haunted::terminal * get_terminal() override;
 
 			expandobox & operator+=(child_pair);
 

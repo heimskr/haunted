@@ -27,7 +27,7 @@ namespace haunted::ui {
 			virtual bool remove_child(child *);
 			virtual int max_children() const;
 			virtual int child_count() const;
-			virtual haunted::terminal * get_term() = 0;
+			virtual haunted::terminal * get_terminal() = 0;
 
 			/** Returns the nth child (indexes `children`). */
 			control * operator[](size_t);

@@ -18,7 +18,7 @@ namespace haunted::ui::boxes {
 			children.at(0)->draw();
 	}
 
-	haunted::terminal * simplebox::get_term() {
+	haunted::terminal * simplebox::get_terminal() {
 		return term;
 	}
 }

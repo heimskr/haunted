@@ -87,34 +87,6 @@ namespace haunted {
 		}
 	}
 
-	ui::keyhandler * terminal::send_key(key k) {
-		// If the root is null, there are no controls and nothing to send key presses to.
-		if (root == nullptr)
-			return nullptr;
-
-		ui::control *ctrl = get_focused();
-
-		if (ctrl == nullptr)
-			throw std::runtime_error("Focused control is null");
-
-		if (ctrl->on_key(k))
-			return ctrl;
-
-		ui::container *ptr = ctrl->get_parent();
-		
-		// Keep trying on_key, going up to the root as long as we keep getting false. If we're at the root and on_key
-		// still returns false, give up.
-		while (!ptr->on_key(k) && dynamic_cast<ui::control *>(ptr) != root) {
-			if (ui::child *cptr = dynamic_cast<ui::child *>(ptr)) {
-				ptr = cptr->get_parent();
-			} else {
-				return nullptr;
-			}
-		}
-
-		return ptr;
-	}
-
 	void terminal::winch(int new_rows, int new_cols) {
 		bool changed = rows != new_rows || cols != new_cols;
 		rows = new_rows;
@@ -146,6 +118,7 @@ namespace haunted {
 			root->resize({0, 0, cols, rows});
 			root->draw();
 		}
+		else DBG("No root.");
 	}
 
 	void terminal::set_root(ui::control *new_root) {
@@ -162,6 +135,34 @@ namespace haunted {
 	void terminal::draw() {
 		if (root)
 			root->draw();
+	}
+
+	ui::keyhandler * terminal::send_key(key k) {
+		// If the root is null, there are no controls and nothing to send key presses to.
+		if (root == nullptr)
+			return nullptr;
+
+		ui::control *ctrl = get_focused();
+
+		if (ctrl == nullptr)
+			throw std::runtime_error("Focused control is null");
+
+		if (ctrl->on_key(k))
+			return ctrl;
+
+		ui::container *ptr = ctrl->get_parent();
+		
+		// Keep trying on_key, going up to the root as long as we keep getting false. If we're at the root and on_key
+		// still returns false, give up.
+		while (!ptr->on_key(k) && dynamic_cast<ui::control *>(ptr) != root) {
+			if (ui::child *cptr = dynamic_cast<ui::child *>(ptr)) {
+				ptr = cptr->get_parent();
+			} else {
+				return nullptr;
+			}
+		}
+
+		return ptr;
 	}
 
 	void terminal::start_input() {
@@ -188,7 +189,7 @@ namespace haunted {
 		return true;
 	}
 
-	terminal * terminal::get_term() {
+	terminal * terminal::get_terminal() {
 		return this;
 	}
 
