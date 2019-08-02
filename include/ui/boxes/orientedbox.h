@@ -28,6 +28,9 @@ namespace haunted::ui::boxes {
 			/** Returns the length of the axis of orientation.
 			 *  For horizontal boxes, this is the width of the box. For vertical boxes, it's the height. */
 			virtual int get_size() const;
+
+			/** Changes the box's orientation and makes any necessary adjustments. */
+			virtual void set_orientation(box_orientation);
 	};
 }
 

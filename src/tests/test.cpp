@@ -368,6 +368,15 @@ namespace haunted::tests {
 		unit.check(tb3.get_position(), {220, 10, 90,  100}, "tb3 position");
 		unit.check(tb4.get_position(), {310, 10, 200, 100}, "tb4 position");
 
+		INFO("Reorienting horizontal → vertical.");
+		expando->resize({10, 10, 100, 250});
+		expando->set_orientation(vertical);
+		unit.check(tb1.get_position(), {10, 10,  100, 10}, "tb1 position");
+		unit.check(tb2.get_position(), {10, 20,  100, 75}, "tb2 position");
+		unit.check(tb3.get_position(), {10, 95,  100, 90}, "tb3 position");
+		unit.check(tb4.get_position(), {10, 185, 100, 75}, "tb4 position");
+
+
 		ansi::out << ansi::endl;
 	}
 
