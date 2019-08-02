@@ -185,6 +185,11 @@ namespace haunted::tests {
 		*tb += "Hello";
 		term.redraw();
 
+		ti->listen(textinput::event::submit, [&](const superstring &str, int) {
+			*tb += str;
+			ti->clear();
+		});
+
 		key k;
 		while (term >> k) {
 			if (k == key(ktype::c, kmod::ctrl))
@@ -192,6 +197,10 @@ namespace haunted::tests {
 			
 			if (k == key(ktype::l, kmod::ctrl)) {
 				term.redraw();
+			} else if (k == key(ktype::t, kmod::ctrl)) {
+				tb->focus();
+			} else if (k == key(ktype::i, kmod::ctrl)) {
+				ti->focus();
 			} else {
 				term.send_key(k);
 			}

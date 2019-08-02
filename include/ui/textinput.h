@@ -47,12 +47,18 @@ namespace haunted::ui {
 			/** A function to call whenever the buffer or cursor has changed. */
 			update_fn on_update;
 
+			/** A function to call whenever the buffer is submitted (e.g., the user presses return). */
+			update_fn on_submit;
+
 			/** Every time the textinput is redrawn, the screen position of the cursor is recorded. */
 			point cursor_pos;
 
 			/** Informs the update listener (if one has been added with listen()) that the buffer or cursor has changed.
 			 */
 			void update();
+
+			/** Informs the submit listener (if one has been added with listen()) that the buffer has been submitted. */
+			void submit();
 
 			/** Partially re-renders the control onto the terminal in response to an cursor move. */
 			void draw_cursor();
@@ -105,6 +111,8 @@ namespace haunted::ui {
 			bool at_end() const;
 
 		public:
+			enum class event: int {update = 1, submit = 2};
+
 			/** When a multibyte UTF-8 codepoint is being received, the individual bytes are stored in this buffer. */
 			std::string unicode_buffer;
 
@@ -136,7 +144,7 @@ namespace haunted::ui {
 			operator std::string() const;
 
 			/** Sets a function to listen for updates to the buffer. */
-			void listen(const update_fn &);
+			void listen(event, const update_fn &);
 
 			/** Moves the cursor to a given position. */
 			void move_to(size_t);

@@ -31,6 +31,11 @@ namespace haunted::ui {
 			on_update(buffer, cursor);
 	}
 
+	void textinput::submit() {
+		if (on_submit)
+			on_submit(buffer, cursor);
+	}
+
 	void textinput::draw_cursor() {
 		if (can_draw() && term->has_focus(this))
 			jump_cursor();
@@ -151,8 +156,14 @@ namespace haunted::ui {
 // Public instance methods
 
 
-	void textinput::listen(const update_fn &fn) {
-		on_update = fn;
+	void textinput::listen(event evt, const update_fn &fn) {
+		if (evt == event::update) {
+			on_update = fn;
+		} else if (evt == event::submit) {
+			on_submit = fn;
+		} else {
+			throw std::invalid_argument("Invalid event type: " + std::to_string(static_cast<int>(evt)));
+		}
 	}
 
 	void textinput::move_to(size_t new_cursor) {
@@ -433,7 +444,7 @@ namespace haunted::ui {
 					case int(ktype::down_arrow):    end(); break;
 					case int(ktype::up_arrow):    start(); break;
 					case int(ktype::backspace):   erase(); break;
-					case int(ktype::enter):       clear(); break;
+					case int(ktype::enter):      submit(); break;
 					case int(ktype::home):        start(); break;
 					case int(ktype::end):           end(); break;
 					default:
