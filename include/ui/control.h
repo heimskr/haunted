@@ -26,13 +26,16 @@ namespace haunted::ui {
 			control(container *parent, terminal *term):
 				child(parent), term(term) {}
 			control(container *parent):
-				control(parent, parent->get_term()) {}
+				control(parent, parent == nullptr? nullptr : parent->get_term()) {}
 			control(): control(nullptr, nullptr) {}
 
 			virtual ~control() = 0;
 			
 			/** Renders the component on the terminal. */
 			virtual void draw() = 0;
+
+			/** Returns whether the control's in a state in which it can be rendered. */
+			virtual bool can_draw() const;
 
 			/** Resizes the component to fit a new position. */
 			virtual void resize(const haunted::position &);

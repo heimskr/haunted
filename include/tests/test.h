@@ -233,6 +233,7 @@ namespace haunted::tests {
 			static void test_cursor(terminal &);
 			static void test_margins(terminal &);
 			static void test_textbox(terminal &);
+			static void test_expandobox(terminal &);
 			static void unittest_csiu(testing &);
 			static void unittest_textbox(testing &);
 			static void unittest_expandobox(testing &);

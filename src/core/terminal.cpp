@@ -141,8 +141,8 @@ namespace haunted {
 
 	void terminal::redraw() {
 		if (root) {
-			ansi::clear();
-			ansi::jump();
+			out_stream.clear();
+			out_stream.jump();
 			root->resize({0, 0, cols, rows});
 			root->draw();
 		}
@@ -202,6 +202,10 @@ namespace haunted {
 
 	int terminal::get_cols() const {
 		return cols;
+	}
+
+	position terminal::get_position() const {
+		return {0, 0, get_cols(), get_rows()};
 	}
 
 	void terminal::jump(int x, int y) {

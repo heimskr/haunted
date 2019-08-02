@@ -13,17 +13,20 @@
 
 #include "core/key.h"
 #include "ui/container.h"
-#include "ui/control.h"
+// #include "ui/control.h"
+
+namespace haunted::ui {
+	class control;
+}
 
 namespace haunted {
 	/**
 	 * This class enables interaction with terminals. It uses termios to change terminal modes.
 	 * When the destructor is called, it resets the modes to their original values.
 	 */
-	class terminal: public virtual ui::container {
+	class terminal: public ui::container {
 		private:
 			std::istream &in_stream;
-			ansi::ansistream out_stream;
 			std::mutex render_mx;
 			std::thread input_thread;
 			termios original;
@@ -69,6 +72,7 @@ namespace haunted {
 			termios attrs;
 			bool raw = false;
 			bool suppress_output = false;
+			ansi::ansistream out_stream;
 
 			terminal(std::istream &, ansi::ansistream);
 			terminal(std::istream &in_stream): terminal(in_stream, ansi::ansistream()) {}
@@ -117,9 +121,16 @@ namespace haunted {
 			virtual int get_rows() const;
 			/** Returns the width (in columns) of the terminal. */
 			virtual int get_cols() const;
+			/** Returns a (0, 0)-based position representing the terminal. */
+			virtual position get_position() const;
 
 			/** Jumps to a position on the screen. */
 			virtual void jump(int x, int y = -1);
+			virtual void    up(size_t n = 1) { out_stream.up(n);    }
+			virtual void  down(size_t n = 1) { out_stream.down(n);  }
+			virtual void right(size_t n = 1) { out_stream.right(n); }
+			virtual void  left(size_t n = 1) { out_stream.left(n);  }
+			virtual void clear_line() { out_stream.clear_line(); }
 
 			/** Scrolls the screen vertically. Negative numbers scroll up, positive numbers scroll down. */
 			virtual void vscroll(int rows = 1);

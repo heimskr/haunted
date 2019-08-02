@@ -7,7 +7,7 @@ namespace haunted {
 	}
 
 	void position::jump(int inner_offset_left, int inner_offset_top) {
-		ansi::jump(left + inner_offset_left, top + inner_offset_top);
+		ansi::out.jump(left + inner_offset_left, top + inner_offset_top);
 	}
 
 	int position::right() const {

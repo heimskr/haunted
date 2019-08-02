@@ -104,6 +104,9 @@ namespace haunted::ui {
 			/** Constructs a textbox with a parent, a default position and empty contents. */
 			textbox(container *parent): textbox(parent, std::vector<std::string> {}) {}
 
+			/** Constructs a textbox with no parent and no contents. */
+			textbox(): textbox(nullptr, std::vector<std::string> {}) {}
+
 			/** Deletes all lines in the textbox. */
 			void clear_lines();
 
@@ -120,7 +123,9 @@ namespace haunted::ui {
 			void set_voffset(int);
 
 			/** Draws the textbox on the terminal. */
-			void draw();
+			void draw() override;
+
+			virtual bool can_draw() const override;
 
 			/** Adds a string to the end of the textbox. */
 			textbox & operator+=(const std::string &);

@@ -12,12 +12,14 @@ namespace haunted::ui {
 
 	textinput::textinput(container *parent, position pos, const superstring &buffer, size_t cursor):
 	control(parent, pos), buffer(buffer), cursor(cursor) {
-		parent->add_child(this);
+		if (parent != nullptr)
+			parent->add_child(this);
 	}
 
 	textinput::textinput(container *parent, const superstring &buffer, size_t cursor):
 	control(parent), buffer(buffer), cursor(cursor) {
-		parent->add_child(this);
+		if (parent != nullptr)
+			parent->add_child(this);
 	}
 
 
@@ -30,11 +32,14 @@ namespace haunted::ui {
 	}
 
 	void textinput::draw_cursor() {
-		if (term->has_focus(this))
+		if (can_draw() && term->has_focus(this))
 			jump_cursor();
 	}
 
 	void textinput::draw_insert() {
+		if (!can_draw())
+			return;
+
 		// It's assumed that the cursor has just been moved to the right from the insertion.
 		// We need to account for that by using a decremented copy of the cursor.
 		size_t cur = cursor - 1;
@@ -54,15 +59,15 @@ namespace haunted::ui {
 			return;
 		}
 
-		ansi::save();
+		term->out_stream.save();
 
 		jump_cursor();
-		ansi::left();
+		term->out_stream.left();
 		point cpos = find_cursor();
 		// Print only enough text to reach the right edge. Printing more would cause wrapping or text being printed out
 		// of bounds.
 		*term << buffer.substr(cur, pos.right() - cpos.x + 2);
-		ansi::restore();
+		term->out_stream.restore();
 		if (has_focus())
 			jump_cursor();
 		flush();
@@ -79,10 +84,13 @@ namespace haunted::ui {
 	}
 
 	void textinput::clear_right(size_t offset) {
-		ansi::jump(pos.left + prefix.length() + offset, pos.top);
+		if (!can_draw())
+			return;
+
+		term->jump(pos.left + prefix.length() + offset, pos.top);
 		if (at_right()) {
 			// If we're bordering the right edge of the screen, we can clear everything to the right.
-			ansi::clear_right();
+			term->out_stream.clear_right();
 		} else {
 			*term << std::string(pos.width - (prefix.length() + offset), ' ');
 			flush();
@@ -235,16 +243,19 @@ namespace haunted::ui {
 	void textinput::erase() {
 		if (cursor > 0) {
 			buffer.erase(--cursor, 1);
-			if (cursor == length() && scroll < cursor && cursor - scroll < text_width()) {
-				// If there's no text after the cursor and the cursor is in bounds, it should be sufficient to erase the
-				// old character from the screen.
-				ansi::save();
-				jump_cursor();
-				*term << ' ';
-				ansi::restore();
-			} else {
-				// Otherwise, we need draw_erase() to handle things.
-				draw_erase();
+
+			if (can_draw()) {
+				if (cursor == length() && scroll < cursor && cursor - scroll < text_width()) {
+					// If there's no text after the cursor and the cursor is in bounds, it should be sufficient to erase
+					// the old character from the screen.
+					term->out_stream.save();
+					jump_cursor();
+					*term << ' ';
+					term->out_stream.restore();
+				} else {
+					// Otherwise, we need draw_erase() to handle things.
+					draw_erase();
+				}
 			}
 
 			update();
@@ -261,27 +272,30 @@ namespace haunted::ui {
 	}
 
 	void textinput::draw_right() {
-		ansi::save();
+		if (!can_draw())
+			return;
+
+		term->out_stream.save();
 		clear_line();
 		jump_cursor();
 		*term << buffer.substr(cursor, text_width() - cursor + scroll);
-		ansi::restore();
+		term->out_stream.restore();
 	}
 
 	void textinput::draw_erase() {
-		if (text_width() <= cursor - scroll) {
+		if (!can_draw() || text_width() <= cursor - scroll) {
 			// If the cursor is at or beyond the right edge, do nothing.
 			return;
 		}
 
-		ansi::save();
+		term->out_stream.save();
 
 		if (cursor <= scroll) {
 			// If the cursor is at or beyond the left edge, redraw the entire line.
 			clear_text();
-			ansi::jump(pos.left + prefix.length(), pos.top);
+			term->jump(pos.left + prefix.length(), pos.top);
 			*term << buffer.substr(scroll, text_width());
-			ansi::restore();
+			term->out_stream.restore();
 			flush();
 		} else {
 			// If the cursor is somewhere between the two edges, clear part of the line and print part of the buffer.
@@ -290,7 +304,7 @@ namespace haunted::ui {
 			*term << buffer.substr(cursor, text_width() - cursor + scroll);
 		}
 
-		ansi::restore();
+		term->out_stream.restore();
 		flush();
 	}
 
@@ -457,6 +471,9 @@ namespace haunted::ui {
 	}
 
 	void textinput::draw() {
+		if (!can_draw())
+			return;
+
 		size_t twidth = text_width();
 
 		clear_line();
@@ -466,13 +483,19 @@ namespace haunted::ui {
 		jump_cursor();
 	}
 
+	bool textinput::can_draw() const {
+		return parent != nullptr && term != nullptr && !term->suppress_output;
+	}
+
 	void textinput::jump_cursor() {
-		point cpos = find_cursor();
-		ansi::jump(cpos.x, cpos.y);
+		if (term != nullptr) {
+			point cpos = find_cursor();
+			term->jump(cpos.x, cpos.y);
+		}
 	}
 
 	bool textinput::try_jump() {
-		if (!has_focus())
+		if (term == nullptr || !has_focus())
 			return false;
 		jump_cursor();
 		return true;

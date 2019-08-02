@@ -129,6 +129,9 @@ namespace haunted::ui {
 			/** Constructs a textinput with a parent and a default position, buffer and cursor. */
 			textinput(container *parent): textinput(parent, "") {}
 
+			/** Constructs a textinput with no parent, no position and no initial contents. */
+			textinput(): textinput(nullptr, "") {}
+
 			/** Returns the contents of the buffer. */
 			operator std::string() const;
 
@@ -188,7 +191,9 @@ namespace haunted::ui {
 			bool on_key(key &) override;
 
 			/** Renders the control onto the terminal. */
-			void draw() override;
+			virtual void draw() override;
+
+			virtual bool can_draw() const override;
 
 			/** Moves the terminal cursor to the position of the textinput cursor. */
 			void jump_cursor();

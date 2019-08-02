@@ -38,14 +38,16 @@ namespace haunted::ui {
 	}
 
 	textbox::textbox(container *parent, position pos, const std::vector<std::string> &contents): control(parent, pos) {
-		parent->add_child(this);
+		if (parent != nullptr)
+			parent->add_child(this);
 		set_lines(contents);
 		// add_child could modify the position, so we set the position again at the end to overoverwrite it.
 		this->pos = pos;
 	}
 
 	textbox::textbox(container *parent, const std::vector<std::string> &contents): control(parent) {
-		parent->add_child(this);
+		if (parent != nullptr)
+			parent->add_child(this);
 		set_lines(contents);
 	}
 
@@ -61,6 +63,9 @@ namespace haunted::ui {
 	}
 
 	void textbox::draw_new_line(const textline &line) {
+		if (!can_draw())
+			return;
+
 		int new_lines = line_rows(line);
 		if (voffset == -1)
 			term->vscroll(-new_lines);
@@ -148,7 +153,7 @@ namespace haunted::ui {
 	}
 
 	void textbox::clear() {
-		if (term->suppress_output)
+		if (!can_draw())
 			return;
 
 		bool should_reset_margins = false;
@@ -158,8 +163,9 @@ namespace haunted::ui {
 		}
 
 		for (int i = 0; i < pos.height; ++i) {
-			if (i) ansi::down();
-			ansi::delete_chars(pos.width);
+			if (i != 0)
+				term->out_stream.down();
+			term->out_stream.delete_chars(pos.width);
 		}
 
 		if (should_reset_margins)
@@ -254,7 +260,7 @@ namespace haunted::ui {
 	}
 
 	void textbox::draw() {
-		if (term->suppress_output)
+		if (!can_draw())
 			return;
 
 		// It's assumed that the terminal is already in cbreak mode. If it's not, DECSLRM won't work and the left and
@@ -282,6 +288,10 @@ namespace haunted::ui {
 		
 		reset_margins();
 		in_margins = false;
+	}
+
+	bool textbox::can_draw() const {
+		return parent != nullptr && term != nullptr && !term->suppress_output;
 	}
 
 	textbox & textbox::operator+=(const std::string &line) {

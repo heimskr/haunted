@@ -34,3 +34,7 @@ uetest: build/test
 
 utest: build/test
 	./$^ unit 2> .log
+
+etest: build/test
+	./$^ expandobox 2> .log
+

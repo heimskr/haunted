@@ -78,18 +78,18 @@ namespace haunted::tests {
 	}
 
 	void maintest::test_cursor(terminal &term) {
-		ansi::clear();
-		ansi::jump(180, 0);
+		term.out_stream.clear();
+		term.jump(180, 0);
 		term << "0";
-		ansi::jump(181, 1);
+		term.jump(181, 1);
 		term << "1";
 		term.flush();
 	}
 
 	void maintest::test_margins(terminal &term) {
 		term.cbreak();
-		ansi::clear();
-		ansi::jump();
+		term.out_stream.clear();
+		term.out_stream.jump();
 		const std::string spam = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		for (int i = 0; i < 40; ++i) {
 			std::cout << spam.substr(i % spam.length(), std::string::npos) << spam.substr(0, i % spam.length()) << "\n";
@@ -100,33 +100,33 @@ namespace haunted::tests {
 		term.margins(2, 10, 5, 15);
 		
 		sleep(1); std::cerr << "Scrolling up.\n";
-		ansi::scroll_up(2);
+		term.out_stream.scroll_up(2);
 		
 		sleep(1); std::cerr << "Scrolling down.\n";
-		ansi::scroll_down(1);
+		term.out_stream.scroll_down(1);
 
 		sleep(2); std::cerr << "Jumping and printing.\n";
-		ansi::jump(5, 2);
+		term.out_stream.jump(5, 2);
 		term << "Hello";
 		term.flush();
 
 		sleep(2); std::cerr << "Setting origin, jumping and printing.\n";
 		term.set_origin();
-		ansi::jump();
+		term.out_stream.jump();
 		term << "Hi :)";
 		term.flush();
 
 		sleep(2); std::cerr << "Clearing line.\n";
-		ansi::clear_line();
+		term.out_stream.clear_line();
 
 		sleep(1); std::cerr << "Clearing all.\n";
-		ansi::clear();
+		term.out_stream.clear();
 
 		sleep(1); std::cerr << "Resetting margins.\n";
 		term.margins();
 
 		sleep(5); std::cerr << "Scrolling up.\n";
-		ansi::scroll_up(2);
+		term.out_stream.scroll_up(2);
 
 		sleep(5); std::cerr << "Done.\n";
 		term.disable_hmargins();
@@ -164,6 +164,16 @@ namespace haunted::tests {
 				*tb += "Key: [" + std::string(k) + "]";
 			}
 		}
+	}
+
+	void maintest::test_expandobox(terminal &term) {
+		using namespace haunted::ui;
+		using namespace haunted::ui::boxes;
+		textbox *tb = new textbox();
+		textinput *ti = new textinput();
+		expandobox *expando = new expandobox(&term, term.get_position(), vertical, {{tb, -1}, {ti, 1}});
+		expando->resize();
+		term.redraw();
 	}
 
 	/** Runs some tests for the CSI u functions. */
@@ -376,7 +386,6 @@ namespace haunted::tests {
 		unit.check(tb3.get_position(), {10, 95,  100, 90}, "tb3 position");
 		unit.check(tb4.get_position(), {10, 185, 100, 75}, "tb4 position");
 
-
 		ansi::out << ansi::endl;
 	}
 
@@ -426,7 +435,7 @@ namespace haunted::tests {
 	}
 
 	testing::~testing() {
-		if (autodisplay) {
+		if (autodisplay && (total_failed != 0 || total_passed != 0)) {
 			ansi::out << ansi::endl;
 			display_results();
 		}
@@ -461,6 +470,8 @@ int main(int argc, char **argv) {
 		haunted::tests::maintest::test_margins(term);
 	} else if (arg == "textbox") {
 		haunted::tests::maintest::test_textbox(term);
+	} else if (arg == "expandobox") {
+		haunted::tests::maintest::test_expandobox(term);
 	} else if (arg == "unitcsiu") {
 		haunted::tests::maintest::unittest_csiu(unit);
 	} else if (arg == "unittextbox") {
