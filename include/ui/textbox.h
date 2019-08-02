@@ -125,6 +125,9 @@ namespace haunted::ui {
 			/** Draws the textbox on the terminal. */
 			void draw() override;
 
+			/** Handles keyboard input. */
+			bool on_key(const key &) override;
+
 			virtual bool can_draw() const override;
 
 			/** Adds a string to the end of the textbox. */

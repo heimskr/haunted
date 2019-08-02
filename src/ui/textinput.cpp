@@ -432,7 +432,7 @@ namespace haunted::ui {
 		return buffer.length();
 	}
 
-	bool textinput::on_key(key &k) {
+	bool textinput::on_key(const key &k) {
 		int type = int(k.type);
 		modset mods = k.mods;
 

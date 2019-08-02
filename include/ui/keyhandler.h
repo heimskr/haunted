@@ -10,7 +10,7 @@ namespace haunted::ui {
 	 */
 	class keyhandler {
 		public:
-			virtual bool on_key(key &);
+			virtual bool on_key(const key &);
 	};
 }
 

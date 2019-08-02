@@ -196,7 +196,7 @@ namespace haunted::ui {
 			size_t size() const;
 
 			/** Handles key presses. */
-			bool on_key(key &) override;
+			bool on_key(const key &) override;
 
 			/** Renders the control onto the terminal. */
 			virtual void draw() override;

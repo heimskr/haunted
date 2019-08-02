@@ -291,6 +291,23 @@ namespace haunted::ui {
 		in_margins = false;
 	}
 
+	bool textbox::on_key(const key &k) {
+		if (k == ktype::up_arrow) {
+			vscroll(-1);
+			draw();
+		} else if (k == ktype::down_arrow) {
+			vscroll(1);
+			draw();
+		} else if (k == ktype::left_arrow) {
+			set_voffset(-1);
+			draw();
+		} else {
+			return false;
+		}
+
+		return true;
+	}
+
 	bool textbox::can_draw() const {
 		return parent != nullptr && term != nullptr && !term->suppress_output;
 	}
