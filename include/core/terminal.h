@@ -13,18 +13,14 @@
 
 #include "core/key.h"
 #include "ui/container.h"
-// #include "ui/control.h"
-
-namespace haunted::ui {
-	class control;
-}
+#include "ui/control.h"
 
 namespace haunted {
 	/**
 	 * This class enables interaction with terminals. It uses termios to change terminal modes.
 	 * When the destructor is called, it resets the modes to their original values.
 	 */
-	class terminal: public ui::container {
+	class terminal: public virtual ui::container {
 		private:
 			std::istream &in_stream;
 			std::mutex render_mx;
