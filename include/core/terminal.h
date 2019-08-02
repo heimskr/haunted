@@ -23,7 +23,7 @@ namespace haunted {
 	class terminal: public virtual ui::container {
 		private:
 			std::istream &in_stream;
-			std::mutex render_mx;
+			std::mutex output_mutex;
 			std::thread input_thread;
 			termios original;
 
@@ -162,14 +162,18 @@ namespace haunted {
 			/** Writes pretty much anything to the terminal. */
 			template <typename T>
 			terminal & operator<<(const T &t) {
-				if (!suppress_output)
+				if (!suppress_output) {
+					std::unique_lock uniq(output_mutex);
 					out_stream << t;
+				}
+
 				return *this;
 			}
 
 			/** Deactivates a formicine style or color. */
 			template <typename T>
 			terminal & operator>>(const T &t) {
+				std::unique_lock uniq(output_mutex);
 				out_stream >> t;
 				return *this;
 			}

@@ -278,7 +278,8 @@ namespace haunted::ui {
 			DBG("effective = " << effective << " (" << total_rows() << " - " << pos.height << ")");
 			try {
 				for (int i = 0; i < pos.height; ++i) {
-					*term << ansi::bg(ansi::green) << text_at_row(i);
+					// *term << ansi::bg(ansi::green) << text_at_row(i) << ansi::reset;
+					*term << text_at_row(i);
 					if (i != pos.height -1) {
 						*term << "\n";
 					}

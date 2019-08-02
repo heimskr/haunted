@@ -210,41 +210,47 @@ namespace haunted {
 	}
 
 	void terminal::jump(int x, int y) {
+		std::unique_lock uniq(output_mutex);
 		if (0 <= x && 0 <= y) {
-			*this << "\e[" << (y + 1) << ";" << (x + 1) << "H";
+			out_stream.style_out << "\e[" << (y + 1) << ";" << (x + 1) << "H";
 		} else if (0 <= x) {
-			*this << "\e[" << (x + 1) << "G";
+			out_stream.style_out << "\e[" << (x + 1) << "G";
 		} else if (0 <= y) {
-			*this << "\e[999999A";
+			out_stream.style_out << "\e[999999A";
 			if (0 < y)
-				*this << "\e[" + std::to_string(y) + "B";
+				out_stream.style_out << "\e[" + std::to_string(y) + "B";
 		} else {
 			throw std::runtime_error("Invalid jump: (" + std::to_string(x) + ", " + std::to_string(y) + ")");
 		}
 	}
 
 	void terminal::vscroll(int rows) {
+		std::unique_lock uniq(output_mutex);
 		if (0 < rows) {
-			*this << "\e[" + std::to_string(rows) + "T";
+			out_stream.style_out << "\e[" + std::to_string(rows) + "T";
 		} else if (rows < 0) {
-			*this << "\e[" + std::to_string(-rows) + "U";
+			out_stream.style_out << "\e[" + std::to_string(-rows) + "U";
 		}
 	}
 
 	void terminal::hmargins(size_t left, size_t right) {
-		out_stream << "\e[" + std::to_string(left + 1) + ";" + std::to_string(right + 1) + "s";
+		std::unique_lock uniq(output_mutex);
+		out_stream.style_out << "\e[" + std::to_string(left + 1) + ";" + std::to_string(right + 1) + "s";
 	}
 
 	void terminal::hmargins() {
-		out_stream << "\e[s";
+		std::unique_lock uniq(output_mutex);
+		out_stream.style_out << "\e[s";
 	}
 
 	void terminal::vmargins(size_t top, size_t bottom) {
-		out_stream << "\e[" + std::to_string(top + 1) + ";" + std::to_string(bottom + 1) + "r";
+		std::unique_lock uniq(output_mutex);
+		out_stream.style_out << "\e[" + std::to_string(top + 1) + ";" + std::to_string(bottom + 1) + "r";
 	}
 
 	void terminal::vmargins() {
-		out_stream << "\e[r";
+		std::unique_lock uniq(output_mutex);
+		out_stream.style_out << "\e[r";
 	}
 
 	void terminal::margins(size_t top, size_t bottom, size_t left, size_t right) {
@@ -258,19 +264,23 @@ namespace haunted {
 	}
 
 	void terminal::enable_hmargins() { // DECLRMM: Left Right Margin Mode
-		out_stream << "\e[?69h";
+		std::unique_lock uniq(output_mutex);
+		out_stream.style_out << "\e[?69h";
 	}
 
 	void terminal::disable_hmargins() {
-		out_stream << "\e[?69l";
+		std::unique_lock uniq(output_mutex);
+		out_stream.style_out << "\e[?69l";
 	}
 
 	void terminal::set_origin() {
-		out_stream << "\e[?6h";
+		std::unique_lock uniq(output_mutex);
+		out_stream.style_out << "\e[?6h";
 	}
 
 	void terminal::reset_origin() {
-		out_stream << "\e[?6l";
+		std::unique_lock uniq(output_mutex);
+		out_stream.style_out << "\e[?6l";
 	}
 
 
