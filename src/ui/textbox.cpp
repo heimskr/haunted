@@ -67,22 +67,17 @@ namespace haunted::ui {
 			return;
 
 		int new_lines = line_rows(line);
-		if (voffset == -1) {
-			DBG("voffset == -1: vscroll([" << (-new_lines) << "] -new_lines)");
+		if (voffset == -1)
 			term->vscroll(-new_lines);
-		}
 
 		// We need to subtract one to account for the fact that the new line is already in the buffer.
 		int next = next_row() - 1;
-		if (voffset != -1 && next < 0) {
-			DBG("voffset[" << voffset << "] != -1 && next[" << next << "] < 0: return");
+		if (voffset != -1 && next < 0)
 			return;
-		}
 
 		set_margins();
 		in_margins = true;
 
-		DBG("jumping to " << next);
 		term->jump(0, next);
 		int height = pos.height;
 		for (int row = next, i = 0; row < height && i < new_lines; ++row, ++i) {
