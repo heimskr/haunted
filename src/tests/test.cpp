@@ -197,20 +197,28 @@ namespace haunted::tests {
 			if (k == key(ktype::c).ctrl())
 				break;
 			
-			if (k == key(ktype::l).ctrl()) {
-				term.redraw();
-			} else if (k == key(ktype::t).ctrl()) {
-				tb->focus();
+			if (k == key(ktype::f).ctrl()) {
+				tb->clear_lines();
+				static std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+				for (int i = 0; i < tb->get_position().height - 1; ++i) {
+					*tb += std::string(1, alphabet[i % 26]);
+					DBG("[" << alphabet[i % 26] << "]");
+				}
+				ti->jump_cursor();
 			} else if (k == key(ktype::i).ctrl()) {
 				ti->focus();
+			} else if (k == key(ktype::k).ctrl()) {
+				dbgstream.clear().jump().flush();
+			} else if (k == key(ktype::l).ctrl()) {
+				term.redraw();
 			} else if (k == key(ktype::n).ctrl()) {
 				DBG("tb->next_row() == " << tb->next_row());
 			} else if (k == key(ktype::r).ctrl()) {
 				DBG("rows: " << term.get_rows());
+			} else if (k == key(ktype::t).ctrl()) {
+				tb->focus();
 			} else if (k == key(ktype::v).ctrl()) {
 				DBG("voffset == " << tb->get_voffset() << ", effective == " << tb->effective_voffset());
-			} else if (k == key(ktype::k).ctrl()) {
-				dbgstream.clear().jump().flush();
 			} else if (k.is_arrow() && k.mods == key::get_modset(kmod::shift)) {
 				tb->on_key(key(k.type));
 				ti->focus();
