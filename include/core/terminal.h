@@ -183,9 +183,6 @@ namespace haunted {
 				out_stream >> t;
 				return *this;
 			}
-
-			/** Returns whether the parent terminal is iTerm. */
-			static bool is_iterm();
 	};
 }
 

@@ -40,7 +40,6 @@ namespace haunted {
 
 	void csi::parse_special(const std::string &str) {
 		// Format for CSI ~ (special): "CSI [number];[modifier] ~" or "CSI [number] ~"
-		// Prior to commit 246667c, the number/modifier is backwards in iTerm.
 
 		first = second = suffix = 0;
 		const ssize_t len = str.size();
@@ -58,22 +57,6 @@ namespace haunted {
 			// assume everything's numeric. The modifier is 1 (none) by default.
 			second = 1;
 			scan_number(first, i, str);
-
-#ifdef ITERM_HACK
-		} else if (terminal::is_iterm()) {
-			// Because the current (beta) version of iTerm incorrectly orders the modifier before the keycode as of June
-			// 15, 2019, we need to accommodate the bug by parsing the numbers backwards.
-			if (semicolon_pos != 1)
-				throw std::invalid_argument("CSI ~ (backwards): invalid semicolon position");
-
-			second = str[0] - '0';
-			scan_number(first, i, str);
-			if (i != semicolon_pos)
-				throw std::invalid_argument("CSI ~ (backwards): parsing failed for \"" + str + "\"");
-
-			return;
-#endif
-
 		} else if (semicolon_pos == len - 2) {
 			// If the second-to-last character is a semicolon, then there's nothing between the semicolon and the
 			// final character. That's invalid.

@@ -3,7 +3,6 @@
 #include <string>
 
 #include <csignal>
-#include <cstdlib>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -107,7 +106,7 @@ namespace haunted {
 
 	void terminal::watch_size() {
 		if (winch_targets.empty())
-			signal(SIGWINCH, &terminal::winch_handler);
+			std::signal(SIGWINCH, &terminal::winch_handler);
 		winch_targets.push_back(this);
 	}
 
@@ -392,13 +391,5 @@ namespace haunted {
 		}
 
 		return *this;
-	}
-
-
-// Public static methods
-
-
-	bool terminal::is_iterm() {
-		return std::string(std::getenv("TERM_PROGRAM")) == "iTerm.app";
 	}
 }
