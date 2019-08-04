@@ -59,11 +59,12 @@ namespace haunted::ui::boxes {
 			expandobox(container *parent, const position &pos, const box_orientation orientation):
 				expandobox(parent, pos, orientation, {}) {}
 
-			virtual void resize(const position &) override;
 			using control::resize;
-			virtual void draw() override;
-			virtual int max_children() const override;
-			virtual haunted::terminal * get_terminal() override;
+			void resize(const position &) override;
+			void draw() override;
+			int max_children() const override { return -1; }
+			haunted::terminal * get_terminal() override { return term; }
+			bool request_resize(control *, size_t, size_t) override;
 
 			expandobox & operator+=(child_pair);
 

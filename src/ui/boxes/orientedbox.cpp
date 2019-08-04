@@ -2,7 +2,7 @@
 
 namespace haunted::ui::boxes {
 	int orientedbox::get_size() const {
-		return orientation == horizontal? pos.width : pos.height;
+		return orientation == box_orientation::horizontal? pos.width : pos.height;
 	}
 
 	void orientedbox::set_orientation(box_orientation new_orientation) {

@@ -132,26 +132,6 @@ namespace haunted::ui {
 		return cursor < size()? buffer[cursor] : superchar();
 	}
 
-	size_t textinput::text_width() const {
-		return pos.width - prefix.length();
-	}
-
-	size_t textinput::get_cursor() const {
-		return cursor;
-	}
-
-	bool textinput::cursor_at_right() const {
-		return cursor - scroll == text_width();
-	}
-
-	bool textinput::cursor_at_left() const {
-		return cursor == scroll;
-	}
-
-	bool textinput::at_end() const {
-		return cursor == size();
-	}
-
 
 // Public instance methods
 
@@ -430,6 +410,10 @@ namespace haunted::ui {
 
 	size_t textinput::size() const {
 		return buffer.length();
+	}
+
+	bool textinput::empty() const {
+		return buffer.empty();
 	}
 
 	bool textinput::on_key(const key &k) {

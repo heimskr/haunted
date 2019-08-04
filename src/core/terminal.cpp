@@ -121,14 +121,10 @@ namespace haunted {
 	}
 
 	void terminal::set_root(ui::control *new_root) {
-		// If new_root is already the root, we need to return here. Otherwise, we'd set the root to a dangling pointer
-		// and then try to call methods on it from terminal::redraw().
-		if (root == new_root)
-			return;
-
-		delete root;
-		root = new_root;
-		redraw();
+		if (root != new_root) {
+			root = new_root;
+			redraw();
+		}
 	}
 
 	void terminal::draw() {

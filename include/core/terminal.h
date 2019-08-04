@@ -82,7 +82,7 @@ namespace haunted {
 
 			/** Redraws the entire screen if a root control exists. This also adjusts the size and position of the root
 			 *  control to match the terminal. */
-			virtual void redraw();
+			virtual void redraw() override;
 
 			/** Sets the terminal's root control. If the new root isn't the same as the old root, this function deletes
 			 *  the old root. */

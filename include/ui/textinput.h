@@ -96,19 +96,16 @@ namespace haunted::ui {
 			superchar next_char();
 
 			/** Returns the width of the buffer area (i.e., the width of the control minus the prefix length). */
-			inline size_t text_width() const;
-
-			/** Returns the cursor's offset. */
-			size_t get_cursor() const;
+			size_t text_width() const { return pos.width - prefix.length(); }
 
 			/** Returns true if the cursor is at the right edge of the textinput. */
-			bool cursor_at_right() const;
+			bool cursor_at_right() const { return cursor - scroll == text_width(); }
 
 			/** Returns true if the cursor is at the left edge of the textinput. */
-			bool cursor_at_left() const;
+			bool cursor_at_left() const { return cursor == scroll; }
 
 			/** Returns true if the cursor is at the end of the buffer. */
-			bool at_end() const;
+			bool at_end() const { return cursor == size(); }
 
 		public:
 			enum class event: int {update = 1, submit = 2};
@@ -145,6 +142,9 @@ namespace haunted::ui {
 
 			/** Sets a function to listen for updates to the buffer. */
 			void listen(event, const update_fn &);
+
+			/** Returns the cursor's offset. */
+			size_t get_cursor() const { return cursor; }
 
 			/** Moves the cursor to a given position. */
 			void move_to(size_t);
@@ -194,6 +194,9 @@ namespace haunted::ui {
 			/** Returns the number of characters in the buffer. */
 			size_t length() const;
 			size_t size() const;
+
+			/** Returns whether the buffer is empty. */
+			bool empty() const;
 
 			/** Handles key presses. */
 			bool on_key(const key &) override;

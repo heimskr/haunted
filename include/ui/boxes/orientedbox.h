@@ -4,7 +4,7 @@
 #include "ui/boxes/box.h"
 
 namespace haunted::ui::boxes {
-	enum box_orientation {horizontal, vertical};
+	enum class box_orientation {horizontal, vertical};
 
 	class orientedbox: public box {
 		protected:

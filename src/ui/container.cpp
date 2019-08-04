@@ -25,11 +25,12 @@ namespace haunted::ui {
 		return false;
 	}
 
-	int container::max_children() const {
-		return -1;
+	bool container::request_resize(control *, size_t, size_t) {
+		return false;
 	}
 
-	int container::child_count() const {
-		return children.size();
+	void container::redraw() {
+		for (control *child: children)
+			child->draw();
 	}
 }

@@ -20,6 +20,7 @@
 #include "core/terminal.h"
 #include "ui/boxes/simplebox.h"
 #include "ui/boxes/expandobox.h"
+#include "ui/label.h"
 #include "ui/textbox.h"
 #include "ui/textinput.h"
 
@@ -179,15 +180,28 @@ namespace haunted::tests {
 		term.cbreak();
 		textbox *tb = new textbox();
 		textinput *ti = new textinput();
-		expandobox *expando = new expandobox(&term, term.get_position(), vertical, {{tb, -1}, {ti, 1}});
-		expando->resize();
-		ti->focus();
+		label *lb = new label("Label", true);
+		label *lb2 = new label(" ", false);
+
+		DBG("term " << &term);
+		DBG("tb " << tb << ", ti " << ti << ", lb " << lb);
+
+		expandobox *hexp = new expandobox(&term, term.get_position(), box_orientation::horizontal, {{lb, 5}, {lb2, 1},
+			{ti, -1}});
+		DBG("hexp " << hexp);
+		hexp->resize();
+		expandobox *vexp = new expandobox(&term, term.get_position(), box_orientation::vertical, {{tb, -1}, {hexp, 1}});
+		DBG("vexp " << vexp);
+		vexp->resize();
+
 		*tb += "Hello";
+
+		ti->focus();
 		term.redraw();
 
-		ti->listen(textinput::event::submit, [&](const superstring &str, int) {
-			if (!std::string(str).empty()) {
-				*tb += str;
+		ti->listen(textinput::event::submit, [&](const superstring &sstr, int) {
+			if (!sstr.empty()) {
+				*tb += sstr;
 				ti->clear();
 			}
 		});
@@ -223,6 +237,16 @@ namespace haunted::tests {
 				tb->on_key(key(k.type));
 				ti->focus();
 				ti->jump_cursor();
+			} else if (k == key(ktype::enter).alt() && !ti->empty()) {
+				std::string new_label = std::string(*ti);
+				ti->clear();
+				lb->set_text(new_label);
+				DBG("ti->cursor == " << ti->get_cursor() << ", ti->left == " << ti->get_position().left);
+				ti->jump_cursor();
+			} else if (k == key(ktype::p).ctrl()) {
+				DBG("tb @ " << tb->get_position() << ", lb @ " << lb->get_position() << ", lb2 @ "
+					<< lb2->get_position() << ", ti @ " << ti->get_position() << ", hexp @ " << hexp->get_position()
+					<< ", vexp @ " << vexp->get_position() << ", term @ " << term.get_position());
 			} else {
 				term.send_key(k);
 			}
@@ -409,7 +433,8 @@ namespace haunted::tests {
 		ui::textbox tb3(&wrapper);
 		ui::textbox tb4(&wrapper);
 
-		expandobox *expando = new expandobox(&wrapper, wrapper.get_position(), horizontal, {{&tb1, 10}, {&tb2, -1}});
+		expandobox *expando = new expandobox(&wrapper, wrapper.get_position(), box_orientation::horizontal,
+			{{&tb1, 10}, {&tb2, -1}});
 
 		unit.check(wrapper.get_position(),  {10, 10, 500, 100}, "wrapper position");
 		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando position");
@@ -431,9 +456,9 @@ namespace haunted::tests {
 		unit.check(tb3.get_position(), {220, 10, 90,  100}, "tb3 position");
 		unit.check(tb4.get_position(), {310, 10, 200, 100}, "tb4 position");
 
-		INFO("Reorienting horizontal → vertical.");
+		INFO("Reorienting horizontal → box_orientation::vertical.");
 		expando->resize({10, 10, 100, 250});
-		expando->set_orientation(vertical);
+		expando->set_orientation(box_orientation::vertical);
 		unit.check(tb1.get_position(), {10, 10,  100, 10}, "tb1 position");
 		unit.check(tb2.get_position(), {10, 20,  100, 75}, "tb2 position");
 		unit.check(tb3.get_position(), {10, 95,  100, 90}, "tb3 position");

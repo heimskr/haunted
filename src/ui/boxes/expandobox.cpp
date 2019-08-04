@@ -84,7 +84,7 @@ namespace haunted::ui::boxes {
 	}
 
 	void expandobox::resize_child(control *child, int offset, int size) {
-		if (orientation == horizontal) {
+		if (orientation == box_orientation::horizontal) {
 			child->resize({pos.left + offset, pos.top, size, pos.height});
 		} else {
 			child->resize({pos.left, pos.top + offset, pos.width, size});
@@ -114,6 +114,8 @@ namespace haunted::ui::boxes {
 				offset += assigned;
 			}
 		}
+
+		redraw();
 	}
 
 	void expandobox::draw() {
@@ -125,12 +127,20 @@ namespace haunted::ui::boxes {
 			child->draw();
 	}
 
-	int expandobox::max_children() const {
-		return -1;
-	}
+	bool expandobox::request_resize(control *child, size_t width, size_t height) {
+		// Don't try to resize anything that isn't a direct descendant.
+		auto iter = std::find(children.begin(), children.end(), child);
+		DBG("expandobox received resize request [" << width << ", " << height << "] from " << child);
+		if (child == nullptr || iter == children.end()) {
+			DBG("... no child found");
+			return false;
+		}
 
-	haunted::terminal * expandobox::get_terminal() {
-		return term;
+		size_t pos = iter - children.begin();
+		sizes[pos] = orientation == box_orientation::vertical? height : width;
+			DBG("... setting size to " << sizes[pos]);
+		resize();
+		return true;
 	}
 
 	expandobox & expandobox::operator+=(expandobox::child_pair p) {

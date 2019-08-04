@@ -18,7 +18,7 @@ namespace haunted::ui {
 			terminal *term;
 			haunted::position pos;
 			control(container *parent, const haunted::position &pos):
-				child(parent), term(parent->get_terminal()), pos(pos) {}
+				child(parent), term(parent == nullptr? nullptr : parent->get_terminal()), pos(pos) {}
 			control(const haunted::position &pos):
 				child(nullptr), term(nullptr), pos(pos) {}
 

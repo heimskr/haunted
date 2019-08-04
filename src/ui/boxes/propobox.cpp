@@ -22,6 +22,6 @@ namespace haunted::ui::boxes {
 	}
 
 	int propobox::get_size() const {
-		return orientation == horizontal? pos.width : pos.height;
+		return orientation == box_orientation::horizontal? pos.width : pos.height;
 	}
 }

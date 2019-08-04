@@ -2,7 +2,7 @@
 
 namespace haunted::ui::boxes {
 	void dualbox::resize(const position &new_pos) {
-		if (orientation == horizontal) {
+		if (orientation == box_orientation::horizontal) {
 			if (control *left = (*this)[0])
 				left->resize({new_pos.left, new_pos.top, size_one(), new_pos.height});
 			

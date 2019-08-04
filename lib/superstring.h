@@ -36,17 +36,20 @@ namespace haunted {
 
 			void dbg();
 
-			iterator begin();
-			iterator end();
+			iterator begin() { return chunks.begin(); }
+			iterator end()   { return chunks.end(); }
 
 			/** Returns the number of substrings. */
-			size_t size() const;
-			size_t length() const;
+			size_t size()   const { return chunks.size(); }
+			size_t length() const { return chunks.size(); }
+
+			/** Returns whether the superstring is empty. */
+			bool empty() const { return chunks.empty(); }
 
 			/** Returns the sum of all the substrings' lengths. */
 			size_t text_length() const;
 
-			void clear();
+			void clear() { chunks.clear(); }
 	};
 }
 
