@@ -136,6 +136,10 @@ namespace haunted {
 			virtual void hmargins(size_t left, size_t right);
 			/** Resets the horizontal margins of the scrollable area. */
 			virtual void hmargins();
+			/** Enables horizontal margins. This must be called before calling hmargins. */
+			virtual void enable_hmargins();
+			/** Disables horizontal margins. */
+			virtual void disable_hmargins();
 			/** Sets the vertical margins of the scrollable area. Zero-based. */
 			virtual void vmargins(size_t top, size_t bottom);
 			/** Resets the vertical margins of the scrollable area. */
@@ -144,8 +148,6 @@ namespace haunted {
 			virtual void margins(size_t top, size_t bottom, size_t left, size_t right);
 			/** Resets the vertical and horizontal margins of the scrollable area. */
 			virtual void margins();
-			virtual void enable_hmargins();
-			virtual void disable_hmargins();
 			/** Enables origin mode: the home position is set to the top-left corner of the margins. */
 			virtual void set_origin();
 			/** Disables origin mode. */

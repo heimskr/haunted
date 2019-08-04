@@ -211,46 +211,36 @@ namespace haunted {
 
 	void terminal::jump(int x, int y) {
 		std::unique_lock uniq(output_mutex);
-		if (0 <= x && 0 <= y) {
-			out_stream.style_out << "\e[" << (y + 1) << ";" << (x + 1) << "H";
-		} else if (0 <= x) {
-			out_stream.style_out << "\e[" << (x + 1) << "G";
-		} else if (0 <= y) {
-			out_stream.style_out << "\e[999999A";
-			if (0 < y)
-				out_stream.style_out << "\e[" + std::to_string(y) + "B";
-		} else {
-			throw std::runtime_error("Invalid jump: (" + std::to_string(x) + ", " + std::to_string(y) + ")");
-		}
+		out_stream.jump(x, y);
 	}
 
 	void terminal::vscroll(int rows) {
 		std::unique_lock uniq(output_mutex);
 		if (0 < rows) {
-			out_stream.style_out << "\e[" + std::to_string(rows) + "T";
+			out_stream.scroll_down(rows);
 		} else if (rows < 0) {
-			out_stream.style_out << "\e[" + std::to_string(-rows) + "S";
+			out_stream.scroll_up(-rows);
 		}
 	}
 
 	void terminal::hmargins(size_t left, size_t right) {
 		std::unique_lock uniq(output_mutex);
-		out_stream.style_out << "\e[" + std::to_string(left + 1) + ";" + std::to_string(right + 1) + "s";
+		out_stream.hmargins(left, right);
 	}
 
 	void terminal::hmargins() {
 		std::unique_lock uniq(output_mutex);
-		out_stream.style_out << "\e[s";
+		out_stream.hmargins();
 	}
 
 	void terminal::vmargins(size_t top, size_t bottom) {
 		std::unique_lock uniq(output_mutex);
-		out_stream.style_out << "\e[" + std::to_string(top + 1) + ";" + std::to_string(bottom + 1) + "r";
+		out_stream.vmargins(top, bottom);
 	}
 
 	void terminal::vmargins() {
 		std::unique_lock uniq(output_mutex);
-		out_stream.style_out << "\e[r";
+		out_stream.vmargins();
 	}
 
 	void terminal::margins(size_t top, size_t bottom, size_t left, size_t right) {
@@ -265,22 +255,22 @@ namespace haunted {
 
 	void terminal::enable_hmargins() { // DECLRMM: Left Right Margin Mode
 		std::unique_lock uniq(output_mutex);
-		out_stream.style_out << "\e[?69h";
+		out_stream.enable_hmargins();
 	}
 
 	void terminal::disable_hmargins() {
 		std::unique_lock uniq(output_mutex);
-		out_stream.style_out << "\e[?69l";
+		out_stream.disable_hmargins();
 	}
 
 	void terminal::set_origin() {
 		std::unique_lock uniq(output_mutex);
-		out_stream.style_out << "\e[?6h";
+		out_stream.set_origin();
 	}
 
 	void terminal::reset_origin() {
 		std::unique_lock uniq(output_mutex);
-		out_stream.style_out << "\e[?6l";
+		out_stream.reset_origin();
 	}
 
 	std::unique_lock<std::recursive_mutex> terminal::lock_render() {
