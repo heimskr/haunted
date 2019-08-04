@@ -130,15 +130,11 @@ namespace haunted::ui::boxes {
 	bool expandobox::request_resize(control *child, size_t width, size_t height) {
 		// Don't try to resize anything that isn't a direct descendant.
 		auto iter = std::find(children.begin(), children.end(), child);
-		DBG("expandobox received resize request [" << width << ", " << height << "] from " << child);
-		if (child == nullptr || iter == children.end()) {
-			DBG("... no child found");
+		if (child == nullptr || iter == children.end())
 			return false;
-		}
 
 		size_t pos = iter - children.begin();
 		sizes[pos] = orientation == box_orientation::vertical? height : width;
-			DBG("... setting size to " << sizes[pos]);
 		resize();
 		return true;
 	}

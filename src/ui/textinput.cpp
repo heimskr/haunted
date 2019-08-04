@@ -483,6 +483,11 @@ namespace haunted::ui {
 		return parent != nullptr && term != nullptr && !term->suppress_output;
 	}
 
+	void textinput::focus() {
+		control::focus();
+		jump_cursor();
+	}
+
 	void textinput::jump_cursor() {
 		if (term != nullptr) {
 			point cpos = find_cursor();

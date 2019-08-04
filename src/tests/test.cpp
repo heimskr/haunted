@@ -180,21 +180,15 @@ namespace haunted::tests {
 		term.cbreak();
 		textbox *tb = new textbox();
 		textinput *ti = new textinput();
+		label *lbl = new label("[", false);
 		label *lb = new label("Label", true);
-		label *lb2 = new label(" ", false);
+		label *lbr = new label("] ", false);
 
-		DBG("term " << &term);
-		DBG("tb " << tb << ", ti " << ti << ", lb " << lb);
-
-		expandobox *hexp = new expandobox(&term, term.get_position(), box_orientation::horizontal, {{lb, 5}, {lb2, 1},
-			{ti, -1}});
-		DBG("hexp " << hexp);
+		expandobox *hexp = new expandobox(&term, term.get_position(), box_orientation::horizontal,
+			{{lbl, 1}, {lb, 5}, {lbr, 2}, {ti, -1}});
 		hexp->resize();
 		expandobox *vexp = new expandobox(&term, term.get_position(), box_orientation::vertical, {{tb, -1}, {hexp, 1}});
-		DBG("vexp " << vexp);
 		vexp->resize();
-
-		*tb += "Hello";
 
 		ti->focus();
 		term.redraw();
@@ -214,39 +208,25 @@ namespace haunted::tests {
 			if (k == key(ktype::f).ctrl()) {
 				tb->clear_lines();
 				static std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-				for (int i = 0; i < tb->get_position().height - 1; ++i) {
+				for (int i = 0; i < tb->get_position().height - 1; ++i)
 					*tb += std::string(1, alphabet[i % 26]);
-					DBG("[" << alphabet[i % 26] << "]");
-				}
-				ti->jump_cursor();
+				ti->focus();
 			} else if (k == key(ktype::i).ctrl()) {
 				ti->focus();
 			} else if (k == key(ktype::k).ctrl()) {
 				dbgstream.clear().jump().flush();
 			} else if (k == key(ktype::l).ctrl()) {
 				term.redraw();
-			} else if (k == key(ktype::n).ctrl()) {
-				DBG("tb->next_row() == " << tb->next_row());
-			} else if (k == key(ktype::r).ctrl()) {
-				DBG("rows: " << term.get_rows());
 			} else if (k == key(ktype::t).ctrl()) {
 				tb->focus();
-			} else if (k == key(ktype::v).ctrl()) {
-				DBG("voffset == " << tb->get_voffset() << ", effective == " << tb->effective_voffset());
 			} else if (k.is_arrow() && k.mods == key::get_modset(kmod::shift)) {
 				tb->on_key(key(k.type));
 				ti->focus();
-				ti->jump_cursor();
 			} else if (k == key(ktype::enter).alt() && !ti->empty()) {
 				std::string new_label = std::string(*ti);
 				ti->clear();
 				lb->set_text(new_label);
-				DBG("ti->cursor == " << ti->get_cursor() << ", ti->left == " << ti->get_position().left);
 				ti->jump_cursor();
-			} else if (k == key(ktype::p).ctrl()) {
-				DBG("tb @ " << tb->get_position() << ", lb @ " << lb->get_position() << ", lb2 @ "
-					<< lb2->get_position() << ", ti @ " << ti->get_position() << ", hexp @ " << hexp->get_position()
-					<< ", vexp @ " << vexp->get_position() << ", term @ " << term.get_position());
 			} else {
 				term.send_key(k);
 			}

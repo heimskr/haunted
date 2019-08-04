@@ -206,6 +206,9 @@ namespace haunted::ui {
 
 			virtual bool can_draw() const override;
 
+			/** Focuses the textinput and jumps to its cursor. */
+			void focus() override;
+
 			/** Moves the terminal cursor to the position of the textinput cursor. */
 			void jump_cursor();
 
