@@ -71,6 +71,7 @@ namespace haunted {
 			terminal(std::istream &in_stream): terminal(in_stream, ansi::ansistream()) {}
 			terminal(): terminal(std::cin) {}
 
+			/** Resets terminal attributes and joins threads as necessary. */
 			~terminal();
 
 			/** Activates cbreak mode. */
@@ -153,6 +154,7 @@ namespace haunted {
 			/** Disables origin mode. */
 			virtual void reset_origin();
 
+			/** Returns a lock that gives the current thread exclusive permission to render components. */
 			virtual std::unique_lock<std::recursive_mutex> lock_render();
 
 			/** Returns true if in_stream is in a valid state. */
@@ -163,7 +165,6 @@ namespace haunted {
 			virtual terminal & operator>>(char &);
 			/** Reads a key from the terminal. This conveniently handles much of the weirdness of terminal input. */
 			virtual terminal & operator>>(key &);
-
 
 			/** Writes pretty much anything to the terminal. */
 			template <typename T>
