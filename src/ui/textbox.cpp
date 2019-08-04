@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 #include "ui/textbox.h"
-#include "lib/formicine/ansi.h"
+#include "formicine/ansi.h"
 #include "tests/test.h"
 
 namespace haunted::ui {

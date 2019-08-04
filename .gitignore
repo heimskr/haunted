@@ -22,3 +22,5 @@ build
 .vscode
 .dep
 .log
+**/.DS_Store
+

@@ -53,9 +53,7 @@ namespace haunted::ui {
 	void colored::apply_colors() {
 		if (term != nullptr) {
 			DBGTFN();
-			*term << ansi::get_bg(term->last_bg = find_color(ansi::color_type::background))
-			      << ansi::get_fg(term->last_fg = find_color(ansi::color_type::foreground));
-			term->out_stream.flush();
+			term->colors.set_both(find_color(ansi::color_type::foreground), find_color(ansi::color_type::background));
 		}
 	}
 
@@ -68,27 +66,20 @@ namespace haunted::ui {
 				bg = find_color(ansi::color_type::background);
 			}
 
-			DBGT(fg << "fg\e[0m, " << term->last_fg << "last_fg\e[0m, " << bg << "bg\e[0m, " << term->last_bg << "last_bg");
+			DBGT(fg << "fg\e[0m, " << term->colors.get_foreground() << "last_fg\e[0m, " << bg << "bg\e[0m, "
+				<< term->colors.get_background() << "last_bg");
 
-			if (fg != term->last_fg) {
+			if (term->colors.set_foreground(fg))
 				DBGT("Applying " << fg << "foreground");
-				*term << ansi::get_fg(term->last_fg = fg);
-			}
 			
-			if (bg != term->last_bg) {
+			if (term->colors.set_background(bg))
 				DBGT("Applying " << bg << "background");
-				*term << ansi::get_bg(term->last_bg = bg);
-			}
 		}
 	}
 
 	void colored::uncolor() {
-		if (term != nullptr) {
-			*term << ansi::color_pair(ansi::color::normal, ansi::color_type::foreground)
-			      << ansi::color_pair(ansi::color::normal, ansi::color_type::background);
-			term->last_fg = term->last_bg = ansi::color::normal;
-			term->last_fg = ansi::color::normal;
-		}
+		if (term != nullptr)
+			term->reset_colors();
 	}
 
 	void colored::set_colors(ansi::color foreground_, ansi::color background_) {

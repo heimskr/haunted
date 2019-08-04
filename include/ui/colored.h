@@ -1,10 +1,13 @@
 #ifndef HAUNTED_UI_COLORED_H_
 #define HAUNTED_UI_COLORED_H_
 
-#include "lib/formicine/ansi.h"
+#include "formicine/ansi.h"
 #include "ui/control.h"
 
 namespace haunted::ui {
+	/**
+	 * Represents a control that can be colored.
+	 */
 	class colored: public virtual control {
 		private:
 			ansi::color background, foreground;

@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "lib/formicine/ansi.h"
+#include "formicine/ansi.h"
 #include "tests/test.h"
 #include "core/csi.h"
 #include "core/dummy_terminal.h"

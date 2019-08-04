@@ -12,6 +12,7 @@
 #include "formicine/ansi.h"
 
 #include "core/key.h"
+#include "ui/coloration.h"
 #include "ui/container.h"
 #include "ui/control.h"
 
@@ -66,7 +67,7 @@ namespace haunted {
 			bool raw = false;
 			bool suppress_output = false;
 			ansi::ansistream out_stream;
-			ansi::color last_fg, last_bg;
+			ui::coloration colors;
 
 			terminal(std::istream &, ansi::ansistream);
 			terminal(std::istream &in_stream): terminal(in_stream, ansi::ansistream()) {}

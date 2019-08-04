@@ -1,1 +1,0 @@
-../../../lib/formicine/ansi.h

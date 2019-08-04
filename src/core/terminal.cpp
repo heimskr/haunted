@@ -19,7 +19,7 @@ namespace haunted {
 	std::vector<terminal *> terminal::winch_targets {};
 
 	terminal::terminal(std::istream &in_stream, ansi::ansistream out_stream):
-	in_stream(in_stream), out_stream(out_stream) {
+	in_stream(in_stream), out_stream(out_stream), colors(&out_stream, &output_mutex) {
 		original = attrs = getattr();
 		winsize size;
 		ioctl(STDIN_FILENO, TIOCGWINSZ, &size);
@@ -113,7 +113,8 @@ namespace haunted {
 	void terminal::redraw() {
 		if (root) {
 			DBG("terminal::redraw()");
-			out_stream.reset_colors().clear().jump();
+			colors.reset();
+			out_stream.clear().jump();
 			root->resize({0, 0, cols, rows});
 			root->draw();
 		}
@@ -133,7 +134,7 @@ namespace haunted {
 
 	void terminal::reset_colors() {
 		std::unique_lock uniq(output_mutex);
-		out_stream.reset_colors();
+		colors.reset();
 	}
 
 	ui::keyhandler * terminal::send_key(key k) {
