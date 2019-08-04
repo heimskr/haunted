@@ -207,6 +207,8 @@ namespace haunted::tests {
 		lb->set_colors(ansi::color::white, ansi::color::normal);
 		lbr->set_colors(ansi::color::white, ansi::color::blue);
 		hexp->set_background(ansi::color::green);
+		ti->inherit_background = true;
+		hexp->propagate(ansi::color_type::both);
 
 		DBG("lbl  " << lbl);
 		DBG("lb   " << lb);

@@ -36,6 +36,8 @@ namespace haunted::ui {
 			/** Returns the number of children the container currently holds. */
 			virtual int child_count()  const { return children.size(); }
 
+			virtual std::vector<control *> & get_children() { return children; }
+
 			/** Returns the terminal associated with the container. */
 			virtual haunted::terminal * get_terminal() = 0;
 

@@ -133,7 +133,6 @@ namespace haunted {
 	}
 
 	void terminal::reset_colors() {
-		std::unique_lock uniq(output_mutex);
 		colors.reset();
 	}
 
