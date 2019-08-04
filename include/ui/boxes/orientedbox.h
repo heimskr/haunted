@@ -6,7 +6,7 @@
 namespace haunted::ui::boxes {
 	enum class box_orientation {horizontal, vertical};
 
-	class orientedbox: public box {
+	class orientedbox: public virtual box {
 		protected:
 			box_orientation orientation;
 

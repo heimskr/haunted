@@ -10,7 +10,7 @@ namespace haunted::ui::boxes {
 	 * Base class representing boxes, which are controls that contain at least two subcontrols
 	 * and resize them as appropriate.
 	 */
-	class box: public container, public control {
+	class box: public virtual container, public virtual control {
 		protected:
 			box(const position &pos): control(pos) {}
 			using control::control;

@@ -10,6 +10,7 @@
 #include "../core/defs.h"
 #include "../core/key.h"
 #include "../lib/utf8.h"
+#include "ui/colored.h"
 #include "ui/container.h"
 #include "ui/control.h"
 
@@ -19,7 +20,7 @@ namespace haunted::ui {
 	 * This control should have a height of one row;
 	 * any rows below the first will be unused.
 	 */
-	class textinput: public virtual control {
+	class textinput: public virtual control, public virtual colored {
 		using update_fn = std::function<void(const superstring &, int)>;
 
 		private:

@@ -93,6 +93,7 @@ namespace haunted::ui {
 			return;
 
 		term->jump(pos.left + prefix.length() + offset, pos.top);
+		apply_colors();
 		if (at_right()) {
 			// If we're bordering the right edge of the screen, we can clear everything to the right.
 			term->out_stream.clear_right();
@@ -469,6 +470,8 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
+		colored::draw();
+
 		auto lock = term->lock_render();
 		size_t twidth = text_width();
 
@@ -484,7 +487,8 @@ namespace haunted::ui {
 	}
 
 	void textinput::focus() {
-		control::focus();
+		DBG(this << ": textinput::focus()");
+		colored::focus();
 		jump_cursor();
 	}
 

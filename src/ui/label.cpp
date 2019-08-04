@@ -33,6 +33,8 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
+		colored::draw();
+
 		auto lock = term->lock_render();
 		jump();
 

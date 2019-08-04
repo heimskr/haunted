@@ -122,6 +122,8 @@ namespace haunted::ui::boxes {
 		if (!can_draw())
 			return;
 
+		colored::draw();
+
 		auto lock = term->lock_render();
 		for (control *child: children)
 			child->draw();

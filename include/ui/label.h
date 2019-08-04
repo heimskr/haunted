@@ -7,17 +7,18 @@
 #include <string>
 #include <unordered_set>
 
-#include "../core/defs.h"
-#include "../core/key.h"
+#include "core/defs.h"
+#include "core/key.h"
 #include "../lib/utf8.h"
 #include "ui/container.h"
 #include "ui/control.h"
+#include "ui/colored.h"
 
 namespace haunted::ui {
 	/**
 	 * Represents a single-row control that displays text.
 	 */
-	class label: public virtual control {
+	class label: public virtual control, public virtual colored {
 		private:
 			/** Contains the label's text. */
 			std::string text;

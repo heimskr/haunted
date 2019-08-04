@@ -193,6 +193,20 @@ namespace haunted::tests {
 		ti->focus();
 		term.redraw();
 
+		lbl->set_colors(ansi::color::white, ansi::color::blue);
+		lb->set_colors(ansi::color::white, ansi::color::normal);
+		lbr->set_colors(ansi::color::white, ansi::color::blue);
+		hexp->set_background(ansi::color::green);
+
+		DBG("lbl  " << lbl);
+		DBG("lb   " << lb);
+		DBG("lbr  " << lbr);
+		DBG("ti   " << ti);
+		DBG("hexp " << hexp);
+		DBG("tb   " << tb);
+		DBG("vexp " << vexp);
+		DBG("term " << &term);
+
 		ti->listen(textinput::event::submit, [&](const superstring &sstr, int) {
 			if (!sstr.empty()) {
 				*tb += sstr;
