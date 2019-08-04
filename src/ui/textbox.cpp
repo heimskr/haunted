@@ -66,9 +66,6 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
-		int new_lines = line_rows(line);
-		if (voffset == -1)
-			term->vscroll(-new_lines);
 
 		// We need to subtract one to account for the fact that the new line is already in the buffer.
 		int next = next_row() - 1;
@@ -77,6 +74,12 @@ namespace haunted::ui {
 
 		set_margins();
 		in_margins = true;
+
+		int new_lines = line_rows(line);
+		if (voffset == -1 && pos.height < total_rows()) {
+			DBG("vscroll([" << -new_lines << "] -new_lines)");
+			term->vscroll(-new_lines);
+		}
 
 		term->jump(0, next);
 		int height = pos.height;
