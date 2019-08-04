@@ -43,7 +43,6 @@ namespace haunted {
 	struct key {
 		private:
 			static std::unordered_map<ktype, std::string> keymap;
-			static modset get_modset(kmod);
 
 		public:
 			ktype type;
@@ -58,11 +57,28 @@ namespace haunted {
 			key(int t):              key(t,        kmod::none) {}
 			key():                   key('\0',     kmod::none) {}
 
+			static modset get_modset(kmod);
+
 			/** Returns true if this key's type is equal to a given key type and this key's only modifier is control. */
 			bool is_ctrl(ktype) const;
 
 			/** Returns true if this key's type is equal to a given key type and this key's only modifier is alt. */
 			bool is_alt(ktype) const;
+
+			/** Returns true if this key's type is equal to a given key type and this key's only modifier is shift. */
+			bool is_shift(ktype) const;
+
+			/** Returns true if the key is one of the arrow keys. */
+			bool is_arrow() const;
+
+			/** Returns a copy of the key with the shift modifier set. */
+			key shift() const;
+
+			/** Returns a copy of the key with the alt modifier set. */
+			key alt() const;
+
+			/** Returns a copy of the key with the control modifier set. */
+			key ctrl() const;
 
 			/** Returns false if the key is null/invalid. */
 			operator bool() const;

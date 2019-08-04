@@ -12,6 +12,27 @@ namespace haunted {
 		return type == other && *this == kmod::alt;
 	}
 
+	bool key::is_shift(ktype other) const {
+		return type == other && *this == kmod::shift;
+	}
+
+	bool key::is_arrow() const {
+		return type == ktype::up_arrow    || type == ktype::down_arrow ||
+		       type == ktype::right_arrow || type == ktype::left_arrow;
+	}
+
+	key key::shift() const {
+		return {type, modset(mods).set(0, true)};
+	}
+
+	key key::alt() const {
+		return {type, modset(mods).set(1, true)};
+	}
+
+	key key::ctrl() const {
+		return {type, modset(mods).set(2, true)};
+	}
+
 	key::operator bool() const {
 		return int(type) != '\0';
 	}

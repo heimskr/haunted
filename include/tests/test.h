@@ -184,7 +184,8 @@ namespace haunted::tests {
 
 			/** Used to check whether a function throws an exception of a given type. */
 			template <typename T, typename R, typename... A>
-			bool check(const std::string &fn_name, const std::type_info &errtype, R(T::*fn)(A...), T *target, const std::string &what, A... args) {
+			bool check(const std::string &fn_name, const std::type_info &errtype, R(T::*fn)(A...), T *target,
+			           const std::string &what, A... args) {
 				using namespace ansi;
 				const std::string demangled = util::demangle(std::string(errtype.name()));
 
