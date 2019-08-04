@@ -6,14 +6,14 @@
 #include <fstream>
 #include <cstddef>
 
-#include "../../lib/formicine/ansi.h"
+#include "lib/formicine/ansi.h"
 
 #ifdef NODEBUG
 #define DBGX(x)
 #define DBG(x)
 #else
 #define DBGX(x) "\e[2m[" << __FILE__ << ":" << __LINE__ << "]\e[0m " << x << std::endl
-#define DBG(x) dbgstream << DBGX(x) << ansi::reset
+#define DBG(x) dbgstream << DBGX(x) << ansi::action::reset
 #endif
 
 namespace haunted {

@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "../../lib/formicine/ansi.h"
+#include "lib/formicine/ansi.h"
 #include "tests/test.h"
 #include "core/csi.h"
 #include "core/dummy_terminal.h"
@@ -235,7 +235,7 @@ namespace haunted::tests {
 
 	/** Runs some tests for the CSI u functions. */
 	void maintest::unittest_csiu(testing &unit) {
-		INFO(wrap("Testing CSI u validation.\n", ansi::bold));
+		INFO(wrap("Testing CSI u validation.\n", ansi::style::bold));
 
 		unit.check<std::string, bool>({
 			{"1;1u",   true},
@@ -273,8 +273,8 @@ namespace haunted::tests {
 	}
 
 	void maintest::unittest_textbox(testing &unit) {
-		INFO(wrap("Testing haunted::ui::textbox.\n", ansi::bold));
 		using namespace haunted::ui;
+		INFO(wrap("Testing haunted::ui::textbox.\n", ansi::style::bold));
 		
 		dummy_terminal dummy;
 
@@ -298,7 +298,7 @@ namespace haunted::tests {
 
 		int rows = tb->total_rows();
 
-		unit.check(tb->line_rows(t2), 11, "line_rows(" + ansi::wrap("t2", ansi::bold) + ")");
+		unit.check(tb->line_rows(t2), 11, "line_rows(" + ansi::wrap("t2", ansi::style::bold) + ")");
 		unit.check(rows, 18, "total_rows()");
 
 		unit.check({
@@ -340,7 +340,7 @@ namespace haunted::tests {
 		}, &textbox::text_at_row, tb, "text_at_row");
 
 		INFO("Trying to scroll 10 lines down (current voffset is " << ansi::wrap(std::to_string(tb->voffset),
-			ansi::bold) << ").");
+			ansi::style::bold) << ").");
 		tb->vscroll(10);
 		unit.check(tb->voffset, 8, "voffset");
 
@@ -400,8 +400,8 @@ namespace haunted::tests {
 	}
 
 	void maintest::unittest_expandobox(testing &unit) {
-		INFO(wrap("Testing haunted::ui::boxes::expandobox.\n", ansi::bold));
 		using namespace haunted::ui::boxes;
+		INFO(wrap("Testing haunted::ui::boxes::expandobox.\n", ansi::style::bold));
 
 		dummy_terminal dummy;
 
@@ -464,10 +464,10 @@ namespace haunted::tests {
 				out << bad << "All " << total_failed << " tests failed.\n";
 		} else {
 			out << warn
-			    << "Passed " << wrap(std::to_string(total_passed), green)
-			    << ", failed " << wrap(std::to_string(total_failed), red)
-			    << " (" << bold << std::setprecision(4)
-			    << (total_passed * 100.0 / (total_passed + total_failed)) << "%" >> bold
+			    << "Passed " << wrap(std::to_string(total_passed), color::green)
+			    << ", failed " << wrap(std::to_string(total_failed), color::red)
+			    << " (" << style::bold << std::setprecision(4)
+			    << (total_passed * 100.0 / (total_passed + total_failed)) << "%" >> style::bold
 			    << ")" << std::defaultfloat << endl;
 		}
 	}
@@ -475,21 +475,21 @@ namespace haunted::tests {
 	void testing::display_failed(const std::string &input,  const std::string &actual, const std::string &expected,
 	                             const std::string &prefix, const std::string &padding, const std::exception *err) {
 		using namespace ansi;
-		out << bad << prefix << parens << wrap(input, bold) << padding << wrap(" == ", dim);
+		out << bad << prefix << parens << wrap(input, style::bold) << padding << " == "_d;
 
 		if (err != nullptr)
-			out << wrap(wrap(util::demangle_object(err), bold) + ": " + std::string(err->what()), red);
+			out << wrap(wrap(util::demangle_object(err), style::bold) + ": " + std::string(err->what()), color::red);
 		else
-			out << wrap(actual, red);
+			out << wrap(actual, color::red);
 		
-		out << wrap(" Expected: ", dim) << wrap(expected, yellow) << endl;
+		out << " Expected: "_d << wrap(expected, color::yellow) << endl;
 	}
 
 	void testing::display_passed(const std::string &input, const std::string &actual, const std::string &prefix,
 	                             const std::string &padding) {
 		using namespace ansi;
-		out << good << prefix << parens << wrap(input, bold) << padding << wrap(" == ", dim)
-		    << wrap(actual, green) << endl;
+		out << good << prefix << parens << wrap(input, style::bold) << padding << " == "_d << wrap(actual, color::green)
+		    << endl;
 	}
 
 	testing::~testing() {

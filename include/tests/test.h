@@ -41,7 +41,7 @@ namespace haunted::tests {
 			template <typename A, typename B>
 			static std::string stringify(const std::pair<A, B> &p) {
 				using namespace ansi;
-				return wrap("{", dim) + stringify(p.first) + wrap(", ", dim) + stringify(p.second) + wrap("}", dim);
+				return "{"_d + stringify(p.first) + ", "_d + stringify(p.second) + "}"_d;
 			}
 
 			/** Whether to display results on destruction. */
@@ -172,11 +172,11 @@ namespace haunted::tests {
 				bool result = actual == expected;
 				if (result) {
 					++total_passed;
-					out << good << fn_name << " " << wrap("== ", dim) << wrap(stringify(actual), green) << endl;
+					out << good << fn_name << " " << "== "_d << wrap(stringify(actual), color::green) << endl;
 				} else {
 					++total_failed;
-					out << bad << fn_name << " " << wrap("== ", dim) << wrap(stringify(actual), red)
-					    << " (expected " << wrap(stringify(expected), bold) << ")" << endl;
+					out << bad << fn_name << " " << "== "_d << wrap(stringify(actual), color::red)
+					    << " (expected " << wrap(stringify(expected), style::bold) << ")" << endl;
 				}
 
 				return result;
@@ -191,26 +191,25 @@ namespace haunted::tests {
 
 				try {
 					const std::string returned = stringify((target->*fn)(args...));
-					out << bad << fn_name << wrap(" == ", dim) << wrap(returned, red) << " (expected "
-						<< demangled;
+					out << bad << fn_name << " == "_d << wrap(returned, color::red) << " (expected " << demangled;
 					if (!what.empty())
 						out << ", \"" << what << "\"";
 					out << ")";
 				} catch (std::exception &exc) {
 					std::string message = exc.what();
 					if (typeid(exc) == errtype && (what.empty() || what == std::string(exc.what()))) {
-						out << good << fn_name << wrap(" throws ", dim) << wrap(demangled, green);
+						out << good << fn_name << " throws "_d << wrap(demangled, color::green);
 						if (!message.empty())
-							out << " (" << (what.empty()? message : wrap(message, green)) << ")";
+							out << " (" << (what.empty()? message : wrap(message, color::green)) << ")";
 						out << endl;
 						++total_passed;
 						return true;
 					}
 
-					out << bad << fn_name << wrap(" throws ", dim)
-					    << wrap(demangled, typeid(exc) == errtype? green : red);
+					out << bad << fn_name << " throws "_d
+					    << wrap(demangled, typeid(exc) == errtype? color::green : color::red);
 					if (!message.empty())
-						out << " (" << wrap(message, message == what? green : red) << ")";
+						out << " (" << wrap(message, message == what? color::green : color::red) << ")";
 				}
 
 				out << endl;

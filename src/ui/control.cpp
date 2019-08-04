@@ -12,7 +12,7 @@ namespace haunted::ui {
 	}
 
 	bool control::can_draw() const {
-		return parent != nullptr;
+		return parent != nullptr && term != nullptr;
 	}
 
 	void control::resize() {
