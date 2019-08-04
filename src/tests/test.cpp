@@ -205,9 +205,14 @@ namespace haunted::tests {
 				DBG("tb->next_row() == " << tb->next_row());
 			} else if (k == key(ktype::r).ctrl()) {
 				DBG("rows: " << term.get_rows());
+			} else if (k == key(ktype::v).ctrl()) {
+				DBG("voffset == " << tb->get_voffset() << ", effective == " << tb->effective_voffset());
+			} else if (k == key(ktype::k).ctrl()) {
+				ansi::ansistream::err().clear().jump();
 			} else if (k.is_arrow() && k.mods == key::get_modset(kmod::shift)) {
 				tb->on_key(key(k.type));
 				ti->focus();
+				ti->jump_cursor();
 			} else {
 				term.send_key(k);
 			}

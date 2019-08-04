@@ -3,6 +3,7 @@
 
 // #define NODEBUG
 
+#include <fstream>
 #include <cstddef>
 
 #include "../../lib/formicine/ansi.h"
@@ -12,10 +13,13 @@
 #define DBG(x)
 #else
 #define DBGX(x) "\e[2m[" << __FILE__ << ":" << __LINE__ << "]\e[0m " << x << std::endl
-#define DBG(x) ansi::ansistream::err() << DBGX(x) << ansi::reset
+#define DBG(x) dbgstream << DBGX(x) << ansi::reset
 #endif
 
 namespace haunted {
+	extern std::ofstream dbgout;
+	extern ansi::ansistream dbgstream;
+
 	enum class side {left, right, top, bottom};
 
 	struct point {

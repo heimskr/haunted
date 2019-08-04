@@ -2,6 +2,9 @@
 #include "core/defs.h"
 
 namespace haunted {
+	std::ofstream dbgout(".log", std::ofstream::app);
+	ansi::ansistream dbgstream(dbgout, dbgout);
+
 	point::operator bool() const {
 		return 0 <= x && 0 <= y;
 	}
