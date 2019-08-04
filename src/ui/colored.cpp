@@ -17,7 +17,7 @@ namespace haunted::ui {
 				// If we find a control that's also an instance of colored, let it determine the color for us.
 				ansi::color found = pcolored->find_color(type);
 				DBGT("Inheriting " << found << (type == ansi::color_type::foreground? "fore" : "back")
-					<< "ground" << ansi::action::reset << " from " << pcolored);
+					<< "ground" << ansi::action::reset << " from " << pcolored->get_id());
 				return found;
 			} else if (control *pcontrol = dynamic_cast<control *>(p)) {
 				if (pcontrol->get_terminal() == pcontrol->get_parent()) {

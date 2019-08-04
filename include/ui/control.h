@@ -34,7 +34,7 @@ namespace haunted::ui {
 			virtual ~control() = 0;
 
 			/** Returns the control's identifier. */
-			virtual std::string get_id() const;
+			virtual std::string get_id(bool pad = false) const;
 
 			/** Sets the control's name. */
 			virtual control & set_name(const std::string &name_) { name = name_; return *this; }

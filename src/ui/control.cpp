@@ -13,16 +13,27 @@ namespace haunted::ui {
 		pos = new_pos;
 	}
 
-	std::string control::get_id() const {
+	std::string control::get_id(bool pad) const {
 		std::stringstream ss;
 		if (name.empty()) {
 			std::string demangled = util::demangle_object(*this);
-			ss << std::setw(10) << demangled.substr(demangled.find_last_of(':') + 1) << "\e[2m|\e[0;33m" << this;
+			if (pad)
+				ss << std::setw(10);
+			ss << demangled.substr(demangled.find_last_of(':') + 1) << "\e[2m|\e[0;33m" << this;
 		} else {
 			
 			// ss << ansi::get_fg(static_cast<ansi::color>(reinterpret_cast<size_t>(this) & 0x10));
-			ss << ansi::get_fg(static_cast<ansi::color>((reinterpret_cast<size_t>(this) >> 6) & 15));
-			ss << std::setw(25) << (name + "  ");
+			ansi::color c = static_cast<ansi::color>((reinterpret_cast<size_t>(this) >> 6) & 15);
+			if (c == ansi::color::black) {
+				c = ansi::color::green;
+			} else if (c == ansi::color::normal) {
+				c = ansi::color::red;
+			}
+
+			ss << ansi::get_fg(c);
+			if (pad)
+				ss << std::setw(10);
+			ss << (name + "  ");
 			ss << ansi::get_fg(ansi::color::normal);
 		}
 

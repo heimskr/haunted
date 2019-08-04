@@ -45,7 +45,7 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
-		DBGFN();
+		DBGTFN();
 
 		// It's assumed that the cursor has just been moved to the right from the insertion.
 		// We need to account for that by using a decremented copy of the cursor.
@@ -167,7 +167,7 @@ namespace haunted::ui {
 	}
 
 	void textinput::insert(unsigned char ch) {
-		DBG(this << ": textinput::insert('" << ch << "')");
+		DBGTFN();
 		if (ch < 0x20 && whitelist.find(ch) == whitelist.end())
 			return;
 		
