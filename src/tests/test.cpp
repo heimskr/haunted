@@ -186,8 +186,10 @@ namespace haunted::tests {
 		term.redraw();
 
 		ti->listen(textinput::event::submit, [&](const superstring &str, int) {
-			*tb += str;
-			ti->clear();
+			if (!std::string(str).empty()) {
+				*tb += str;
+				ti->clear();
+			}
 		});
 
 		key k;
