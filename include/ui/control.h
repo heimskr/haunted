@@ -60,8 +60,9 @@ namespace haunted::ui {
 			/** Sets the parent and adopts its terminal. */
 			virtual void set_parent(container *) override;
 
-			terminal * get_terminal() const;
+			terminal & get_terminal() const;
 			void set_terminal(terminal *);
+			void set_terminal(terminal &);
 
 			/** Returns the control's position. */
 			haunted::position get_position() const;

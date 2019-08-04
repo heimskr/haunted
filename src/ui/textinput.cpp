@@ -72,6 +72,7 @@ namespace haunted::ui {
 		point cpos = find_cursor();
 		// Print only enough text to reach the right edge. Printing more would cause wrapping or text being printed out
 		// of bounds.
+		try_colors();
 		*term << buffer.substr(cur, pos.right() - cpos.x + 2);
 		term->out_stream.restore();
 		if (has_focus())
@@ -492,7 +493,7 @@ namespace haunted::ui {
 	}
 
 	void textinput::focus() {
-		DBG(this << ": textinput::focus()");
+		DBGTFN();
 		colored::focus();
 		jump_cursor();
 	}

@@ -20,7 +20,7 @@ namespace haunted::ui {
 					<< "ground" << ansi::action::reset << " from " << pcolored->get_id());
 				return found;
 			} else if (control *pcontrol = dynamic_cast<control *>(p)) {
-				if (pcontrol->get_terminal() == pcontrol->get_parent()) {
+				if (&pcontrol->get_terminal() == pcontrol->get_parent()) {
 					// If we've reached the terminal and still haven't found any control with a color preference,
 					// give up.
 					break;
@@ -53,9 +53,32 @@ namespace haunted::ui {
 	void colored::apply_colors() {
 		if (term != nullptr) {
 			DBGTFN();
-			*term << ansi::get_bg(find_color(ansi::color_type::background))
-				<< ansi::get_fg(find_color(ansi::color_type::foreground));
+			*term << ansi::get_bg(term->last_bg = find_color(ansi::color_type::background))
+			      << ansi::get_fg(term->last_fg = find_color(ansi::color_type::foreground));
 			term->out_stream.flush();
+		}
+	}
+
+	void colored::try_colors(bool find) {
+		if (term != nullptr) {
+			DBGTFN();
+			ansi::color fg = foreground, bg = background;
+			if (find) {
+				fg = find_color(ansi::color_type::foreground);
+				bg = find_color(ansi::color_type::background);
+			}
+
+			DBGT(fg << "fg\e[0m, " << term->last_fg << "last_fg\e[0m, " << bg << "bg\e[0m, " << term->last_bg << "last_bg");
+
+			if (fg != term->last_fg) {
+				DBGT("Applying " << fg << "foreground");
+				*term << ansi::get_fg(term->last_fg = fg);
+			}
+			
+			if (bg != term->last_bg) {
+				DBGT("Applying " << bg << "background");
+				*term << ansi::get_bg(term->last_bg = bg);
+			}
 		}
 	}
 
@@ -63,6 +86,8 @@ namespace haunted::ui {
 		if (term != nullptr) {
 			*term << ansi::color_pair(ansi::color::normal, ansi::color_type::foreground)
 			      << ansi::color_pair(ansi::color::normal, ansi::color_type::background);
+			term->last_fg = term->last_bg = ansi::color::normal;
+			term->last_fg = ansi::color::normal;
 		}
 	}
 

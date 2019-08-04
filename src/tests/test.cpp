@@ -198,8 +198,10 @@ namespace haunted::tests {
 		vexp->resize();
 
 
-		ti->focus();
 		term.redraw();
+		DBG("[[[");
+		ti->focus();
+		DBG("]]]");
 
 		lbl->set_colors(ansi::color::white, ansi::color::blue);
 		lb->set_colors(ansi::color::white, ansi::color::normal);

@@ -66,6 +66,7 @@ namespace haunted {
 			bool raw = false;
 			bool suppress_output = false;
 			ansi::ansistream out_stream;
+			ansi::color last_fg, last_bg;
 
 			terminal(std::istream &, ansi::ansistream);
 			terminal(std::istream &in_stream): terminal(in_stream, ansi::ansistream()) {}

@@ -4,6 +4,8 @@
 // #define NODEBUG
 
 #include <fstream>
+#include <sstream>
+
 #include <cstddef>
 
 #include "lib/formicine/ansi.h"
@@ -63,6 +65,25 @@ namespace haunted {
 		operator std::string() const;
 
 		friend std::ostream & operator<<(std::ostream &, const position &);
+	};
+
+	template <typename T>
+	class null_terminal: public std::exception {
+		private:
+			T *source;
+
+		public:
+			null_terminal(T *source): source(source) {}
+
+			const char * what() const throw() {
+				if (source == nullptr) {
+					return "Terminal is null";
+				} else {
+					std::stringstream ss;
+					ss << "Terminal is null for " << source;
+					return ss.str().c_str();
+				}
+			}
 	};
 }
 

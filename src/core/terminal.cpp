@@ -112,7 +112,7 @@ namespace haunted {
 
 	void terminal::redraw() {
 		if (root) {
-			DBGFN();
+			DBG("terminal::redraw()");
 			out_stream.reset_colors().clear().jump();
 			root->resize({0, 0, cols, rows});
 			root->draw();
