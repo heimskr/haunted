@@ -229,7 +229,7 @@ namespace haunted {
 		if (0 < rows) {
 			out_stream.style_out << "\e[" + std::to_string(rows) + "T";
 		} else if (rows < 0) {
-			out_stream.style_out << "\e[" + std::to_string(-rows) + "U";
+			out_stream.style_out << "\e[" + std::to_string(-rows) + "S";
 		}
 	}
 
