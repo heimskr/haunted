@@ -16,6 +16,8 @@ namespace haunted::ui {
 	class control: public keyhandler, public child {
 		protected:
 			terminal *term;
+			std::string name;
+
 			haunted::position pos;
 			control(container *parent, const haunted::position &pos):
 				child(parent), term(parent == nullptr? nullptr : parent->get_terminal()), pos(pos) {}
@@ -30,23 +32,29 @@ namespace haunted::ui {
 			control(): control(nullptr, nullptr) {}
 
 			virtual ~control() = 0;
+
+			/** Returns the control's identifier. */
+			virtual std::string get_id() const;
+
+			/** Sets the control's name. */
+			virtual control & set_name(const std::string &name_) { name = name_; return *this; }
 			
-			/** Renders the component on the terminal. */
+			/** Renders the control on the terminal. */
 			virtual void draw() = 0;
 
 			/** Returns whether the control's in a state in which it can be rendered. */
 			virtual bool can_draw() const;
 
-			/** Resizes the component to fit a new position. */
+			/** Resizes the control to fit a new position. */
 			virtual void resize(const haunted::position &);
 
-			/** Reassigns the component's current position to itself. Useful for container. */
+			/** Reassigns the control's current position to itself. Useful for container. */
 			virtual void resize();
 
-			/** Moves the component to a given coordinate. */
+			/** Moves the control to a given coordinate. */
 			virtual void move(int left, int top);
 
-			/** Focuses the component. */
+			/** Focuses the control. */
 			virtual void focus();
 
 			/** Sets the parent and adopts its terminal. */
@@ -55,7 +63,7 @@ namespace haunted::ui {
 			terminal * get_terminal() const;
 			void set_terminal(terminal *);
 
-			/** Returns the component's position. */
+			/** Returns the control's position. */
 			haunted::position get_position() const;
 
 			/** Moves the cursor on the screen to the top-left corner of the control. */

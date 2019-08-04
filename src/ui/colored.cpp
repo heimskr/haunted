@@ -16,7 +16,7 @@ namespace haunted::ui {
 			if (colored *pcolored = dynamic_cast<colored *>(p)) {
 				// If we find a control that's also an instance of colored, let it determine the color for us.
 				ansi::color found = pcolored->find_color(type);
-				DBG(this << " inheriting " << found << (type == ansi::color_type::foreground? "fore" : "back")
+				DBGT("Inheriting " << found << (type == ansi::color_type::foreground? "fore" : "back")
 					<< "ground" << ansi::action::reset << " from " << pcolored);
 				return found;
 			} else if (control *pcontrol = dynamic_cast<control *>(p)) {
@@ -32,7 +32,7 @@ namespace haunted::ui {
 				// At this point, because the parent of the previous control isn't null, but it (almost surely) also
 				// isn't a terminal and it isn't a control, the parent must surely be a plain container or some unknown
 				// subtype. This shouldn't happen. If it does, stop searching.
-				DBG("Unknown container at " << p << "; returning default " <<
+				DBGT("Unknown container at " << p << "; returning default " <<
 					(type == ansi::color_type::foreground? "fore" : "back") << "ground color.");
 				break;
 			}
@@ -52,10 +52,17 @@ namespace haunted::ui {
 
 	void colored::apply_colors() {
 		if (term != nullptr) {
-			DBG(this << ": applying colors");
+			DBGTFN();
 			*term << ansi::get_bg(find_color(ansi::color_type::background))
 				<< ansi::get_fg(find_color(ansi::color_type::foreground));
 			term->out_stream.flush();
+		}
+	}
+
+	void colored::uncolor() {
+		if (term != nullptr) {
+			*term << ansi::color_pair(ansi::color::normal, ansi::color_type::foreground)
+			      << ansi::color_pair(ansi::color::normal, ansi::color_type::background);
 		}
 	}
 
@@ -66,7 +73,7 @@ namespace haunted::ui {
 	}
 
 	void colored::focus() {
-		DBG(this << ": colored::focus()");
+		DBGTFN();
 		apply_colors();
 		control::focus();
 	}

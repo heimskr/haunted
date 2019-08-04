@@ -84,6 +84,9 @@ namespace haunted {
 			 *  control to match the terminal. */
 			virtual void redraw() override;
 
+			/** Resets the colors to the terminal's defaults. */
+			virtual void reset_colors();
+
 			/** Sets the terminal's root control. If the new root isn't the same as the old root, this function deletes
 			 *  the old root. */
 			virtual void set_root(ui::control *);

@@ -1,6 +1,8 @@
-#include "formicine/ansi.h"
+#include <sstream>
 
+#include "formicine/ansi.h"
 #include "core/terminal.h"
+#include "core/util.h"
 #include "ui/control.h"
 
 namespace haunted::ui {
@@ -9,6 +11,22 @@ namespace haunted::ui {
 	void control::resize(const haunted::position &new_pos) {
 		// It's up to the caller of resize() to also call draw().
 		pos = new_pos;
+	}
+
+	std::string control::get_id() const {
+		std::stringstream ss;
+		if (name.empty()) {
+			std::string demangled = util::demangle_object(*this);
+			ss << std::setw(10) << demangled.substr(demangled.find_last_of(':') + 1) << "\e[2m|\e[0;33m" << this;
+		} else {
+			
+			// ss << ansi::get_fg(static_cast<ansi::color>(reinterpret_cast<size_t>(this) & 0x10));
+			ss << ansi::get_fg(static_cast<ansi::color>((reinterpret_cast<size_t>(this) >> 6) & 15));
+			ss << std::setw(25) << (name + "  ");
+			ss << ansi::get_fg(ansi::color::normal);
+		}
+
+		return ss.str();
 	}
 
 	bool control::can_draw() const {

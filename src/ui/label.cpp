@@ -25,7 +25,7 @@ namespace haunted::ui {
 
 	void label::set_autoresize(bool autoresize_) {
 		autoresize = autoresize_;
-		if (autoresize_ && pos.width < length() && parent != nullptr)
+		if (autoresize_ && static_cast<size_t>(pos.width) < length() && parent != nullptr)
 			parent->request_resize(this, length(), pos.height);
 	}
 
@@ -53,6 +53,8 @@ namespace haunted::ui {
 		} else {
 			*term << text.substr(0, width - clen) << cutoff;
 		}
+
+		term->reset_colors();
 	}
 
 	bool label::can_draw() const {

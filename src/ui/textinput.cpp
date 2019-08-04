@@ -45,10 +45,11 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
+		DBGFN();
+
 		// It's assumed that the cursor has just been moved to the right from the insertion.
 		// We need to account for that by using a decremented copy of the cursor.
 		size_t cur = cursor - 1;
-
 
 		if (text_width() <= cur - scroll) {
 			// If, for whatever reason, the cursor is to the right of the bounds of the textinput, there's no visible
@@ -166,6 +167,7 @@ namespace haunted::ui {
 	}
 
 	void textinput::insert(unsigned char ch) {
+		DBG(this << ": textinput::insert('" << ch << "')");
 		if (ch < 0x20 && whitelist.find(ch) == whitelist.end())
 			return;
 		
@@ -470,6 +472,8 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
+		DBGTFN();
+
 		colored::draw();
 
 		auto lock = term->lock_render();
@@ -480,6 +484,7 @@ namespace haunted::ui {
 
 		*term << prefix << buffer.substr(scroll, twidth);
 		jump_cursor();
+		term->reset_colors();
 	}
 
 	bool textinput::can_draw() const {

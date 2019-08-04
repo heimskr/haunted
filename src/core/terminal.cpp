@@ -112,12 +112,11 @@ namespace haunted {
 
 	void terminal::redraw() {
 		if (root) {
-			out_stream.clear();
-			out_stream.jump();
+			DBGFN();
+			out_stream.reset_colors().clear().jump();
 			root->resize({0, 0, cols, rows});
 			root->draw();
 		}
-		else DBG("No root.");
 	}
 
 	void terminal::set_root(ui::control *new_root) {
@@ -130,6 +129,11 @@ namespace haunted {
 	void terminal::draw() {
 		if (root)
 			root->draw();
+	}
+
+	void terminal::reset_colors() {
+		std::unique_lock uniq(output_mutex);
+		out_stream.reset_colors();
 	}
 
 	ui::keyhandler * terminal::send_key(key k) {

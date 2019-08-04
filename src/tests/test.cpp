@@ -179,16 +179,24 @@ namespace haunted::tests {
 
 		term.cbreak();
 		textbox *tb = new textbox();
+		tb->set_name("tb");
 		textinput *ti = new textinput();
+		ti->set_name("ti");
 		label *lbl = new label("[", false);
+		lbl->set_name("lbl");
 		label *lb = new label("Label", true);
+		lb->set_name("lb");
 		label *lbr = new label("] ", false);
+		lbr->set_name("lbr");
 
 		expandobox *hexp = new expandobox(&term, term.get_position(), box_orientation::horizontal,
 			{{lbl, 1}, {lb, 5}, {lbr, 2}, {ti, -1}});
+		hexp->set_name("hexp");
 		hexp->resize();
 		expandobox *vexp = new expandobox(&term, term.get_position(), box_orientation::vertical, {{tb, -1}, {hexp, 1}});
+		vexp->set_name("vexp");
 		vexp->resize();
+
 
 		ti->focus();
 		term.redraw();
@@ -225,6 +233,8 @@ namespace haunted::tests {
 				for (int i = 0; i < tb->get_position().height - 1; ++i)
 					*tb += std::string(1, alphabet[i % 26]);
 				ti->focus();
+			} else if (k == key(ktype::F).ctrl()) {
+				DBG("Focused: " << term.get_focused());
 			} else if (k == key(ktype::i).ctrl()) {
 				ti->focus();
 			} else if (k == key(ktype::k).ctrl()) {

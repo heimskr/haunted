@@ -25,6 +25,7 @@ namespace haunted::ui {
 			void set_foreground(ansi::color foreground_) { foreground = foreground_; draw(); }
 			void set_colors(ansi::color foreground_, ansi::color background_);
 			void apply_colors();
+			void uncolor();
 
 			virtual void draw() override;
 			virtual void focus() override;
