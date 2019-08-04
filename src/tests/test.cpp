@@ -210,7 +210,7 @@ namespace haunted::tests {
 			} else if (k == key(ktype::v).ctrl()) {
 				DBG("voffset == " << tb->get_voffset() << ", effective == " << tb->effective_voffset());
 			} else if (k == key(ktype::k).ctrl()) {
-				ansi::ansistream::err().clear().jump();
+				dbgstream.clear().jump().flush();
 			} else if (k.is_arrow() && k.mods == key::get_modset(kmod::shift)) {
 				tb->on_key(key(k.type));
 				ti->focus();

@@ -100,7 +100,7 @@ namespace haunted::ui {
 		int total = total_rows();
 
 		// Return -1 if the next row is below the visible area.
-		if (pos.height <= total - offset)
+		if (pos.height < total - offset)
 			return -1;
 
 		return total - offset;
