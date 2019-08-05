@@ -532,13 +532,8 @@ int main(int argc, char **argv) {
 	
 	const std::string arg(argv[1]);
 
-	// terminal term(std::cin, ansi::ansistream(std::cout, arg == "expandobox"? std::cerr : std::cout));
-	terminal term(std::cin, ansi::ansistream(std::cout, std::cout));
-	// terminal term(std::cin, ansi::ansistream());
+	terminal term(std::cin, ansi::ansistream());
 	term.watch_size();
-
-	// int fd = open(".log", O_RDWR | O_APPEND | O_CREAT);
-	// dup2(fd, 2);
 
 	if (argc < 2) {
 		haunted::tests::maintest::test_key(term);
