@@ -28,6 +28,7 @@ namespace haunted::ui {
 	}
 
 	bool coloration::reset() {
+		DBG("Resetting colors.");
 		return set_both(ansi::color::normal, ansi::color::normal);
 	}
 }

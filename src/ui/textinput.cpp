@@ -65,6 +65,8 @@ namespace haunted::ui {
 			return;
 		}
 
+		// It's important to apply colors before saving the cursor, as it also saves the color information.
+		try_colors();
 		term->out_stream.save();
 
 		jump_cursor();
@@ -72,7 +74,6 @@ namespace haunted::ui {
 		point cpos = find_cursor();
 		// Print only enough text to reach the right edge. Printing more would cause wrapping or text being printed out
 		// of bounds.
-		try_colors();
 		*term << buffer.substr(cur, pos.right() - cpos.x + 2);
 		term->out_stream.restore();
 		if (has_focus())

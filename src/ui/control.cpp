@@ -33,8 +33,7 @@ namespace haunted::ui {
 			ss << ansi::get_fg(c);
 			if (pad)
 				ss << std::setw(10);
-			ss << (name + "  ");
-			ss << ansi::get_fg(ansi::color::normal);
+			ss << name << ansi::get_fg(ansi::color::normal);
 		}
 
 		return ss.str();

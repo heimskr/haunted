@@ -231,7 +231,13 @@ namespace haunted::tests {
 			if (k == key(ktype::c).ctrl())
 				break;
 			
-			if (k == key(ktype::f).ctrl()) {
+			if (k == key(ktype::C).alt()) {
+				DBG("Inserting green.");
+				term << "\e[33m";
+			} else if (k == key(ktype::c).alt()) {
+				DBG("ti: foreground = " << ansi::get_name(ti->get_foreground())
+					<< ", background = " << ansi::get_name(ti->get_background()));
+			} else if (k == key(ktype::f).ctrl()) {
 				tb->clear_lines();
 				static std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 				for (int i = 0; i < tb->get_position().height - 1; ++i)

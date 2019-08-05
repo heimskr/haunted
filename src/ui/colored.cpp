@@ -90,7 +90,7 @@ namespace haunted::ui {
 	bool colored::propagate(ansi::color_type type) {
 		container *cont = dynamic_cast<container *>(this);
 		if (cont == nullptr) {
-			DBGT(ansi::color::red << "propagate() failed: not a container");
+			DBGT(ansi::color::red << "propagate() not applicable (not a container)");
 			return false;
 		}
 
@@ -101,30 +101,44 @@ namespace haunted::ui {
 		bool is_bg = (static_cast<int>(type) & static_cast<int>(ansi::color_type::background)) != 0;
 		bool is_fg = (static_cast<int>(type) & static_cast<int>(ansi::color_type::foreground)) != 0;
 
-		for (control *child: cont->get_children()) {
-			colored *cchild = dynamic_cast<colored *>(child);
-			if (cchild == nullptr) {
-				DBGT("... child isn't colorable.");
+
+		// Part recursive, part iterative. Great.
+		std::deque<control *> queue(cont->get_children().begin(), cont->get_children().end());
+
+		while (!queue.empty()) {
+			control *child = queue.front();
+			queue.pop_front();
+
+			colored *colored_child = dynamic_cast<colored *>(child);
+			if (colored_child == nullptr) {
+				if (container *container_child = dynamic_cast<container *>(child)) {
+					DBGT("... child is a non-colorable container. Adding children to queue.");
+					queue.insert(queue.end(), container_child->get_children().begin(),
+					                          container_child->get_children().end());
+				} else {
+					DBGT("... child is a non-colorable. Ignoring.");
+				}
+
 				continue;
 			}
 
 			bool changed = false;
 
-			if (is_bg && cchild->inherit_background && cchild->get_background() != background) {
-				DBGT("Propagating " << ansi::get_name(background) << " background to " << cchild->get_id());
-				cchild->set_background(background);
+			if (is_bg && colored_child->inherit_background && colored_child->get_background() != background) {
+				DBGT("Propagating " << ansi::get_name(background) << " background to " << colored_child->get_id());
+				colored_child->background = background;
 				changed = true;
 			}
 			
-			if (is_fg && cchild->inherit_foreground && cchild->get_foreground() != foreground) {
-				DBGT("Propagating " << ansi::get_name(foreground) << " foreground to " << cchild->get_id());
-				cchild->set_foreground(foreground);
+			if (is_fg && colored_child->inherit_foreground && colored_child->get_foreground() != foreground) {
+				DBGT("Propagating " << ansi::get_name(foreground) << " foreground to " << colored_child->get_id());
+				colored_child->foreground = foreground;
 				changed = true;
 			}
 
 			if (changed) {
-				DBGT("Propagating " << cchild->get_id() << ".");
-				cchild->propagate(type);
+				DBGT("Propagating " << colored_child->get_id() << ".");
+				colored_child->propagate(type);
 			}
 		}
 
