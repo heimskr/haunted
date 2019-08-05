@@ -65,7 +65,6 @@ namespace haunted::ui {
 			return;
 		}
 
-		// It's important to apply colors before saving the cursor, as it also saves the color information.
 		try_colors();
 		term->out_stream.save();
 
@@ -76,6 +75,7 @@ namespace haunted::ui {
 		// of bounds.
 		*term << buffer.substr(cur, pos.right() - cpos.x + 2);
 		term->out_stream.restore();
+		term->colors.apply();
 		if (has_focus())
 			jump_cursor();
 		flush();

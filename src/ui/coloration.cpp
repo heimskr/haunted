@@ -27,8 +27,16 @@ namespace haunted::ui {
 		return fg || bg;
 	}
 
+	void coloration::apply() {
+		*out_stream << ansi::get_fg(last_foreground) << ansi::get_bg(last_background);
+	}
+
 	bool coloration::reset() {
 		DBG("Resetting colors.");
 		return set_both(ansi::color::normal, ansi::color::normal);
+	}
+
+	void coloration::debug() {
+		DBG("Foreground: " << ansi::get_name(last_foreground) << ", background: " << ansi::get_name(last_background));
 	}
 }

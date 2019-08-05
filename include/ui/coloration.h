@@ -30,8 +30,14 @@ namespace haunted::ui {
 			/** Attempts to set both the foreground and the background. Returns whether any change occurred. */
 			bool set_both(ansi::color foreground, ansi::color background);
 
+			/** Sets the terminal's colors to the stored foreground and background colors. */
+			void apply();
+
 			/** Attempts to reset the colors to the terminal's defaults. Returns whether any change occurred. */
 			bool reset();
+
+			/** Prints the foreground and background information to the debug log. */
+			void debug();
 
 			ansi::color get_foreground() const { return last_foreground; }
 			ansi::color get_background() const { return last_background; }
