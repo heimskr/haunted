@@ -264,14 +264,19 @@ namespace haunted::ui {
 		update();
 	}
 
-	void textinput::draw_right() {
+	void textinput::draw_right(int offset) {
 		if (!can_draw())
 			return;
 
 		term->out_stream.save();
 		clear_line();
+		size_t old_cursor = cursor;
+		cursor = offset < 0 && -offset > static_cast<int>(cursor)? 0 : cursor + offset;
+		if (cursor > length())
+			cursor = length();
 		jump_cursor();
 		*term << buffer.substr(cursor, text_width() - cursor + scroll);
+		cursor = old_cursor;
 		term->out_stream.restore();
 	}
 
@@ -420,6 +425,23 @@ namespace haunted::ui {
 		}
 	}
 
+	void textinput::transpose() {
+		const size_t len = length();
+		// If there aren't at least two characters, there's nothing to transpose.
+		// Don't do anything if the cursor is at the beginning either.
+		if (len < 2 || cursor == 0)
+			return;
+
+		if (cursor == len) {
+			size_t blen = buffer.length();
+			std::swap(buffer[blen - 1], buffer[blen - 2]);
+			draw_right(-2);
+		} else {
+			std::swap(buffer[cursor], buffer[cursor - 1]);
+			draw_right(-1);
+		}
+	}
+
 	size_t textinput::length() const {
 		return buffer.length();
 	}
@@ -458,6 +480,7 @@ namespace haunted::ui {
 				switch (type) {
 					case 'a':      start(); break;
 					case 'e':        end(); break;
+					case 't':  transpose(); break;
 					case 'u':      clear(); return true;
 					case 'w': erase_word(); break;
 					default: break;

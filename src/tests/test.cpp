@@ -216,15 +216,11 @@ namespace haunted::tests {
 					*tb += std::string(1, alphabet[i % 26]);
 				ti->focus();
 			} else if (k == key(ktype::F).ctrl()) {
-				DBG("Focused: " << term.get_focused());
-			} else if (k == key(ktype::i).ctrl()) {
-				ti->focus();
+				DBG("Focused: " << term.get_focused()->get_id());
 			} else if (k == key(ktype::k).ctrl()) {
 				dbgstream.clear().jump().flush();
 			} else if (k == key(ktype::l).ctrl()) {
 				term.redraw();
-			} else if (k == key(ktype::t).ctrl()) {
-				tb->focus();
 			} else if (k.is_arrow() && k.mods == key::get_modset(kmod::shift)) {
 				tb->on_key(key(k.type));
 				ti->focus();

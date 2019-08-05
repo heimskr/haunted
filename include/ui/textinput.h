@@ -71,7 +71,7 @@ namespace haunted::ui {
 			void draw_erase();
 
 			/** Clears the space to the right of the cursor and redraws the text. */
-			void draw_right();
+			void draw_right(int offset = 0);
 
 			/** Blanks out the spaces to the right of the buffer. */
 			void clear_line();
@@ -197,6 +197,9 @@ namespace haunted::ui {
 
 			/** Moves the cursor right by one word. Uses the same word-detecting logic as erase_word(). */
 			void next_word();
+
+			/** Swaps the character to the left of the cursor with the character to the right of the cursor. */
+			void transpose();
 
 			/** Returns the number of characters in the buffer. */
 			size_t length() const;
