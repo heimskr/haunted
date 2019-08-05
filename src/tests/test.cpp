@@ -199,14 +199,13 @@ namespace haunted::tests {
 
 
 		term.redraw();
-		DBG("[[[");
 		ti->focus();
-		DBG("]]]");
 
 		lbl->set_colors(ansi::color::white, ansi::color::blue);
 		lb->set_colors(ansi::color::white, ansi::color::normal);
 		lbr->set_colors(ansi::color::white, ansi::color::blue);
 		hexp->set_background(ansi::color::green);
+		lb->inherit_background = true;
 		ti->inherit_background = true;
 		hexp->propagate(ansi::color_type::both);
 

@@ -101,8 +101,6 @@ namespace haunted::ui {
 		bool is_bg = (static_cast<int>(type) & static_cast<int>(ansi::color_type::background)) != 0;
 		bool is_fg = (static_cast<int>(type) & static_cast<int>(ansi::color_type::foreground)) != 0;
 
-
-		// Part recursive, part iterative. Great.
 		std::deque<control *> queue(cont->get_children().begin(), cont->get_children().end());
 
 		while (!queue.empty()) {
@@ -137,11 +135,15 @@ namespace haunted::ui {
 			}
 
 			if (changed) {
-				DBGT("Propagating " << colored_child->get_id() << ".");
-				colored_child->propagate(type);
+				if (container *container_child = dynamic_cast<container *>(child)) {
+					DBGT("Propagating " << child->get_id() << ".");
+					queue.insert(queue.end(), container_child->get_children().begin(),
+					                          container_child->get_children().end());
+				}
 			}
 		}
 
+		draw();
 		return true;
 	}
 
