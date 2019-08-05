@@ -27,7 +27,7 @@ namespace haunted {
 		return iter;
 	}
 
-	superstring::operator std::string() const {
+	std::string superstring::str() const {
 		std::string out;
 		for (const std::string &sub: chunks)
 			out.append(sub);

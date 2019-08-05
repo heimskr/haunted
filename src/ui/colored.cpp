@@ -63,15 +63,15 @@ namespace haunted::ui {
 
 	colored & colored::try_colors(bool find) {
 		if (term != nullptr) {
-			DBGTFN();
+			// DBGTFN();
 			ansi::color fg = foreground, bg = background;
 			if (find) {
 				fg = find_color(ansi::color_type::foreground);
 				bg = find_color(ansi::color_type::background);
 			}
 
-			DBGT("fg = " << ansi::get_name(fg) << ", last_fg = " << ansi::get_name(term->colors.get_foreground())
-				<< ", bg = " << ansi::get_name(bg) << ", last_bg = " << ansi::get_name(term->colors.get_background()));
+			// DBGT("fg = " << ansi::get_name(fg) << ", last_fg = " << ansi::get_name(term->colors.get_foreground())
+			// 	<< ", bg = " << ansi::get_name(bg) << ", last_bg = " << ansi::get_name(term->colors.get_background()));
 
 			if (term->colors.set_foreground(fg))
 				DBGT("Applying foreground: " << ansi::get_name(fg));

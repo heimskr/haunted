@@ -180,22 +180,13 @@ namespace haunted::tests {
 		term.cbreak();
 		textbox   *tb  = new textbox();               tb->set_name("tb");
 		textinput *ti  = new textinput();             ti->set_name("ti");
-		label     *lbl = new label("[",      false); lbl->set_name("lbl");
-		label     *lb  = new label("Label",  true);   lb->set_name("lb");
-		label     *lbr = new label("] ",     false); lbr->set_name("lbr");
 		label     *tlb = new label("Title",  false); tlb->set_name("tlb");
 		label     *slb = new label("Status", false); slb->set_name("slb");
 
-		expandobox *hexp = new expandobox(&term, term.get_position(), box_orientation::horizontal, {
-			{lbl, 1}, {lb, 5}, {lbr, 2}, {ti, -1}
-		});
-		hexp->set_name("hexp").resize();
-		
 		expandobox *vexp = new expandobox(&term, term.get_position(), box_orientation::vertical, {
-			{tlb, 1}, {tb, -1}, {slb, 1}, {hexp, 1}
+			{tlb, 1}, {tb, -1}, {slb, 1}, {ti, 1}
 		});
 		vexp->set_name("vexp").resize();
-
 
 		term.redraw();
 		ti->focus();
@@ -203,11 +194,7 @@ namespace haunted::tests {
 		tlb->set_colors(ansi::color::white, ansi::color::blue);
 		slb->set_colors(ansi::color::white, ansi::color::blue);
 
-		DBG("lbl  " << lbl);
-		DBG("lb   " << lb);
-		DBG("lbr  " << lbr);
 		DBG("ti   " << ti);
-		DBG("hexp " << hexp);
 		DBG("tb   " << tb);
 		DBG("vexp " << vexp);
 		DBG("term " << &term);
@@ -249,16 +236,16 @@ namespace haunted::tests {
 			} else if (k.is_arrow() && k.mods == key::get_modset(kmod::shift)) {
 				tb->on_key(key(k.type));
 				ti->focus();
-			} else if (k == key(ktype::l).alt() && !ti->empty()) {
-				lb->set_text(*ti);
+			} else if (k == key(ktype::l).alt()) {
+				ti->set_prefix(ti->empty()? "" : "[" + ti->str() + "] ");
 				ti->clear();
 				ti->jump_cursor();
 			} else if (k == key(ktype::s).alt() && !ti->empty()) {
 				slb->set_text(*ti);
 				ti->clear();
 				ti->jump_cursor();
-			// } else if (k == key(ktype::t).alt() && !ti->empty()) {
-			} else if (k == key(ktype::T) && !ti->empty()) {
+			} else if (k == key(ktype::t).alt() && !ti->empty()) {
+			// } else if (k == key(ktype::T) && !ti->empty()) {
 				tlb->set_text(*ti);
 				ti->clear();
 				ti->jump_cursor();

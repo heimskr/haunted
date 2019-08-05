@@ -138,8 +138,11 @@ namespace haunted::ui {
 			/** Constructs a textinput with no parent, no position and no initial contents. */
 			textinput(): textinput(nullptr, "") {}
 
-			/** Returns the contents of the buffer. */
-			operator std::string() const;
+			/** Returns the contents of the buffer as a string. */
+			std::string str() const { return buffer.str(); }
+
+			/** Converts the contents of the buffer to a string. */
+			operator std::string() const { return buffer.str(); }
 
 			/** Sets a function to listen for updates to the buffer. */
 			void listen(event, const update_fn &);
@@ -173,6 +176,9 @@ namespace haunted::ui {
 
 			/** Sets the contents of the buffer and moves the cursor to the end of the buffer. */
 			void set_text(const std::string &);
+
+			/** Sets the prefix portion of the textinput. */
+			void set_prefix(const std::string &);
 
 			/** Moves the cursor one character to the left unless it's already at the leftmost edge. */
 			void left();

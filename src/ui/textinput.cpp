@@ -45,8 +45,6 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
-		DBGTFN();
-
 		// It's assumed that the cursor has just been moved to the right from the insertion.
 		// We need to account for that by using a decremented copy of the cursor.
 		size_t cur = cursor - 1;
@@ -169,7 +167,6 @@ namespace haunted::ui {
 	}
 
 	void textinput::insert(unsigned char ch) {
-		DBGTFN();
 		if (ch < 0x20 && whitelist.find(ch) == whitelist.end())
 			return;
 		
@@ -308,14 +305,22 @@ namespace haunted::ui {
 		return buffer;
 	}
 
-	void textinput::set_text(const std::string &str) {
+	void textinput::set_text(const std::string &text) {
 		// buffer = icu::UnicodeString::fromUTF8(str);
-		buffer = str;
-		cursor = str.size();
+		buffer = text;
+		cursor = text.size();
 		if (cursor > text_width())
 			scroll = text_width() - cursor;
 		draw();
 		update();
+	}
+
+	void textinput::set_prefix(const std::string &prefix_) {
+		if (prefix != prefix_) {
+			prefix = prefix_;
+			draw();
+			update();
+		}
 	}
 
 	void textinput::left() {
@@ -517,10 +522,6 @@ namespace haunted::ui {
 			return false;
 		jump_cursor();
 		return true;
-	}
-
-	textinput::operator std::string() const {
-		return std::string(buffer);
 	}
 
 	std::ostream & operator<<(std::ostream &os, const textinput &input) {
