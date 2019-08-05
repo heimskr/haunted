@@ -56,24 +56,17 @@ namespace haunted {
 	}
 
 	std::string superstring::substr(size_t pos, size_t n) const {
-		// DBG("[" << size() << ":" << length() << "] substr(" << pos << ", " << n << ")");
 		return std::string(*this).substr(pos, n);
 	}
 
 	void superstring::insert(size_t pos, const superchar &item) {
-		// DBG("insert(" << pos << ", \"" << item << "\"): [" << size() << "]");
 		if (pos == size()) {
-			// DBG("    pos == size(" << size() << ")");
 			chunks.push_back(item);
 		} else if (pos == 0) {
-			// DBG("    pos == 0");
 			chunks.push_front(item);
 		} else {
-			// DBG("    pos != size(" << size() << "), pos != 0");
 			chunks.insert(nth(pos), item);
 		}
-
-		// dbg();
 	}
 
 	void superstring::insert(size_t pos, char ch) {
@@ -82,15 +75,8 @@ namespace haunted {
 
 	void superstring::dbg() {
 		std::string str = "[" + std::to_string(size()) + "]";
-		for (const superchar &sc: chunks) {
+		for (const superchar &sc: chunks)
 			str += " \"" + sc + "\"";
-		}
-
-		// DBG(str);
-
-		// for (auto iter = begin(); iter != end(); ++iter) {
-
-		// }
 	}
 
 	superstring & superstring::erase(size_t pos, size_t len) {

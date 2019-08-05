@@ -71,11 +71,6 @@ namespace haunted::ui {
 		point cpos = find_cursor();
 		// Print only enough text to reach the right edge. Printing more would cause wrapping or text being printed out
 		// of bounds.
-		// DBG("cpos: " << cpos << "; pos: " << pos);
-		// DBG("1. buffer.substr(cur, pos.right() - cpos.x + 2)");
-		// DBG("2. buffer.substr(" << cur << ", " << pos.right() << " - " << cpos.x << " + 2)");
-		// DBG("3. buffer.substr(" << cur << ", " << pos.right() - cpos.x + 2 << ")");
-		// DBG("4. \"" << buffer.substr(cur, pos.right() - cpos.x + 2) << "\"");
 		*term << buffer.substr(cur, pos.right() - cpos.x + 2);
 		term->out_stream.restore();
 		term->colors.apply();
@@ -204,22 +199,7 @@ namespace haunted::ui {
 			if (width < 2) {
 				// It seems we've received a plain old ASCII character or an invalid UTF8 start byte.
 				// Either way, append it to the buffer.
-				DBG("---------------- cursor = " << cursor);
-				superstring b = buffer, b2 = buffer;
-				std::string s = buffer.str(), s2 = buffer.str();
-				b2.insert(cursor, "|");
-				s2.insert(cursor, "|");
-				DBG("old: \"" << buffer.str() << "\"");
-				DBG("     \"" << b2.str() << "\"  b");
-				DBG("     \"" << s2       << "\"  s");
-				b.insert(cursor, ch);
-				b.insert(cursor + 1, "|");
-				s.insert(cursor, std::string(1, ch));
-				s.insert(cursor + 1, "|");
-				DBG("     \"" << b.str() << "\" b");
-				DBG("     \"" << s       << "\" s");
 				buffer.insert(cursor++, ch);
-				DBG("new: \"" << buffer.str() << "\"");
 				draw_insert();
 				update();
 			} else {
