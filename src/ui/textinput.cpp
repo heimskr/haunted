@@ -381,11 +381,25 @@ namespace haunted::ui {
 	}
 
 	void textinput::prev_word() {
-		if (cursor == 0)
+		if (cursor == 0) {
+			DBG("textinput::prev_word(): cursor == 0; return.");
 			return;
+		}
+
+		DBG("textinput::prev_word(): " << ansi::good);
+		DBG("old_cursor: " << cursor);
+
 		size_t old_cursor = cursor;
-		for (; prev_char() == " "; --cursor);
-		for (; !next_char().empty() && prev_char() != " "; --cursor);
+		DBG("prev_char == '" << prev_char() << "'");
+		for (; prev_char() == " "; --cursor) {
+			DBG("--cursor == " << cursor - 1 << "; prev_char() == '" << prev_char() << "'");
+		}
+
+		DBG("!next_char().empty() && prev_char() != \" \"" << "  →  "_d << "!\"" << next_char() << "\".empty() && \""
+			<< prev_char() << "\" != \" \"" << "  →  "_d << !next_char().empty() << " && " << (prev_char() != " ")
+			<< "  →  "_d << (!next_char().empty() && prev_char() != " "));
+
+		for (; !prev_char().empty() && prev_char() != " "; --cursor);
 		if (cursor != old_cursor) {
 			if (cursor < scroll) {
 				scroll = cursor;
@@ -397,9 +411,13 @@ namespace haunted::ui {
 	}
 
 	void textinput::next_word() {
-		if (cursor == size())
+		if (cursor == size()) {
+			DBG("textinput::next_word(): cursor == size(): " << cursor << "; return.");
 			return;
+		}
+
 		size_t old_cursor = cursor;
+
 		for (; next_char() == " "; ++cursor);
 		for (; !next_char().empty() && next_char() != " "; ++cursor);
 		if (cursor != old_cursor) {
