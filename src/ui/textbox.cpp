@@ -117,7 +117,7 @@ namespace haunted::ui {
 
 		// Ignore all the text on the first line because it's not affected by continuation.
 		length -= width;
-		
+
 		return length / (width - line.continuation) + (length % (width - line.continuation)? 2 : 1);
 	}
 

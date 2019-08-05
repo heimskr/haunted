@@ -4,6 +4,7 @@
 // #define NODEBUG
 
 #include <fstream>
+#include <iomanip>
 #include <sstream>
 
 #include <cstddef>

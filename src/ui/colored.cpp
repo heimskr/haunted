@@ -1,3 +1,5 @@
+#include <deque>
+
 #include "core/terminal.h"
 #include "ui/colored.h"
 

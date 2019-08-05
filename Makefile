@@ -1,5 +1,5 @@
 COMPILER		:= clang++
-CFLAGS			:= -std=c++2a -g -O0 -Wall -Wextra
+CFLAGS			:= -std=c++2a -g -ggdb -O0 -Wall -Wextra
 CFLAGS_ORIG		:= $(CFLAGS)
 LDFLAGS			:=
 INCLUDE			:=

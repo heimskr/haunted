@@ -257,7 +257,8 @@ namespace haunted::tests {
 				slb->set_text(*ti);
 				ti->clear();
 				ti->jump_cursor();
-			} else if (k == key(ktype::t).alt() && !ti->empty()) {
+			// } else if (k == key(ktype::t).alt() && !ti->empty()) {
+			} else if (k == key(ktype::T) && !ti->empty()) {
 				tlb->set_text(*ti);
 				ti->clear();
 				ti->jump_cursor();

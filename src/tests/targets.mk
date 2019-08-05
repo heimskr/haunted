@@ -38,7 +38,7 @@ utest: build/test
 etest: build/test
 	./$^ expandobox
 
-LLDB := /Applications/Xcode-beta.app/Contents/Developer/usr/bin/lldb
+LLDB := /Applications/Xcode.app/Contents/Developer/usr/bin/lldb
 
 dbg: build/test
 	echo "run expandobox" | $(LLDB) build/test

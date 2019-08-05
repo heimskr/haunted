@@ -484,7 +484,13 @@ namespace haunted::ui {
 		clear_line();
 		jump();
 
-		*term << prefix << buffer.substr(scroll, twidth);
+		try {
+			*term << prefix << buffer.substr(scroll, twidth);
+		} catch (std::out_of_range &) {
+			DBGT("std::out_of_range in textinput::draw(): buffer[" << buffer.size() << "] = \"" << std::string(buffer) << "\"");
+			*term << prefix;
+		}
+		
 		jump_cursor();
 		term->reset_colors();
 	}
