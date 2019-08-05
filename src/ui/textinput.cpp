@@ -479,8 +479,6 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
-		DBGTFN();
-
 		colored::draw();
 
 		auto lock = term->lock_render();
@@ -505,7 +503,6 @@ namespace haunted::ui {
 	}
 
 	void textinput::focus() {
-		DBGTFN();
 		colored::focus();
 		jump_cursor();
 	}

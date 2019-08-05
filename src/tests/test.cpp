@@ -194,11 +194,6 @@ namespace haunted::tests {
 		tlb->set_colors(ansi::color::white, ansi::color::blue);
 		slb->set_colors(ansi::color::white, ansi::color::blue);
 
-		DBG("ti   " << ti);
-		DBG("tb   " << tb);
-		DBG("vexp " << vexp);
-		DBG("term " << &term);
-
 		ti->listen(textinput::event::submit, [&](const superstring &sstr, int) {
 			if (!sstr.empty()) {
 				*tb += sstr;
@@ -211,12 +206,8 @@ namespace haunted::tests {
 			if (k == key(ktype::c).ctrl())
 				break;
 			
-			if (k == key(ktype::C).alt()) {
-				DBG("Inserting green.");
-				term << "\e[33m";
-			} else if (k == key(ktype::c).alt()) {
-				DBG("ti: foreground = " << ansi::get_name(ti->get_foreground())
-					<< ", background = " << ansi::get_name(ti->get_background()));
+			if (k == key(ktype::c).alt()) {
+				tb->clear_lines();
 			} else if (k == key(ktype::f).ctrl()) {
 				tb->clear_lines();
 				static std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

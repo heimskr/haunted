@@ -18,8 +18,6 @@ namespace haunted::ui {
 			if (colored *pcolored = dynamic_cast<colored *>(p)) {
 				// If we find a control that's also an instance of colored, let it determine the color for us.
 				ansi::color found = pcolored->find_color(type);
-				DBGT("Inheriting " << found << (type == ansi::color_type::foreground? "fore" : "back")
-					<< "ground" << ansi::action::reset << " from " << pcolored->get_id());
 				return found;
 			} else if (control *pcontrol = dynamic_cast<control *>(p)) {
 				if (&pcontrol->get_terminal() == pcontrol->get_parent()) {
@@ -53,31 +51,21 @@ namespace haunted::ui {
 	}
 
 	colored & colored::apply_colors() {
-		if (term != nullptr) {
-			DBGTFN();
+		if (term != nullptr)
 			term->colors.set_both(find_color(ansi::color_type::foreground), find_color(ansi::color_type::background));
-		}
-
 		return *this;
 	}
 
 	colored & colored::try_colors(bool find) {
 		if (term != nullptr) {
-			// DBGTFN();
 			ansi::color fg = foreground, bg = background;
 			if (find) {
 				fg = find_color(ansi::color_type::foreground);
 				bg = find_color(ansi::color_type::background);
 			}
 
-			// DBGT("fg = " << ansi::get_name(fg) << ", last_fg = " << ansi::get_name(term->colors.get_foreground())
-			// 	<< ", bg = " << ansi::get_name(bg) << ", last_bg = " << ansi::get_name(term->colors.get_background()));
-
-			if (term->colors.set_foreground(fg))
-				DBGT("Applying foreground: " << ansi::get_name(fg));
-			
-			if (term->colors.set_background(bg))
-				DBGT("Applying background: " << ansi::get_name(bg));
+			term->colors.set_foreground(fg);
+			term->colors.set_background(bg);
 		}
 
 		return *this;
@@ -90,15 +78,10 @@ namespace haunted::ui {
 	}
 
 	bool colored::propagate(ansi::color_type type) {
+		// If this isn't a container, there's nothing to propagate to.
 		container *cont = dynamic_cast<container *>(this);
-		if (cont == nullptr) {
-			DBGT(ansi::color::red << "propagate() not applicable (not a container)");
+		if (cont == nullptr)
 			return false;
-		}
-
-		DBGT("Propagating " << (type == ansi::color_type::foreground? "foreground" :
-			(type == ansi::color_type::background? "background" : "both")) << ". Colors = ["
-			<< ansi::get_name(foreground) << ", " << ansi::get_name(background) << "]");
 
 		bool is_bg = (static_cast<int>(type) & static_cast<int>(ansi::color_type::background)) != 0;
 		bool is_fg = (static_cast<int>(type) & static_cast<int>(ansi::color_type::foreground)) != 0;
@@ -112,11 +95,8 @@ namespace haunted::ui {
 			colored *colored_child = dynamic_cast<colored *>(child);
 			if (colored_child == nullptr) {
 				if (container *container_child = dynamic_cast<container *>(child)) {
-					DBGT("... child is a non-colorable container. Adding children to queue.");
 					queue.insert(queue.end(), container_child->get_children().begin(),
 					                          container_child->get_children().end());
-				} else {
-					DBGT("... child is a non-colorable. Ignoring.");
 				}
 
 				continue;
@@ -125,20 +105,17 @@ namespace haunted::ui {
 			bool changed = false;
 
 			if (is_bg && colored_child->inherit_background && colored_child->get_background() != background) {
-				DBGT("Propagating " << ansi::get_name(background) << " background to " << colored_child->get_id());
 				colored_child->background = background;
 				changed = true;
 			}
 			
 			if (is_fg && colored_child->inherit_foreground && colored_child->get_foreground() != foreground) {
-				DBGT("Propagating " << ansi::get_name(foreground) << " foreground to " << colored_child->get_id());
 				colored_child->foreground = foreground;
 				changed = true;
 			}
 
 			if (changed) {
 				if (container *container_child = dynamic_cast<container *>(child)) {
-					DBGT("Propagating " << child->get_id() << ".");
 					queue.insert(queue.end(), container_child->get_children().begin(),
 					                          container_child->get_children().end());
 				}
@@ -206,7 +183,6 @@ namespace haunted::ui {
 	}
 
 	void colored::focus() {
-		DBGTFN();
 		apply_colors();
 		control::focus();
 	}

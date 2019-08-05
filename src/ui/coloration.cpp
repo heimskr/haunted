@@ -7,7 +7,6 @@ namespace haunted::ui {
 			return false;
 		
 		auto lock = get_lock();
-		DBG("Switching foreground: " << ansi::get_name(last_foreground) << " → "_d << ansi::get_name(foreground));
 		*out_stream << ansi::get_fg(last_foreground = foreground);
 		return true;
 	}
@@ -17,7 +16,6 @@ namespace haunted::ui {
 			return false;
 		
 		auto lock = get_lock();
-		DBG("Switching background: " << ansi::get_name(last_background) << " → "_d << ansi::get_name(background));
 		*out_stream << ansi::get_bg(last_background = background);
 		return true;
 	}
@@ -32,7 +30,6 @@ namespace haunted::ui {
 	}
 
 	bool coloration::reset() {
-		DBG("Resetting colors.");
 		return set_both(ansi::color::normal, ansi::color::normal);
 	}
 
