@@ -207,7 +207,8 @@ namespace haunted::tests {
 				break;
 			
 			if (k == key(ktype::c).alt()) {
-				tb->clear_lines();
+				// tb->clear_lines();
+				DBG("cursor == " << ti->get_cursor());
 			} else if (k == key(ktype::f).ctrl()) {
 				tb->clear_lines();
 				static std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

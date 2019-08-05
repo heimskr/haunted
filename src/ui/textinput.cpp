@@ -71,6 +71,11 @@ namespace haunted::ui {
 		point cpos = find_cursor();
 		// Print only enough text to reach the right edge. Printing more would cause wrapping or text being printed out
 		// of bounds.
+		// DBG("cpos: " << cpos << "; pos: " << pos);
+		// DBG("1. buffer.substr(cur, pos.right() - cpos.x + 2)");
+		// DBG("2. buffer.substr(" << cur << ", " << pos.right() << " - " << cpos.x << " + 2)");
+		// DBG("3. buffer.substr(" << cur << ", " << pos.right() - cpos.x + 2 << ")");
+		// DBG("4. \"" << buffer.substr(cur, pos.right() - cpos.x + 2) << "\"");
 		*term << buffer.substr(cur, pos.right() - cpos.x + 2);
 		term->out_stream.restore();
 		term->colors.apply();
@@ -199,7 +204,22 @@ namespace haunted::ui {
 			if (width < 2) {
 				// It seems we've received a plain old ASCII character or an invalid UTF8 start byte.
 				// Either way, append it to the buffer.
+				DBG("---------------- cursor = " << cursor);
+				superstring b = buffer, b2 = buffer;
+				std::string s = buffer.str(), s2 = buffer.str();
+				b2.insert(cursor, "|");
+				s2.insert(cursor, "|");
+				DBG("old: \"" << buffer.str() << "\"");
+				DBG("     \"" << b2.str() << "\"  b");
+				b.insert(cursor, ch);
+				b.insert(cursor + 1, "|");
+				DBG("     \"" << b.str() << "\" b");
+				DBG("     \"" << s2       << "\"  s");
+				s.insert(cursor, std::string(1, ch));
+				s.insert(cursor + 1, "|");
+				DBG("     \"" << s       << "\" s");
 				buffer.insert(cursor++, ch);
+				DBG("new: \"" << buffer.str() << "\"");
 				draw_insert();
 				update();
 			} else {
@@ -381,25 +401,14 @@ namespace haunted::ui {
 	}
 
 	void textinput::prev_word() {
-		if (cursor == 0) {
-			DBG("textinput::prev_word(): cursor == 0; return.");
+		if (cursor == 0)
 			return;
-		}
-
-		DBG("textinput::prev_word(): " << ansi::good);
-		DBG("old_cursor: " << cursor);
 
 		size_t old_cursor = cursor;
-		DBG("prev_char == '" << prev_char() << "'");
-		for (; prev_char() == " "; --cursor) {
-			DBG("--cursor == " << cursor - 1 << "; prev_char() == '" << prev_char() << "'");
-		}
 
-		DBG("!next_char().empty() && prev_char() != \" \"" << "  →  "_d << "!\"" << next_char() << "\".empty() && \""
-			<< prev_char() << "\" != \" \"" << "  →  "_d << !next_char().empty() << " && " << (prev_char() != " ")
-			<< "  →  "_d << (!next_char().empty() && prev_char() != " "));
-
+		for (; prev_char() == " "; --cursor);
 		for (; !prev_char().empty() && prev_char() != " "; --cursor);
+
 		if (cursor != old_cursor) {
 			if (cursor < scroll) {
 				scroll = cursor;
@@ -411,15 +420,14 @@ namespace haunted::ui {
 	}
 
 	void textinput::next_word() {
-		if (cursor == size()) {
-			DBG("textinput::next_word(): cursor == size(): " << cursor << "; return.");
+		if (cursor == size())
 			return;
-		}
 
 		size_t old_cursor = cursor;
 
 		for (; next_char() == " "; ++cursor);
 		for (; !next_char().empty() && next_char() != " "; ++cursor);
+
 		if (cursor != old_cursor) {
 			if (cursor - scroll > text_width()) {
 				// If we've moved beyond the right edge, we need to adjust the scroll to align the cursor with the right
