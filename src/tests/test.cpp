@@ -178,36 +178,30 @@ namespace haunted::tests {
 		using namespace haunted::ui::boxes;
 
 		term.cbreak();
-		textbox *tb = new textbox();
-		tb->set_name("tb");
-		textinput *ti = new textinput();
-		ti->set_name("ti");
-		label *lbl = new label("[", false);
-		lbl->set_name("lbl");
-		label *lb = new label("Label", true);
-		lb->set_name("lb");
-		label *lbr = new label("] ", false);
-		lbr->set_name("lbr");
+		textbox   *tb  = new textbox();               tb->set_name("tb");
+		textinput *ti  = new textinput();             ti->set_name("ti");
+		label     *lbl = new label("[",      false); lbl->set_name("lbl");
+		label     *lb  = new label("Label",  true);   lb->set_name("lb");
+		label     *lbr = new label("] ",     false); lbr->set_name("lbr");
+		label     *tlb = new label("Title",  false); tlb->set_name("tlb");
+		label     *slb = new label("Status", false); slb->set_name("slb");
 
-		expandobox *hexp = new expandobox(&term, term.get_position(), box_orientation::horizontal,
-			{{lbl, 1}, {lb, 5}, {lbr, 2}, {ti, -1}});
-		hexp->set_name("hexp");
-		hexp->resize();
-		expandobox *vexp = new expandobox(&term, term.get_position(), box_orientation::vertical, {{tb, -1}, {hexp, 1}});
-		vexp->set_name("vexp");
-		vexp->resize();
+		expandobox *hexp = new expandobox(&term, term.get_position(), box_orientation::horizontal, {
+			{lbl, 1}, {lb, 5}, {lbr, 2}, {ti, -1}
+		});
+		hexp->set_name("hexp").resize();
+		
+		expandobox *vexp = new expandobox(&term, term.get_position(), box_orientation::vertical, {
+			{tlb, 1}, {tb, -1}, {slb, 1}, {hexp, 1}
+		});
+		vexp->set_name("vexp").resize();
 
 
 		term.redraw();
 		ti->focus();
 
-		lbl->set_colors(ansi::color::white, ansi::color::blue);
-		lb->set_colors(ansi::color::white, ansi::color::normal);
-		lbr->set_colors(ansi::color::white, ansi::color::blue);
-		hexp->set_background(ansi::color::green);
-		lb->inherit_background = true;
-		ti->inherit_background = true;
-		hexp->propagate(ansi::color_type::both);
+		tlb->set_colors(ansi::color::white, ansi::color::blue);
+		slb->set_colors(ansi::color::white, ansi::color::blue);
 
 		DBG("lbl  " << lbl);
 		DBG("lb   " << lb);
@@ -255,10 +249,17 @@ namespace haunted::tests {
 			} else if (k.is_arrow() && k.mods == key::get_modset(kmod::shift)) {
 				tb->on_key(key(k.type));
 				ti->focus();
-			} else if (k == key(ktype::enter).alt() && !ti->empty()) {
-				std::string new_label = std::string(*ti);
+			} else if (k == key(ktype::l).alt() && !ti->empty()) {
+				lb->set_text(*ti);
 				ti->clear();
-				lb->set_text(new_label);
+				ti->jump_cursor();
+			} else if (k == key(ktype::s).alt() && !ti->empty()) {
+				slb->set_text(*ti);
+				ti->clear();
+				ti->jump_cursor();
+			} else if (k == key(ktype::t).alt() && !ti->empty()) {
+				tlb->set_text(*ti);
+				ti->clear();
 				ti->jump_cursor();
 			} else {
 				term.send_key(k);
