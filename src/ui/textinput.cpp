@@ -211,12 +211,12 @@ namespace haunted::ui {
 				s2.insert(cursor, "|");
 				DBG("old: \"" << buffer.str() << "\"");
 				DBG("     \"" << b2.str() << "\"  b");
+				DBG("     \"" << s2       << "\"  s");
 				b.insert(cursor, ch);
 				b.insert(cursor + 1, "|");
-				DBG("     \"" << b.str() << "\" b");
-				DBG("     \"" << s2       << "\"  s");
 				s.insert(cursor, std::string(1, ch));
 				s.insert(cursor + 1, "|");
+				DBG("     \"" << b.str() << "\" b");
 				DBG("     \"" << s       << "\" s");
 				buffer.insert(cursor++, ch);
 				DBG("new: \"" << buffer.str() << "\"");

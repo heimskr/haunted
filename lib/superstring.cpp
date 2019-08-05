@@ -70,7 +70,7 @@ namespace haunted {
 			chunks.push_front(item);
 		} else {
 			// DBG("    pos != size(" << size() << "), pos != 0");
-			chunks.insert(nth(pos + 1), item);
+			chunks.insert(nth(pos), item);
 		}
 
 		// dbg();
