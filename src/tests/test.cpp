@@ -205,38 +205,55 @@ namespace haunted::tests {
 		while (term >> k) {
 			if (k == key(ktype::c).ctrl())
 				break;
-			
-			if (k == key(ktype::c).alt()) {
-				// tb->clear_lines();
-				DBG("cursor == " << ti->get_cursor());
-			} else if (k == key(ktype::f).ctrl()) {
-				tb->clear_lines();
-				static std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-				for (int i = 0; i < tb->get_position().height - 1; ++i)
-					*tb += std::string(1, alphabet[i % 26]);
-				ti->focus();
-			} else if (k == key(ktype::F).ctrl()) {
-				DBG("Focused: " << term.get_focused()->get_id());
-			} else if (k == key(ktype::k).ctrl()) {
-				dbgstream.clear().jump().flush();
-			} else if (k == key(ktype::l).ctrl()) {
-				term.redraw();
+
+			if (k == kmod::ctrl) {
+				switch (k.type) {
+					case ktype::F:  DBG("Focused: " << term.get_focused()->get_id());  break;
+					case ktype::k:  dbgstream.clear().jump().flush();                  break;
+					case ktype::l:  term.redraw();                                     break;
+
+					case ktype::f: {
+						tb->clear_lines();
+						static std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+						for (int i = 0; i < tb->get_position().height - 1; ++i)
+							*tb += std::string(1, alphabet[i % 26]);
+						ti->focus();
+						break;
+					}
+
+					default: term.send_key(k);
+				}
+			} else if (k == kmod::alt) {
+				switch (k.type) {
+					case ktype::c:  tb->clear_lines(); break;
+
+					case ktype::l:
+						ti->set_prefix(ti->empty()? "" : "[" + ti->str() + "] ");
+						ti->clear();
+						ti->jump_cursor();
+						break;
+
+					case ktype::s:
+						if (!ti->empty()) {
+							slb->set_text(*ti);
+							ti->clear();
+							ti->jump_cursor();
+						}
+						break;
+					
+					case ktype::t:
+						if (!ti->empty()) {
+							tlb->set_text(*ti);
+							ti->clear();
+							ti->jump_cursor();
+						}
+						break;
+
+					default: term.send_key(k);
+				}
 			} else if (k.is_arrow() && k.mods == key::get_modset(kmod::shift)) {
 				tb->on_key(key(k.type));
 				ti->focus();
-			} else if (k == key(ktype::l).alt()) {
-				ti->set_prefix(ti->empty()? "" : "[" + ti->str() + "] ");
-				ti->clear();
-				ti->jump_cursor();
-			} else if (k == key(ktype::s).alt() && !ti->empty()) {
-				slb->set_text(*ti);
-				ti->clear();
-				ti->jump_cursor();
-			} else if (k == key(ktype::t).alt() && !ti->empty()) {
-			// } else if (k == key(ktype::T) && !ti->empty()) {
-				tlb->set_text(*ti);
-				ti->clear();
-				ti->jump_cursor();
 			} else {
 				term.send_key(k);
 			}
