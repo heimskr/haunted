@@ -3,8 +3,8 @@
 
 namespace haunted::ui {
 
-	label::label(container *parent, position pos, const std::string &text, bool autoresize, const std::string &cutoff):
-	control(parent, pos), text(text), cutoff(cutoff), autoresize(autoresize) {
+	label::label(container *parent, const position &pos, const std::string &text, bool autoresize,
+	const std::string &cutoff): control(parent, pos), text(text), cutoff(cutoff), autoresize(autoresize) {
 		if (parent != nullptr)
 			parent->add_child(this);
 	}

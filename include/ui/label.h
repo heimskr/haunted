@@ -31,7 +31,7 @@ namespace haunted::ui {
 			bool autoresize;
 		public:
 			/** Constructs a textinput with a parent, a position, text, an autoresize flag and a cutoff string. */
-			label(container *parent, position pos, const std::string &text, bool autoresize = false,
+			label(container *parent, const position &pos = {}, const std::string &text = "", bool autoresize = false,
 				const std::string &cutoff = "...");
 
 			label(const std::string &text, bool autoresize = false, const std::string &cutoff = "..."):

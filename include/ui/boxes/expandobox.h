@@ -59,6 +59,8 @@ namespace haunted::ui::boxes {
 			expandobox(container *, const position &, const box_orientation, std::initializer_list<child_pair>);
 			expandobox(container *parent, const position &pos, const box_orientation orientation):
 				expandobox(parent, pos, orientation, {}) {}
+			expandobox(container *parent, const box_orientation orientation = box_orientation::horizontal,
+				std::initializer_list<child_pair> child_pairs = {}): expandobox(parent, {}, orientation, child_pairs) {}
 
 			using control::resize;
 			void resize(const position &) override;
