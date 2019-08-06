@@ -32,8 +32,9 @@ namespace haunted::ui::boxes {
 	}
 
 	expandobox::expandobox(container *parent, const position &pos, const box_orientation orientation,
-	std::initializer_list<child_pair> pairs): orientedbox(parent, pos, orientation) {
+	std::initializer_list<child_pair> pairs): child(parent), orientedbox(parent, pos, orientation) {
 		if (parent != nullptr) {
+			DBG(parent << "->add_child(" << get_id() << ")");
 			parent->add_child(this);
 			term = parent->get_terminal();
 		}

@@ -5,13 +5,15 @@
 #include "ui/boxes/propobox.h"
 
 namespace haunted::ui::boxes {
-	propobox::propobox(const position &pos, double ratio): dualbox(pos), ratio(ratio) {
+	propobox::propobox(const position &pos, double ratio): child(nullptr), dualbox(pos), ratio(ratio) {
+		DBGFN();
 		if (ratio < 0)
 			throw std::domain_error("Box ratio cannot be negative");
 	}
 
 	propobox::propobox(container *parent, double ratio, control *one, control *two, const position &pos):
 	propobox(pos, ratio) {
+		DBGFN();
 		if (parent != nullptr) {
 			parent->add_child(this);
 			term = parent->get_terminal();

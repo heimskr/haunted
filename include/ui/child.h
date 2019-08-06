@@ -10,9 +10,13 @@ namespace haunted::ui {
 	class child {
 		protected:
 			container *parent;
-			child(container *parent): parent(parent) {}
 
 		public:
+
+			child(container *parent = nullptr): parent(parent) {
+				DBGFN();
+				DBG("child::child(parent=" << parent <<"): setting parent of " << this << " to " << parent);
+			}
 			container * get_parent();
 			virtual void set_parent(container *);
 	};

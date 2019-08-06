@@ -12,10 +12,12 @@ namespace haunted::ui::boxes {
 	 */
 	class simplebox: public virtual container, public virtual control {
 		protected:
-			simplebox(const position &pos_): control(pos_) {}
-			using control::control;
 
 		public:
+			using container::container;
+			using control::control;
+			
+			simplebox(const position &pos_): child(nullptr), control(pos_) {}
 			virtual int max_children() const override { return 1; }
 
 			virtual void resize(const position &) override;

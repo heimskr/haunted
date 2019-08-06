@@ -149,6 +149,10 @@ namespace haunted {
 			return ctrl;
 
 		ui::container *ptr = ctrl->get_parent();
+
+		if (ptr == nullptr) {
+			DBG("Parent is null for " << ctrl->get_id());
+		}
 		
 		// Keep trying on_key, going up to the root as long as we keep getting false. If we're at the root and on_key
 		// still returns false, give up.

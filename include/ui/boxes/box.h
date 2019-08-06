@@ -12,8 +12,16 @@ namespace haunted::ui::boxes {
 	 */
 	class box: public virtual container, public virtual control {
 		protected:
-			box(const position &pos): control(pos) {}
-			using control::control;
+			// box(const position &pos): control(pos) { DBG("box::box(pos): pos " << pos); }
+			// box(container *parent): control(parent) { DBG("box::box(parent): parent " << parent); }
+			// box(container *parent, terminal *term): control(parent, term) { DBG("box::box(parent, term): parent " << parent << ", term " << term); }
+			// box(container *parent, const position &pos): control(parent, pos) { DBG("box::box(parent, pos): parent " << parent << ", pos " << pos); }
+			// box(): control(nullptr, nullptr) { DBG("box::box()"); }
+			box(const position &pos): control(pos) { DBGFN(); }
+			box(container *parent): control(parent) { DBGFN(); }
+			box(container *parent, terminal *term): control(parent, term) { DBGFN(); }
+			box(container *parent, const position &pos): control(parent, pos) { DBGFN(); }
+			box(): control(nullptr, nullptr) { DBGFN(); }
 
 		public:
 			haunted::side side;

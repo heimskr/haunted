@@ -21,7 +21,7 @@ namespace haunted::ui {
 			bool inherit_foreground, inherit_background;
 
 			colored(ansi::color foreground, ansi::color background, bool inherit_fg = false, bool inherit_bg = false):
-				background(background), foreground(foreground), inherit_foreground(inherit_fg),
+				child(nullptr), background(background), foreground(foreground), inherit_foreground(inherit_fg),
 				inherit_background(inherit_bg) {}
 			colored(ansi::color foreground): colored(foreground, ansi::color::normal) {}
 			colored(): colored(ansi::color::normal) {}

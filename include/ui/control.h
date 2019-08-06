@@ -13,20 +13,17 @@ namespace haunted::ui {
 	 * Represents a control.
 	 * This includes things like boxes, text views and text inputs.
 	 */
-	class control: public keyhandler, public child {
+	class control: public virtual keyhandler, public virtual child {
 		protected:
 			terminal *term;
 			std::string name;
-
 			haunted::position pos;
-			control(container *parent, const haunted::position &pos):
-				child(parent), term(parent == nullptr? nullptr : parent->get_terminal()), pos(pos) {}
-			control(const haunted::position &pos):
-				child(nullptr), term(nullptr), pos(pos) {}
 
 		public:
-			control(container *parent, terminal *term):
-				child(parent), term(term) {}
+			control(container *parent, const haunted::position &pos):
+				child(parent), term(parent == nullptr? nullptr : parent->get_terminal()), pos(pos) {}
+			control(const haunted::position &pos): child(nullptr), term(nullptr), pos(pos) {}
+			control(container *parent, terminal *term): child(parent), term(term) {}
 			control(container *parent):
 				control(parent, parent == nullptr? nullptr : parent->get_terminal()) {}
 			control(): control(nullptr, nullptr) {}

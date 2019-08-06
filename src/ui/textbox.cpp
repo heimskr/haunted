@@ -37,7 +37,7 @@ namespace haunted::ui {
 		return os;
 	}
 
-	textbox::textbox(container *parent, position pos, const std::vector<std::string> &contents): control(parent, pos) {
+	textbox::textbox(container *parent, position pos, const std::vector<std::string> &contents): child(parent), control(parent, pos) {
 		if (parent != nullptr)
 			parent->add_child(this);
 		set_lines(contents);
@@ -45,7 +45,7 @@ namespace haunted::ui {
 		this->pos = pos;
 	}
 
-	textbox::textbox(container *parent, const std::vector<std::string> &contents): control(parent) {
+	textbox::textbox(container *parent, const std::vector<std::string> &contents): child(parent), control(parent) {
 		if (parent != nullptr)
 			parent->add_child(this);
 		set_lines(contents);

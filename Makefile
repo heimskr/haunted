@@ -5,7 +5,7 @@ LDFLAGS			:=
 INCLUDE			:=
 CC				 = $(COMPILER) $(CFLAGS) $(CHECKFLAGS)
 MKBUILD			:= mkdir -p build
-CHECK			:= asan
+CHECK			:= none
 OUTPUT			:= build/tests
 VALGRIND		:= valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=no
 SDKFLAGS		:= --sysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
