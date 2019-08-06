@@ -530,7 +530,7 @@ namespace haunted::tests {
 int main(int argc, char **argv) {
 	using namespace haunted;
 	
-	const std::string arg(argv[1]);
+	const std::string arg = argc < 2? "" : argv[1];
 
 	terminal term(std::cin, ansi::ansistream());
 	term.watch_size();
