@@ -14,12 +14,11 @@ namespace haunted::ui::boxes {
 		protected:
 
 		public:
-			using container::container;
 			using control::control;
 			
 			simplebox(const position &pos_): child(nullptr), control(pos_) {}
-			virtual int max_children() const override { return 1; }
 
+			virtual int max_children() const override { return 1; }
 			virtual void resize(const position &) override;
 			virtual void move(int, int) override;
 			virtual void draw() override;

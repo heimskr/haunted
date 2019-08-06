@@ -12,11 +12,7 @@ namespace haunted::ui {
 			container *parent;
 
 		public:
-
-			child(container *parent = nullptr): parent(parent) {
-				DBGFN();
-				DBG("child::child(parent=" << parent <<"): setting parent of " << this << " to " << parent);
-			}
+			child(container *parent = nullptr): parent(parent) {}
 			container * get_parent();
 			virtual void set_parent(container *);
 	};

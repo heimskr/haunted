@@ -11,13 +11,13 @@ namespace haunted::ui {
 	std::unordered_set<unsigned char> textinput::whitelist = {9, 10, 11, 13};
 
 	textinput::textinput(container *parent, position pos, const superstring &buffer, size_t cursor):
-	child(parent), control(parent, pos), buffer(buffer), cursor(cursor) {
+	control(parent, pos), buffer(buffer), cursor(cursor) {
 		if (parent != nullptr)
 			parent->add_child(this);
 	}
 
 	textinput::textinput(container *parent, const superstring &buffer, size_t cursor):
-	child(parent), control(parent), buffer(buffer), cursor(cursor) {
+	control(parent), buffer(buffer), cursor(cursor) {
 		if (parent != nullptr)
 			parent->add_child(this);
 	}

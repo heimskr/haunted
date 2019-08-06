@@ -24,8 +24,7 @@ namespace haunted::ui {
 				child(parent), term(parent == nullptr? nullptr : parent->get_terminal()), pos(pos) {}
 			control(const haunted::position &pos): child(nullptr), term(nullptr), pos(pos) {}
 			control(container *parent, terminal *term): child(parent), term(term) {}
-			control(container *parent):
-				control(parent, parent == nullptr? nullptr : parent->get_terminal()) {}
+			control(container *parent): control(parent, parent == nullptr? nullptr : parent->get_terminal()) {}
 			control(): control(nullptr, nullptr) {}
 
 			virtual ~control() = 0;
