@@ -18,8 +18,7 @@ namespace haunted::ui::boxes {
 				DBG("Regards from box::box(container *, const position &). parent = " << parent << ", parent_ = " << parent_);
 			}
 
-			/** Returns the maximum number of children the box can contain (-1 for unlimited). */
-			virtual int max_children() const = 0;
+			virtual terminal * get_terminal() override { return term; }
 	};
 }
 

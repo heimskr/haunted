@@ -22,7 +22,7 @@ namespace haunted::ui {
 				ansi::color found = pcolored->find_color(type);
 				return found;
 			} else if (control *pcontrol = dynamic_cast<control *>(p)) {
-				if (&pcontrol->get_terminal() == pcontrol->get_parent()) {
+				if (pcontrol->get_terminal() == pcontrol->get_parent()) {
 					// If we've reached the terminal and still haven't found any control with a color preference,
 					// give up.
 					break;
@@ -50,27 +50,30 @@ namespace haunted::ui {
 	}
 
 	colored & colored::apply_colors() {
-		terminal &term = get_terminal();
-		term.colors.set_both(find_color(ansi::color_type::foreground), find_color(ansi::color_type::background));
+		if (terminal *term = get_terminal())
+			term->colors.set_both(find_color(ansi::color_type::foreground), find_color(ansi::color_type::background));
+
 		return *this;
 	}
 
 	colored & colored::try_colors(bool find) {
-		terminal &term = get_terminal();
-		ansi::color fg = foreground, bg = background;
-		if (find) {
-			fg = find_color(ansi::color_type::foreground);
-			bg = find_color(ansi::color_type::background);
-		}
+		if (terminal *term = get_terminal()) {
+			ansi::color fg = foreground, bg = background;
+			if (find) {
+				fg = find_color(ansi::color_type::foreground);
+				bg = find_color(ansi::color_type::background);
+			}
 
-		term.colors.set_foreground(fg);
-		term.colors.set_background(bg);
+			term->colors.set_foreground(fg);
+			term->colors.set_background(bg);
+		}
 
 		return *this;
 	}
 
 	colored & colored::uncolor() {
-		get_terminal().reset_colors();
+		if (terminal *term = get_terminal())
+			term->reset_colors();
 		return *this;
 	}
 

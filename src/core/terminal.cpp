@@ -113,6 +113,7 @@ namespace haunted {
 	void terminal::redraw() {
 		if (root) {
 			colors.reset();
+			DBG("terminal::redraw(): root = " << util::demangle_object(*root));
 			out_stream.clear().jump();
 			root->resize({0, 0, cols, rows});
 			root->draw();
@@ -120,6 +121,7 @@ namespace haunted {
 	}
 
 	void terminal::set_root(ui::control *new_root) {
+		DBG("terminal::set_root(" << util::demangle_object(*new_root) << "); " << (root == new_root? "same" : "different"));
 		if (root != new_root) {
 			root = new_root;
 			redraw();

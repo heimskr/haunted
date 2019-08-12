@@ -46,8 +46,8 @@ namespace haunted::ui {
 			virtual void draw();
 			virtual void focus();
 
-			virtual container * get_parent() const;
-			virtual terminal & get_terminal() const;
+			virtual container * get_parent() const = 0;
+			virtual terminal * get_terminal() = 0;
 	};
 }
 

@@ -31,11 +31,13 @@ namespace haunted::ui::boxes {
 			void set_ratio(const double);
 
 			virtual void draw() override;
-			haunted::terminal * get_terminal() override { return term; }
 			virtual int max_children() const override { return 2; }
 			virtual int size_one() const override;
 			virtual int size_two() const override;
 			virtual int get_size() const override;
+
+			virtual terminal * get_terminal() override { return term; }
+			virtual container * get_parent() const override { return parent; }
 	};
 }
 

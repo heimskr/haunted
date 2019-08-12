@@ -68,6 +68,9 @@ namespace haunted::ui::boxes {
 			int max_children() const override { return -1; }
 			bool request_resize(control *, size_t, size_t) override;
 
+			virtual terminal * get_terminal() override { return term; }
+			virtual container * get_parent() const override { return parent; }
+
 			expandobox & operator+=(child_pair);
 
 			iterator begin();

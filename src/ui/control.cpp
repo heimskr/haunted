@@ -62,25 +62,10 @@ namespace haunted::ui {
 			set_terminal(parent_->get_terminal());
 	}
 
-	terminal & control::get_terminal() const {
-		if (term == nullptr)
-			throw null_terminal(this);
-
-		return *term;
-	}
-
 	void control::set_terminal(terminal *term_) {
 		if (term_ == nullptr)
 			throw null_terminal(this);
 		set_terminal(*term_);
-	}
-
-	void control::set_terminal(terminal &term_) {
-		term = &term_;
-	}
-
-	haunted::position control::get_position() const {
-		return pos;
 	}
 
 	void control::jump() {

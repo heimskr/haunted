@@ -61,6 +61,9 @@ namespace haunted::ui {
 			/** Returns the contents of the buffer. */
 			operator std::string() const { return text; }
 
+			virtual terminal * get_terminal() override { return term; }
+			virtual container * get_parent() const override { return parent; }
+
 			/** Writes the label text to an output stream. */
 			friend std::ostream & operator<<(std::ostream &os, const label &input);
 	};

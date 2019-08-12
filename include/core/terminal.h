@@ -115,7 +115,7 @@ namespace haunted {
 			virtual bool add_child(ui::control *) override;
 
 			/** Returns the terminal. Required by haunted::ui::container. */
-			virtual terminal & get_terminal() override { return *this; }
+			virtual terminal * get_terminal() override { return this; }
 
 			/** Returns true if a given control is the focused control. */
 			virtual bool has_focus(const ui::control *) const;

@@ -11,10 +11,18 @@ namespace haunted::ui {
 	std::unordered_set<unsigned char> textinput::whitelist = {9, 10, 11, 13};
 
 	textinput::textinput(container *parent_, position pos_, const superstring &buffer_, size_t cursor_):
-		control(parent_, pos_), buffer(buffer_), cursor(cursor_) {}
+	control(parent_, pos_), buffer(buffer_), cursor(cursor_) {
+		DBG("Regards from textinput::textinput(container *, position, const superstring &, size_t).");
+		if (parent_ != nullptr)
+			parent_->add_child(this);
+	}
 
 	textinput::textinput(container *parent_, const superstring &buffer_, size_t cursor_):
-		control(parent_), buffer(buffer_), cursor(cursor_) {}
+	control(parent_), buffer(buffer_), cursor(cursor_) {
+		DBG("Regards from textinput::textinput(container *, const superstring &, size_t).");
+		if (parent_ != nullptr)
+			parent_->add_child(this);
+	}
 
 
 // Private instance methods

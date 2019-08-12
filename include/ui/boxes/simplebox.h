@@ -23,7 +23,6 @@ namespace haunted::ui::boxes {
 			virtual void resize(const position &) override;
 			virtual void move(int, int) override;
 			virtual void draw() override;
-			virtual haunted::terminal * get_terminal() override;
 	};
 }
 

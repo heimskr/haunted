@@ -22,17 +22,16 @@ namespace haunted::ui {
 		public:
 			control() = delete;
 
-			control(container *parent_, haunted::position pos_):
-				child(parent_), term(parent_ == nullptr? nullptr : &parent_->get_terminal()), pos(pos_) {
+			control(container *parent_, haunted::position pos_): child(parent_), term(nullptr), pos(pos_) {
 				if (parent_ != nullptr)
-					parent_->add_child(this);
+					term = parent_->get_terminal();
+
 				DBG("Regards from control(container *, position). parent = " << parent << ", parent_ = " << parent);
-					// DBG("parent = " << parent << ", parent_" << parent_);
 			}
 
-			control(const haunted::position &pos): child(nullptr), term(nullptr), pos(pos) {}
-			control(container *parent, terminal *term): child(parent), term(term) {}
-			control(container *parent): control(parent, parent == nullptr? nullptr : &parent->get_terminal()) {}
+			control(const haunted::position &pos_): child(nullptr), term(nullptr), pos(pos_) {}
+			control(container *parent_, terminal *term_): child(parent_), term(term_) {}
+			control(container *parent_): control(parent_, parent_ == nullptr? nullptr : parent_->get_terminal()) {}
 
 			virtual ~control() = 0;
 
@@ -63,12 +62,13 @@ namespace haunted::ui {
 			/** Sets the parent and adopts its terminal. */
 			virtual void set_parent(container *) override;
 
-			virtual terminal & get_terminal() const;
+			virtual container * get_parent() const { return parent; }
+			virtual terminal * get_terminal() { return term; }
 			void set_terminal(terminal *);
-			void set_terminal(terminal &);
+			void set_terminal(terminal &term_) { term = &term_; }
 
 			/** Returns the control's position. */
-			haunted::position get_position() const;
+			haunted::position get_position() const { return pos; }
 
 			/** Moves the cursor on the screen to the top-left corner of the control. */
 			void jump();

@@ -15,14 +15,9 @@ namespace haunted::ui::boxes {
 	propobox::propobox(container *parent_, double ratio_, box_orientation orientation_, control *one, control *two, const position &pos_):
 	propobox(parent_, pos_, ratio_, orientation_) {
 		DBG("Regards from propobox(container *, double, control *, control *, const position &). parent = " << parent << ", parent_ = " << parent_);
-		if (parent != nullptr) {
-			parent->add_child(this);
-			term = parent->get_terminal();
-		}
-
 		for (control *ctrl: {one, two}) {
 			ctrl->set_parent(this);
-			ctrl->set_terminal(term);
+			ctrl->set_terminal(control::get_terminal());
 			children.push_back(ctrl);
 		}
 	}
