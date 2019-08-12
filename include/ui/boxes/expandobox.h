@@ -14,7 +14,7 @@ namespace haunted::ui::boxes {
 	 * The remaining space is distributed equally among those children.
 	 * TODO: possibly create an unholy monstrosity that supports ratios/weights for the expanding children?
 	 */
-	class expandobox: public virtual orientedbox, public virtual colored {
+	class expandobox: public orientedbox, public colored {
 		private:
 			/** Returns the sum of all the fixed sizes. */
 			int fixed_sum() const;

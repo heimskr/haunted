@@ -11,7 +11,6 @@ namespace haunted::ui::boxes {
 			box_orientation orientation;
 
 		public:
-
 			orientedbox() = delete;
 			orientedbox(orientedbox &&) = delete;
 			orientedbox(const orientedbox &) = delete;

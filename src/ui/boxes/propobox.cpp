@@ -8,6 +8,9 @@ namespace haunted::ui::boxes {
 	propobox::propobox(container *parent_, const position &pos_, double ratio_, box_orientation orientation_):
 	dualbox(parent_, pos_, orientation_), ratio(ratio_) {
 		DBG("Regards from propobox(container *, const position &, double). parent = " << parent << ", parent_ = " << parent_);
+		if (parent_)
+			parent_->add_child(this);
+
 		if (ratio < 0)
 			throw std::domain_error("Box ratio cannot be negative");
 	}

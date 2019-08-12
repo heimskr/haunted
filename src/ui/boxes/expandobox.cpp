@@ -35,6 +35,8 @@ namespace haunted::ui::boxes {
 	std::initializer_list<child_pair> pairs): orientedbox(parent_, pos, orientation) {
 		DBG("Regards from expandobox::expandobox(container *, const position &, const box_orientation, std::initializer_list<child_pair>).");
 		DBG("parent = " << parent << ", parent_ = " << parent_);
+		if (parent_)
+			parent_->add_child(this);
 
 		for (const child_pair &p: pairs) {
 			p.first->set_parent(this);
