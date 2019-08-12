@@ -4,8 +4,10 @@
 #include "ui/colored.h"
 
 namespace haunted::ui {
+	colored::~colored() = default;
+
 	ansi::color colored::find_color(ansi::color_type type) const {
-		container *p = parent;
+		container *p = get_parent();
 
 		// If the control doesn't need to inherit a color, that would save us the effort of checking its ancestors.
 		if (type == ansi::color_type::background && !inherit_background)
@@ -32,7 +34,7 @@ namespace haunted::ui {
 				// At this point, because the parent of the previous control isn't null, but it (almost surely) also
 				// isn't a terminal and it isn't a control, the parent must surely be a plain container or some unknown
 				// subtype. This shouldn't happen. If it does, stop searching.
-				DBGT("Unknown container at " << p << "; returning default " <<
+				DBG("Unknown container at " << p << "; returning default " <<
 					(type == ansi::color_type::foreground? "fore" : "back") << "ground color.");
 				break;
 			}
@@ -44,36 +46,31 @@ namespace haunted::ui {
 	}
 
 	void colored::draw() {
-		if (!can_draw())
-			return;
-		
 		apply_colors();
 	}
 
 	colored & colored::apply_colors() {
-		if (term != nullptr)
-			term->colors.set_both(find_color(ansi::color_type::foreground), find_color(ansi::color_type::background));
+		terminal &term = get_terminal();
+		term.colors.set_both(find_color(ansi::color_type::foreground), find_color(ansi::color_type::background));
 		return *this;
 	}
 
 	colored & colored::try_colors(bool find) {
-		if (term != nullptr) {
-			ansi::color fg = foreground, bg = background;
-			if (find) {
-				fg = find_color(ansi::color_type::foreground);
-				bg = find_color(ansi::color_type::background);
-			}
-
-			term->colors.set_foreground(fg);
-			term->colors.set_background(bg);
+		terminal &term = get_terminal();
+		ansi::color fg = foreground, bg = background;
+		if (find) {
+			fg = find_color(ansi::color_type::foreground);
+			bg = find_color(ansi::color_type::background);
 		}
+
+		term.colors.set_foreground(fg);
+		term.colors.set_background(bg);
 
 		return *this;
 	}
 
 	colored & colored::uncolor() {
-		if (term != nullptr)
-			term->reset_colors();
+		get_terminal().reset_colors();
 		return *this;
 	}
 
@@ -184,6 +181,5 @@ namespace haunted::ui {
 
 	void colored::focus() {
 		apply_colors();
-		control::focus();
 	}
 }

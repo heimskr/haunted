@@ -7,9 +7,13 @@ namespace haunted::ui::boxes {
 	/**
 	 * Base class for boxes that contain exactly two children.
 	 */
-	class dualbox: public virtual orientedbox {
+	class dualbox: public orientedbox {
 		public:
 			using orientedbox::orientedbox;
+
+			dualbox() = delete;
+			dualbox(dualbox &&) = delete;
+			dualbox(const dualbox &) = delete;
 
 			virtual void resize(const position &) override;
 			virtual int max_children() const override;

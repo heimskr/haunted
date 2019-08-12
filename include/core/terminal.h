@@ -115,15 +115,15 @@ namespace haunted {
 			virtual bool add_child(ui::control *) override;
 
 			/** Returns the terminal. Required by haunted::ui::container. */
-			virtual terminal * get_terminal() override;
+			virtual terminal & get_terminal() override { return *this; }
 
 			/** Returns true if a given control is the focused control. */
 			virtual bool has_focus(const ui::control *) const;
 
 			/** Returns the height (in rows) of the terminal. */
-			virtual int get_rows() const;
+			virtual int get_rows() const { return rows; }
 			/** Returns the width (in columns) of the terminal. */
-			virtual int get_cols() const;
+			virtual int get_cols() const { return cols; }
 			/** Returns a (0, 0)-based position representing the terminal. */
 			virtual position get_position() const;
 

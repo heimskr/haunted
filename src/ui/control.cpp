@@ -59,7 +59,7 @@ namespace haunted::ui {
 	void control::set_parent(container *parent_) {
 		child::set_parent(parent_);
 		if (parent_ != nullptr)
-			set_terminal(*parent_->get_terminal());
+			set_terminal(parent_->get_terminal());
 	}
 
 	terminal & control::get_terminal() const {

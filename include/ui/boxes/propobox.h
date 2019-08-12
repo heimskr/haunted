@@ -19,14 +19,14 @@ namespace haunted::ui::boxes {
 	 * 
 	 *     size_two = size_box/(1 + ratio)
 	 */
-	class propobox: public virtual dualbox, public virtual haunted::ui::colored {
+	class propobox: public dualbox, public haunted::ui::colored {
 		protected:
-			propobox(const position &, double);
-			propobox(const position &pos): propobox(pos, 1) {}
+			propobox(container *, const position &, double, box_orientation);
 			double ratio;
 
 		public:
-			propobox(container *, double, control * = nullptr, control * = nullptr, const position & = {});
+			propobox(container *, double, box_orientation, control * = nullptr, control * = nullptr,
+				const position & = {});
 			double get_ratio() const { return ratio; }
 			void set_ratio(const double);
 

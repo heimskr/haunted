@@ -66,7 +66,6 @@ namespace haunted::ui::boxes {
 			void resize(const position &) override;
 			void draw() override;
 			int max_children() const override { return -1; }
-			haunted::terminal * get_terminal() override { return term; }
 			bool request_resize(control *, size_t, size_t) override;
 
 			expandobox & operator+=(child_pair);

@@ -39,7 +39,7 @@ namespace haunted::ui {
 			virtual std::vector<control *> & get_children() { return children; }
 
 			/** Returns the terminal associated with the container. */
-			virtual haunted::terminal * get_terminal() = 0;
+			virtual haunted::terminal & get_terminal() = 0;
 
 			/** Asks the parent to assign a new size to one of its children. Useful for expandoboxes.
 			 *  Returns true if the request was granted. */

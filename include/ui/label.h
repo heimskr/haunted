@@ -18,7 +18,7 @@ namespace haunted::ui {
 	/**
 	 * Represents a single-row control that displays text.
 	 */
-	class label: public virtual control, public virtual colored {
+	class label: public control, public colored {
 		private:
 			/** Contains the label's text. */
 			std::string text;

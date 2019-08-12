@@ -31,11 +31,13 @@ namespace haunted::ui::boxes {
 		return a.child_iterator != b.child_iterator || a.size_iterator != b.size_iterator;
 	}
 
-	expandobox::expandobox(container *parent, const position &pos, const box_orientation orientation,
-	std::initializer_list<child_pair> pairs): orientedbox(parent, pos, orientation) {
-		if (parent != nullptr) {
-			parent->add_child(this);
-			term = parent->get_terminal();
+	expandobox::expandobox(container *parent_, const position &pos, const box_orientation orientation,
+	std::initializer_list<child_pair> pairs): orientedbox(parent_, pos, orientation) {
+		DBG("Regards from expandobox::expandobox(container *, const position &, const box_orientation, std::initializer_list<child_pair>).");
+		DBG("parent = " << parent << ", parent_ = " << parent_);
+		if (parent_ != nullptr) {
+			parent_->add_child(this);
+			term = parent_->get_terminal();
 		}
 
 		for (const child_pair &p: pairs) {

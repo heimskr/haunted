@@ -187,20 +187,8 @@ namespace haunted {
 		return true;
 	}
 
-	terminal * terminal::get_terminal() {
-		return this;
-	}
-
 	bool terminal::has_focus(const ui::control *ctrl) const {
 		return focused == ctrl;
-	}
-
-	int terminal::get_rows() const {
-		return rows;
-	}
-
-	int terminal::get_cols() const {
-		return cols;
 	}
 
 	position terminal::get_position() const {

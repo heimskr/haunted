@@ -6,25 +6,25 @@
 
 namespace haunted::ui {
 	/**
-	 * Represents a control that can be colored.
+	 * Represents somethjing that can be colored.
 	 */
-	class colored: public virtual control {
+	class colored {
 		private:
 			ansi::color background, foreground;
 
-			/** If the specified color type is "normal" for this control, this function searches the control's parents
-			 *  until it finds one with a color of the same type and returns it. Otherwise, this returns the control's
-			 *  specified color. */
+			/** If the specified color type is "normal" for this, this function searches all ancestors until it finds
+			 *  one with a color of the same type and returns it. Otherwise, this returns the specified color. */
 			ansi::color find_color(ansi::color_type) const;
 
 		public:
 			bool inherit_foreground, inherit_background;
 
-			colored(ansi::color foreground, ansi::color background, bool inherit_fg = false, bool inherit_bg = false):
+			colored(ansi::color foreground = ansi::color::normal, ansi::color background = ansi::color::normal,
+			bool inherit_fg = false, bool inherit_bg = false):
 				background(background), foreground(foreground), inherit_foreground(inherit_fg),
 				inherit_background(inherit_bg) {}
-			colored(ansi::color foreground): colored(foreground, ansi::color::normal) {}
-			colored(): colored(ansi::color::normal) {}
+
+			virtual ~colored() = 0;
 
 			ansi::color get_foreground() const { return foreground; }
 			ansi::color get_background() const { return background; }
@@ -43,8 +43,11 @@ namespace haunted::ui {
 			/** Propagate the control's colors to its children. */
 			bool propagate(ansi::color_type);
 
-			virtual void draw() override;
-			virtual void focus() override;
+			virtual void draw();
+			virtual void focus();
+
+			virtual container * get_parent() const;
+			virtual terminal & get_terminal() const;
 	};
 }
 

@@ -6,24 +6,22 @@
 namespace haunted::ui::boxes {
 	enum class box_orientation {horizontal, vertical};
 
-	class orientedbox: public virtual box {
+	class orientedbox: public box {
 		protected:
 			box_orientation orientation;
 
 		public:
-			using box::box;
-			
-			orientedbox(container *parent, const haunted::position &pos, box_orientation orientation):
-				box(parent, pos), orientation(orientation) {}
 
-			orientedbox(const haunted::position &pos, box_orientation orientation):
-				box(pos), orientation(orientation) {}
+			orientedbox() = delete;
+			orientedbox(orientedbox &&) = delete;
+			orientedbox(const orientedbox &) = delete;
 
-			orientedbox(container *parent, terminal *term, box_orientation orientation):
-				box(parent, term), orientation(orientation) {}
+			orientedbox(container *parent_, const haunted::position &pos_, box_orientation orientation_):
+			box(parent_, pos_), orientation(orientation_) {
+				DBG("Regards from orientedbox::orientedbox(container *, const position &, box_orientation). parent = " << parent << ", parent_" << parent_);
+			}
 
-			orientedbox(container *parent, box_orientation orientation):
-				box(parent), orientation(orientation) {}
+			orientedbox(container *parent_, box_orientation orientation_): orientedbox(parent_, {}, orientation_) {}
 
 			/** Returns the length of the axis of orientation.
 			 *  For horizontal boxes, this is the width of the box. For vertical boxes, it's the height. */

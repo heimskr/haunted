@@ -10,16 +10,13 @@ namespace haunted::ui::boxes {
 	 * Base class representing boxes, which are controls that contain at least two subcontrols
 	 * and resize them as appropriate.
 	 */
-	class box: public virtual container, public virtual control {
-		protected:
-			box(const position &pos): control(pos) {}
-			box(container *parent): control(parent) {}
-			box(container *parent, terminal *term): control(parent, term) {}
-			box(container *parent, const position &pos): control(parent, pos) {}
-			box(): control(nullptr, nullptr) {}
-
+	class box: public virtual container, public control {
 		public:
-			haunted::side side;
+			box() = delete;
+
+			box(container *parent_, const position &pos_ = {}): control(parent_, pos_) {
+				DBG("Regards from box::box(container *, const position &). parent = " << parent << ", parent_ = " << parent_);
+			}
 
 			/** Returns the maximum number of children the box can contain (-1 for unlimited). */
 			virtual int max_children() const = 0;

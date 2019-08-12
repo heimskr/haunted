@@ -2,6 +2,8 @@
 #include "ui/child.h"
 
 namespace haunted::ui {
+	child::~child() = default;
+
 	container * child::get_parent() {
 		return parent;
 	}

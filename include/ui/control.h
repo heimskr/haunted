@@ -13,19 +13,26 @@ namespace haunted::ui {
 	 * Represents a control.
 	 * This includes things like boxes, text views and text inputs.
 	 */
-	class control: public virtual keyhandler, public virtual child {
+	class control: public keyhandler, public child {
 		protected:
 			terminal *term;
 			std::string name;
 			haunted::position pos;
 
 		public:
-			control(container *parent, const haunted::position &pos):
-				child(parent), term(parent == nullptr? nullptr : parent->get_terminal()), pos(pos) {}
+			control() = delete;
+
+			control(container *parent_, haunted::position pos_):
+				child(parent_), term(parent_ == nullptr? nullptr : &parent_->get_terminal()), pos(pos_) {
+				if (parent_ != nullptr)
+					parent_->add_child(this);
+				DBG("Regards from control(container *, position). parent = " << parent << ", parent_ = " << parent);
+					// DBG("parent = " << parent << ", parent_" << parent_);
+			}
+
 			control(const haunted::position &pos): child(nullptr), term(nullptr), pos(pos) {}
 			control(container *parent, terminal *term): child(parent), term(term) {}
-			control(container *parent): control(parent, parent == nullptr? nullptr : parent->get_terminal()) {}
-			control(): control(nullptr, nullptr) {}
+			control(container *parent): control(parent, parent == nullptr? nullptr : &parent->get_terminal()) {}
 
 			virtual ~control() = 0;
 
@@ -56,7 +63,7 @@ namespace haunted::ui {
 			/** Sets the parent and adopts its terminal. */
 			virtual void set_parent(container *) override;
 
-			terminal & get_terminal() const;
+			virtual terminal & get_terminal() const;
 			void set_terminal(terminal *);
 			void set_terminal(terminal &);
 
