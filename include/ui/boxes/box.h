@@ -13,10 +13,7 @@ namespace haunted::ui::boxes {
 	class box: public virtual container, public control {
 		public:
 			box() = delete;
-
-			box(container *parent_, const position &pos_ = {}): control(parent_, pos_) {
-				DBG("Regards from box::box(container *, const position &). parent = " << parent << ", parent_ = " << parent_);
-			}
+			box(container *parent_, const position &pos_ = {}): control(parent_, pos_) {}
 
 			virtual terminal * get_terminal() override { return term; }
 	};

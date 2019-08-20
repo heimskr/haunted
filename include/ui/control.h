@@ -25,8 +25,6 @@ namespace haunted::ui {
 			control(container *parent_, haunted::position pos_): child(parent_), term(nullptr), pos(pos_) {
 				if (parent_ != nullptr)
 					term = parent_->get_terminal();
-
-				DBG("Regards from control(container *, position). parent = " << parent << ", parent_ = " << parent);
 			}
 
 			control(const haunted::position &pos_): child(nullptr), term(nullptr), pos(pos_) {}

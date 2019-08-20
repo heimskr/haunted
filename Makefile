@@ -1,14 +1,14 @@
 COMPILER		:= clang++
 CFLAGS			:= -std=c++2a -g -ggdb -O0 -Wall -Wextra
 CFLAGS_ORIG		:= $(CFLAGS)
-LDFLAGS			:=
 INCLUDE			:=
+LDFLAGS			:=
 CC				 = $(COMPILER) $(CFLAGS) $(CHECKFLAGS)
-MKBUILD			:= mkdir -p build
-CHECK			:= asan
-OUTPUT			:= build/tests
 VALGRIND		:= valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=no
-SDKFLAGS		:= --sysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+MKBUILD			:= mkdir -p build
+OUTPUT			:= build/tests
+CHECK			:= asan
+SDKFLAGS		:= --sysroot /etc/sdk
 
 ifeq ($(CHECK), asan)
 	CHECKFLAGS := -fsanitize=address -fno-common

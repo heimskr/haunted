@@ -12,9 +12,7 @@ namespace haunted::ui {
 			container *parent;
 
 		public:
-			child(container *parent_ = nullptr): parent(parent_) {
-				DBG("Regards from child::child(container *). parent = " << parent << ", parent_ = " << parent_);
-			}
+			child(container *parent_ = nullptr): parent(parent_) {}
 
 			virtual ~child() = 0;
 

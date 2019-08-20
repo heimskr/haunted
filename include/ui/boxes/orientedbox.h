@@ -16,9 +16,7 @@ namespace haunted::ui::boxes {
 			orientedbox(const orientedbox &) = delete;
 
 			orientedbox(container *parent_, const haunted::position &pos_, box_orientation orientation_):
-			box(parent_, pos_), orientation(orientation_) {
-				DBG("Regards from orientedbox::orientedbox(container *, const position &, box_orientation). parent = " << parent << ", parent_" << parent_);
-			}
+			box(parent_, pos_), orientation(orientation_) {}
 
 			orientedbox(container *parent_, box_orientation orientation_): orientedbox(parent_, {}, orientation_) {}
 

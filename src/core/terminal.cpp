@@ -119,7 +119,6 @@ namespace haunted {
 	}
 
 	void terminal::set_root(ui::control *new_root) {
-		DBG("terminal::set_root(" << util::demangle_object(*new_root) << "); " << (root == new_root? "same" : "different"));
 		if (root != new_root) {
 			root = new_root;
 			redraw();
@@ -144,8 +143,6 @@ namespace haunted {
 
 		if (!ctrl)
 			throw std::runtime_error("Focused control is null");
-
-		DBG("ctrl = " << ctrl->get_id() << " (" << ctrl << ")");
 
 		if (ctrl->on_key(k))
 			return ctrl;
