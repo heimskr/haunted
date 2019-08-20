@@ -29,9 +29,7 @@ namespace haunted {
 
 	terminal::~terminal() {
 		reset();
-		DBG(ansi::wrap("terminal::terminal~()", ansi::color::red) << ": joining");
 		join();
-		DBG(ansi::wrap("terminal::terminal~()", ansi::color::red) << ": joined");
 	}
 
 
@@ -172,13 +170,8 @@ namespace haunted {
 	}
 
 	void terminal::join() {
-		DBGFN();
-
-		if (input_thread.joinable()) {
-			DBG("terminal::join(): joining input_thread.");
+		if (input_thread.joinable())
 			input_thread.join();
-			DBG("terminal::join(): joined input_thread.");
-		}
 	}
 
 	void terminal::flush() {
