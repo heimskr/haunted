@@ -29,8 +29,9 @@ namespace haunted {
 
 	terminal::~terminal() {
 		reset();
-		if (input_thread.joinable())
-			input_thread.join();
+		DBG(ansi::wrap("terminal::terminal~()", ansi::color::red) << ": joining");
+		join();
+		DBG(ansi::wrap("terminal::terminal~()", ansi::color::red) << ": joined");
 	}
 
 
@@ -113,7 +114,6 @@ namespace haunted {
 	void terminal::redraw() {
 		if (root) {
 			colors.reset();
-			DBG("terminal::redraw(): root = " << util::demangle_object(*root));
 			out_stream.clear().jump();
 			root->resize({0, 0, cols, rows});
 			root->draw();
@@ -144,8 +144,10 @@ namespace haunted {
 
 		ui::control *ctrl = get_focused();
 
-		if (ctrl == nullptr)
+		if (!ctrl)
 			throw std::runtime_error("Focused control is null");
+
+		DBG("ctrl = " << ctrl->get_id() << " (" << ctrl << ")");
 
 		if (ctrl->on_key(k))
 			return ctrl;
@@ -167,6 +169,16 @@ namespace haunted {
 
 	void terminal::start_input() {
 		input_thread = std::thread(&terminal::work_input, this);
+	}
+
+	void terminal::join() {
+		DBGFN();
+
+		if (input_thread.joinable()) {
+			DBG("terminal::join(): joining input_thread.");
+			input_thread.join();
+			DBG("terminal::join(): joined input_thread.");
+		}
 	}
 
 	void terminal::flush() {

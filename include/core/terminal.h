@@ -103,6 +103,9 @@ namespace haunted {
 			/** Starts the input-reading thread. */
 			virtual void start_input();
 
+			/** Joins all the terminal's threads. */
+			virtual void join();
+
 			/** Flushes the output stream. */
 			virtual void flush();
 
