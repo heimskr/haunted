@@ -532,7 +532,7 @@ int main(int argc, char **argv) {
 	
 	const std::string arg = argc < 2? "" : argv[1];
 
-	terminal term(std::cin, ansi::ansistream());
+	terminal term(std::cin, ansi::out);
 	term.watch_size();
 
 	if (argc < 2) {

@@ -66,11 +66,11 @@ namespace haunted {
 			termios attrs;
 			bool raw = false;
 			bool suppress_output = false;
-			ansi::ansistream out_stream;
+			ansi::ansistream &out_stream;
 			ui::coloration colors;
 
-			terminal(std::istream &, ansi::ansistream);
-			terminal(std::istream &in_stream): terminal(in_stream, ansi::ansistream()) {}
+			terminal(std::istream &, ansi::ansistream &);
+			terminal(std::istream &in_stream): terminal(in_stream, ansi::out) {}
 			terminal(): terminal(std::cin) {}
 
 			/** Resets terminal attributes and joins threads as necessary. */

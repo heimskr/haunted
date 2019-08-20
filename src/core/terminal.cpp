@@ -18,8 +18,8 @@ namespace haunted {
 
 	std::vector<terminal *> terminal::winch_targets {};
 
-	terminal::terminal(std::istream &in_stream, ansi::ansistream out_stream):
-	in_stream(in_stream), out_stream(out_stream), colors(&out_stream, &output_mutex) {
+	terminal::terminal(std::istream &in_stream_, ansi::ansistream &out_stream_):
+	in_stream(in_stream_), out_stream(out_stream_), colors(&out_stream_, &output_mutex) {
 		original = attrs = getattr();
 		winsize size;
 		ioctl(STDIN_FILENO, TIOCGWINSZ, &size);

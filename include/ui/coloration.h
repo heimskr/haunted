@@ -14,7 +14,8 @@ namespace haunted::ui {
 		private:
 			ansi::ansistream *out_stream;
 			std::mutex *mux;
-			ansi::color last_foreground = ansi::color::normal, last_background = ansi::color::normal;
+			ansi::color last_foreground = ansi::color::normal;
+			ansi::color last_background = ansi::color::normal;
 
 			std::unique_lock<std::mutex> get_lock() { return std::unique_lock(*mux); }
 
