@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 
+#include "ui/colored.h"
 #include "ui/control.h"
 #include "core/terminal.h"
 
@@ -43,7 +44,7 @@ namespace haunted::ui {
 	/**
 	 * Represents a multiline box of text.
 	 */
-	class textbox: public virtual control {
+	class textbox: public control, public colored {
 		friend class haunted::tests::maintest;
 
 		private:
@@ -137,6 +138,9 @@ namespace haunted::ui {
 
 			/** Returns the textbox's contents. */
 			operator std::string() const;
+
+			virtual terminal * get_terminal() override { return term; }
+			virtual container * get_parent() const override { return parent; }
 
 			using iterator = std::deque<textline>::iterator;
 			using reverse_iterator = std::deque<textline>::reverse_iterator;

@@ -1,8 +1,28 @@
 #include "ui/container.h"
 #include "ui/control.h"
+#include "core/util.h"
+#include "core/terminal.h"
 
 namespace haunted::ui {
-	container::~container() = default;	
+	container::~container()
+	//  = default; /*
+	{
+		if (control *ctrl = dynamic_cast<control *>(this)) {
+			DBG("~container(" << ctrl->get_id() << "): size() == " << children.size());
+		} else if (terminal *t = dynamic_cast<terminal *>(this)) {
+			DBG("~container(terminal *" << this << "): size() == " << children.size());
+		} else {
+			DBG("~container(" << util::demangle_object(this) << " " << this << "): size() == " << children.size());
+		}
+
+
+		for (control *child_control: children) {
+			std::string prefix;
+
+			DBG(prefix << "Deleting " << (child_control == nullptr? "null" : child_control->get_id()));
+			delete child_control;
+		}
+	}//*/
 
 	control * container::operator[](size_t index) {
 		return index < children.size()? children.at(index) : nullptr;

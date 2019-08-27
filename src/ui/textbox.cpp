@@ -66,7 +66,6 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
-
 		// We need to subtract one to account for the fact that the new line is already in the buffer.
 		int next = next_row() - 1;
 		if (voffset != -1 && next < 0)
@@ -266,6 +265,8 @@ namespace haunted::ui {
 	void textbox::draw() {
 		if (!can_draw())
 			return;
+
+		colored::draw();
 
 		auto lock = term->lock_render();
 

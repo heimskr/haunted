@@ -19,6 +19,8 @@ namespace haunted::ui {
 			container * get_parent();
 			virtual void set_parent(container *);
 	};
+
+	using child_ptr = std::shared_ptr<child>;
 }
 
 #endif

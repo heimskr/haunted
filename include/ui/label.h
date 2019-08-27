@@ -29,6 +29,7 @@ namespace haunted::ui {
 
 			/** Whether to request a resize from the parent whenever the label text changes. */
 			bool autoresize;
+
 		public:
 			/** Constructs a textinput with a parent, a position, text, an autoresize flag and a cutoff string. */
 			label(container *parent, const position &pos = {}, const std::string &text = "", bool autoresize = false,

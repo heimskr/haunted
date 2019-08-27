@@ -30,6 +30,9 @@ namespace haunted::ui::boxes {
 			double get_ratio() const { return ratio; }
 			void set_ratio(const double);
 
+			using control::resize;
+			void resize(const position &) override;
+
 			virtual void draw() override;
 			virtual int max_children() const override { return 2; }
 			virtual int size_one() const override;

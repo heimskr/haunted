@@ -94,6 +94,8 @@ namespace haunted::ui {
 
 			friend class container;
 	};
+
+	using control_ptr = std::shared_ptr<control>;
 }
 
 #endif
