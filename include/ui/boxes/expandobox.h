@@ -30,11 +30,11 @@ namespace haunted::ui::boxes {
 			template <typename L, typename R>
 			class pair_iterator: public std::iterator<std::forward_iterator_tag, std::pair<L, R>> {
 				private:
-					std::vector<control *>::iterator child_iterator;
+					std::vector<control_ptr>::iterator child_iterator;
 					std::vector<int>::iterator size_iterator;
 
 				public:
-					pair_iterator(std::vector<control *>::iterator c, std::vector<int>::iterator s):
+					pair_iterator(std::vector<control_ptr>::iterator c, std::vector<int>::iterator s):
 						child_iterator(c), size_iterator(s) {}
 
 					std::pair<L &, R &> operator*() const;
@@ -53,8 +53,8 @@ namespace haunted::ui::boxes {
 			std::vector<int> sizes;
 
 		public:
-			typedef std::pair<control *, int> child_pair;
-			typedef pair_iterator<control *, int> iterator;
+			typedef std::pair<control_ptr, int> child_pair;
+			typedef pair_iterator<control_ptr, int> iterator;
 
 			expandobox(container *, const position &, const box_orientation, std::initializer_list<child_pair>);
 			expandobox(container *parent, const position &pos, const box_orientation orientation):

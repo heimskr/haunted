@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "core/defs.h"
 #include "ui/keyhandler.h"
 
 namespace haunted {
@@ -27,10 +28,11 @@ namespace haunted::ui {
 			virtual ~container();
 
 			/** Adds a child to the container. Returns true if successful. */
-			virtual bool add_child(std::shared_ptr<control>);
+			virtual bool add_child(control_ptr);
 
 			/** Removes a child from the container. Returns true if successful. */
 			virtual bool remove_child(std::shared_ptr<child>);
+			virtual bool remove_child(child *);
 
 			/** Returns the largest number of children the container can accommodate.
 			 *  A value of -1 means the container can hold an arbitrary number of children. */
@@ -39,20 +41,20 @@ namespace haunted::ui {
 			/** Returns the number of children the container currently holds. */
 			virtual int child_count()  const { return children.size(); }
 
-			virtual std::vector<std::shared_ptr<control>> & get_children() { return children; }
+			virtual std::vector<control_ptr> & get_children() { return children; }
 
 			/** Returns the terminal associated with the container. */
 			virtual haunted::terminal * get_terminal() = 0;
 
 			/** Asks the parent to assign a new size to one of its children. Useful for expandoboxes.
 			 *  Returns true if the request was granted. */
-			virtual bool request_resize(std::shared_ptr<control>, size_t width, size_t height);
+			virtual bool request_resize(control *, size_t width, size_t height);
 
 			/** Redraws all the container's children in order. */
 			virtual void redraw();
 
 			/** Returns the nth child (indexes `children`). */
-			control * operator[](size_t);
+			control_ptr operator[](size_t);
 	};
 
 	using container_ptr = std::shared_ptr<container>;

@@ -178,10 +178,10 @@ namespace haunted::tests {
 		using namespace haunted::ui::boxes;
 
 		term.cbreak();
-		textbox   *tb  = new textbox();               tb->set_name("tb");
-		textinput *ti  = new textinput();             ti->set_name("ti");
-		label     *tlb = new label("Title",  false); tlb->set_name("tlb");
-		label     *slb = new label("Status", false); slb->set_name("slb");
+		std::shared_ptr<textbox>   tb  = std::make_shared<textbox>();               tb->set_name("tb");
+		std::shared_ptr<textinput> ti  = std::make_shared<textinput>();             ti->set_name("ti");
+		std::shared_ptr<label>     tlb = std::make_shared<label>("Title",  false); tlb->set_name("tlb");
+		std::shared_ptr<label>     slb = std::make_shared<label>("Status", false); slb->set_name("slb");
 
 		expandobox *vexp = new expandobox(&term, term.get_position(), box_orientation::vertical, {
 			{tlb, 1}, {tb, -1}, {slb, 1}, {ti, 1}
@@ -305,10 +305,10 @@ namespace haunted::tests {
 		
 		dummy_terminal dummy;
 
-		boxes::simplebox wrapper(&dummy);
+		control_ptr wrapper(&dummy);
 		wrapper.resize({0, 0, 20, 10});
 		
-		textbox *tb = new textbox(&wrapper, wrapper.get_position());
+		control_ptr tb = &(textbox(&wrapper, wrapper.get_position()));
 
 		textline t1("Hello", 4);
 		textline t2("This line is longer than the control's width of 20 characters. Its continuation should align with the third word.", 10);
@@ -435,41 +435,41 @@ namespace haunted::tests {
 		simplebox wrapper(&dummy);
 		wrapper.resize({10, 10, 500, 100});
 
-		ui::textbox tb1(&wrapper);
-		ui::textbox tb2(&wrapper);
-		ui::textbox tb3(&wrapper);
-		ui::textbox tb4(&wrapper);
+		std::shared_ptr<ui::textbox> tb1 = std::make_shared<ui::textbox>(&wrapper);
+		std::shared_ptr<ui::textbox> tb2 = std::make_shared<ui::textbox>(&wrapper);
+		std::shared_ptr<ui::textbox> tb3 = std::make_shared<ui::textbox>(&wrapper);
+		std::shared_ptr<ui::textbox> tb4 = std::make_shared<ui::textbox>(&wrapper);
 
 		expandobox *expando = new expandobox(&wrapper, wrapper.get_position(), box_orientation::horizontal,
-			{{&tb1, 10}, {&tb2, -1}});
+			{{tb1, 10}, {tb2, -1}});
 
 		unit.check(wrapper.get_position(),  {10, 10, 500, 100}, "wrapper position");
 		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando position");
-		unit.check(tb1.get_position(), {-1, -1, -1, -1}, "tb1 position");
-		unit.check(tb2.get_position(), {-1, -1, -1, -1}, "tb2 position");
+		unit.check(tb1->get_position(), {-1, -1, -1, -1}, "tb1 position");
+		unit.check(tb2->get_position(), {-1, -1, -1, -1}, "tb2 position");
 		INFO("Expanding children.");
 		expando->resize();
-		unit.check(tb1.get_position(), {10, 10, 10,  100}, "tb1 position");
-		unit.check(tb2.get_position(), {20, 10, 490, 100}, "tb2 position");
+		unit.check(tb1->get_position(), {10, 10, 10,  100}, "tb1 position");
+		unit.check(tb2->get_position(), {20, 10, 490, 100}, "tb2 position");
 		INFO("Adding tb3 and expanding.");
 		(*expando += {&tb3, 90}).resize();
-		unit.check(tb1.get_position(), {10,  10, 10,  100}, "tb1 position");
-		unit.check(tb2.get_position(), {20,  10, 400, 100}, "tb2 position");
-		unit.check(tb3.get_position(), {420, 10, 90,  100}, "tb3 position");
+		unit.check(tb1->get_position(), {10,  10, 10,  100}, "tb1 position");
+		unit.check(tb2->get_position(), {20,  10, 400, 100}, "tb2 position");
+		unit.check(tb3->get_position(), {420, 10, 90,  100}, "tb3 position");
 		INFO("Adding tb4 and expanding.");
 		(*expando += {&tb4, -1}).resize();
-		unit.check(tb1.get_position(), {10,  10, 10,  100}, "tb1 position");
-		unit.check(tb2.get_position(), {20,  10, 200, 100}, "tb2 position");
-		unit.check(tb3.get_position(), {220, 10, 90,  100}, "tb3 position");
-		unit.check(tb4.get_position(), {310, 10, 200, 100}, "tb4 position");
+		unit.check(tb1->get_position(), {10,  10, 10,  100}, "tb1 position");
+		unit.check(tb2->get_position(), {20,  10, 200, 100}, "tb2 position");
+		unit.check(tb3->get_position(), {220, 10, 90,  100}, "tb3 position");
+		unit.check(tb4->get_position(), {310, 10, 200, 100}, "tb4 position");
 
 		INFO("Reorienting horizontal → box_orientation::vertical.");
 		expando->resize({10, 10, 100, 250});
 		expando->set_orientation(box_orientation::vertical);
-		unit.check(tb1.get_position(), {10, 10,  100, 10}, "tb1 position");
-		unit.check(tb2.get_position(), {10, 20,  100, 75}, "tb2 position");
-		unit.check(tb3.get_position(), {10, 95,  100, 90}, "tb3 position");
-		unit.check(tb4.get_position(), {10, 185, 100, 75}, "tb4 position");
+		unit.check(tb1->get_position(), {10, 10,  100, 10}, "tb1 position");
+		unit.check(tb2->get_position(), {10, 20,  100, 75}, "tb2 position");
+		unit.check(tb3->get_position(), {10, 95,  100, 90}, "tb3 position");
+		unit.check(tb4->get_position(), {10, 185, 100, 75}, "tb4 position");
 
 		ansi::out << ansi::endl;
 	}

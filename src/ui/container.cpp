@@ -4,40 +4,26 @@
 #include "core/terminal.h"
 
 namespace haunted::ui {
-	container::~container()
-	//  = default; /*
-	{
-		if (control *ctrl = dynamic_cast<control *>(this)) {
-			DBG("~container(" << ctrl->get_id() << "): size() == " << children.size());
-		} else if (terminal *t = dynamic_cast<terminal *>(this)) {
-			DBG("~container(terminal *" << this << "): size() == " << children.size());
-		} else {
-			DBG("~container(" << util::demangle_object(this) << " " << this << "): size() == " << children.size());
-		}
+	container::~container() = default;
 
-
-		for (control *child_control: children) {
-			std::string prefix;
-
-			DBG(prefix << "Deleting " << (child_control == nullptr? "null" : child_control->get_id()));
-			delete child_control;
-		}
-	}//*/
-
-	control * container::operator[](size_t index) {
+	control_ptr container::operator[](size_t index) {
 		return index < children.size()? children.at(index) : nullptr;
 	}
 
-	bool container::add_child(control *child) {
+	bool container::add_child(control_ptr child) {
 		children.push_back(child);
 		return true;
 	}
 
-	bool container::remove_child(child *child) {
+	bool container::remove_child(std::shared_ptr<child> to_remove) {
+		return remove_child(to_remove.get());
+	}
+
+	bool container::remove_child(child *to_remove) {
 		for (auto iter = children.begin(); iter != children.end(); ++iter) {
-			if (*iter == child) {
+			if (iter->get() == to_remove) {
 				children.erase(iter);
-				child->set_parent(nullptr);
+				to_remove->set_parent(nullptr);
 				return true;
 			}
 		}
@@ -50,7 +36,7 @@ namespace haunted::ui {
 	}
 
 	void container::redraw() {
-		for (control *child: children)
+		for (control_ptr child: children)
 			child->draw();
 	}
 }

@@ -18,11 +18,13 @@ namespace haunted::ui {
 			terminal *term;
 			std::string name;
 			haunted::position pos;
+			control_ptr ptr;
 
 		public:
 			control() = delete;
 
 			control(container *parent_, haunted::position pos_): child(parent_), term(nullptr), pos(pos_) {
+				ptr = control_ptr(this);
 				if (parent_ != nullptr)
 					term = parent_->get_terminal();
 			}
@@ -32,6 +34,8 @@ namespace haunted::ui {
 			control(container *parent_): control(parent_, parent_ == nullptr? nullptr : parent_->get_terminal()) {}
 
 			virtual ~control() = 0;
+
+			virtual control_ptr operator&() { return ptr; }
 
 			/** Returns the control's identifier. */
 			virtual std::string get_id(bool pad = false) const;

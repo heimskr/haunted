@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <memory>
 #include <sstream>
 
 #include <cstddef>
@@ -87,6 +88,14 @@ namespace haunted {
 				}
 			}
 	};
+}
+
+namespace haunted::ui {
+	class control;
+	class child;
+
+	using control_ptr = std::shared_ptr<control>;
+	using child_ptr = std::shared_ptr<child>;
 }
 
 #endif
