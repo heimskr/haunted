@@ -21,17 +21,16 @@ namespace haunted::ui {
 		friend class control;
 
 		protected:
-			std::vector<std::shared_ptr<control>> children;
+			std::vector<control *> children;
 		
 		public:
 			// virtual ~container() = 0;
 			virtual ~container();
 
 			/** Adds a child to the container. Returns true if successful. */
-			virtual bool add_child(control_ptr);
+			virtual bool add_child(control *);
 
 			/** Removes a child from the container. Returns true if successful. */
-			virtual bool remove_child(std::shared_ptr<child>);
 			virtual bool remove_child(child *);
 
 			/** Returns the largest number of children the container can accommodate.
@@ -41,7 +40,7 @@ namespace haunted::ui {
 			/** Returns the number of children the container currently holds. */
 			virtual int child_count()  const { return children.size(); }
 
-			virtual std::vector<control_ptr> & get_children() { return children; }
+			virtual std::vector<control *> & get_children() { return children; }
 
 			/** Returns the terminal associated with the container. */
 			virtual haunted::terminal * get_terminal() = 0;
@@ -54,10 +53,8 @@ namespace haunted::ui {
 			virtual void redraw();
 
 			/** Returns the nth child (indexes `children`). */
-			control_ptr operator[](size_t);
+			control * operator[](size_t);
 	};
-
-	using container_ptr = std::shared_ptr<container>;
 }
 
 #endif

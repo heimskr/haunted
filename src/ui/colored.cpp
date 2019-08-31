@@ -86,15 +86,15 @@ namespace haunted::ui {
 		bool is_bg = (static_cast<int>(type) & static_cast<int>(ansi::color_type::background)) != 0;
 		bool is_fg = (static_cast<int>(type) & static_cast<int>(ansi::color_type::foreground)) != 0;
 
-		std::deque<control_ptr> queue(cont->get_children().begin(), cont->get_children().end());
+		std::deque<control *> queue(cont->get_children().begin(), cont->get_children().end());
 
 		while (!queue.empty()) {
-			control_ptr child = queue.front();
+			control * child = queue.front();
 			queue.pop_front();
 
-			colored *colored_child = dynamic_cast<colored *>(child.get());
+			colored *colored_child = dynamic_cast<colored *>(child);
 			if (colored_child == nullptr) {
-				if (container *container_child = dynamic_cast<container *>(child.get())) {
+				if (container *container_child = dynamic_cast<container *>(child)) {
 					queue.insert(queue.end(), container_child->get_children().begin(),
 					                          container_child->get_children().end());
 				}
@@ -115,7 +115,7 @@ namespace haunted::ui {
 			}
 
 			if (changed) {
-				if (container *container_child = dynamic_cast<container *>(child.get())) {
+				if (container *container_child = dynamic_cast<container *>(child)) {
 					queue.insert(queue.end(), container_child->get_children().begin(),
 					                          container_child->get_children().end());
 				}

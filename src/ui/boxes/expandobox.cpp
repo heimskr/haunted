@@ -5,7 +5,7 @@
 
 namespace haunted::ui::boxes {
 	template <>
-	std::pair<control_ptr &, int &> expandobox::iterator::operator*() const {
+	std::pair<control *&, int &> expandobox::iterator::operator*() const {
 		return {*child_iterator, *size_iterator};
 	}
 
@@ -18,7 +18,7 @@ namespace haunted::ui::boxes {
 
 	template <>
 	expandobox::iterator expandobox::iterator::operator++(int) {
-		std::vector<control_ptr>::iterator new_child_iterator(child_iterator);
+		std::vector<control *>::iterator new_child_iterator(child_iterator);
 		std::vector<int>::iterator new_size_iterator(size_iterator);
 		return {++new_child_iterator, ++new_size_iterator};
 	}
@@ -34,7 +34,7 @@ namespace haunted::ui::boxes {
 	expandobox::expandobox(container *parent_, const position &pos, const box_orientation orientation,
 	std::initializer_list<child_pair> pairs): orientedbox(parent_, pos, orientation) {
 		if (parent_)
-			parent_->add_child(ptr);
+			parent_->add_child(this);
 
 		for (const child_pair &p: pairs) {
 			p.first->set_parent(this);
@@ -102,17 +102,17 @@ namespace haunted::ui::boxes {
 		int offset = 0;
 
 		for (const child_pair p: *this) {
-			control_ptr child = p.first;
+			control *child = p.first;
 			const int child_size = p.second;
 
 			if (offset >= size) {
 				// If there's no space left, assign the child a size of zero and place it at the far edge.
 				DBG("Resizing " << child->get_id() << " with offset " << get_size() << " and size " << 0 << " (no space left)");
-				resize_child(child.get(), get_size(), 0);
+				resize_child(child, get_size(), 0);
 			} else {
 				const int assigned = child_size == -1? expanded_size(expanded++) : std::min(child_size, size - offset);
 				DBG("Resizing " << child->get_id() << " with offset " << offset << " and size " << assigned);
-				resize_child(child.get(), offset, assigned);
+				resize_child(child, offset, assigned);
 				offset += assigned;
 			}
 		}
@@ -127,14 +127,14 @@ namespace haunted::ui::boxes {
 		colored::draw();
 
 		auto lock = term->lock_render();
-		for (control_ptr child: children)
+		for (control *child: children)
 			child->draw();
 	}
 
 	bool expandobox::request_resize(control *child, size_t width, size_t height) {
 		// Don't try to resize anything that isn't a direct descendant.
 		for (auto iter = children.begin(), end = children.end(); iter != end; ++iter) {
-			if (iter->get() == child) {
+			if (*iter == child) {
 				size_t pos = iter - children.begin();
 				sizes[pos] = orientation == box_orientation::vertical? height : width;
 				resize();

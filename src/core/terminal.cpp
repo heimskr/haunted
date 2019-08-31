@@ -186,8 +186,8 @@ namespace haunted {
 		return root;
 	}
 
-	bool terminal::add_child(ui::control_ptr child) {
-		set_root(child.get());
+	bool terminal::add_child(ui::control *child) {
+		set_root(child);
 		return true;
 	}
 

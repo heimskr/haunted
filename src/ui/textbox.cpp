@@ -39,7 +39,7 @@ namespace haunted::ui {
 
 	textbox::textbox(container *parent_, position pos_, const std::vector<std::string> &contents): control(parent_, pos_) {
 		if (parent_ != nullptr)
-			parent_->add_child(ptr);
+			parent_->add_child(this);
 		set_lines(contents);
 		// add_child could modify the position, so we set the position again at the end to overoverwrite it.
 		pos = pos_;
@@ -47,7 +47,7 @@ namespace haunted::ui {
 
 	textbox::textbox(container *parent_, const std::vector<std::string> &contents): control(parent_) {
 		if (parent_ != nullptr)
-			parent_->add_child(ptr);
+			parent_->add_child(this);
 		set_lines(contents);
 	}
 

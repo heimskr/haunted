@@ -25,7 +25,7 @@ namespace haunted::ui::boxes {
 			double ratio;
 
 		public:
-			propobox(container *, double, box_orientation, control_ptr = nullptr, control_ptr = nullptr,
+			propobox(container *, double, box_orientation, control * = nullptr, control * = nullptr,
 				const position & = {});
 			double get_ratio() const { return ratio; }
 			void set_ratio(const double);

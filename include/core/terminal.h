@@ -17,8 +17,6 @@
 #include "ui/control.h"
 
 namespace haunted {
-	using terminal_ptr = std::shared_ptr<terminal>;
-
 	/**
 	 * This class enables interaction with terminals. It uses termios to change terminal modes.
 	 * When the destructor is called, it resets the modes to their original values.
@@ -117,7 +115,7 @@ namespace haunted {
 			virtual ui::control * get_focused();
 
 			/** Adds a child to the terminal by setting its root to the child. */
-			virtual bool add_child(ui::control_ptr) override;
+			virtual bool add_child(ui::control *) override;
 
 			/** Returns the terminal. Required by haunted::ui::container. */
 			virtual terminal * get_terminal() override { return this; }
