@@ -19,7 +19,7 @@ namespace haunted::ui {
 		return index < children.size()? children.at(index) : nullptr;
 	}
 
-	bool container::add_child(control * child) {
+	bool container::add_child(control *child) {
 		children.push_back(child);
 		return true;
 	}
