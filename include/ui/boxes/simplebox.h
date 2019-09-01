@@ -16,8 +16,6 @@ namespace haunted::ui::boxes {
 
 		public:
 			using box::box;
-			
-			// simplebox(const position &pos_): box(nullptr, pos_) {}
 
 			virtual int max_children() const override { return 1; }
 			virtual void resize(const position &) override;

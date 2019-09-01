@@ -30,6 +30,7 @@ namespace haunted {
 	terminal::~terminal() {
 		reset();
 		join();
+		container::~container();
 	}
 
 

@@ -29,9 +29,9 @@ namespace haunted::ui {
 		 *  container and has to be wrapped. The first row of the line isn't padded, but all subsequent rows are. */
 		int continuation = 0;
 
-		textline(std::string text, int continuation): text(text), continuation(continuation) {}
-		textline(std::string text): text(text) {}
-		textline(int continuation): continuation(continuation) {}
+		textline(const std::string &text_, int continuation_): text(text_), continuation(continuation_) {}
+		textline(const std::string &text_): text(text_) {}
+		textline(int continuation_): continuation(continuation_) {}
 		textline(): textline("", 0) {}
 
 		/** Returns the text for a given row relative to the line for a given textbox width. */
@@ -94,16 +94,16 @@ namespace haunted::ui {
 
 		public:
 			/** Constructs a textbox with a parent, a position and initial contents. */
-			textbox(container *parent, position pos, const std::vector<std::string> &contents);
+			textbox(container *parent_, position pos_, const std::vector<std::string> &contents_);
 
 			/** Constructs a textbox with a parent and position and empty contents. */
-			textbox(container *parent, position pos): textbox(parent, pos, {}) {}
+			textbox(container *parent_, position pos_): textbox(parent_, pos_, {}) {}
 
 			/** Constructs a textbox with a parent, initial contents and a default position. */
-			textbox(container *parent, const std::vector<std::string> &contents);
+			textbox(container *parent_, const std::vector<std::string> &contents_);
 
 			/** Constructs a textbox with a parent, a default position and empty contents. */
-			textbox(container *parent): textbox(parent, std::vector<std::string> {}) {}
+			textbox(container *parent_): textbox(parent_, std::vector<std::string> {}) {}
 
 			/** Constructs a textbox with no parent and no contents. */
 			textbox(): textbox(nullptr, std::vector<std::string> {}) {}

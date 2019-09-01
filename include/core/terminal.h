@@ -74,7 +74,7 @@ namespace haunted {
 			terminal(): terminal(std::cin) {}
 
 			/** Resets terminal attributes and joins threads as necessary. */
-			~terminal();
+			virtual ~terminal();
 
 			/** Activates cbreak mode. */
 			virtual void cbreak();

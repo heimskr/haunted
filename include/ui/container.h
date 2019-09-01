@@ -24,7 +24,6 @@ namespace haunted::ui {
 			std::vector<control *> children;
 		
 		public:
-			// virtual ~container() = 0;
 			virtual ~container();
 
 			/** Adds a child to the container. Returns true if successful. */

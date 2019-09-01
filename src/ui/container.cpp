@@ -4,7 +4,16 @@
 #include "core/terminal.h"
 
 namespace haunted::ui {
-	container::~container() = default;
+	container::~container() {
+		if (control *cptr = dynamic_cast<control *>(this)) {
+			DBG("~container(): " << this << " (" << cptr->get_id() << ")");
+		} else {
+			DBG("~container(): " << this << " (?)");
+		}
+
+		for (control *child: children)
+			delete child;
+	}
 
 	control * container::operator[](size_t index) {
 		return index < children.size()? children.at(index) : nullptr;
@@ -32,7 +41,7 @@ namespace haunted::ui {
 	}
 
 	void container::redraw() {
-		for (control * child: children)
+		for (control *child: children)
 			child->draw();
 	}
 }
