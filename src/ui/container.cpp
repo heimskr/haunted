@@ -5,12 +5,6 @@
 
 namespace haunted::ui {
 	container::~container() {
-		if (control *cptr = dynamic_cast<control *>(this)) {
-			DBG("~container(): " << this << " (" << cptr->get_id() << ")");
-		} else {
-			DBG("~container(): " << this << " (?)");
-		}
-
 		for (control *child: children)
 			delete child;
 	}
