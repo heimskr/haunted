@@ -97,15 +97,26 @@ namespace haunted::ui {
 	}
 
 	void control::set_margins() {
-		if (term == nullptr) return;
-		term->enable_hmargins();
-		term->margins(pos.top, pos.bottom(), pos.left, pos.right());
-		term->set_origin();
+		if (term != nullptr) {
+			term->enable_hmargins();
+			term->margins(pos.top, pos.bottom(), pos.left, pos.right());
+			term->set_origin();
+		}
+	}
+
+	void control::set_hmargins() {
+		if (term != nullptr) {
+			term->enable_hmargins();
+			term->hmargins(pos.left, pos.right());
+			term->set_origin();
+		}
 	}
 
 	void control::reset_margins() {
-		if (term == nullptr) return;
-		term->reset_origin();
-		term->margins();
+		if (term != nullptr) {
+			term->reset_origin();
+			term->margins();
+			term->disable_hmargins();
+		}
 	}
 }
