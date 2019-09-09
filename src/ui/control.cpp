@@ -65,12 +65,6 @@ namespace haunted::ui {
 		}
 	}
 
-	void control::set_terminal(terminal *term_) {
-		if (term_ == nullptr)
-			throw null_terminal(this);
-		set_terminal(*term_);
-	}
-
 	void control::jump() {
 		pos.jump();
 	}

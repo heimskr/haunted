@@ -62,8 +62,7 @@ namespace haunted::ui {
 
 			virtual container * get_parent() const { return parent; }
 			virtual terminal * get_terminal() { return term; }
-			void set_terminal(terminal *);
-			void set_terminal(terminal &term_) { term = &term_; }
+			void set_terminal(terminal *term_) { term = term_;  }
 
 			/** Returns the control's position. */
 			haunted::position get_position() const { return pos; }
