@@ -137,7 +137,7 @@ namespace haunted {
 		colors.reset();
 	}
 
-	ui::keyhandler * terminal::send_key(key k) {
+	ui::keyhandler * terminal::send_key(const key &k) {
 		// If the root is null, there are no controls and nothing to send key presses to.
 		if (root == nullptr)
 			return nullptr;
@@ -153,8 +153,13 @@ namespace haunted {
 		ui::container *ptr = ctrl->get_parent();
 		
 		// Keep trying on_key, going up to the root as long as we keep getting false. If we're at the root and on_key
-		// still returns false, controle up.
-		while (!ptr->on_key(k) && dynamic_cast<ui::control *>(ptr) != root) {
+		// still returns false, let the terminal itself handle the keypress as a last resort.
+		while (!ptr->on_key(k)) {
+			if (dynamic_cast<ui::control *>(ptr) == root) {
+				on_key(k);
+				return this;
+			}
+
 			if (ui::child *cptr = dynamic_cast<ui::child *>(ptr)) {
 				ptr = cptr->get_parent();
 			} else {
@@ -163,6 +168,15 @@ namespace haunted {
 		}
 
 		return ptr;
+	}
+
+	bool terminal::on_key(const key &k) {
+		if (k.is_ctrl(ktype::l)) {
+			redraw();
+			return true;
+		}
+
+		return false;
 	}
 
 	void terminal::start_input() {

@@ -100,7 +100,10 @@ namespace haunted {
 			
 			/** Sends a key press to whichever control is most appropriate and willing to receive it.
 			 *  Returns a pointer to the control or container that ended up handling the key press. */
-			virtual ui::keyhandler * send_key(key);
+			virtual ui::keyhandler * send_key(const key &);
+
+			/** Handles key combinations common to most console programs. */
+			virtual bool on_key(const key &) override;
 
 			/** Starts the input-reading thread. */
 			virtual void start_input();

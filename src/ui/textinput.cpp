@@ -483,7 +483,7 @@ namespace haunted::ui {
 					case 't':  transpose(); break;
 					case 'u':      clear(); return true;
 					case 'w': erase_word(); break;
-					default: break;
+					default: return false;
 				}
 				break;
 			case kmod::alt:
@@ -493,7 +493,7 @@ namespace haunted::ui {
 					case 'f': next_word(); break;
 					case 'H': start();     break;
 					case 'F': end();       break;
-					default: break;
+					default: return false;
 				}
 				break;
 			default: break;
