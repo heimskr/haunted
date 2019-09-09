@@ -71,22 +71,21 @@ namespace haunted {
 	};
 
 	template <typename T>
-	class null_terminal: public std::exception {
+	class null_terminal: public std::runtime_error {
 		private:
 			T *source;
 
-		public:
-			null_terminal(T *source): source(source) {}
-
-			const char * what() const throw() {
-				if (source == nullptr) {
-					return "Terminal is null";
-				} else {
-					std::stringstream ss;
-					ss << "Terminal is null for " << source;
-					return ss.str().c_str();
-				}
+			std::runtime_error create_runtime_error(T *source) {
+				char msg[1024];
+				if (source == nullptr)
+					sprintf(msg, "Terminal is null");
+				else
+					sprintf(msg, "Terminal is null for %p", source);
+				return std::runtime_error(msg);
 			}
+
+		public:
+			null_terminal(T *source): std::runtime_error(null_terminal::create_runtime_error(source)) {}
 	};
 }
 

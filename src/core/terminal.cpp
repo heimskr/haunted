@@ -30,7 +30,7 @@ namespace haunted {
 	terminal::~terminal() {
 		reset();
 		join();
-		container::~container();
+		delete root;
 	}
 
 
@@ -119,8 +119,10 @@ namespace haunted {
 		}
 	}
 
-	void terminal::set_root(ui::control *new_root) {
+	void terminal::set_root(ui::control *new_root, bool delete_old) {
 		if (root != new_root) {
+			if (delete_old)
+				delete root;
 			root = new_root;
 			redraw();
 		}

@@ -36,10 +36,7 @@ namespace haunted::ui {
 			 *  A value of -1 means the container can hold an arbitrary number of children. */
 			virtual int max_children() const { return -1; }
 
-			/** Returns the number of children the container currently holds. */
-			virtual int child_count()  const { return children.size(); }
-
-			virtual std::vector<control *> & get_children() { return children; }
+			std::vector<control *> & get_children() { return children; }
 
 			/** Returns the terminal associated with the container. */
 			virtual haunted::terminal * get_terminal() = 0;
@@ -50,6 +47,10 @@ namespace haunted::ui {
 
 			/** Redraws all the container's children in order. */
 			virtual void redraw();
+
+			bool empty()   const { return children.empty(); }
+			size_t size()  const { return children.size();  }
+			size_t count() const { return children.size();  }
 
 			/** Returns the nth child (indexes `children`). */
 			control * operator[](size_t);

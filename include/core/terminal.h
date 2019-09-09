@@ -21,7 +21,7 @@ namespace haunted {
 	 * This class enables interaction with terminals. It uses termios to change terminal modes.
 	 * When the destructor is called, it resets the modes to their original values.
 	 */
-	class terminal: public virtual ui::container {
+	class terminal: public ui::container {
 		private:
 			std::istream &in_stream;
 			std::mutex output_mutex;
@@ -73,6 +73,8 @@ namespace haunted {
 			terminal(std::istream &in_stream): terminal(in_stream, ansi::out) {}
 			terminal(): terminal(std::cin) {}
 
+			terminal(const terminal &) = delete;
+
 			/** Resets terminal attributes and joins threads as necessary. */
 			virtual ~terminal();
 
@@ -89,9 +91,9 @@ namespace haunted {
 			/** Resets the colors to the terminal's defaults. */
 			virtual void reset_colors();
 
-			/** Sets the terminal's root control. If the new root isn't the same as the old root, this function deletes
-			 *  the old root. */
-			virtual void set_root(ui::control *);
+			/** Sets the terminal's root control. If the new root isn't the same as the old root and the `delete_old`
+			 *  parameter is `true`, this function deletes the old root. */
+			virtual void set_root(ui::control *, bool delete_old = true);
 			
 			/** Draws the root control if one exists. */
 			virtual void draw();

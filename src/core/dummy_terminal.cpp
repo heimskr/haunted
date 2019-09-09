@@ -8,7 +8,7 @@ namespace haunted {
 	void dummy_terminal::cbreak() {}
 	void dummy_terminal::watch_size() {}
 	void dummy_terminal::redraw() {}
-	void dummy_terminal::set_root(ui::control *) {}
+	void dummy_terminal::set_root(ui::control *, bool) {}
 	void dummy_terminal::draw() {}
 	void dummy_terminal::start_input() {}
 	void dummy_terminal::flush() {}
