@@ -19,7 +19,7 @@ namespace haunted::ui {
 			std::string demangled = util::demangle_object(*this);
 			if (pad)
 				ss << std::setw(10);
-			ss << demangled.substr(demangled.find_last_of(':') + 1) << "\e[2m|\e[0;33m" << this;
+			ss << demangled.substr(demangled.find_last_of(':') + 1) << "\e[2m|\e[0;33m" << this << "\e[39m";
 		} else {
 			
 			// ss << ansi::get_fg(static_cast<ansi::color>(reinterpret_cast<size_t>(this) & 0x10));

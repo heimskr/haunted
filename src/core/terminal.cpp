@@ -204,8 +204,7 @@ namespace haunted {
 	}
 
 	bool terminal::add_child(ui::control *child) {
-		set_root(child);
-		return true;
+		return false;
 	}
 
 	bool terminal::has_focus(const ui::control *ctrl) const {

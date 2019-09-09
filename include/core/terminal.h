@@ -119,7 +119,9 @@ namespace haunted {
 			/** Returns the focused control. If none is currently selected, this function focuses the root control. */
 			virtual ui::control * get_focused();
 
-			/** Adds a child to the terminal by setting its root to the child. */
+			/** Adding a child to the terminal the normal way does nothing. This is so that controls whose parents
+			 *  don't exist yet can use the terminal as the parent without being set as the root. The program using this
+			 *  library is responsible for passing the intended root control to set_root. */
 			virtual bool add_child(ui::control *) override;
 
 			/** Returns the terminal. Required by haunted::ui::container. */

@@ -18,7 +18,7 @@ namespace haunted::ui::boxes {
 	const position &pos_): propobox(parent_, pos_, ratio_, orientation_) {
 		for (control *ctrl: {one, two}) {
 			ctrl->set_parent(this);
-			ctrl->set_terminal(control::get_terminal());
+			ctrl->set_terminal(term);
 			children.push_back(ctrl);
 		}
 	}

@@ -18,6 +18,7 @@ namespace haunted::ui::boxes {
 			control *active = nullptr;
 
 		public:
+			swapbox(const swapbox &) = delete;
 			swapbox(container *, const position &, std::initializer_list<control *> = {});
 
 			void set_active(control *);
