@@ -93,15 +93,15 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
-		term->jump(pos.left + prefix.length() + offset, pos.top);
+		// Unfortunately, the top and bottom margins can't be the same line. Because textinputs are assumed to be one
+		// line high, this means we can't use top and bottom margins. However, this isn't a complete tragedy here, as
+		// we're clearing only one line; instead of setting both margins, we set only the horizontal margins and then
+		// jump to the absolute vertical position of the textinput without the assistance of top/bottom margins.
+		set_hmargins();
+		term->jump(prefix.length() + offset, pos.top);
 		apply_colors();
-		if (at_right()) {
-			// If we're bordering the right edge of the screen, we can clear everything to the right.
-			term->out_stream.clear_right();
-		} else {
-			*term << std::string(pos.width - (prefix.length() + offset), ' ');
-			flush();
-		}
+		term->out_stream.clear_right();
+		reset_margins();
 	}
 
 	point textinput::find_cursor() const {
