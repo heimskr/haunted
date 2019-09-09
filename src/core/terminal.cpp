@@ -171,8 +171,39 @@ namespace haunted {
 	}
 
 	bool terminal::on_key(const key &k) {
-		if (k.is_ctrl(ktype::l)) {
-			redraw();
+		if (k == kmod::ctrl) {
+			switch (k.type) {
+				case ktype::l:
+					redraw();
+					break;
+				case ktype::p: {
+					ansi::ansistream &dbg = haunted::dbgstream;
+					dbg << "terminal: {}" << ansi::endl;
+
+					if (root) {
+						std::deque<std::pair<int, ui::control *>> queue {{1, root}};
+
+						int depth;
+						ui::control *ctrl;
+
+						while (!queue.empty()) {
+							std::tie(depth, ctrl) = queue.back();
+							queue.pop_back();
+							dbg << ansi::color::gray << std::string(depth, ':') << ansi::action::reset << " "
+							    << ctrl->get_id() << "\t\t" << ctrl->get_position() << ansi::endl;
+							if (ui::container *cont = dynamic_cast<ui::container *>(ctrl)) {
+								for (ui::control *child: cont->get_children())
+									queue.push_back({depth + 1, child});
+							}
+						}
+					}
+
+					break;
+				}
+				default:
+					return false;
+			}
+
 			return true;
 		}
 
