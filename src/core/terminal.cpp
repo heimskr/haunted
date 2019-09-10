@@ -178,7 +178,7 @@ namespace haunted {
 					break;
 				case ktype::p: {
 					ansi::ansistream &dbg = haunted::dbgstream;
-					dbg << "terminal: {}" << ansi::endl;
+					dbg << "terminal"_b << ansi::endl;
 
 					if (root) {
 						std::deque<std::pair<int, ui::control *>> queue {{1, root}};
@@ -189,8 +189,16 @@ namespace haunted {
 						while (!queue.empty()) {
 							std::tie(depth, ctrl) = queue.back();
 							queue.pop_back();
-							dbg << ansi::color::gray << std::string(depth, ':') << ansi::action::reset << " "
-							    << ctrl->get_id() << "\t\t" << ctrl->get_position() << ansi::endl;
+
+							const haunted::position &pos = ctrl->get_position();
+							int width = pos.width, height = pos.height, top = pos.top, left = pos.left;
+
+							dbg << ansi::color::gray << std::string(depth * 2, ' ') << ansi::action::reset
+							    << ctrl->get_id();
+							dbg.jump(25, -1).save()        << "("_d << left << ","_d;
+							dbg.restore().right(6)         << top << ") "_d;
+							dbg.restore().right(10).save() << width;
+							dbg.restore().right(3)         << " × "_d << height << ansi::endl;
 							if (ui::container *cont = dynamic_cast<ui::container *>(ctrl)) {
 								for (ui::control *child: cont->get_children())
 									queue.push_back({depth + 1, child});
