@@ -203,8 +203,8 @@ namespace haunted::ui {
 				draw_insert();
 				update();
 			} else {
-				// This byte is the first of a multi-byte codepoint. Set the expected width and initialize the Unicode
-				// buffer with the byte.
+				// This byte is the first of a multi-byte codepoint.
+				// Set the expected width and initialize the Unicode buffer with the byte.
 				bytes_expected = width;
 				unicode_buffer.push_back(ch);
 			}
@@ -239,8 +239,8 @@ namespace haunted::ui {
 
 			if (can_draw()) {
 				if (cursor == length() && scroll < cursor && cursor - scroll < text_width()) {
-					// If there's no text after the cursor and the cursor is in bounds, it should be sufficient to erase
-					// the old character from the screen.
+					// If there's no text after the cursor and the cursor is in bounds,
+					// it should be sufficient to erase the old character from the screen.
 					term->out_stream.save();
 					jump_cursor();
 					*term << ' ';
@@ -439,6 +439,8 @@ namespace haunted::ui {
 		} else {
 			std::swap(buffer[cursor], buffer[cursor - 1]);
 			draw_right(-1);
+			++cursor;
+			jump_cursor();
 		}
 	}
 
