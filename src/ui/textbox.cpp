@@ -81,6 +81,7 @@ namespace haunted::ui {
 
 		set_margins();
 		in_margins = true;
+		colored::draw();
 
 		int new_lines = line_rows(line);
 		if (voffset == -1 && pos.height < total_rows()) {
