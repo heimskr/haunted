@@ -242,7 +242,7 @@ namespace haunted {
 		return root;
 	}
 
-	bool terminal::add_child(ui::control *child) {
+	bool terminal::add_child(ui::control *) {
 		return false;
 	}
 

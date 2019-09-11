@@ -140,7 +140,7 @@ namespace haunted::tests {
 	}
 
 	void maintest::test_textbox(terminal &term) {
-		using haunted::ui::textline;
+		using haunted::ui::textline, haunted::ui::simpleline;
 
 		term.cbreak();
 		haunted::ui::textbox *tb = new haunted::ui::textbox(&term);
@@ -162,10 +162,10 @@ namespace haunted::tests {
 				tb->set_voffset(-1);
 				tb->draw();
 			} else if (k == ktype::hash) {
-				*tb += textline("This is a very long line. Its purpose is to test the continuation of lines in a textbox. Its continuation value is set to 26, so the wrapped text should line up with the start of the second sentence in the line.", 26);
+				*tb += simpleline("This is a very long line. Its purpose is to test the continuation of lines in a textbox. Its continuation value is set to 26, so the wrapped text should line up with the start of the second sentence in the line.", 26);
 			} else if (k == ktype::star) {
-				for (const textline &line: *tb) {
-					DBG(line.continuation << "[" << line.text << "]");
+				for (const haunted::ui::textbox::line_ptr line: *tb) {
+					DBG(line->continuation << "[" << std::string(*line) << "]");
 				}
 			} else {
 				*tb += "Key: [" + std::string(k) + "]";
@@ -310,11 +310,11 @@ namespace haunted::tests {
 		
 		textbox *tb = new textbox(&wrapper, wrapper.get_position());
 
-		textline t1("Hello", 4);
-		textline t2("This line is longer than the control's width of 20 characters. Its continuation should align with the third word.", 10);
-		textline t3("Another line.", 1);
-		textline t4("This is another long line with a continuation of 0.");
-		textline t5("Exactly 20 chars :^)", 0);
+		std::shared_ptr<simpleline> t1 = std::make_shared<simpleline>("Hello", 4);
+		std::shared_ptr<simpleline> t2 = std::make_shared<simpleline>("This line is longer than the control's width of 20 characters. Its continuation should align with the third word.", 10);
+		std::shared_ptr<simpleline> t3 = std::make_shared<simpleline>("Another line.", 1);
+		std::shared_ptr<simpleline> t4 = std::make_shared<simpleline>("This is another long line with a continuation of 0.");
+		std::shared_ptr<simpleline> t5 = std::make_shared<simpleline>("Exactly 20 chars :^)", 0);
 
 		*tb += t1;
 		*tb += t2;
@@ -325,7 +325,7 @@ namespace haunted::tests {
 
 		int rows = tb->total_rows();
 
-		unit.check(tb->line_rows(t2), 11, "line_rows(" + ansi::wrap("t2", ansi::style::bold) + ")");
+		unit.check(tb->line_rows(*t2), 11, "line_rows(" + ansi::wrap("t2", ansi::style::bold) + ")");
 		unit.check(rows, 18, "total_rows()");
 
 		unit.check({
@@ -412,16 +412,16 @@ namespace haunted::tests {
 		unit.check(tb->next_row(), -1, "next_row()");
 
 		using namespace std::string_literals;
-		unit.check(t1.text_at_row(tb->pos.width, 0), "Hello               "s, "t1.text_at_row(0)");
-		unit.check(t2.text_at_row(tb->pos.width, 0), "This line is longer "s, "t2.text_at_row(0)");
-		unit.check(t2.text_at_row(tb->pos.width, 1), "          than the c"s, "t2.text_at_row(1)");
-		unit.check(t2.text_at_row(tb->pos.width, 2), "          ontrol's w"s, "t2.text_at_row(2)");
-		unit.check(t2.text_at_row(tb->pos.width, 3), "          idth of 20"s, "t2.text_at_row(3)");
-		unit.check(t2.text_at_row(tb->pos.width, 4), "           character"s, "t2.text_at_row(4)");
-		unit.check(t2.text_at_row(tb->pos.width, 5), "          s. Its con"s, "t2.text_at_row(5)");
-		unit.check(t2.text_at_row(tb->pos.width, 6), "          tinuation "s, "t2.text_at_row(6)");
-		unit.check(t2.text_at_row(tb->pos.width, 7), "          should ali"s, "t2.text_at_row(7)");
-		unit.check(t2.text_at_row(tb->pos.width, 8), "          gn with th"s, "t2.text_at_row(8)");
+		unit.check(t1->text_at_row(tb->pos.width, 0), "Hello               "s, "t1.text_at_row(0)");
+		unit.check(t2->text_at_row(tb->pos.width, 0), "This line is longer "s, "t2.text_at_row(0)");
+		unit.check(t2->text_at_row(tb->pos.width, 1), "          than the c"s, "t2.text_at_row(1)");
+		unit.check(t2->text_at_row(tb->pos.width, 2), "          ontrol's w"s, "t2.text_at_row(2)");
+		unit.check(t2->text_at_row(tb->pos.width, 3), "          idth of 20"s, "t2.text_at_row(3)");
+		unit.check(t2->text_at_row(tb->pos.width, 4), "           character"s, "t2.text_at_row(4)");
+		unit.check(t2->text_at_row(tb->pos.width, 5), "          s. Its con"s, "t2.text_at_row(5)");
+		unit.check(t2->text_at_row(tb->pos.width, 6), "          tinuation "s, "t2.text_at_row(6)");
+		unit.check(t2->text_at_row(tb->pos.width, 7), "          should ali"s, "t2.text_at_row(7)");
+		unit.check(t2->text_at_row(tb->pos.width, 8), "          gn with th"s, "t2.text_at_row(8)");
 
 		ansi::out << ansi::endl;
 	}

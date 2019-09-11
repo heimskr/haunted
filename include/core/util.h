@@ -7,6 +7,8 @@
 
 #include <cxxabi.h>
 
+#define EXTENDS(sub, base) typename sub, typename std::enable_if<std::is_base_of<base, sub>::value>::type * = nullptr
+
 namespace haunted {
 	class util {
 		public:
@@ -30,7 +32,7 @@ namespace haunted {
 				const char * const name = mangled.c_str();
 				int status = 0;
 
-				std::unique_ptr<char, void(*)(void *)> result = {
+				std::unique_ptr<char, void(*)(void *)> result {
 					abi::__cxa_demangle(name, nullptr, nullptr, &status), std::free
 				};
 

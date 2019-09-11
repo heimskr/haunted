@@ -38,6 +38,11 @@ namespace haunted::tests {
 				return std::string(o);
 			}
 
+			template <typename T>
+			static std::string stringify(std::shared_ptr<T> ptr) {
+				return stringify(*ptr);
+			}
+
 			template <typename A, typename B>
 			static std::string stringify(const std::pair<A, B> &p) {
 				using namespace ansi;
