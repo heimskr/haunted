@@ -5,6 +5,7 @@
 
 #include "core/defs.h"
 #include "ui/keyhandler.h"
+#include "core/util.h"
 
 namespace haunted {
 	class terminal;
@@ -51,6 +52,8 @@ namespace haunted::ui {
 			bool empty()   const { return children.empty(); }
 			size_t size()  const { return children.size();  }
 			size_t count() const { return children.size();  }
+
+			BEGIN_END(children)
 
 			/** Returns the nth child (indexes `children`). */
 			control * operator[](size_t);

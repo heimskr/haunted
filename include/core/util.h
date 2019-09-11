@@ -7,8 +7,6 @@
 
 #include <cxxabi.h>
 
-#define EXTENDS(sub, base) typename sub, typename std::enable_if<std::is_base_of<base, sub>::value>::type * = nullptr
-
 namespace haunted {
 	class util {
 		public:
@@ -46,5 +44,16 @@ namespace haunted {
 			}
 	};
 }
+
+#define EXTENDS(sub, base) typename sub, typename std::enable_if<std::is_base_of<base, sub>::value>::type * = nullptr
+#define BEGIN_END(source) \
+	decltype(source)::              iterator   begin() { return (source).begin();   } \
+	decltype(source)::      reverse_iterator  rbegin() { return (source).rbegin();  } \
+	decltype(source)::        const_iterator  cbegin() { return (source).cbegin();  } \
+	decltype(source)::const_reverse_iterator crbegin() { return (source).crbegin(); } \
+	decltype(source)::              iterator     end() { return (source).end();     } \
+	decltype(source)::      reverse_iterator    rend() { return (source).rend();    } \
+	decltype(source)::        const_iterator    cend() { return (source).cend();    } \
+	decltype(source)::const_reverse_iterator   crend() { return (source).crend();   }
 
 #endif

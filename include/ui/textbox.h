@@ -169,20 +169,6 @@ namespace haunted::ui {
 			virtual terminal * get_terminal() override { return term; }
 			virtual container * get_parent() const override { return parent; }
 
-			using               iterator = std::deque<std::shared_ptr<textline>>::iterator;
-			using       reverse_iterator = std::deque<std::shared_ptr<textline>>::reverse_iterator;
-			using         const_iterator = std::deque<std::shared_ptr<textline>>::const_iterator;
-			using const_reverse_iterator = std::deque<std::shared_ptr<textline>>::const_reverse_iterator;
-
-			              iterator   begin() { return lines.begin();   }
-			      reverse_iterator  rbegin() { return lines.rbegin();  }
-			        const_iterator  cbegin() { return lines.cbegin();  }
-			const_reverse_iterator crbegin() { return lines.crbegin(); }
-			              iterator     end() { return lines.end();     }
-			      reverse_iterator    rend() { return lines.rend();    }
-			        const_iterator    cend() { return lines.cend();    }
-			const_reverse_iterator   crend() { return lines.crend();   }
-
 			size_t size() const { return lines.size(); }
 
 			friend void swap(textbox &left, textbox &right);
