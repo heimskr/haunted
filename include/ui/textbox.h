@@ -48,7 +48,7 @@ namespace haunted::ui {
 		/** The raw text of the line. */
 		std::string text = "";
 
-		simpleline(const std::string &text_, int continuation_ = 0): textline(continuation_), text(text_) {}
+		simpleline(const std::string &text_, int continuation_ = 0);
 		simpleline(int continuation_): textline(continuation_) {}
 		simpleline(): simpleline("", 0) {}
 
@@ -184,6 +184,8 @@ namespace haunted::ui {
 			const_reverse_iterator   crend() { return lines.crend();   }
 
 			size_t size() const { return lines.size(); }
+
+			friend void swap(textbox &left, textbox &right);
 	};
 }
 

@@ -92,7 +92,6 @@ namespace haunted::ui::boxes {
 
 	void expandobox::resize(const position &new_pos) {
 		control::resize(new_pos);
-		DBGTFN();
 		const int size = get_size();
 
 		// Number of times an expanding child has been resized.
@@ -111,7 +110,6 @@ namespace haunted::ui::boxes {
 				resize_child(child, get_size(), 0);
 			} else {
 				const int assigned = child_size == -1? expanded_size(expanded++) : std::min(child_size, size - offset);
-				DBG("Resizing " << child->get_id() << " with offset " << offset << " and size " << assigned);
 				resize_child(child, offset, assigned);
 				offset += assigned;
 			}

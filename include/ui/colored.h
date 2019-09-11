@@ -6,7 +6,7 @@
 
 namespace haunted::ui {
 	/**
-	 * Represents somethjing that can be colored.
+	 * Represents something that can be colored.
 	 */
 	class colored {
 		private:
@@ -18,6 +18,9 @@ namespace haunted::ui {
 
 		public:
 			bool inherit_foreground, inherit_background;
+
+			colored(const colored &) = delete;
+			colored & operator=(const colored &) = delete;
 
 			colored(ansi::color foreground = ansi::color::normal, ansi::color background = ansi::color::normal,
 			bool inherit_fg = false, bool inherit_bg = false):
@@ -48,6 +51,8 @@ namespace haunted::ui {
 
 			virtual container * get_parent() const = 0;
 			virtual terminal * get_terminal() = 0;
+
+			friend void swap(colored &left, colored &right);
 	};
 }
 

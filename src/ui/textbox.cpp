@@ -7,6 +7,11 @@
 #include "tests/test.h"
 
 namespace haunted::ui {
+	simpleline::simpleline(const std::string &text_, int continuation_): textline(continuation_), text(text_) {
+		text.erase(std::remove(text.begin(), text.end(), '\r'), text.end());
+		text.erase(std::remove(text.begin(), text.end(), '\n'), text.end());
+	}
+
 	std::string simpleline::text_at_row(size_t width, int row) const {
 		if (row == 0) {
 			return text.length() < width? text.substr(0, width) + std::string(width - text.length(), ' ')
@@ -32,7 +37,7 @@ namespace haunted::ui {
 		// Ignore all the text on the first line because it's not affected by continuation.
 		length -= width;
 
-		const int adjusted_continuation = width == continuation? continuation - 1 : continuation;
+		const int adjusted_continuation = width - (width == continuation? continuation - 1 : continuation);
 		return length / adjusted_continuation + (length % adjusted_continuation? 2 : 1);
 	}
 
@@ -342,5 +347,14 @@ namespace haunted::ui {
 		}
 
 		return out;
+	}
+
+	void swap(textbox &left, textbox &right) {
+		swap(static_cast<control &>(left), static_cast<control &>(right));
+		swap(static_cast<colored &>(left), static_cast<colored &>(right));
+		std::swap(left.lines,      right.lines);
+		std::swap(left.voffset,	   right.voffset);
+		std::swap(left.wrap,       right.wrap);
+		std::swap(left.in_margins, right.in_margins);
 	}
 }

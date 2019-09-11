@@ -21,6 +21,8 @@ namespace haunted::ui {
 
 		public:
 			control() = delete;
+			control(const control &) = delete;
+			control & operator=(const control &) = delete;
 
 			control(container *parent_, haunted::position pos_): child(parent_), term(nullptr), pos(pos_) {
 				if (parent_ != nullptr)
@@ -95,6 +97,8 @@ namespace haunted::ui {
 			void reset_margins();
 
 			friend class container;
+
+			friend void swap(control &left, control &right);
 	};
 }
 

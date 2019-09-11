@@ -17,4 +17,8 @@ namespace haunted::ui {
 
 		parent = new_parent;
 	}
+
+	void swap(child &left, child &right) {
+		std::swap(left.parent, right.parent);
+	}
 }

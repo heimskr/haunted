@@ -185,4 +185,11 @@ namespace haunted::ui {
 	void colored::focus() {
 		apply_colors();
 	}
+
+	void swap(colored &left, colored &right) {
+		std::swap(left.background, right.background);
+		std::swap(left.foreground, right.foreground);
+		std::swap(left.inherit_foreground, right.inherit_foreground);
+		std::swap(left.inherit_background, right.inherit_background);
+	}
 }

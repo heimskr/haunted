@@ -13,11 +13,15 @@ namespace haunted::ui {
 
 		public:
 			child(container *parent_ = nullptr): parent(parent_) {}
+			child(const child &) = delete;
+			child & operator=(const child &) = delete;
 
 			virtual ~child() = 0;
 
 			container * get_parent();
 			virtual void set_parent(container *);
+
+			friend void swap(child &left, child &right);
 	};
 }
 

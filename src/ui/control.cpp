@@ -119,4 +119,11 @@ namespace haunted::ui {
 			term->disable_hmargins();
 		}
 	}
+
+	void swap(control &left, control &right) {
+		swap(static_cast<child &>(left), static_cast<child &>(right));
+		std::swap(left.term, right.term);
+		std::swap(left.name, right.name);
+		std::swap(left.pos,  right.pos);
+	}
 }
