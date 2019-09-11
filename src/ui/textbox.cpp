@@ -84,10 +84,8 @@ namespace haunted::ui {
 		colored::draw();
 
 		int new_lines = line_rows(line);
-		if (voffset == -1 && pos.height < total_rows()) {
-			DBG("vscroll([" << -new_lines << "] -new_lines)");
+		if (voffset == -1 && pos.height < total_rows())
 			term->vscroll(-new_lines);
-		}
 
 		term->jump(0, next);
 		int height = pos.height;
