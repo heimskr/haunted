@@ -19,14 +19,6 @@
 // #define DBGFN() { std::string pfn = __PRETTY_FUNCTION__; DBG(ansi::style::bold << this << ": " << ansi::action::reset  \
 // 	<< pfn.substr(0, pfn.find_first_of(' '))); }
 #define DBGFN() DBG(ansi::style::bold << this << ": " << ansi::action::reset << __PRETTY_FUNCTION__)
-#ifdef NODEBUG
-#define DBGX(x)
-#define DBG(x)
-#else
-#define DBGX(x) "\e[2m[" << std::right << std::setw(25) << std::setfill(' ') << std::string(__FILE__).substr(0, 25) << ":" \
-	<< std::setw(3) << __LINE__ << "]\e[0m " << x << std::endl
-#define DBG(x) haunted::dbgstream << DBGX(x) << ansi::action::reset
-#endif
 
 namespace haunted {
 	extern std::ofstream dbgout;
