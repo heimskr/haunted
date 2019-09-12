@@ -13,7 +13,7 @@ namespace haunted::ui {
 	 * Represents a control.
 	 * This includes things like boxes, text views and text inputs.
 	 */
-	class control: public keyhandler, public child {
+	class control: public virtual keyhandler, public child {
 		protected:
 			terminal *term;
 			std::string name;

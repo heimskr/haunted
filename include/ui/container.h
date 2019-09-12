@@ -18,7 +18,7 @@ namespace haunted::ui {
 	/**
 	 * Containers contain controls.
 	 */
-	class container: public keyhandler {
+	class container: public virtual keyhandler {
 		friend class control;
 
 		protected:

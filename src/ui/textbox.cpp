@@ -115,25 +115,6 @@ namespace haunted::ui {
 		return total - offset;
 	}
 
-	int textbox::line_rows(const textline &line) const {
-		// TODO: support doublewide characters.
-
-		if (!wrap)
-			return 1;
-		
-		return line.num_rows(pos.width);
-	}
-
-	int textbox::total_rows() const {
-		if (!wrap)
-			return lines.size();
-
-		int rows = 0;
-		for (const std::shared_ptr<textline> line: lines)
-			rows += line_rows(*line);
-		return rows;
-	}
-
 	std::pair<std::shared_ptr<textline>, int> textbox::line_at_row(int row) {
 		if (lines.empty() || row >= total_rows())
 			throw std::out_of_range("Invalid row index: " + std::to_string(row));
@@ -267,6 +248,25 @@ namespace haunted::ui {
 
 	void textbox::set_voffset(int new_voffset) {
 		voffset = new_voffset;
+	}
+
+	int textbox::line_rows(const textline &line) const {
+		// TODO: support doublewide characters.
+
+		if (!wrap)
+			return 1;
+		
+		return line.num_rows(pos.width);
+	}
+
+	int textbox::total_rows() const {
+		if (!wrap)
+			return lines.size();
+
+		int rows = 0;
+		for (const std::shared_ptr<textline> line: lines)
+			rows += line_rows(*line);
+		return rows;
 	}
 
 	void textbox::draw() {

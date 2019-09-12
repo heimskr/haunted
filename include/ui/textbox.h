@@ -93,12 +93,6 @@ namespace haunted::ui {
 			/** Returns the row on which the next line should be drawn or -1 if it's out of bounds. */
 			int next_row() const;
 
-			/** Returns the number of rows on the terminal a line of text would occupy. */
-			int line_rows(const textline &) const;
-
-			/** Returns the total number of rows occupied by all the lines in the text box. */
-			int total_rows() const;
-
 			/** Returns a pair of the line at a given row (ignoring voffset and zero-based) and the number of rows past
 			 *  the start of the line. For example, if the textbox contains one line that occupies a single row and a
 			 *  second line that spans 5 rows, then calling this function with 4 will return {lines[1], 3}. */
@@ -141,6 +135,12 @@ namespace haunted::ui {
 
 			/** Sets the vertical offset. */
 			void set_voffset(int);
+
+			/** Returns the number of rows on the terminal a line of text would occupy. */
+			int line_rows(const textline &) const;
+
+			/** Returns the total number of rows occupied by all the lines in the text box. */
+			int total_rows() const;
 
 			/** Draws the textbox on the terminal. */
 			void draw() override;
