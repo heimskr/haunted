@@ -164,7 +164,7 @@ namespace haunted::tests {
 			} else if (k == ktype::hash) {
 				*tb += simpleline("This is a very long line. Its purpose is to test the continuation of lines in a textbox. Its continuation value is set to 26, so the wrapped text should line up with the start of the second sentence in the line.", 26);
 			} else if (k == ktype::star) {
-				for (const haunted::ui::textbox::line_ptr line: tb->lines) {
+				for (const haunted::ui::textbox::line_ptr &line: tb->lines) {
 					DBG(line->continuation << "[" << std::string(*line) << "]");
 				}
 			} else {
@@ -316,12 +316,12 @@ namespace haunted::tests {
 		std::shared_ptr<simpleline> t4 = std::make_shared<simpleline>("This is another long line with a continuation of 0.");
 		std::shared_ptr<simpleline> t5 = std::make_shared<simpleline>("Exactly 20 chars :^)", 0);
 
-		*tb += t1;
-		*tb += t2;
-		*tb += t3;
-		*tb += t3;
-		*tb += t4;
-		*tb += t5;
+		*tb += *t1;
+		*tb += *t2;
+		*tb += *t3;
+		*tb += *t3;
+		*tb += *t4;
+		*tb += *t5;
 
 		int rows = tb->total_rows();
 
@@ -329,24 +329,24 @@ namespace haunted::tests {
 		unit.check(rows, 18, "total_rows()");
 
 		unit.check({
-			{0,  {t1, 0}},
-			{1,  {t2, 0}},
-			{2,  {t2, 1}},
-			{3,  {t2, 2}},
-			{4,  {t2, 3}},
-			{5,  {t2, 4}},
-			{6,  {t2, 5}},
-			{7,  {t2, 6}},
-			{8,  {t2, 7}},
-			{9,  {t2, 8}},
-			{10, {t2, 9}},
-			{11, {t2, 10}},
-			{12, {t3, 0}},
-			{13, {t3, 0}},
-			{14, {t4, 0}},
-			{15, {t4, 1}},
-			{16, {t4, 2}},
-			{17, {t5, 0}},
+			{0,  {&*t1, 0}},
+			{1,  {&*t2, 0}},
+			{2,  {&*t2, 1}},
+			{3,  {&*t2, 2}},
+			{4,  {&*t2, 3}},
+			{5,  {&*t2, 4}},
+			{6,  {&*t2, 5}},
+			{7,  {&*t2, 6}},
+			{8,  {&*t2, 7}},
+			{9,  {&*t2, 8}},
+			{10, {&*t2, 9}},
+			{11, {&*t2, 10}},
+			{12, {&*t3, 0}},
+			{13, {&*t3, 0}},
+			{14, {&*t4, 0}},
+			{15, {&*t4, 1}},
+			{16, {&*t4, 2}},
+			{17, {&*t5, 0}},
 		}, &textbox::line_at_row, tb, "line_at_row");
 
 		unit.check("line_at_row(" + std::to_string(rows) + ")", typeid(std::out_of_range), &textbox::line_at_row, tb,
@@ -394,21 +394,21 @@ namespace haunted::tests {
 		unit.check(tb->effective_voffset(), 0, "effective_voffset()");
 		unit.check(tb->pos.height, 10, "pos.height");
 		unit.check(tb->next_row(), 0, "next_row()");
-		*tb += t1;
+		*tb += *t1;
 		unit.check(tb->next_row(), 1, "next_row()");
-		*tb += t1;
+		*tb += *t1;
 		unit.check(tb->next_row(), 2, "next_row()");
-		*tb += t4;
+		*tb += *t4;
 		unit.check(tb->next_row(), 5, "next_row()");
-		*tb += t1;
+		*tb += *t1;
 		unit.check(tb->next_row(), 6, "next_row()");
-		*tb += t1;
+		*tb += *t1;
 		unit.check(tb->next_row(), 7, "next_row()");
-		*tb += t1;
+		*tb += *t1;
 		unit.check(tb->next_row(), 8, "next_row()");
-		*tb += t1;
+		*tb += *t1;
 		unit.check(tb->next_row(), 9, "next_row()");
-		*tb += t1;
+		*tb += *t1;
 		unit.check(tb->next_row(), -1, "next_row()");
 
 		using namespace std::string_literals;

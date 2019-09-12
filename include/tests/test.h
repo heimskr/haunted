@@ -12,6 +12,7 @@
 #include "formicine/ansi.h"
 #include "core/terminal.h"
 #include "core/util.h"
+#include "ui/textbox.h"
 
 namespace haunted::tests {
 	/**
@@ -38,8 +39,21 @@ namespace haunted::tests {
 				return std::string(o);
 			}
 
+			static std::string stringify(haunted::ui::textline *tl) {
+				// std::stringstream ss;
+				// ss << std::hex << reinterpret_cast<long>(tl);
+
+				return tl? std::to_string(tl->continuation) + ":["_d + std::string(*tl) + "]"_d : "null";
+				// return ss.str();
+			}
+
 			template <typename T>
 			static std::string stringify(std::shared_ptr<T> ptr) {
+				return stringify(*ptr);
+			}
+
+			template <typename T>
+			static std::string stringify(std::unique_ptr<T> ptr) {
 				return stringify(*ptr);
 			}
 
@@ -47,6 +61,18 @@ namespace haunted::tests {
 			static std::string stringify(const std::pair<A, B> &p) {
 				using namespace ansi;
 				return "{"_d + stringify(p.first) + ", "_d + stringify(p.second) + "}"_d;
+			}
+
+			// We want to be able to compare the pairs returned by line_at_row as equal even if the addresses of the
+			// pointers differ, as long as the content of the textlines is the same.
+			using tl_pair = std::pair<haunted::ui::textline *, int>;
+			static bool equal(tl_pair left, tl_pair right) {
+				return left.second == right.second && *left.first == *right.first;
+			}
+
+			template <typename T>
+			static bool equal(const T &left, const T &right) {
+				return left == right;
 			}
 
 			/** Whether to display results on destruction. */
@@ -92,7 +118,7 @@ namespace haunted::tests {
 					size_t length = stringify(input).size();
 					try {
 						const O &actual = fn(input);
-						if (expected == actual) {
+						if (equal(expected, actual)) {
 							display_passed(stringify(input), stringify(actual), prefix,
 							               padding.substr(0, max_length - length));
 							passed++;
@@ -148,7 +174,7 @@ namespace haunted::tests {
 					size_t length = stringify(input).size();
 					try {
 						const O &actual = std::invoke(fn, *target, input);
-						if (expected == actual) {
+						if (equal(expected, actual)) {
 							display_passed(stringify(input), stringify(actual), prefix,
 							               padding.substr(0, max_length - length));
 							passed++;
@@ -174,7 +200,7 @@ namespace haunted::tests {
 			template <typename T>
 			bool check(const T &actual, const T &expected, const std::string &fn_name) {
 				using namespace ansi;
-				bool result = actual == expected;
+				bool result = equal(actual, expected);
 				if (result) {
 					++total_passed;
 					out << good << fn_name << " " << "== "_d << wrap(stringify(actual), color::green) << endl;

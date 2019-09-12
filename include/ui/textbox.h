@@ -39,6 +39,7 @@ namespace haunted::ui {
 
 		/** Returns the raw text of the line. */
 		virtual operator std::string() const = 0;
+		bool operator==(const textline &) const;
 	};
 
 	/**

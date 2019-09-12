@@ -498,7 +498,7 @@ namespace haunted::ui {
 					default: return false;
 				}
 				break;
-			default: break;
+			default: return false;
 		}
 
 		draw_cursor();

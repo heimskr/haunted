@@ -7,6 +7,10 @@
 #include "tests/test.h"
 
 namespace haunted::ui {
+	bool textline::operator==(const textline &other) const {
+		return continuation == other.continuation && std::string(*this) == std::string(other);
+	}
+
 	simpleline::simpleline(const std::string &text_, int continuation_): textline(continuation_), text(text_) {
 		text.erase(std::remove(text.begin(), text.end(), '\r'), text.end());
 		text.erase(std::remove(text.begin(), text.end(), '\n'), text.end());
@@ -54,7 +58,8 @@ namespace haunted::ui {
 		return os;
 	}
 
-	textbox::textbox(container *parent_, position pos_, const std::vector<std::string> &contents): control(parent_, pos_) {
+	textbox::textbox(container *parent_, position pos_, const std::vector<std::string> &contents):
+	control(parent_, pos_) {
 		if (parent_ != nullptr)
 			parent_->add_child(this);
 		set_lines(contents);
