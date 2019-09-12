@@ -91,8 +91,7 @@ namespace haunted::tests {
 			 * @return True if no tests failed.
 			 */
 			template <typename I, typename O>
-			bool check(const std::vector<std::pair<I, O>> &pairs, std::function<O(I)> fn,
-			                  const std::string &fn_name) {
+			bool check(const std::vector<std::pair<I, O>> &pairs, std::function<O(I)> fn, const std::string &fn_name) {
 				using namespace ansi;
 
 				if (pairs.size() == 0) {
