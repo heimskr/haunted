@@ -64,7 +64,7 @@ namespace haunted::ui {
 	 */
 	class textbox: public control, public colored {
 		friend class haunted::tests::maintest;
-		using line_ptr = std::shared_ptr<textline>;
+		using line_ptr = std::unique_ptr<textline>;
 
 		private:
 			std::deque<line_ptr> lines;
@@ -96,7 +96,7 @@ namespace haunted::ui {
 			/** Returns a pair of the line at a given row (ignoring voffset and zero-based) and the number of rows past
 			 *  the start of the line. For example, if the textbox contains one line that occupies a single row and a
 			 *  second line that spans 5 rows, then calling this function with 4 will return {lines[1], 3}. */
-			std::pair<line_ptr, int> line_at_row(int);
+			std::pair<textline *, int> line_at_row(int);
 
 			/** Clears the region of the screen occupied by the textbox. */
 			void clear();
@@ -152,14 +152,13 @@ namespace haunted::ui {
 
 			/** Adds a string to the end of the textbox. */
 			textbox & operator+=(const std::string &);
+			
 			/** Adds a line to the end of the textbox. */
-			textbox & operator+=(line_ptr);
-
 			template <EXTENDS(T, textline)>
 			textbox & operator+=(const T &line) {
-				std::shared_ptr<T> line_copy = std::make_shared<T>(line);
-				lines.push_back(line_copy);
+				std::unique_ptr<T> line_copy = std::make_unique<T>(line);
 				draw_new_line(*line_copy);
+				lines.push_back(std::move(line_copy));
 				return *this;
 			}
 

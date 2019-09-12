@@ -75,7 +75,8 @@ namespace haunted::ui {
 	void textbox::set_lines(const std::vector<std::string> &strings) {
 		lines.clear();
 		for (const std::string &str: strings) {
-			lines.push_back(std::make_shared<simpleline>(str, 0));
+			std::unique_ptr<simpleline> ptr = std::make_unique<simpleline>(str, 0);
+			lines.push_back(std::move(ptr));
 		}
 	}
 
@@ -119,12 +120,12 @@ namespace haunted::ui {
 		return total - offset;
 	}
 
-	std::pair<std::shared_ptr<textline>, int> textbox::line_at_row(int row) {
+	std::pair<textline *, int> textbox::line_at_row(int row) {
 		if (lines.empty() || row >= total_rows())
 			throw std::out_of_range("Invalid row index: " + std::to_string(row));
 
 		if (!wrap)
-			return {lines[row], 0};
+			return {lines[row].get(), 0};
 
 		int line_count = lines.size(), index = 0, row_count = 0, last_count = 0, offset = -1;
 
@@ -141,7 +142,7 @@ namespace haunted::ui {
 		if (line_count <= index)
 			throw std::out_of_range("Line index too large: " + std::to_string(index));
 
- 		return {lines[index], offset == -1? row - row_count : offset};
+ 		return {lines[index].get(), offset == -1? row - row_count : offset};
 	}
 
 	void textbox::clear() {
@@ -167,7 +168,7 @@ namespace haunted::ui {
 	std::string textbox::text_at_row(int row) {
 		const size_t cols = pos.width;
 		
-		line_ptr line;
+		textline *line;
 		size_t offset;
 
 		if (pos.height <= row || row < 0)
@@ -268,7 +269,7 @@ namespace haunted::ui {
 			return lines.size();
 
 		int rows = 0;
-		for (const std::shared_ptr<textline> line: lines)
+		for (const line_ptr &line: lines)
 			rows += line_rows(*line);
 		return rows;
 	}
@@ -331,20 +332,15 @@ namespace haunted::ui {
 		if (!text.empty() && text.back() == '\n')
 			lines.pop_back();
 
-		lines.push_back(std::make_shared<simpleline>(text, 0));
+		std::unique_ptr<simpleline> ptr = std::make_unique<simpleline>(text, 0);
+		lines.push_back(std::move(ptr));
 		draw_new_line(*lines.back());
-		return *this;
-	}
-
-	textbox & textbox::operator+=(line_ptr line) {
-		lines.push_back(line);
-		draw_new_line(*line);
 		return *this;
 	}
 
 	textbox::operator std::string() const {
 		std::string out = "";
-		for (const line_ptr line: lines) {
+		for (const std::unique_ptr<textline> &line: lines) {
 			if (!out.empty())
 				out += "\n";
 			out += std::string(*line);
