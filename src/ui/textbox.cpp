@@ -12,7 +12,9 @@ namespace haunted::ui {
 		text.erase(std::remove(text.begin(), text.end(), '\n'), text.end());
 	}
 
-	std::string simpleline::text_at_row(size_t width, int row) const {
+	std::string textline::text_at_row(size_t width, int row) const {
+		const std::string text = std::string(*this);
+
 		if (row == 0) {
 			return text.length() < width? text.substr(0, width) + std::string(width - text.length(), ' ')
 				: text.substr(0, width);
@@ -29,7 +31,9 @@ namespace haunted::ui {
 		return chunk;
 	}
 
-	int simpleline::num_rows(int width) const {
+	int textline::num_rows(int width) const {
+		const std::string text = std::string(*this);
+
 		int length = ansi::strip(text).length();
 		if (length <= width)
 			return 1;
