@@ -5,8 +5,10 @@
 
 namespace haunted::ui {
 	container::~container() {
-		for (control *child: children)
+		for (control *child: children) {
+			DBG("Deleting " << child->get_id());
 			delete child;
+		}
 	}
 
 	control * container::operator[](size_t index) {

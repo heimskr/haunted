@@ -176,7 +176,7 @@ namespace haunted {
 				case ktype::l:
 					redraw();
 					break;
-				case ktype::p: {
+				case ktype::y: {
 					ansi::ansistream &dbg = haunted::dbgstream;
 					dbg << "terminal"_b << ansi::endl;
 

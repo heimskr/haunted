@@ -27,20 +27,16 @@ namespace haunted::ui::boxes {
 			return;
 
 		if (new_active == nullptr) {
-			active->set_parent(nullptr);
 			active->set_terminal(nullptr);
 			active = nullptr;
 
 			clear_rect();
 		} else if (new_active != nullptr) {
 			if (active != nullptr) {
-				active->set_parent(nullptr);
 				active->set_terminal(nullptr);
 			}
 
 			active = new_active;
-
-			active->set_parent(this);
 			active->set_terminal(term);
 			active->draw();
 		}
