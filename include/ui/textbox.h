@@ -88,8 +88,10 @@ namespace haunted::ui {
 			void set_lines(const std::vector<std::string> &);
 
 			/** When a new line is added, it's usually not necessary to completely redraw the component. Instead,
-			 *  scrolling the component and printing only the new line is sufficient. */
-			void draw_new_line(const textline &);
+			 *  scrolling the component and printing only the new line is sufficient.
+			 *  @param inserted Whether the line has already been inserted into the textbox's collection.
+			 */
+			void draw_new_line(const textline &, bool inserted = false);
 
 			/** Returns the row on which the next line should be drawn or -1 if it's out of bounds. */
 			int next_row() const;
@@ -158,7 +160,7 @@ namespace haunted::ui {
 			template <EXTENDS(T, textline)>
 			textbox & operator+=(const T &line) {
 				std::unique_ptr<T> line_copy = std::make_unique<T>(line);
-				draw_new_line(*line_copy);
+				draw_new_line(*line_copy, false);
 				lines.push_back(std::move(line_copy));
 				return *this;
 			}

@@ -19,6 +19,8 @@ namespace haunted::ui {
 	std::string textline::text_at_row(size_t width, int row) const {
 		const std::string text = std::string(*this);
 
+		DBG(ansi::color::green << "<" << text << ansi::color::green << ">");
+
 		if (row == 0) {
 			return text.length() < width? text.substr(0, width) + std::string(width - text.length(), ' ')
 				: text.substr(0, width);
@@ -85,12 +87,12 @@ namespace haunted::ui {
 		}
 	}
 
-	void textbox::draw_new_line(const textline &line) {
+	void textbox::draw_new_line(const textline &line, bool inserted) {
 		if (!can_draw())
 			return;
 
-		// We need to subtract one to account for the fact that the new line is already in the buffer.
-		int next = next_row() - 1;
+		// We need to subtract one if the new line is already in the buffer.
+		int next = next_row() - (inserted? 1 : 0);
 		if (voffset != -1 && next < 0)
 			return;
 
@@ -99,15 +101,26 @@ namespace haunted::ui {
 		colored::draw();
 
 		int new_lines = line_rows(line);
-		if (voffset == -1 && pos.height < total_rows())
+		DBG("Line rows: " << new_lines);
+		if (voffset == -1 && pos.height < total_rows()) {
+			DBG("Scrolling by " << -new_lines);
 			term->vscroll(-new_lines);
+		}
 
 		term->jump(0, next);
 		int height = pos.height;
+		DBG("Next: " << next);
+		DBG("width = " << pos.width);
+		bool skip = true;
 		for (int row = next, i = 0; row < height && i < new_lines; ++row, ++i) {
 			if (i > 0)
 				*term << "\n";
-			*term << line.text_at_row(pos.width, i);
+
+			const std::string tar = line.text_at_row(pos.width, i);
+			skip = static_cast<size_t>(pos.width) <= tar.length();
+			*term << tar;
+
+			DBG("Row " << (next + i) << ": <" << tar << "> length = " << ansi::strip(tar).length() << ", num_rows = " << line.num_rows(pos.width));
 		}
 
 		reset_margins();
@@ -119,6 +132,7 @@ namespace haunted::ui {
 		int total = total_rows();
 
 		// Return -1 if the next row is below the visible area.
+		DBG("height <= total - offset: " << pos.height << " <= " << total << " - " << offset << ": " << (pos.height <= total - offset? "true (-1)" : ("false (" + std::to_string(total - offset) + ")")));
 		if (pos.height <= total - offset)
 			return -1;
 
@@ -270,12 +284,17 @@ namespace haunted::ui {
 	}
 
 	int textbox::total_rows() const {
-		if (!wrap)
+		if (!wrap) {
+			DBG("!wrap: " << lines.size());
 			return lines.size();
+		}
 
 		int rows = 0;
-		for (const line_ptr &line: lines)
+		for (const line_ptr &line: lines) {
+			DBG("total: " << rows << " += " << line_rows(*line) << " for \"" << std::string(*line).substr(0, 32) << "\"");
 			rows += line_rows(*line);
+		}
+		if (rows != 0) DBG("total = " << rows);
 		return rows;
 	}
 
@@ -339,7 +358,7 @@ namespace haunted::ui {
 
 		std::unique_ptr<simpleline> ptr = std::make_unique<simpleline>(text, 0);
 		lines.push_back(std::move(ptr));
-		draw_new_line(*lines.back());
+		draw_new_line(*lines.back(), true);
 		return *this;
 	}
 
