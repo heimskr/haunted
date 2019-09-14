@@ -178,13 +178,13 @@ namespace haunted::tests {
 		using namespace haunted::ui::boxes;
 
 		term.cbreak();
-		std::unique_ptr<textbox>   tb  = std::make_unique<textbox>();               tb->set_name("tb");
-		std::unique_ptr<textinput> ti  = std::make_unique<textinput>();             ti->set_name("ti");
-		std::unique_ptr<label>     tlb = std::make_unique<label>("Title",  false); tlb->set_name("tlb");
-		std::unique_ptr<label>     slb = std::make_unique<label>("Status", false); slb->set_name("slb");
+		textbox   *tb  = new textbox();               tb->set_name("tb");
+		textinput *ti  = new textinput();             ti->set_name("ti");
+		label     *tlb = new label("Title",  false); tlb->set_name("tlb");
+		label     *slb = new label("Status", false); slb->set_name("slb");
 
 		expandobox *vexp = new expandobox(&term, term.get_position(), box_orientation::vertical, {
-			{tlb.get(), 1}, {tb.get(), -1}, {slb.get(), 1}, {ti.get(), 1}
+			{tlb, 1}, {tb, -1}, {slb, 1}, {ti, 1}
 		});
 		vexp->set_name("vexp").resize();
 
@@ -435,13 +435,13 @@ namespace haunted::tests {
 		simplebox wrapper(&dummy);
 		wrapper.resize({10, 10, 500, 100});
 
-		std::unique_ptr<ui::textbox> tb1 = std::make_unique<ui::textbox>(&wrapper);
-		std::unique_ptr<ui::textbox> tb2 = std::make_unique<ui::textbox>(&wrapper);
-		std::unique_ptr<ui::textbox> tb3 = std::make_unique<ui::textbox>(&wrapper);
-		std::unique_ptr<ui::textbox> tb4 = std::make_unique<ui::textbox>(&wrapper);
+		ui::textbox *tb1 = new ui::textbox(nullptr);
+		ui::textbox *tb2 = new ui::textbox(nullptr);
+		ui::textbox *tb3 = new ui::textbox(nullptr);
+		ui::textbox *tb4 = new ui::textbox(nullptr);
 
 		expandobox *expando = new expandobox(&wrapper, wrapper.get_position(), box_orientation::horizontal,
-			{{tb1.get(), 10}, {tb2.get(), -1}});
+			{{tb1, 10}, {tb2, -1}});
 
 		unit.check(wrapper.get_position(),  {10, 10, 500, 100}, "wrapper position");
 		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando position");
@@ -452,12 +452,12 @@ namespace haunted::tests {
 		unit.check(tb1->get_position(), {10, 10, 10,  100}, "tb1 position");
 		unit.check(tb2->get_position(), {20, 10, 490, 100}, "tb2 position");
 		INFO("Adding tb3 and expanding.");
-		(*expando += {tb3.get(), 90}).resize();
+		(*expando += {tb3, 90}).resize();
 		unit.check(tb1->get_position(), {10,  10, 10,  100}, "tb1 position");
 		unit.check(tb2->get_position(), {20,  10, 400, 100}, "tb2 position");
 		unit.check(tb3->get_position(), {420, 10, 90,  100}, "tb3 position");
 		INFO("Adding tb4 and expanding.");
-		(*expando += {tb4.get(), -1}).resize();
+		(*expando += {tb4, -1}).resize();
 		unit.check(tb1->get_position(), {10,  10, 10,  100}, "tb1 position");
 		unit.check(tb2->get_position(), {20,  10, 200, 100}, "tb2 position");
 		unit.check(tb3->get_position(), {220, 10, 90,  100}, "tb3 position");
@@ -470,6 +470,8 @@ namespace haunted::tests {
 		unit.check(tb2->get_position(), {10, 20,  100, 75}, "tb2 position");
 		unit.check(tb3->get_position(), {10, 95,  100, 90}, "tb3 position");
 		unit.check(tb4->get_position(), {10, 185, 100, 75}, "tb4 position");
+
+		unit.check(ansi::strip("["_d + "00:00:00" + "] <"_d + "@kai" + "> "_d + "Hello there."), std::string("[00:00:00] <@kai> Hello there."), "ansi::strip");
 
 		ansi::out << ansi::endl;
 	}
