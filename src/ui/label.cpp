@@ -38,7 +38,7 @@ namespace haunted::ui {
 		auto lock = term->lock_render();
 		jump();
 
-		size_t tlen = text.length(), clen = cutoff.length(), width = pos.width;
+		size_t tlen = ansi::strip(text).length(), clen = ansi::strip(cutoff).length(), width = pos.width;
 
 		if (tlen == width) {
 			*term << text;
