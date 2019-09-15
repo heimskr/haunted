@@ -90,8 +90,10 @@ namespace haunted {
 		bool changed = rows != new_rows || cols != new_cols;
 		rows = new_rows;
 		cols = new_cols;
-		if (changed)
+		if (changed) {
+			std::unique_lock lock(winch_mutex);
 			redraw();
+		}
 	}
 
 

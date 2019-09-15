@@ -25,6 +25,7 @@ namespace haunted {
 		private:
 			std::istream &in_stream;
 			std::mutex output_mutex;
+			std::mutex winch_mutex;
 			std::recursive_mutex render_mutex;
 			std::thread input_thread;
 			termios original;
