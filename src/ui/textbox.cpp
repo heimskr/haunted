@@ -19,24 +19,8 @@ namespace haunted::ui {
 	std::string textline::text_at_row(size_t width, int row) const {
 		const std::string text = std::string(*this);
 		const size_t text_length = ansi::length(text);
-		DBG(std::string(64, '-'));
-		DBG("text_at_row(width=" << width << ", row=" << row << ") for textline(cont=" << continuation << ") \"" << text << "\" of type " << util::demangle_object(*this));
-
-		std::stringstream hex;
-			hex << "\n" << std::hex;
-			for (size_t i = 0; i < text.length(); ++i)
-				hex << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(text[i]) << " '" << text[i] << "'\n";
-			DBG(hex.str());
 
 		if (row == 0) {
-			const std::string sub = ansi::substr(text, 0, width);
-			DBG("length of ansi substring: " << sub.length() << "; ansilength: " << ansi::length(sub) << ". \"" << ansi::substr(text, 0, width) << "\"");
-			std::stringstream hex;
-			hex << "\n" << std::hex;
-			for (size_t i = 0; i < sub.length(); ++i)
-				hex << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(sub[i]) << " '" << sub[i] << "'\n";
-			// DBG(hex.str());
-
 			return text_length < width? ansi::substr(text, 0, width) + std::string(width - text_length, ' ')
 			     : ansi::substr(text, 0, width);
 		}
@@ -47,7 +31,6 @@ namespace haunted::ui {
 
 		std::string chunk = std::string(continuation, ' ') + ansi::substr(text, index, width - continuation);
 		const size_t chunk_length = ansi::length(chunk);
-		DBG("chunk[" << chunk_length << "]: \"" << chunk << "\"");
 		if (chunk_length < width)
 			return chunk + std::string(width - chunk_length, ' ');
 
