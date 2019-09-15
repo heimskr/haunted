@@ -23,12 +23,14 @@ namespace haunted::ui::boxes {
 		return {++new_child_iterator, ++new_size_iterator};
 	}
 
-	bool operator==(expandobox::iterator a, expandobox::iterator b) {
-		return a.child_iterator == b.child_iterator && a.size_iterator == b.size_iterator;
+	template <>
+	bool expandobox::iterator::operator==(expandobox::iterator other) {
+		return child_iterator == other.child_iterator && size_iterator == other.size_iterator;
 	}
 
-	bool operator!=(expandobox::iterator a, expandobox::iterator b) {
-		return a.child_iterator != b.child_iterator || a.size_iterator != b.size_iterator;
+	template <>
+	bool expandobox::iterator::operator!=(expandobox::iterator other) {
+		return child_iterator != other.child_iterator || size_iterator != other.size_iterator;
 	}
 
 	expandobox::expandobox(container *parent_, const position &pos, const box_orientation orientation,
