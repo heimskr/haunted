@@ -471,7 +471,11 @@ namespace haunted::tests {
 		unit.check(tb3->get_position(), {10, 95,  100, 90}, "tb3 position");
 		unit.check(tb4->get_position(), {10, 185, 100, 75}, "tb4 position");
 
-		unit.check(ansi::strip("["_d + "00:00:00" + "] <"_d + "@kai" + "> "_d + "Hello there."), std::string("[00:00:00] <@kai> Hello there."), "ansi::strip");
+		std::string ansistr = "["_d + "00:00:00" + "] <"_d + "@kai" + "> "_d + "Hello there.";
+		std::string stripped = ansi::strip(ansistr);
+		unit.check(stripped, std::string("[00:00:00] <@kai> Hello there."), "ansi::strip");
+		unit.check(ansi::strip(ansi::substr(ansistr, 4, 18)), stripped.substr(4, 18), "ansi::strip(ansi::substr)");
+		unit.check(ansi::substr(ansistr, 4, 18), "00:00" + "] <"_d + "@kai" + "> "_d + "Hell", "ansi::substr");
 
 		ansi::out << ansi::endl;
 	}
