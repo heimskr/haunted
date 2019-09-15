@@ -1,5 +1,5 @@
-COMPILER		:= clang++
-CFLAGS			:= -std=c++2a -g -ggdb -O0 -Wall -Wextra
+COMPILER		:= g++
+CFLAGS			:= -std=c++17 -g -ggdb -O0 -Wall -Wextra
 CFLAGS_ORIG		:= $(CFLAGS)
 INCLUDE			:=
 LDFLAGS			:=
