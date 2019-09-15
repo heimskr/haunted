@@ -1,7 +1,7 @@
 #ifndef HAUNTED_UI_CONTROL_H_
 #define HAUNTED_UI_CONTROL_H_
 
-#include "../core/defs.h"
+#include "../core/hdefs.h"
 #include "../core/key.h"
 #include "child.h"
 #include "container.h"

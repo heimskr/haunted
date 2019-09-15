@@ -1,7 +1,7 @@
 #ifndef HAUNTED_UI_BOXES_BOX_H_
 #define HAUNTED_UI_BOXES_BOX_H_
 
-#include "core/defs.h"
+#include "core/hdefs.h"
 #include "ui/container.h"
 #include "ui/control.h"
 

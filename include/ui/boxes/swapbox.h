@@ -3,7 +3,7 @@
 
 #include <list>
 
-#include "core/defs.h"
+#include "core/hdefs.h"
 #include "ui/boxes/box.h"
 #include "ui/container.h"
 #include "ui/control.h"

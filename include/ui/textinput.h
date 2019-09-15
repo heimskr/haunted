@@ -7,7 +7,7 @@
 #include <string>
 #include <unordered_set>
 
-#include "../core/defs.h"
+#include "../core/hdefs.h"
 #include "../core/key.h"
 #include "../lib/utf8.h"
 #include "ui/colored.h"

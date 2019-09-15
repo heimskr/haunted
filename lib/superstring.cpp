@@ -1,9 +1,9 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include "core/defs.h"
 #include <unistd.h>
 
+#include "core/hdefs.h"
 #include "superstring.h"
 #include "utf8.h"
 #include "formicine/ansi.h"

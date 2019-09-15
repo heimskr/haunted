@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 #include <iostream>
-#include "core/defs.h"
+#include "core/hdefs.h"
 
 namespace haunted {
 	/**

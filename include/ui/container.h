@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "core/defs.h"
+#include "core/hdefs.h"
 #include "ui/keyhandler.h"
 #include "core/util.h"
 

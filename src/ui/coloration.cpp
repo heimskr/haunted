@@ -1,4 +1,4 @@
-#include "core/defs.h"
+#include "core/hdefs.h"
 #include "ui/coloration.h"
 
 namespace haunted::ui {

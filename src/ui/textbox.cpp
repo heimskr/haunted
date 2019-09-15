@@ -134,7 +134,7 @@ namespace haunted::ui {
 
 		int line_count = lines.size(), index = 0, row_count = 0, last_count = 0, offset = -1;
 
-		for (index = 0, row_count = 0;; ++index) {
+		for (index = 0, row_count = 0; index < line_count; ++index) {
 			last_count = line_rows(*lines[index]);
 			if (row_count <= row && row < row_count + last_count) {
 				offset = row - row_count;
@@ -223,7 +223,7 @@ namespace haunted::ui {
 	}
 
 	void textbox::vscroll(int delta) {
-		// TODO: scroll the terminal and fill in the empty lines.
+		const int old_effective = effective_voffset();
 
 		if (voffset == -1) {
 			voffset = effective_voffset() + delta;
@@ -235,9 +235,30 @@ namespace haunted::ui {
 
 		voffset = std::max(voffset, 0);
 		int total = total_rows();
-		if (pos.height < total) {
+		if (pos.height < total)
 			voffset = std::min(voffset, total - pos.height);
+
+		const int new_effective = effective_voffset();
+		// If new < old, we need to render newly exposed lines at the top. If old < new, we render at the bottom.
+
+		set_margins();
+		in_margins = true;
+
+		if (new_effective < old_effective) {
+			const int diff = old_effective - new_effective;
+
+			term->jump(0, 0);
+			for (int i = 0; i < diff; ++i) {
+				*term << text_at_row(i);
+				if (i < pos.height - 1)
+					*term << "\n";
+			}
+		} else if (old_effective < new_effective) {
+			term->jump(0, pos.height - (new_effective - old_effective));
 		}
+
+		reset_margins();
+		in_margins = false;
 	}
 
 	int textbox::get_voffset() const {

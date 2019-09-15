@@ -1,5 +1,5 @@
-#ifndef HAUNTED_CORE_DEFS_H_
-#define HAUNTED_CORE_DEFS_H_
+#ifndef HAUNTED_CORE_HDEFS_H_
+#define HAUNTED_CORE_HDEFS_H_
 
 // #define NODEBUG
 
@@ -51,7 +51,8 @@ namespace haunted {
 		/** Returns the bottommost column of the position. */
 		int bottom() const;
 
-		bool operator==(const position &other) const;
+		bool operator==(const position &) const;
+		bool operator!=(const position &) const;
 
 		/** Returns whether this is a valid (i.e., not default-constructed) position. */
 		explicit operator bool() const;

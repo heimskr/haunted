@@ -1,5 +1,5 @@
 #include "formicine/ansi.h"
-#include "core/defs.h"
+#include "core/hdefs.h"
 
 namespace haunted {
 	std::ofstream dbgout(".log", std::ofstream::app);
@@ -23,6 +23,10 @@ namespace haunted {
 
 	bool position::operator==(const position &other) const {
 		return left == other.left && top == other.top && width == other.width && height == other.height;
+	}
+
+	bool position::operator!=(const position &other) const {
+		return left != other.left || top != other.top || width != other.width || height != other.height;
 	}
 
 	position::operator bool() const {

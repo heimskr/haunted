@@ -1,3 +1,4 @@
+#include "core/hdefs.h"
 #include "ui/boxes/swapbox.h"
 
 namespace haunted::ui::boxes {
@@ -35,6 +36,9 @@ namespace haunted::ui::boxes {
 			if (active != nullptr) {
 				active->set_terminal(nullptr);
 			}
+
+			if (active->get_position() != new_active->get_position())
+				new_active->resize(active->get_position());
 
 			active = new_active;
 			active->set_terminal(term);
