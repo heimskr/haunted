@@ -98,6 +98,7 @@ namespace haunted::ui {
 		if (voffset != -1 && next < 0)
 			return;
 
+
 		set_margins();
 		in_margins = true;
 		colored::draw();
@@ -244,14 +245,15 @@ namespace haunted::ui {
 			voffset = std::min(voffset, total - pos.height);
 
 		const int new_effective = effective_voffset();
-		// If new < old, we need to render newly exposed lines at the top. If old < new, we render at the bottom.
+		const int diff = old_effective - new_effective;
 
 		set_margins();
 		in_margins = true;
 
-		if (new_effective < old_effective) {
-			const int diff = old_effective - new_effective;
+		term->vscroll(diff);
 
+		// If new < old, we need to render newly exposed lines at the top. If old < new, we render at the bottom.
+		if (new_effective < old_effective) {
 			term->jump(0, 0);
 			for (int i = 0; i < diff; ++i) {
 				*term << text_at_row(i);
@@ -259,7 +261,12 @@ namespace haunted::ui {
 					*term << "\n";
 			}
 		} else if (old_effective < new_effective) {
-			term->jump(0, pos.height - (new_effective - old_effective));
+			term->jump(0, pos.height + diff);
+			for (int i = pos.height + diff; i < pos.height; ++i) {
+				*term << text_at_row(i);
+				if (i < pos.height - 1)
+					*term << "\n";
+			}
 		}
 
 		reset_margins();
