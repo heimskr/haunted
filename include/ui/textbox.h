@@ -94,7 +94,7 @@ namespace haunted::ui {
 			void draw_new_line(const textline &, bool inserted = false);
 
 			/** Returns the row on which the next line should be drawn or -1 if it's out of bounds. */
-			int next_row() const;
+			int next_row(int offset_offset = 0) const;
 
 			/** Returns a pair of the line at a given row (ignoring voffset and zero-based) and the number of rows past
 			 *  the start of the line. For example, if the textbox contains one line that occupies a single row and a

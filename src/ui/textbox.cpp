@@ -91,20 +91,24 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
-		int new_lines = line_rows(line);
+		const int new_lines = line_rows(line);
+		const int offset = inserted? new_lines : 0;
 
-		// We need to subtract one if the new line is already in the buffer.
-		int next = next_row() - (inserted? new_lines : 0);
+		int next = next_row() - offset;
 		if (voffset != -1 && next < 0)
 			return;
-
 
 		set_margins();
 		in_margins = true;
 		colored::draw();
 
-		if (voffset == -1 && pos.height < total_rows())
+		if (voffset == -1 && pos.height <= total_rows()) {
 			term->vscroll(-new_lines);
+			// After we scroll the terminal, there's some new space for lines to be in, whereas there was no space
+			// before. Because of that, we have to recalculate the next row by using the number of new lines to decrease
+			// the vertical offset the next_row method uses.
+			next = next_row(new_lines) - offset;
+		}
 
 		term->jump(0, next);
 		for (int row = next, i = 0; row < pos.height && i < new_lines; ++row, ++i) {
@@ -117,8 +121,8 @@ namespace haunted::ui {
 		in_margins = false;
 	}
 
-	int textbox::next_row() const {
-		int offset = effective_voffset();
+	int textbox::next_row(int offset_offset) const {
+		int offset = effective_voffset() + offset_offset;
 		int total = total_rows();
 
 		// Return -1 if the next row is below the visible area.
@@ -247,8 +251,12 @@ namespace haunted::ui {
 		const int new_effective = effective_voffset();
 		const int diff = old_effective - new_effective;
 
-		set_margins();
-		in_margins = true;
+		const bool do_margins = !in_margins;
+
+		if (do_margins) {
+			set_margins();
+			in_margins = true;
+		}
 
 		term->vscroll(diff);
 
@@ -269,8 +277,10 @@ namespace haunted::ui {
 			}
 		}
 
-		reset_margins();
-		in_margins = false;
+		if (do_margins) {
+			reset_margins();
+			in_margins = false;
+		}
 	}
 
 	int textbox::get_voffset() const {
