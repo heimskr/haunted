@@ -473,12 +473,18 @@ namespace haunted::tests {
 
 		std::string ansistr = "["_d + "00:00:00" + "] <"_d + "@kai" + "> "_d + "Hello there.";
 		std::string stripped = ansi::strip(ansistr);
-		unit.check(stripped, std::string("[00:00:00] <@kai> Hello there."), "ansi::strip");
-		unit.check(ansi::strip(ansi::substr(ansistr, 4, 18)), stripped.substr(4, 18), "ansi::strip(ansi::substr)");
-		unit.check(ansi::substr(ansistr, 4, 18), "00:00" + "] <"_d + "@kai" + "> "_d + "Hell", "ansi::substr");
-		unit.check(ansi::length(ansistr), 30UL, "ansi::length");
-		unit.check(ansi::get_pos(ansistr, 0), 4UL, "ansi::get_pos(0)");
-		unit.check(ansi::get_pos(ansistr, 1), 10UL, "ansi::get_pos(1)");
+		unit.check(stripped, std::string("[00:00:00] <@kai> Hello there."), "ansi::strip()");
+		unit.check(ansi::strip(ansi::substr(ansistr, 4, 18)), stripped.substr(4, 18), "ansi::strip(ansi::substr(4, 18))");
+		unit.check(ansi::substr(ansistr, 4, 18), "00:00" + "] <"_d + "@kai" + "> "_d + "Hell", "ansi::substr(4, 18)");
+		unit.check(ansi::length(ansistr), 30UL, "ansi::length()");
+		unit.check(ansi::get_pos(ansistr, 0), 0UL, "ansi::get_pos(0)");
+		unit.check(ansi::get_pos(ansistr, 1), 5UL, "ansi::get_pos(1)");
+		unit.check(ansi::get_pos(ansistr, 2), 11UL, "ansi::get_pos(2)");
+		unit.check(ansi::get_pos(ansistr, 3), 12UL, "ansi::get_pos(3)");
+		const std::string str_extra = "This is another sentence to increase the length of the string so that it can be used for more unit tests.";
+		ansistr += " " + str_extra;
+		INFO("Appending \"" << str_extra << "\" to ansi_str.");
+		unit.check(ansi::substr(ansistr, 0, 112), std::string("["_d + "00:00:00" + "] <"_d + "@kai" + "> "_d + "Hello there. This is another sentence to increase the length of the string so that it can be u"), "ansi::substr(0, 112)");
 
 		ansi::out << ansi::endl;
 	}

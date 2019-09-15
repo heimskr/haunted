@@ -483,7 +483,7 @@ namespace haunted::ui {
 					case 'a':      start(); break;
 					case 'e':        end(); break;
 					case 't':  transpose(); break;
-					case 'u':      clear(); return true;
+					case 'u':      clear(); break;
 					case 'w': erase_word(); break;
 					default: return false;
 				}
