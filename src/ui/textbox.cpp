@@ -203,12 +203,11 @@ namespace haunted::ui {
 		std::string str = ansi::substr(line_text, cols);
 
 		// Erase the continued lines after the first line and before the continuation at the given row.
-		// TODO: this doesn't account for ANSI escapes. Add another ANSI-blind method to formicine.
-		str.erase(0, (offset - 1) * continuation_chars);
+		ansi::erase(str, 0, (offset - 1) * continuation_chars);
 
 		// Erase all characters after the continuation if any remain.
 		if (continuation_chars < ansi::length(str))
-			str.erase(continuation_chars, std::string::npos);
+			ansi::erase(str, continuation_chars, std::string::npos);
 
 		const size_t str_length = ansi::length(str);
 		// Return the continuation padding plus the segment of text visible on the row.

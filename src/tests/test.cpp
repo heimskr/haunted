@@ -477,6 +477,8 @@ namespace haunted::tests {
 		unit.check(ansi::strip(ansi::substr(ansistr, 4, 18)), stripped.substr(4, 18), "ansi::strip(ansi::substr)");
 		unit.check(ansi::substr(ansistr, 4, 18), "00:00" + "] <"_d + "@kai" + "> "_d + "Hell", "ansi::substr");
 		unit.check(ansi::length(ansistr), 30UL, "ansi::length");
+		unit.check(ansi::get_pos(ansistr, 0), 4UL, "ansi::get_pos(0)");
+		unit.check(ansi::get_pos(ansistr, 1), 10UL, "ansi::get_pos(1)");
 
 		ansi::out << ansi::endl;
 	}
@@ -541,11 +543,6 @@ int main(int argc, char **argv) {
 	terminal term(std::cin, ansi::out);
 	term.watch_size();
 
-	if (argc < 2) {
-		haunted::tests::maintest::test_key(term);
-		return 0;
-	}
-
 	haunted::tests::testing unit;
 
 	if (arg == "key") {
@@ -572,6 +569,6 @@ int main(int argc, char **argv) {
 		haunted::tests::maintest::unittest_textbox(unit);
 		haunted::tests::maintest::unittest_expandobox(unit);
 	} else {
-		haunted::tests::maintest::test_key(term);
+		haunted::tests::maintest::unittest_textbox(unit);
 	}
 }
