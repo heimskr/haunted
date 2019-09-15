@@ -476,6 +476,7 @@ namespace haunted::tests {
 		unit.check(stripped, std::string("[00:00:00] <@kai> Hello there."), "ansi::strip");
 		unit.check(ansi::strip(ansi::substr(ansistr, 4, 18)), stripped.substr(4, 18), "ansi::strip(ansi::substr)");
 		unit.check(ansi::substr(ansistr, 4, 18), "00:00" + "] <"_d + "@kai" + "> "_d + "Hell", "ansi::substr");
+		unit.check(ansi::length(ansistr), 30UL, "ansi::length");
 
 		ansi::out << ansi::endl;
 	}
@@ -508,21 +509,20 @@ namespace haunted::tests {
 	void testing::display_failed(const std::string &input,  const std::string &actual, const std::string &expected,
 	                             const std::string &prefix, const std::string &padding, const std::exception *err) {
 		using namespace ansi;
-		out << bad << prefix << parens << wrap(input, style::bold) << padding << " == "_d;
+		out << bad << prefix << parens << bold(input) << padding << " == "_d;
 
 		if (err != nullptr)
-			out << wrap(wrap(util::demangle_object(err), style::bold) + ": " + std::string(err->what()), color::red);
+			out << red(bold(util::demangle_object(err)) + ": " + std::string(err->what()));
 		else
-			out << wrap(actual, color::red);
+			out << red(actual);
 		
-		out << " Expected: "_d << wrap(expected, color::yellow) << endl;
+		out << " Expected: "_d << yellow(expected) << endl;
 	}
 
 	void testing::display_passed(const std::string &input, const std::string &actual, const std::string &prefix,
 	                             const std::string &padding) {
 		using namespace ansi;
-		out << good << prefix << parens << wrap(input, style::bold) << padding << " == "_d << wrap(actual, color::green)
-		    << endl;
+		out << good << prefix << parens << bold(input) << padding << " == "_d << green(actual) << endl;
 	}
 
 	testing::~testing() {

@@ -202,11 +202,11 @@ namespace haunted::tests {
 				bool result = equal(actual, expected);
 				if (result) {
 					++total_passed;
-					out << good << fn_name << " " << "== "_d << wrap(stringify(actual), color::green) << endl;
+					out << good << fn_name << " " << "== "_d << ansi::green(stringify(actual)) << endl;
 				} else {
 					++total_failed;
-					out << bad << fn_name << " " << "== "_d << wrap(stringify(actual), color::red)
-					    << " (expected " << wrap(stringify(expected), style::bold) << ")" << endl;
+					out << bad << fn_name << " " << "== "_d << ansi::red(stringify(actual))
+					    << " (expected " << ansi::bold(stringify(expected)) << ")" << endl;
 				}
 
 				return result;
@@ -221,16 +221,16 @@ namespace haunted::tests {
 
 				try {
 					const std::string returned = stringify((target->*fn)(args...));
-					out << bad << fn_name << " == "_d << wrap(returned, color::red) << " (expected " << demangled;
+					out << bad << fn_name << " == "_d << red(returned) << " (expected " << demangled;
 					if (!what.empty())
 						out << ", \"" << what << "\"";
 					out << ")";
 				} catch (std::exception &exc) {
 					std::string message = exc.what();
 					if (typeid(exc) == errtype && (what.empty() || what == std::string(exc.what()))) {
-						out << good << fn_name << " throws "_d << wrap(demangled, color::green);
+						out << good << fn_name << " throws "_d << green(demangled);
 						if (!message.empty())
-							out << " (" << (what.empty()? message : wrap(message, color::green)) << ")";
+							out << " (" << (what.empty()? message : green(message)) << ")";
 						out << endl;
 						++total_passed;
 						return true;

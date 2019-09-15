@@ -18,27 +18,29 @@ namespace haunted::ui {
 
 	std::string textline::text_at_row(size_t width, int row) const {
 		const std::string text = std::string(*this);
+		const size_t text_length = ansi::length(text);
 
 		if (row == 0) {
-			return text.length() < width? text.substr(0, width) + std::string(width - text.length(), ' ')
-			     : text.substr(0, width);
+			return text.length() < width? ansi::substr(text, 0, width) + std::string(width - text.length(), ' ')
+			     : ansi::substr(text, 0, width);
 		}
 
-		size_t index = continuation + row * (width - continuation);
-		if (index >= text.length())
+		const size_t index = continuation + row * (width - continuation);
+		if (index >= ansi::length(text))
 			return std::string(width, ' ');
 
-		std::string chunk = std::string(continuation, ' ') + text.substr(index, width - continuation);
-		if (chunk.length() < width)
-			return chunk + std::string(width - chunk.length(), ' ');
+		std::string chunk = std::string(continuation, ' ') + ansi::substr(text, index, width - continuation);
+		const size_t chunk_length = ansi::length(chunk);
+		if (chunk_length < width)
+			return chunk + std::string(width - chunk_length, ' ');
 
 		return chunk;
 	}
 
 	int textline::num_rows(int width) const {
-		const std::string text = std::string(*this);
+		const std::string text = ansi::strip(*this);
 
-		int length = ansi::strip(text).length();
+		int length = ansi::length(text);
 		if (length <= width)
 			return 1;
 
@@ -188,26 +190,30 @@ namespace haunted::ui {
 		const std::string line_text(*line);
 		const int continuation = line->continuation;
 
-		if (offset == 0)
-			return line_text.length() <= cols? line_text + std::string(cols - line_text.length(), ' ')
-				: line_text.substr(0, cols);
+		if (offset == 0) {
+			const size_t line_length = ansi::length(line_text);
+			return line_length <= cols? line_text + std::string(cols - line_length, ' ')
+				: ansi::substr(line_text, 0, cols);
+		}
 
 		// Number of chars visible per row on a continued line
 		size_t continuation_chars = cols - line->continuation;
 
 		// Ignore the first line. 
-		std::string str = line_text.substr(cols);
+		std::string str = ansi::substr(line_text, cols);
 
 		// Erase the continued lines after the first line and before the continuation at the given row.
+		// TODO: this doesn't account for ANSI escapes. Add another ANSI-blind method to formicine.
 		str.erase(0, (offset - 1) * continuation_chars);
 
 		// Erase all characters after the continuation if any remain.
-		if (continuation_chars < str.length())
+		if (continuation_chars < ansi::length(str))
 			str.erase(continuation_chars, std::string::npos);
 
+		const size_t str_length = ansi::length(str);
 		// Return the continuation padding plus the segment of text visible on the row.
-		if (continuation + str.length() < cols)
-			return std::string(continuation, ' ') + str + std::string(cols - continuation - str.size(), ' ');
+		if (continuation + str_length < cols)
+			return std::string(continuation, ' ') + str + std::string(cols - continuation - str_length, ' ');
 		return std::string(continuation, ' ') + str;
 	}
 

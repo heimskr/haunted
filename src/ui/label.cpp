@@ -45,13 +45,13 @@ namespace haunted::ui {
 		} else if (tlen < width) {
 			*term << text << std::string(width - tlen, ' ');
 		} else if (cutoff.empty()) {
-			*term << text.substr(0, width);
+			*term << ansi::substr(text, 0, width);
 		} else if (clen == width) {
 			*term << cutoff;
 		} else if (width < clen) {
-			*term << cutoff.substr(0, width);
+			*term << ansi::substr(cutoff, 0, width);
 		} else {
-			*term << text.substr(0, width - clen) << cutoff;
+			*term << ansi::substr(text, 0, width - clen) << cutoff;
 		}
 
 		term->reset_colors();
