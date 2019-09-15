@@ -300,7 +300,19 @@ namespace haunted::ui {
 	}
 
 	void textbox::set_voffset(int new_voffset) {
+		const int old_effective = effective_voffset();
+		const int old_voffset = voffset;
+
 		voffset = new_voffset;
+
+		const int new_effective = effective_voffset();
+		if (old_effective != new_effective) {
+			// If the effective positions change, that means the content should update (scrolling would cause incorrect
+			// output otherwise). vscrolling fixes that, but as it assumes the content on the screen is already properly
+			// scrolled, we need to reset the voffset.
+			voffset = old_voffset;
+			vscroll(new_effective - old_effective);
+		}
 	}
 
 	int textbox::line_rows(const textline &line) const {
