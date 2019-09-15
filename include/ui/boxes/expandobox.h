@@ -42,8 +42,10 @@ namespace haunted::ui::boxes {
 					pair_iterator & operator++();
 					pair_iterator operator++(int);
 
-					friend bool operator==(pair_iterator, pair_iterator);
-					friend bool operator!=(pair_iterator, pair_iterator);
+					template <typename L_, typename R_>
+					friend bool operator==(pair_iterator<L_, R_>, pair_iterator<L_, R_>);
+					template <typename L_, typename R_>
+					friend bool operator!=(pair_iterator<L_, R_>, pair_iterator<L_, R_>);
 
 					operator pair_iterator<L const, R const>() const;
 			};
