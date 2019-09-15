@@ -8,7 +8,10 @@ VALGRIND		:= valgrind --leak-check=full --show-leak-kinds=all --track-origins=ye
 MKBUILD			:= mkdir -p build
 OUTPUT			:= build/tests
 CHECK			:= asan
-SDKFLAGS		:= --sysroot /etc/sdk
+
+ifeq ($(shell uname -s), Darwin)
+	SDKFLAGS	:= --sysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+endif
 
 ifeq ($(CHECK), asan)
 	CHECKFLAGS := -fsanitize=address -fno-common
