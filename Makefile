@@ -2,12 +2,11 @@ COMPILER		:= g++
 CFLAGS			:= -std=c++17 -g -ggdb -O0 -Wall -Wextra
 CFLAGS_ORIG		:= $(CFLAGS)
 INCLUDE			:=
-LDFLAGS			:=
-CC				 = $(COMPILER) $(strip $(CFLAGS) $(CHECKFLAGS))
+LDFLAGS			:= -pthread
+CC			 = $(COMPILER) $(strip $(CFLAGS) $(CHECKFLAGS))
 VALGRIND		:= valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=no
 MKBUILD			:= mkdir -p build
 OUTPUT			:= build/tests
-CHECK			:= asan
 
 ifeq ($(shell uname -s), Darwin)
 	SDKFLAGS	:= --sysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
@@ -47,7 +46,7 @@ build/tests: build/tests/tests.o $(COMMONOBJ)
 
 build/%.o: src/%.cpp
 	@ mkdir -p "$(shell dirname "$@")"
-	$(CC) $(SDKFLAGS) $(strip $(INCLUDE)) -c $< -o $@
+	$(CC) $(strip $(SDKFLAGS) $(INCLUDE)) -c $< -o $@
 
 grind: $(OUTPUT)
 	$(VALGRIND) ./$(OUTPUT)
