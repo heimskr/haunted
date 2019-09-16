@@ -21,6 +21,7 @@ namespace haunted {
 
 	terminal::terminal(std::istream &in_stream_, ansi::ansistream &out_stream_):
 	in_stream(in_stream_), out_stream(out_stream_), colors(&out_stream_, &output_mutex) {
+		DBG("terminal(): " << this);
 		original = attrs = getattr();
 		winsize size;
 		ioctl(STDIN_FILENO, TIOCGWINSZ, &size);
@@ -29,6 +30,9 @@ namespace haunted {
 	}
 
 	terminal::~terminal() {
+		DBG("~terminal(): " << this);
+		out_stream.reset_colors();
+		out_stream.clear();
 		reset();
 		join();
 		delete root;
@@ -226,8 +230,10 @@ namespace haunted {
 	}
 
 	void terminal::join() {
-		if (input_thread.joinable())
+		if (input_thread.joinable()) {
+			DBG("Joining input thread.");
 			input_thread.join();
+		}
 	}
 
 	void terminal::flush() {
