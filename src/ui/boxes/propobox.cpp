@@ -34,13 +34,10 @@ namespace haunted::ui::boxes {
 		control::resize(new_pos);
 
 		if (children.size() == 0) {
-			DBG("size == 0");
 			return;
 		} else if (children.size() == 1) {
-			DBG("size == 1");
 			children[0]->resize(new_pos);
 		} else if (children.size() == 2) {
-			DBG("size == 2");
 			if (orientation == box_orientation::horizontal) {
 				children[0]->resize({pos.left, pos.top, size_one(), pos.height});
 				children[1]->resize({pos.left + size_one(), pos.top, size_two(), pos.height});
@@ -50,7 +47,7 @@ namespace haunted::ui::boxes {
 			} else throw std::runtime_error("Unknown orientation: " + std::to_string(static_cast<int>(orientation)));
 		} else throw std::runtime_error("Invalid number of children for propobox: " + std::to_string(children.size()));
 
-		// redraw();
+		redraw();
 	}
 
 	void propobox::draw() {

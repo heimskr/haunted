@@ -320,7 +320,6 @@ namespace haunted::ui {
 		try_margins([&]() {
 			apply_colors();
 			clear_rect();
-			jump();
 
 			int effective = effective_voffset();
 
@@ -329,9 +328,9 @@ namespace haunted::ui {
 			} else {
 				try {
 					for (int i = 0; i < pos.height; ++i) {
+						apply_colors();
+						term->jump(0, i);
 						*term << text_at_row(i);
-						if (i != pos.height - 1)
-							*term << "\n";
 					}
 				} catch (std::out_of_range &err) {}
 			}
@@ -373,7 +372,7 @@ namespace haunted::ui {
 
 	textbox::operator std::string() const {
 		std::string out = "";
-		for (const std::unique_ptr<textline> &line: lines) {
+		for (const line_ptr &line: lines) {
 			if (!out.empty())
 				out += "\n";
 			out += std::string(*line);
