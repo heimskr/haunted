@@ -100,7 +100,7 @@ namespace haunted::ui {
 
 			/** Returns the string to print on a given row (zero-based) of the textbox. Handles text wrapping and
 			 *  scrolling automatically. */
-			std::string text_at_row(int);
+			std::string text_at_row(int, bool pad_right = true);
 
 		public:
 			/** Constructs a textbox with a parent, a position and initial contents. */

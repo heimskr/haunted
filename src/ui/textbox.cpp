@@ -158,7 +158,7 @@ namespace haunted::ui {
  		return {lines[index].get(), offset == -1? row - row_count : offset};
 	}
 
-	std::string textbox::text_at_row(int row) {
+	std::string textbox::text_at_row(int row, bool pad_right) {
 		const size_t cols = pos.width;
 		
 		textline *line;
@@ -178,8 +178,12 @@ namespace haunted::ui {
 
 		if (offset == 0) {
 			const size_t line_length = ansi::length(line_text);
-			return line_length <= cols? line_text + std::string(cols - line_length, ' ')
-				: ansi::substr(line_text, 0, cols);
+			if (pad_right) {
+				return line_length <= cols? line_text + std::string(cols - line_length, ' ')
+					: ansi::substr(line_text, 0, cols);
+			} else {
+				return line_length <= cols? line_text : ansi::substr(line_text, 0, cols);
+			}
 		}
 
 		// Number of chars visible per row on a continued line
@@ -197,7 +201,7 @@ namespace haunted::ui {
 
 		const size_t str_length = ansi::length(str);
 		// Return the continuation padding plus the segment of text visible on the row.
-		if (continuation + str_length < cols)
+		if (pad_right && continuation + str_length < cols)
 			return std::string(continuation, ' ') + str + std::string(cols - continuation - str_length, ' ');
 		return std::string(continuation, ' ') + str;
 	}
@@ -330,8 +334,11 @@ namespace haunted::ui {
 				try {
 					for (int i = 0; i < pos.height; ++i) {
 						apply_colors();
-						term->jump(0, i);
-						*term << text_at_row(i);
+						const std::string text = text_at_row(i, false);
+						if (!text.empty()) {
+							term->jump(0, i);
+							*term << text;
+						}
 					}
 				} catch (std::out_of_range &err) {}
 			}
