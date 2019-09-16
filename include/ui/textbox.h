@@ -2,11 +2,11 @@
 #define HAUNTED_UI_TEXTBOX_H_
 
 #include <deque>
+#include <functional>
 #include <string>
 #include <utility>
 
-#include "ui/colored.h"
-#include "ui/control.h"
+#include "ui/colored_control.h"
 #include "core/terminal.h"
 #include "core/util.h"
 
@@ -63,7 +63,7 @@ namespace haunted::ui {
 	/**
 	 * Represents a multiline box of text.
 	 */
-	class textbox: public control, public colored {
+	class textbox: public colored_control {
 		friend class haunted::tests::maintest;
 		using line_ptr = std::unique_ptr<textline>;
 
@@ -81,9 +81,6 @@ namespace haunted::ui {
 			/** Whether to wrap long lines based on the continuation column. */
 			bool wrap = true;
 
-			/** Whether margins have been set. */
-			bool in_margins = false;
-
 			/** Empties the buffer and replaces it with 0-continuation lines from a vector of string. */
 			void set_lines(const std::vector<std::string> &);
 
@@ -100,9 +97,6 @@ namespace haunted::ui {
 			 *  the start of the line. For example, if the textbox contains one line that occupies a single row and a
 			 *  second line that spans 5 rows, then calling this function with 4 will return {lines[1], 3}. */
 			std::pair<textline *, int> line_at_row(int);
-
-			/** Clears the region of the screen occupied by the textbox. */
-			void clear();
 
 			/** Returns the string to print on a given row (zero-based) of the textbox. Handles text wrapping and
 			 *  scrolling automatically. */
@@ -151,7 +145,7 @@ namespace haunted::ui {
 			/** Handles keyboard input. */
 			bool on_key(const key &) override;
 
-			virtual bool can_draw() const override;
+			bool can_draw() const override;
 
 			/** Adds a string to the end of the textbox. */
 			textbox & operator+=(const std::string &);

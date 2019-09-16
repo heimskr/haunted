@@ -49,6 +49,10 @@ namespace haunted::ui {
 		apply_colors();
 	}
 
+	void colored::focus() {
+		apply_colors();
+	}
+
 	colored & colored::apply_colors() {
 		if (terminal *term = get_terminal())
 			term->colors.set_both(find_color(ansi::color_type::foreground), find_color(ansi::color_type::background));
@@ -89,7 +93,7 @@ namespace haunted::ui {
 		std::deque<control *> queue(cont->get_children().begin(), cont->get_children().end());
 
 		while (!queue.empty()) {
-			control * child = queue.front();
+			control *child = queue.front();
 			queue.pop_front();
 
 			colored *colored_child = dynamic_cast<colored *>(child);
@@ -180,10 +184,6 @@ namespace haunted::ui {
 		}
 		
 		return changed;
-	}
-
-	void colored::focus() {
-		apply_colors();
 	}
 
 	void swap(colored &left, colored &right) {

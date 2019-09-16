@@ -17,7 +17,12 @@ namespace haunted::ui {
 		protected:
 			terminal *term;
 			std::string name;
-			haunted::position pos;
+			bool in_margins = false;
+			public:haunted::position pos;
+
+			/** Sets the margins if needed, executes a function and resets the margins if needed. Returns true if the
+			 *  margins were set. */
+			bool try_margins(std::function<void()>);
 
 		public:
 			control() = delete;
@@ -73,7 +78,7 @@ namespace haunted::ui {
 			void jump();
 
 			/** Erases the portion of the display that this control occupies. */
-			void clear_rect();
+			virtual void clear_rect();
 
 			/** Flushes the terminal's output buffer. */
 			void flush();
