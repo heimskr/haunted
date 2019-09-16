@@ -8,6 +8,28 @@
 namespace haunted::ui {
 	control::~control() = default;
 
+
+// Protected instance methods
+
+
+	bool control::try_margins(std::function<void()> fn) {
+		const bool should_reset_margins = !in_margins;
+
+		if (should_reset_margins)
+			set_margins();
+
+		fn();
+
+		if (should_reset_margins)
+			reset_margins();
+
+		return should_reset_margins;
+	}
+
+
+// Public instance methods
+
+
 	void control::resize(const haunted::position &new_pos) {
 		// It's up to the caller of resize() to also call draw().
 		pos = new_pos;
@@ -70,13 +92,13 @@ namespace haunted::ui {
 	}
 
 	void control::clear_rect() {
-		if (term != nullptr) {
-			term->out_stream.save();
-			set_margins();
-			term->out_stream.clear();
-			reset_margins();
-			term->out_stream.restore();
-		}
+		if (term == nullptr)
+			return;
+
+		try_margins([&]() {
+			// Galaxy brain trickery here.
+			term->vscroll(pos.height);
+		});
 	}
 
 	void control::flush() {
@@ -101,6 +123,7 @@ namespace haunted::ui {
 			term->enable_hmargins();
 			term->margins(pos.top, pos.bottom(), pos.left, pos.right());
 			term->set_origin();
+			in_margins = true;
 		}
 	}
 
@@ -117,6 +140,7 @@ namespace haunted::ui {
 			term->reset_origin();
 			term->margins();
 			term->disable_hmargins();
+			in_margins = false;
 		}
 	}
 
@@ -125,5 +149,6 @@ namespace haunted::ui {
 		std::swap(left.term, right.term);
 		std::swap(left.name, right.name);
 		std::swap(left.pos,  right.pos);
+		std::swap(left.in_margins, right.in_margins);
 	}
 }

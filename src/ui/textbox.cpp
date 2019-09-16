@@ -6,6 +6,8 @@
 #include "formicine/ansi.h"
 #include "tests/test.h"
 
+#define UDBG(x) { if (name == "sidebar") { DBG(x); } }
+
 namespace haunted::ui {
 	bool textline::operator==(const textline &other) const {
 		return continuation == other.continuation && std::string(*this) == std::string(other);
@@ -61,7 +63,7 @@ namespace haunted::ui {
 	}
 
 	textbox::textbox(container *parent_, position pos_, const std::vector<std::string> &contents):
-	control(parent_, pos_) {
+	colored_control(parent_, pos_) {
 		if (parent_ != nullptr)
 			parent_->add_child(this);
 		set_lines(contents);
@@ -69,7 +71,7 @@ namespace haunted::ui {
 		pos = pos_;
 	}
 
-	textbox::textbox(container *parent_, const std::vector<std::string> &contents): control(parent_) {
+	textbox::textbox(container *parent_, const std::vector<std::string> &contents): colored_control(parent_) {
 		if (parent_ != nullptr)
 			parent_->add_child(this);
 		set_lines(contents);
@@ -98,27 +100,26 @@ namespace haunted::ui {
 		if (voffset != -1 && next < 0)
 			return;
 
-		set_margins();
-		in_margins = true;
-		colored::draw();
+		try_margins([&]() {
+			apply_colors();
 
-		if (voffset == -1 && pos.height <= total_rows()) {
-			term->vscroll(-new_lines);
-			// After we scroll the terminal, there's some new space for lines to be in, whereas there was no space
-			// before. Because of that, we have to recalculate the next row by using the number of new lines to decrease
-			// the vertical offset the next_row method uses.
-			next = next_row(new_lines) - offset;
-		}
+			if (voffset == -1 && pos.height <= total_rows()) {
+				term->vscroll(-new_lines);
+				// After we scroll the terminal, there's some new space for lines to be in, whereas there was no space
+				// before. Because of that, we have to recalculate the next row by using the number of new lines to decrease
+				// the vertical offset the next_row method uses.
+				next = next_row(new_lines) - offset;
+			}
 
-		term->jump(0, next);
-		for (int row = next, i = 0; row < pos.height && i < new_lines; ++row, ++i) {
-			if (i > 0)
-				*term << "\n";
-			*term << line.text_at_row(pos.width, i);
-		}
+			term->jump(0, next);
+			for (int row = next, i = 0; row < pos.height && i < new_lines; ++row, ++i) {
+				if (i > 0)
+					*term << "\n";
+				*term << line.text_at_row(pos.width, i);
+			}
 
-		reset_margins();
-		in_margins = false;
+			uncolor();
+		});
 	}
 
 	int textbox::next_row(int offset_offset) const {
@@ -155,26 +156,6 @@ namespace haunted::ui {
 			throw std::out_of_range("Line index too large: " + std::to_string(index));
 
  		return {lines[index].get(), offset == -1? row - row_count : offset};
-	}
-
-	void textbox::clear() {
-		if (!can_draw())
-			return;
-
-		bool should_reset_margins = false;
-		if (!in_margins) {
-			set_margins();
-			should_reset_margins = true;
-		}
-
-		for (int i = 0; i < pos.height; ++i) {
-			if (i != 0)
-				term->out_stream.down();
-			term->out_stream.delete_chars(pos.width);
-		}
-
-		if (should_reset_margins)
-			reset_margins();
 	}
 
 	std::string textbox::text_at_row(int row) {
@@ -251,36 +232,29 @@ namespace haunted::ui {
 		const int new_effective = effective_voffset();
 		const int diff = old_effective - new_effective;
 
-		const bool do_margins = !in_margins;
+		try_margins([&]() {
+			apply_colors();
+			term->vscroll(diff);
 
-		if (do_margins) {
-			set_margins();
-			in_margins = true;
-		}
-
-		term->vscroll(diff);
-
-		// If new < old, we need to render newly exposed lines at the top. If old < new, we render at the bottom.
-		if (new_effective < old_effective) {
-			term->jump(0, 0);
-			for (int i = 0; i < diff; ++i) {
-				*term << text_at_row(i);
-				if (i < pos.height - 1)
-					*term << "\n";
+			// If new < old, we need to render newly exposed lines at the top. If old < new, we render at the bottom.
+			if (new_effective < old_effective) {
+				term->jump(0, 0);
+				for (int i = 0; i < diff; ++i) {
+					*term << text_at_row(i);
+					if (i < pos.height - 1)
+						*term << "\n";
+				}
+			} else if (old_effective < new_effective) {
+				term->jump(0, pos.height + diff);
+				for (int i = pos.height + diff; i < pos.height; ++i) {
+					*term << text_at_row(i);
+					if (i < pos.height - 1)
+						*term << "\n";
+				}
 			}
-		} else if (old_effective < new_effective) {
-			term->jump(0, pos.height + diff);
-			for (int i = pos.height + diff; i < pos.height; ++i) {
-				*term << text_at_row(i);
-				if (i < pos.height - 1)
-					*term << "\n";
-			}
-		}
 
-		if (do_margins) {
-			reset_margins();
-			in_margins = false;
-		}
+			uncolor();
+		});
 	}
 
 	int textbox::get_voffset() const {
@@ -312,6 +286,8 @@ namespace haunted::ui {
 			// scrolled, we need to reset the voffset.
 			voffset = old_voffset;
 			vscroll(new_effective - old_effective);
+			if (new_voffset == -1)
+				voffset = -1;
 		}
 	}
 
@@ -339,33 +315,28 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
-		colored::draw();
-
 		auto lock = term->lock_render();
 
-		// It's assumed that the terminal is already in cbreak mode. If it's not, DECSLRM won't work and the left and
-		// right margins won't be set.
-		set_margins();
-		in_margins = true;
-		clear();
-		jump();
+		try_margins([&]() {
+			apply_colors();
+			clear_rect();
 
-		int effective = effective_voffset();
+			int effective = effective_voffset();
 
-		if (0 <= effective && total_rows() <= effective) {
-			// There's no need to draw anything if the box has been scrolled down beyond all its contents.
-		} else {
-			try {
-				for (int i = 0; i < pos.height; ++i) {
-					*term << text_at_row(i);
-					if (i != pos.height - 1)
-						*term << "\n";
-				}
-			} catch (std::out_of_range &err) {}
-		}
-		
-		reset_margins();
-		in_margins = false;
+			if (0 <= effective && total_rows() <= effective) {
+				// There's no need to draw anything if the box has been scrolled down beyond all its contents.
+			} else {
+				try {
+					for (int i = 0; i < pos.height; ++i) {
+						apply_colors();
+						term->jump(0, i);
+						*term << text_at_row(i);
+					}
+				} catch (std::out_of_range &err) {}
+			}
+			
+			uncolor();
+		});
 	}
 
 	bool textbox::on_key(const key &k) {
@@ -401,7 +372,7 @@ namespace haunted::ui {
 
 	textbox::operator std::string() const {
 		std::string out = "";
-		for (const std::unique_ptr<textline> &line: lines) {
+		for (const line_ptr &line: lines) {
 			if (!out.empty())
 				out += "\n";
 			out += std::string(*line);
@@ -416,6 +387,5 @@ namespace haunted::ui {
 		std::swap(left.lines,      right.lines);
 		std::swap(left.voffset,	   right.voffset);
 		std::swap(left.wrap,       right.wrap);
-		std::swap(left.in_margins, right.in_margins);
 	}
 }

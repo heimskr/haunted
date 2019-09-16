@@ -26,7 +26,7 @@ namespace haunted::ui::boxes {
 	void propobox::set_ratio(const double ratio_) {
 		if (ratio != ratio_) {
 			ratio = ratio_;
-			draw();
+			resize();
 		}
 	}
 

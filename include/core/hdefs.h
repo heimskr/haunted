@@ -13,9 +13,10 @@
 #include "formicine/ansi.h"
 
 #define DBGT(x) DBG(ansi::style::bold << get_id(true) << "  " << ansi::action::reset << x)
-#define DBGTFN() { std::string pfn = __PRETTY_FUNCTION__; size_t _sp = pfn.find_first_of(' '), _co = pfn.find_last_of( \
+#define DBGTFNC() { std::string pfn = __PRETTY_FUNCTION__; size_t _sp = pfn.find_first_of(' '), _co = pfn.find_last_of( \
 	':'), _lp = pfn.find_first_of('('); DBGT("\e[1m" << pfn.substr(0, _sp) << "\e[0;2m" << pfn.substr(_sp, _co + 1 -   \
 	_sp) << "\e[0;1m" << pfn.substr(_co + 1, _lp - _co - 1) << "\e[0m" << pfn.substr(_lp)); }
+#define DBGTFN() DBGT(ansi::dim(__PRETTY_FUNCTION__))
 #define DBGFN() DBG(ansi::style::bold << this << ": " << ansi::action::reset << __PRETTY_FUNCTION__)
 
 namespace haunted {
