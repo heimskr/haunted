@@ -90,7 +90,6 @@ namespace haunted::ui {
 	}
 
 	void textbox::draw_new_line(const textline &line, bool inserted) {
-		DBGTFN();
 		if (!can_draw())
 			return;
 
@@ -101,7 +100,6 @@ namespace haunted::ui {
 		if (voffset != -1 && next < 0)
 			return;
 
-		DBGTFN();
 		try_margins([&]() {
 			apply_colors();
 
@@ -113,14 +111,11 @@ namespace haunted::ui {
 				next = next_row(new_lines) - offset;
 			}
 
-			UDBG("pos = " << pos);
-
 			term->jump(0, next);
 			for (int row = next, i = 0; row < pos.height && i < new_lines; ++row, ++i) {
 				if (i > 0)
 					*term << "\n";
-				UDBG("line.text_at_row(" << pos.width << ", " << i << ") == \"" << line.text_at_row(pos.width, i) << "\"");
-				*term << " " << line.text_at_row(pos.width, i);
+				*term << line.text_at_row(pos.width, i);
 			}
 
 			uncolor();
@@ -237,8 +232,8 @@ namespace haunted::ui {
 		const int new_effective = effective_voffset();
 		const int diff = old_effective - new_effective;
 
-		DBGTFN();
 		try_margins([&]() {
+			apply_colors();
 			term->vscroll(diff);
 
 			// If new < old, we need to render newly exposed lines at the top. If old < new, we render at the bottom.
@@ -257,6 +252,8 @@ namespace haunted::ui {
 						*term << "\n";
 				}
 			}
+
+			uncolor();
 		});
 	}
 
@@ -289,6 +286,8 @@ namespace haunted::ui {
 			// scrolled, we need to reset the voffset.
 			voffset = old_voffset;
 			vscroll(new_effective - old_effective);
+			if (new_voffset == -1)
+				voffset = -1;
 		}
 	}
 
@@ -318,7 +317,6 @@ namespace haunted::ui {
 
 		auto lock = term->lock_render();
 
-		DBGTFN();
 		try_margins([&]() {
 			apply_colors();
 			clear_rect();

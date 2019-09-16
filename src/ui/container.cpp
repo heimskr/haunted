@@ -35,14 +35,7 @@ namespace haunted::ui {
 	}
 
 	void container::redraw() {
-		control *ctrl = dynamic_cast<control *>(this);
-		for (control *child: children) {
-			if (ctrl) {
-				DBG(ctrl->get_id() << ": drawing " << child->get_id());
-			} else {
-				DBG("Drawing " << child->get_id());
-			}
+		for (control *child: children)
 			child->draw();
-		}
 	}
 }

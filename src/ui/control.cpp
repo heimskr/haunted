@@ -120,7 +120,6 @@ namespace haunted::ui {
 
 	void control::set_margins() {
 		if (term != nullptr) {
-			DBGT("set_margins()");
 			term->enable_hmargins();
 			term->margins(pos.top, pos.bottom(), pos.left, pos.right());
 			term->set_origin();
@@ -138,7 +137,6 @@ namespace haunted::ui {
 
 	void control::reset_margins() {
 		if (term != nullptr) {
-			DBGT("reset_margins()");
 			term->reset_origin();
 			term->margins();
 			term->disable_hmargins();
