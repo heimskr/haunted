@@ -73,7 +73,7 @@ depend:
 
 	@ echo $(DEPTOKEN) > $(DEPFILE)
 	makedepend $(DEPFLAGS) -- $(CC) -- $(SRC_ALL) $(EXTRASRC) 2>/dev/null
-	@ sed -i .sed 's/^src\//build\//' $(DEPFILE)
+	@ sed -i.sed 's/^src\//build\//' $(DEPFILE)
 	@ rm $(DEPFILE).bak $(DEPFILE).sed
 
 sinclude $(DEPFILE)
