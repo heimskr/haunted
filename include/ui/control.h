@@ -18,7 +18,7 @@ namespace haunted::ui {
 			terminal *term;
 			std::string name;
 			bool in_margins = false;
-			haunted::position pos;
+			haunted::position pos = {};
 
 			/** Sets the margins if needed, executes a function and resets the margins if needed. Returns true if the
 			 *  margins were set. */

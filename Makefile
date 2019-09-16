@@ -3,7 +3,7 @@ CFLAGS			:= -std=c++17 -g -ggdb -O0 -Wall -Wextra
 CFLAGS_ORIG		:= $(CFLAGS)
 INCLUDE			:=
 LDFLAGS			:= -pthread
-CC			 = $(COMPILER) $(strip $(CFLAGS) $(CHECKFLAGS))
+CC				 = $(COMPILER) $(strip $(CFLAGS) $(CHECKFLAGS))
 VALGRIND		:= valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=no
 MKBUILD			:= mkdir -p build
 OUTPUT			:= build/tests

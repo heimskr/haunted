@@ -264,6 +264,7 @@ namespace haunted::ui {
 	int textbox::effective_voffset() const {
 		int total = total_rows();
 
+
 		if (total <= pos.height)
 			return 0;
 
