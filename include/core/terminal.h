@@ -146,6 +146,11 @@ namespace haunted {
 			virtual void  left(size_t n = 1) { out_stream.left(n);  }
 			virtual void clear_line() { out_stream.clear_line(); }
 
+			/** Makes the cursor visible. */
+			virtual void show() { out_stream.show(); }
+			/** Makes the cursor invisible. */
+			virtual void hide() { out_stream.hide(); }
+
 			/** Scrolls the screen vertically. Negative numbers scroll up, positive numbers scroll down. */
 			virtual void vscroll(int rows = 1);
 

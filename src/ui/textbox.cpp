@@ -323,6 +323,7 @@ namespace haunted::ui {
 		auto lock = term->lock_render();
 
 		try_margins([&]() {
+			term->hide();
 			apply_colors();
 			clear_rect();
 
@@ -344,6 +345,7 @@ namespace haunted::ui {
 			}
 			
 			uncolor();
+			term->show();
 		});
 	}
 
