@@ -5,7 +5,7 @@
 #include "core/util.h"
 
 namespace haunted {
-	void csi::scan_number(int &target, ssize_t &i, const std::string &str) {
+	void csi::scan_number(unsigned int &target, ssize_t &i, const std::string &str) {
 		for (ssize_t p = 1; 0 <= i && util::is_numeric(str[i]); --i) {
 			target += p * (str[i] - '0');
 			p *= 10;
@@ -15,7 +15,7 @@ namespace haunted {
 	void csi::parse_u(const std::string &str) {
 		// Format for CSI u: "CSI [number];[modifier] u"
 
-		first = second = suffix = 0;
+		first = second = 0;
 		const ssize_t len = str.size();
 		ssize_t i = len - 2;
 		suffix = str[len - 1];
@@ -41,7 +41,7 @@ namespace haunted {
 	void csi::parse_special(const std::string &str) {
 		// Format for CSI ~ (special): "CSI [number];[modifier] ~" or "CSI [number] ~"
 
-		first = second = suffix = 0;
+		first = second = 0;
 		const ssize_t len = str.size();
 		ssize_t i = len - 2;
 		suffix = str[len - 1];

@@ -275,7 +275,7 @@ namespace haunted::ui {
 			return 0;
 
 		if (voffset == -1)
-			return total <= pos.height? 0 : total - pos.height;
+			return total - pos.height;
 
 		return voffset;
 	}

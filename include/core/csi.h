@@ -16,10 +16,10 @@ namespace haunted {
 			void parse_u(const std::string &);
 			void parse_special(const std::string &);
 
-			static void scan_number(int &, ssize_t &, const std::string &);
+			static void scan_number(unsigned int &, ssize_t &, const std::string &);
 
 		public:
-			int first, second;
+			unsigned int first, second;
 			char suffix;
 			csi_type type;
 

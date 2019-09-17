@@ -35,10 +35,9 @@ namespace haunted::ui::boxes {
 		} else if (new_active != nullptr) {
 			if (active != nullptr) {
 				active->set_terminal(nullptr);
+				if (active->get_position() != new_active->get_position())
+					new_active->resize(active->get_position());
 			}
-
-			if (active->get_position() != new_active->get_position())
-				new_active->resize(active->get_position());
 
 			active = new_active;
 			active->set_terminal(term);

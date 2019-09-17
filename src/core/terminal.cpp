@@ -421,10 +421,8 @@ namespace haunted {
 				}
 
 				const csi parsed = buffer;
-				if (parsed.first >= 0) {
-					k = key(parsed.get_key(), modset((parsed.second - 1) & 7));
-					return *this;
-				}
+				k = key(parsed.get_key(), modset((parsed.second - 1) & 7));
+				return *this;
 			}
 
 			k = {c, kmod::alt};
