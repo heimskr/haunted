@@ -22,6 +22,8 @@ namespace haunted::tests {
 		private:
 			size_t total_passed = 0, total_failed = 0;
 
+			// multi_apply is based on the possible implementation for std::apply at cppreference:
+			// https://en.cppreference.com/w/cpp/utility/apply
 			template <typename Fn, typename Trg, typename Tup>
 			constexpr decltype(auto) multi_apply(Fn &&func, Trg *target, Tup &&tuple) {
 				return multi_apply_impl(std::forward<Fn>(func), target, std::forward<Tup>(tuple),
