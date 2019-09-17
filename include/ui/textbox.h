@@ -32,7 +32,7 @@ namespace haunted::ui {
 		virtual ~textline() = default;
 
 		/** Returns the text for a given row relative to the line for a given textbox width. */
-		virtual std::string text_at_row(size_t width, int row) const;
+		virtual std::string text_at_row(size_t width, int row, bool pad_right = true) const;
 
 		/** Returns the number of rows the line will occupy for a given width. */
 		virtual int num_rows(int width) const;

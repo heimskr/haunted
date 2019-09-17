@@ -18,7 +18,7 @@ namespace haunted::ui {
 		text.erase(std::remove(text.begin(), text.end(), '\n'), text.end());
 	}
 
-	std::string textline::text_at_row(size_t width, int row) const {
+	std::string textline::text_at_row(size_t width, int row, bool pad_right) const {
 		const std::string text = std::string(*this);
 		const size_t text_length = ansi::length(text);
 
@@ -29,11 +29,11 @@ namespace haunted::ui {
 
 		const size_t index = continuation + row * (width - continuation);
 		if (index >= text_length)
-			return std::string(width, ' ');
+			return pad_right? std::string(width, ' ') : "";
 
 		std::string chunk = std::string(continuation, ' ') + ansi::substr(text, index, width - continuation);
 		const size_t chunk_length = ansi::length(chunk);
-		if (chunk_length < width)
+		if (pad_right && chunk_length < width)
 			return chunk + std::string(width - chunk_length, ' ');
 
 		return chunk;
@@ -93,6 +93,8 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
+		auto lock = term->lock_render();
+
 		const int new_lines = line_rows(line);
 		const int offset = inserted? new_lines : 0;
 
@@ -115,7 +117,7 @@ namespace haunted::ui {
 			for (int row = next, i = 0; row < pos.height && i < new_lines; ++row, ++i) {
 				if (i > 0)
 					*term << "\n";
-				*term << line.text_at_row(pos.width, i);
+				*term << line.text_at_row(pos.width, i, true);
 			}
 
 			uncolor();
@@ -170,10 +172,10 @@ namespace haunted::ui {
 		try {
 			std::tie(line, offset) = line_at_row(row + effective_voffset());
 		} catch (std::out_of_range &) {
-			return std::string(cols, ' ');
+			return pad_right? std::string(cols, ' ') : "";
 		}
 
-		const std::string line_text(*line);
+		const std::string line_text = std::string(*line);
 		const int continuation = line->continuation;
 
 		if (offset == 0) {
