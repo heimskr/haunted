@@ -4,7 +4,6 @@
 
 #include "ui/textbox.h"
 #include "formicine/ansi.h"
-#include "tests/test.h"
 
 #define UDBG(x) { if (name == "sidebar") { DBG(x); } }
 

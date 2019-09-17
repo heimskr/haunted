@@ -22,6 +22,17 @@ namespace haunted::tests {
 		private:
 			size_t total_passed = 0, total_failed = 0;
 
+			template <typename Fn, typename Trg, typename Tup>
+			constexpr decltype(auto) multi_apply(Fn &&func, Trg *target, Tup &&tuple) {
+				return multi_apply_impl(std::forward<Fn>(func), target, std::forward<Tup>(tuple),
+					std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tup>>> {});
+			}
+
+			template <typename Fn, typename Trg, typename Tup, size_t... I>
+			constexpr decltype(auto) multi_apply_impl(Fn &&func, Trg *target, Tup &&tuple, std::index_sequence<I...>) {
+				return std::invoke(std::forward<Fn>(func), target, std::get<I>(std::forward<Tup>(tuple))...);
+			}
+
 		public:
 			static std::string stringify(const std::pair<int, int> &p);
 			static std::string stringify(const std::string &);
@@ -40,11 +51,7 @@ namespace haunted::tests {
 			}
 
 			static std::string stringify(haunted::ui::textline *tl) {
-				// std::stringstream ss;
-				// ss << std::hex << reinterpret_cast<long>(tl);
-
 				return tl? std::to_string(tl->continuation) + ":["_d + std::string(*tl) + "]"_d : "null";
-				// return ss.str();
 			}
 
 			template <typename T>
@@ -185,7 +192,8 @@ namespace haunted::tests {
 					const O &expected = p.second;
 					size_t length = stringify(input).size();
 					try {
-						const O &actual = std::apply(std::bind_front(fn, target), input);
+						const O &actual = multi_apply(fn, target, input);
+
 						if (equal(expected, actual)) {
 							display_passed(stringify(input), stringify(actual), prefix,
 							               padding.substr(0, max_length - length));
