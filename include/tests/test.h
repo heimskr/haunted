@@ -63,6 +63,22 @@ namespace haunted::tests {
 				return "{"_d + stringify(p.first) + ", "_d + stringify(p.second) + "}"_d;
 			}
 
+			template <typename... Ts>
+			static std::string stringify(const std::tuple<Ts...> &tuple) {
+				return stringify_impl(tuple, std::index_sequence_for<Ts...> {});
+			}
+
+			template <typename... Ts, size_t... S>
+			static std::string stringify_impl(const std::tuple<Ts...> &tuple, std::index_sequence<S...>) {
+				std::stringstream ss;
+				ss << "{"_d;
+				(void)(std::initializer_list<int> {
+					(ss << (S == 0? "" : ", "_d) << stringify(std::get<S>(tuple)), 0)...
+				});
+				ss << "}"_d;
+				return ss.str();
+			}
+
 			// We want to be able to compare the pairs returned by line_at_row as equal even if the addresses of the
 			// pointers differ, as long as the content of the textlines is the same.
 			using tl_pair = std::pair<haunted::ui::textline *, int>;
@@ -83,15 +99,10 @@ namespace haunted::tests {
 
 			~testing();
 
-			/**
-			 * Runs a set of tests and displays the results.
-			 * @param  pairs    A vector of {input data, expected results} pairs.
-			 * @param  fn       The function whose output will be compared to the expected results.
-			 * @param  fn_name  The name of the function.
-			 * @return True if no tests failed.
-			 */
-			template <typename I, typename O>
-			bool check(const std::vector<std::pair<I, O>> &pairs, std::function<O(I)> fn, const std::string &fn_name) {
+			/** Runs a set of tests and displays the results. */
+			template <typename O, typename... I>
+			bool check(const std::vector<std::pair<std::tuple<I...>, O>> &pairs, std::function<O(I...)> fn,
+			const std::string &fn_name) {
 				using namespace ansi;
 
 				if (pairs.size() == 0) {
@@ -103,7 +114,7 @@ namespace haunted::tests {
 				size_t passed = 0, failed = 0;
 
 				size_t max_length = 0;
-				for (const std::pair<I, O> &p: pairs) {
+				for (const std::pair<std::tuple<I...>, O> &p: pairs) {
 					size_t length = stringify(p.first).size();
 					if (length > max_length)
 						max_length = length;
@@ -111,12 +122,12 @@ namespace haunted::tests {
 
 				const std::string padding(max_length, ' ');
 
-				for (const std::pair<I, O> &p: pairs) {
-					const I &input = p.first;
+				for (const std::pair<std::tuple<I...>, O> &p: pairs) {
+					const std::tuple<I...> &input = p.first;
 					const O &expected = p.second;
 					size_t length = stringify(input).size();
 					try {
-						const O &actual = fn(input);
+						const O &actual = std::apply(fn, input);
 						if (equal(expected, actual)) {
 							display_passed(stringify(input), stringify(actual), prefix,
 							               padding.substr(0, max_length - length));
@@ -139,15 +150,17 @@ namespace haunted::tests {
 				return failed == 0;
 			}
 
-			/**
-			 * Runs a set of tests and displays the results.
-			 * @param  pairs    A vector of {input data, expected results} pairs.
-			 * @param  fn       The function whose output will be compared to the expected results.
-			 * @param  fn_name  The name of the function.
-			 * @return True if no tests failed.
-			 */
-			template <typename I, typename O, typename T>
-			bool check(const std::vector<std::pair<I, O>> &pairs, O(T::*fn)(I), T *target, const std::string &fn_name) {
+			/** Runs a set of tests and displays the results. */
+			template <typename O, typename... I>
+			bool check(const std::vector<std::pair<std::tuple<I...>, O>> &pairs, O(*fn)(I...),
+			const std::string &fn_name) {
+				return check(pairs, std::function<O(I...)>(fn), fn_name);
+			}
+
+			/** Runs a set of tests and displays the results. */
+			template <typename T, typename O, typename... I>
+			bool check(const std::vector<std::pair<std::tuple<I...>, O>> &pairs, O(T::*fn)(I...), T *target,
+			const std::string &fn_name) {
 				using namespace ansi;
 
 				if (pairs.size() == 0) {
@@ -159,7 +172,7 @@ namespace haunted::tests {
 				size_t passed = 0, failed = 0;
 
 				size_t max_length = 0;
-				for (const std::pair<I, O> &p: pairs) {
+				for (const std::pair<std::tuple<I...>, O> &p: pairs) {
 					size_t length = stringify(p.first).size();
 					if (length > max_length)
 						max_length = length;
@@ -167,12 +180,12 @@ namespace haunted::tests {
 
 				const std::string padding(max_length, ' ');
 
-				for (const std::pair<I, O> &p: pairs) {
-					const I &input = p.first;
+				for (const std::pair<std::tuple<I...>, O> &p: pairs) {
+					const std::tuple<I...> &input = p.first;
 					const O &expected = p.second;
 					size_t length = stringify(input).size();
 					try {
-						const O &actual = std::invoke(fn, *target, input);
+						const O &actual = std::apply(std::bind_front(fn, target), input);
 						if (equal(expected, actual)) {
 							display_passed(stringify(input), stringify(actual), prefix,
 							               padding.substr(0, max_length - length));

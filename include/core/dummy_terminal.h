@@ -46,6 +46,8 @@ namespace haunted {
 			void left(size_t) override {}
 			void vscroll(int) override {}
 			void clear_line() override {}
+			void show() override {}
+			void hide() override {}
 			operator bool() const override { return true; }
 			terminal & operator>>(int &)  override { return *this; }
 			terminal & operator>>(char &) override { return *this; }

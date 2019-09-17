@@ -262,38 +262,39 @@ namespace haunted::tests {
 
 	/** Runs some tests for the CSI u functions. */
 	void maintest::unittest_csiu(testing &unit) {
+		using namespace std::string_literals;
 		INFO(wrap("Testing CSI u validation.\n", ansi::style::bold));
 
-		unit.check<std::string, bool>({
-			{"1;1u",   true},
-			{"1;1a",  false},
-			{";1u",   false},
-			{"1;u",   false},
-			{"4u",    false},
-			{"1;u1",  false},
-			{"1u;1",  false},
-			{";1u",   false},
-			{"u1;1",  false},
-			{"42;0u",  true},
-			{"3;911u", true},
-			{"5;5U",  false},
+		unit.check({
+			{{"1;1u"s  },  true},
+			{{"1;1a"s  }, false},
+			{{";1u"s   }, false},
+			{{"1;u"s   }, false},
+			{{"4u"s    }, false},
+			{{"1;u1"s  }, false},
+			{{"1u;1"s  }, false},
+			{{";1u"s   }, false},
+			{{"u1;1"s  }, false},
+			{{"42;0u"s },  true},
+			{{"3;911u"s},  true},
+			{{"5;5U"s  }, false},
 		}, &csi::is_csiu, "is_csiu");
 
 		// ansi::out << "\nTesting CSI u parsing.\n";
-		// unit.check<std::string, std::pair<int, int>>({
-		// 	{"1;1u",    { 1,   1}},
-		// 	{"42;0u",   {42,   0}},
-		// 	{"3;911u",  { 3, 911}},
-		// 	{"55;555u", {55, 555}},
-		// 	{"1;1a",    {-1,  -2}},
-		// 	{";1u",     {-1,  -1}},
-		// 	{"1;u",     {-1,  -1}},
-		// 	{"4u",      {-1,  -1}},
-		// 	{"1;u1",    {-1,  -2}},
-		// 	{"1u;1",    {-1,  -2}},
-		// 	{";1u",     {-1,  -1}},
-		// 	{"u1;1",    {-1,  -1}},
-		// 	{"5;5U",    {-1,  -2}},
+		// unit.check({
+		// 	{"1;1u"s,    { 1,   1}},
+		// 	{"42;0u"s,   {42,   0}},
+		// 	{"3;911u"s,  { 3, 911}},
+		// 	{"55;555u"s, {55, 555}},
+		// 	{"1;1a"s,    {-1,  -2}},
+		// 	{";1u"s,     {-1,  -1}},
+		// 	{"1;u"s,     {-1,  -1}},
+		// 	{"4u"s,      {-1,  -1}},
+		// 	{"1;u1"s,    {-1,  -2}},
+		// 	{"1u;1"s,    {-1,  -2}},
+		// 	{";1u"s,     {-1,  -1}},
+		// 	{"u1;1"s,    {-1,  -1}},
+		// 	{"5;5U"s,    {-1,  -2}},
 		// }, &parse_csi, "parse_csiu");
 
 		ansi::out << ansi::endl;
@@ -329,41 +330,41 @@ namespace haunted::tests {
 		unit.check(rows, 18, "total_rows()");
 
 		unit.check({
-			{0,  {&*t1, 0}},
-			{1,  {&*t2, 0}},
-			{2,  {&*t2, 1}},
-			{3,  {&*t2, 2}},
-			{4,  {&*t2, 3}},
-			{5,  {&*t2, 4}},
-			{6,  {&*t2, 5}},
-			{7,  {&*t2, 6}},
-			{8,  {&*t2, 7}},
-			{9,  {&*t2, 8}},
-			{10, {&*t2, 9}},
-			{11, {&*t2, 10}},
-			{12, {&*t3, 0}},
-			{13, {&*t3, 0}},
-			{14, {&*t4, 0}},
-			{15, {&*t4, 1}},
-			{16, {&*t4, 2}},
-			{17, {&*t5, 0}},
+			{{0},  {&*t1, 0}},
+			{{1},  {&*t2, 0}},
+			{{2},  {&*t2, 1}},
+			{{3},  {&*t2, 2}},
+			{{4},  {&*t2, 3}},
+			{{5},  {&*t2, 4}},
+			{{6},  {&*t2, 5}},
+			{{7},  {&*t2, 6}},
+			{{8},  {&*t2, 7}},
+			{{9},  {&*t2, 8}},
+			{{10}, {&*t2, 9}},
+			{{11}, {&*t2, 10}},
+			{{12}, {&*t3, 0}},
+			{{13}, {&*t3, 0}},
+			{{14}, {&*t4, 0}},
+			{{15}, {&*t4, 1}},
+			{{16}, {&*t4, 2}},
+			{{17}, {&*t5, 0}},
 		}, &textbox::line_at_row, tb, "line_at_row");
 
 		unit.check("line_at_row(" + std::to_string(rows) + ")", typeid(std::out_of_range), &textbox::line_at_row, tb,
 			"Invalid row index: " + std::to_string(rows), rows);
 
 		unit.check({
-			{0,  "Hello               "},
-			{1,  "This line is longer "},
-			{2,  "          than the c"},
-			{3,  "          ontrol's w"},
-			{4,  "          idth of 20"},
-			{5,  "           character"},
-			{6,  "          s. Its con"},
-			{7,  "          tinuation "},
-			{8,  "          should ali"},
-			{9,  "          gn with th"},
-			{10, ""},
+			{{0, true}, "Hello               "},
+			{{1, true}, "This line is longer "},
+			{{2, true}, "          than the c"},
+			{{3, true}, "          ontrol's w"},
+			{{4, true}, "          idth of 20"},
+			{{5, true}, "           character"},
+			{{6, true}, "          s. Its con"},
+			{{7, true}, "          tinuation "},
+			{{8, true}, "          should ali"},
+			{{9, true}, "          gn with th"},
+			{{1, true}, ""},
 		}, &textbox::text_at_row, tb, "text_at_row");
 
 		INFO("Trying to scroll 10 lines down (current voffset is " << ansi::wrap(std::to_string(tb->voffset),
@@ -372,17 +373,17 @@ namespace haunted::tests {
 		unit.check(tb->voffset, 8, "voffset");
 
 		unit.check({
-			{0,  "          should ali"},
-			{1,  "          gn with th"},
-			{2,  "          e third wo"},
-			{3,  "          rd.       "},
-			{4,  "Another line.       "},
-			{5,  "Another line.       "},
-			{6,  "This is another long"},
-			{7,  " line with a continu"},
-			{8,  "ation of 0.         "},
-			{9,  "Exactly 20 chars :^)"},
-			{10, ""},
+			{{0, true},  "          should ali"},
+			{{1, true},  "          gn with th"},
+			{{2, true},  "          e third wo"},
+			{{3, true},  "          rd.       "},
+			{{4, true},  "Another line.       "},
+			{{5, true},  "Another line.       "},
+			{{6, true},  "This is another long"},
+			{{7, true},  " line with a continu"},
+			{{8, true},  "ation of 0.         "},
+			{{9, true},  "Exactly 20 chars :^)"},
+			{{10, true}, ""},
 		}, &textbox::text_at_row, tb, "textbox::text_at_row");
 
 		unit.check(tb->next_row(), -1, "next_row()");
@@ -541,27 +542,29 @@ namespace haunted::tests {
 	}
 }
 
+
 int main(int argc, char **argv) {
 	using namespace haunted;
 	
 	const std::string arg = argc < 2? "" : argv[1];
 
-	terminal term(std::cin, ansi::out);
-	term.watch_size();
+	// terminal term(std::cin, ansi::out);
+	// term.watch_size();
 
 	haunted::tests::testing unit;
 
-	if (arg == "key") {
+#define MKTERM terminal term(std::cin, ansi::out); term.watch_size();
+	if (arg == "key") { MKTERM
 		haunted::tests::maintest::test_key(term);
-	} else if (arg == "input") {
+	} else if (arg == "input") { MKTERM
 		haunted::tests::maintest::test_textinput(term);
-	} else if (arg == "cursor") {
+	} else if (arg == "cursor") { MKTERM
 		haunted::tests::maintest::test_cursor(term);
-	} else if (arg == "margins") {
+	} else if (arg == "margins") { MKTERM
 		haunted::tests::maintest::test_margins(term);
-	} else if (arg == "textbox") {
+	} else if (arg == "textbox") { MKTERM
 		haunted::tests::maintest::test_textbox(term);
-	} else if (arg == "expandobox") {
+	} else if (arg == "expandobox") { MKTERM
 		haunted::tests::maintest::test_expandobox(term);
 	} else if (arg == "unitcsiu") {
 		haunted::tests::maintest::unittest_csiu(unit);
@@ -577,4 +580,6 @@ int main(int argc, char **argv) {
 	} else {
 		haunted::tests::maintest::unittest_textbox(unit);
 	}
+#undef MKTERM
 }
+
