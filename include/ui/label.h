@@ -9,7 +9,7 @@
 
 #include "core/hdefs.h"
 #include "core/key.h"
-#include "../lib/utf8.h"
+#include "lib/utf8.h"
 #include "ui/container.h"
 #include "ui/control.h"
 #include "ui/colored.h"

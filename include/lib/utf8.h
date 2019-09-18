@@ -3,7 +3,7 @@
 
 #include <cstdlib>
 
-#include "superstring.h"
+#include "lib/superstring.h"
 
 namespace haunted {
 	class utf8 {

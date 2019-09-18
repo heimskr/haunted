@@ -1,7 +1,6 @@
 COMPILER		:= clang++
 CFLAGS			:= -std=c++2a -g -ggdb -O0 -Wall -Wextra
-CFLAGS_ORIG		:= $(CFLAGS)
-INCLUDE			:=
+INCLUDE			:= -Iinclude
 LDFLAGS			:= -pthread
 CC				 = $(COMPILER) $(strip $(CFLAGS) $(CHECKFLAGS))
 VALGRIND		:= valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=no
@@ -19,28 +18,17 @@ else ifeq ($(CHECK), msan)
 endif
 
 .PHONY: all test clean depend spotless vars
-all: Makefile
 
-# Peter Miller, "Recursive Make Considered Harmful" (http://aegis.sourceforge.net/auug97.pdf)
-MODULES			:= src/core src/ui lib src/ui/boxes src/tests
-COMMONSRC		:=
-SRC				:=
-CFLAGS			+= -Iinclude
-LDFLAGS			+= -L/usr/local/opt/binutils/lib
-EXTRASRC		:=
-include $(patsubst %,%/module.mk,$(MODULES))
-SRC				+= $(COMMONSRC)
-COMMONOBJ		:= $(patsubst src/%.cpp,build/%.o, $(patsubst lib/%.cpp,build/lib/%.o, $(filter %.cpp,$(COMMONSRC))))
-OBJ				:= $(patsubst src/%.cpp,build/%.o, $(patsubst lib/%.cpp,build/lib/%.o, $(filter %.cpp,$(SRC))))
 
-OBJ_ALL			= $(OBJ) $(OBJ_PP)
-SRC_ALL			= $(SRC) $(SRC_PP)
+SOURCES			:= $(shell find -L src -name '*.cpp' | sed -nE '/(tests?|test_.+)\.cpp$$/!p')
+OBJECTS			:= $(patsubst src/%.cpp,build/%.o, $(SOURCES))
 
-sinclude $(patsubst %,%/targets.mk,$(MODULES))
+sinclude $(shell find src -name 'targets.mk')
 
-all: $(COMMONOBJ) build/test
 
-build/tests: build/tests/tests.o $(COMMONOBJ)
+all: $(OBJECTS) build/test
+
+build/tests: build/tests/tests.o $(OBJECTS)
 	@ $(MKBUILD)
 	$(CC) $(SDKFLAGS) $< $(filter-out $<,$+) -o $@ $(LDFLAGS) $(LDLIBS)
 

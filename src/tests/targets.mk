@@ -1,6 +1,4 @@
-EXTRASRC += src/tests/test.cpp
-
-build/test: build/tests/test.o $(OBJ)
+build/test: build/tests/test.o $(OBJECTS)
 	@ $(MKBUILD)
 	$(CC) $(INCLUDE) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 

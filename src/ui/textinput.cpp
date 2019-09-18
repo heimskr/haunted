@@ -1,9 +1,6 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "formicine/ansi.h"
-#include "utf8.h"
-
 #include "core/terminal.h"
 #include "ui/textinput.h"
 

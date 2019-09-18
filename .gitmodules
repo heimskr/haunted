@@ -1,4 +1,4 @@
 [submodule "formicine"]
-	path = lib/formicine
+	path = formicine
 	url = https://github.com/heimskr/formicine.git
 

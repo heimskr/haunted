@@ -1,7 +1,7 @@
 #ifndef HAUNTED_UI_COLORED_H_
 #define HAUNTED_UI_COLORED_H_
 
-#include "formicine/ansi.h"
+#include "lib/formicine/ansi.h"
 #include "ui/control.h"
 
 namespace haunted::ui {

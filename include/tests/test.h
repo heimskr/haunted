@@ -9,7 +9,7 @@
 
 #include <cassert>
 
-#include "formicine/ansi.h"
+#include "lib/formicine/ansi.h"
 #include "core/terminal.h"
 #include "core/util.h"
 #include "ui/textbox.h"

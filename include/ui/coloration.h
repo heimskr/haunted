@@ -3,7 +3,7 @@
 
 #include <mutex>
 
-#include "formicine/ansi.h"
+#include "lib/formicine/ansi.h"
 
 namespace haunted::ui {
 	/**

@@ -3,7 +3,6 @@
 #include <stdexcept>
 
 #include "ui/textbox.h"
-#include "formicine/ansi.h"
 
 #define UDBG(x) { if (name == "sidebar") { DBG(x); } }
 
@@ -107,8 +106,8 @@ namespace haunted::ui {
 			if (voffset == -1 && pos.height <= total_rows()) {
 				term->vscroll(-new_lines);
 				// After we scroll the terminal, there's some new space for lines to be in, whereas there was no space
-				// before. Because of that, we have to recalculate the next row by using the number of new lines to decrease
-				// the vertical offset the next_row method uses.
+				// before. Because of that, we have to recalculate the next row by using the number of new lines to
+				// decrease the vertical offset the next_row method uses.
 				next = next_row(new_lines) - offset;
 			}
 

@@ -1,4 +1,3 @@
-#include "formicine/ansi.h"
 #include "core/hdefs.h"
 
 namespace haunted {

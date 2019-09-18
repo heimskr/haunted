@@ -4,8 +4,8 @@
 #include <unistd.h>
 
 #include "core/hdefs.h"
-#include "superstring.h"
-#include "utf8.h"
+#include "lib/superstring.h"
+#include "lib/utf8.h"
 #include "formicine/ansi.h"
 
 namespace haunted {

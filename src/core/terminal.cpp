@@ -11,7 +11,6 @@
 #include "core/key.h"
 #include "core/terminal.h"
 #include "core/util.h"
-#include "formicine/ansi.h"
 #include "ui/child.h"
 
 namespace haunted {
