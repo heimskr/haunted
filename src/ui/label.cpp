@@ -14,13 +14,10 @@ namespace haunted::ui {
 
 
 	void label::set_text(const std::string &text_) {
-		bool request_resize = text.length() != text_.length();
-		text = text_;
-
-		if (request_resize && parent != nullptr)
-			parent->request_resize(this, text_.length(), pos.height);
-
-		draw();
+		if (text != text_) {
+			text = text_;
+			draw();
+		}
 	}
 
 	void label::set_autoresize(bool autoresize_) {
