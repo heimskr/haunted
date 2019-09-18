@@ -371,6 +371,11 @@ namespace haunted::ui {
 		return parent != nullptr && term != nullptr && !term->suppress_output;
 	}
 
+	void textbox::focus() {
+		control::focus();
+		colored::focus();
+	}
+
 	textbox & textbox::operator+=(const std::string &text) {
 		if (!text.empty() && text.back() == '\n')
 			lines.pop_back();
