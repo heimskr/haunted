@@ -351,6 +351,10 @@ namespace haunted::ui {
 	}
 
 	bool textbox::on_key(const key &k) {
+		return key_fn? key_fn(k) : default_on_key(k);
+	}
+
+	bool textbox::default_on_key(const key &k) {
 		if (k == ktype::up_arrow) {
 			vscroll(-1);
 			draw();

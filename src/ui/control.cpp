@@ -75,7 +75,8 @@ namespace haunted::ui {
 	}
 
 	void control::focus() {
-		term->focus(this);
+		if (term)
+			term->focus(this);
 	}
 
 	void control::set_parent(container *parent_) {

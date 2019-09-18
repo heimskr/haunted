@@ -26,6 +26,7 @@ namespace haunted::ui::boxes {
 
 			virtual void resize(const position &) override;
 			virtual void draw() override;
+			bool on_key(const key &) override;
 	};
 }
 

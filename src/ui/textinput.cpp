@@ -534,8 +534,8 @@ namespace haunted::ui {
 	}
 
 	void textinput::focus() {
-		colored::focus();
 		control::focus();
+		colored::focus();
 		jump_cursor();
 	}
 

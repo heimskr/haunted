@@ -8,7 +8,8 @@ namespace haunted::ui::boxes {
 			parent_->add_child(this);
 
 		for (control *ctrl: children_) {
-			ctrl->set_parent(nullptr);
+			ctrl->set_parent(this);
+			ctrl->set_terminal(nullptr);
 			children.push_back(ctrl);
 		}
 
@@ -41,6 +42,7 @@ namespace haunted::ui::boxes {
 
 			active = new_active;
 			active->set_terminal(term);
+			active->set_parent(this);
 			active->draw();
 		}
 
@@ -62,5 +64,9 @@ namespace haunted::ui::boxes {
 			active->draw();
 		else
 			clear_rect();
+	}
+
+	bool swapbox::on_key(const key &k) {
+		return key_fn? key_fn(k) : active && active->on_key(k);
 	}
 }

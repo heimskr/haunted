@@ -1,5 +1,6 @@
 #include "core/key.h"
 #include "ui/keyhandler.h"
+#include "ui/control.h"
 
 namespace haunted::ui {
 	/**

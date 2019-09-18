@@ -145,6 +145,9 @@ namespace haunted::ui {
 			/** Handles keyboard input. */
 			bool on_key(const key &) override;
 
+			/** Handles textbox-related keyboard input. */
+			bool default_on_key(const key &);
+
 			bool can_draw() const override;
 
 			void focus() override;
