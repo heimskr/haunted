@@ -30,9 +30,8 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
-		colored::draw();
-
 		auto lock = term->lock_render();
+		colored::draw();
 		jump();
 
 		size_t tlen = ansi::strip(text).length(), clen = ansi::strip(cutoff).length(), width = pos.width;
