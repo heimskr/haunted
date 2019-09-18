@@ -63,6 +63,7 @@ namespace haunted::ui {
 			return;
 		}
 
+		auto lock = term->lock_render();
 		try_colors();
 		term->out_stream.save();
 
@@ -169,15 +170,6 @@ namespace haunted::ui {
 	void textinput::insert(unsigned char ch) {
 		if (ch < 0x20 && whitelist.find(ch) == whitelist.end())
 			return;
-		
-		if (ch == '*') {
-			DBG("Buffer length: " << size() << ", \"" << std::string(buffer) << "\"");
-			// DBG("Buffer length: " << size());
-			buffer.dbg();
-			// for (size_t i = 0; i < buffer.length(); ++i)
-				// DBG(" " << i << ": 0x" << std::hex << uint32_t(buffer[i]) << std::dec << ", '" << buffer[i] << "'");
-			return;
-		}
 
 		if (!unicode_buffer.empty()) {
 			unicode_buffer.push_back(ch);
@@ -195,7 +187,6 @@ namespace haunted::ui {
 			}
 		} else {
 			size_t width = utf8::width(ch);
-			// DBG("Width for " << static_cast<int>(ch) << ": " << width);
 			if (width < 2) {
 				// It seems we've received a plain old ASCII character or an invalid UTF8 start byte.
 				// Either way, append it to the buffer.
@@ -235,6 +226,7 @@ namespace haunted::ui {
 
 	void textinput::erase() {
 		if (cursor > 0) {
+			auto lock = term->lock_render();
 			buffer.erase(--cursor, 1);
 
 			if (can_draw()) {
@@ -268,6 +260,7 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
+		auto lock = term->lock_render();
 		term->out_stream.save();
 		clear_line();
 		size_t old_cursor = cursor;
@@ -286,6 +279,7 @@ namespace haunted::ui {
 			return;
 		}
 
+		auto lock = term->lock_render();
 		term->out_stream.save();
 
 		if (cursor <= scroll) {
@@ -311,7 +305,6 @@ namespace haunted::ui {
 	}
 
 	void textinput::set_text(const std::string &text) {
-		// buffer = icu::UnicodeString::fromUTF8(str);
 		buffer = text;
 		cursor = text.size();
 		if (cursor > text_width())
@@ -541,6 +534,7 @@ namespace haunted::ui {
 
 	void textinput::jump_cursor() {
 		if (term != nullptr) {
+			auto lock = term->lock_render();
 			point cpos = find_cursor();
 			term->jump(cpos.x, cpos.y);
 		}
