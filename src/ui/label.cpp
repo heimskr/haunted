@@ -13,6 +13,10 @@ namespace haunted::ui {
 // Public instance methods
 
 
+	void label::clear() {
+		set_text("");
+	}
+
 	void label::set_text(const std::string &text_) {
 		if (text != text_) {
 			text = text_;

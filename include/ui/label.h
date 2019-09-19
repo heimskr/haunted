@@ -28,7 +28,7 @@ namespace haunted::ui {
 			std::string cutoff;
 
 			/** Whether to request a resize from the parent whenever the label text changes. */
-			bool autoresize;
+			bool autoresize = false;
 
 		public:
 			/** Constructs a textinput with a parent, a position, text, an autoresize flag and a cutoff string. */
@@ -38,8 +38,8 @@ namespace haunted::ui {
 			label(const std::string &text, bool autoresize = false, const std::string &cutoff = "..."):
 				label(nullptr, {}, text, autoresize, cutoff) {}
 
-			/** Erases the contents of the buffer and resets the cursor. */
-			void clear() { text.clear(); }
+			/** Erases the label text. */
+			void clear();
 
 			/** Returns the label text. */
 			std::string get_text() const { return text; }
