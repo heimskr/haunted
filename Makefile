@@ -1,4 +1,4 @@
-COMPILER		:= clang++
+COMPILER		:= g++
 CFLAGS			:= -std=c++2a -g -ggdb -O0 -Wall -Wextra
 INCLUDE			:= -Iinclude
 LDFLAGS			:= -pthread
