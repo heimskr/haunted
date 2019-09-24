@@ -455,8 +455,8 @@ namespace haunted::ui {
 				switch (type) {
 					case int(ktype::right_arrow): right(); break;
 					case int(ktype::left_arrow):   left(); break;
-					case int(ktype::down_arrow):    end(); break;
-					case int(ktype::up_arrow):    start(); break;
+					case int(ktype::down_arrow): return false;
+					case int(ktype::up_arrow):   return false;
 					case int(ktype::backspace):   erase(); break;
 					case int(ktype::enter):      submit(); break;
 					case int(ktype::home):        start(); break;
