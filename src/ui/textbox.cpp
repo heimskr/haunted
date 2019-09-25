@@ -221,7 +221,7 @@ namespace haunted::ui {
 		const int old_effective = effective_voffset();
 
 		if (voffset == -1) {
-			voffset = effective_voffset() + delta;
+			voffset = old_effective + delta;
 		} else if (voffset + delta < 0) {
 			voffset = 0;
 		} else {
@@ -229,9 +229,11 @@ namespace haunted::ui {
 		}
 
 		voffset = std::max(voffset, 0);
-		int total = total_rows();
+
+		// Don't let the voffset extend past the point where the last line of text is just above the first row.
+		const int total = total_rows();
 		if (pos.height < total)
-			voffset = std::min(voffset, total - pos.height);
+			voffset = std::min(voffset, total);
 
 		const int new_effective = effective_voffset();
 		const int diff = old_effective - new_effective;
@@ -266,14 +268,10 @@ namespace haunted::ui {
 	}
 
 	int textbox::effective_voffset() const {
-		int total = total_rows();
-
-
-		if (total <= pos.height)
-			return 0;
+		const int total = total_rows();
 
 		if (voffset == -1)
-			return total - pos.height;
+			return total <= pos.height? 0 : total - pos.height;
 
 		return voffset;
 	}
