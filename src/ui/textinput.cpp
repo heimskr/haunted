@@ -520,7 +520,7 @@ namespace haunted::ui {
 	}
 
 	bool textinput::can_draw() const {
-		return parent != nullptr && term != nullptr && !term->suppress_output;
+		return control::can_draw() && !term->suppress_output;
 	}
 
 	void textinput::focus() {
