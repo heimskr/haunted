@@ -79,7 +79,7 @@ namespace haunted::ui {
 
 	void textinput::clear_line() {
 		// If the buffer touches the right edge of the container, there's nothing to do.
-		if (pos.width - prefix.length() > length() - scroll)
+		if (pos.width - prefix_length > length() - scroll)
 			clear_right(length() - scroll);
 	}
 
@@ -96,14 +96,14 @@ namespace haunted::ui {
 		// we're clearing only one line; instead of setting both margins, we set only the horizontal margins and then
 		// jump to the absolute vertical position of the textinput without the assistance of top/bottom margins.
 		set_hmargins();
-		term->jump(prefix.length() + offset, pos.top);
+		term->jump(prefix_length + offset, pos.top);
 		apply_colors();
 		term->out_stream.clear_right();
 		reset_margins();
 	}
 
 	point textinput::find_cursor() const {
-		return {static_cast<int>(pos.left + prefix.length() + cursor - scroll), pos.top};
+		return {static_cast<int>(pos.left + prefix_length + cursor - scroll), pos.top};
 	}
 
 	bool textinput::check_scroll() {
@@ -282,7 +282,7 @@ namespace haunted::ui {
 		if (cursor <= scroll) {
 			// If the cursor is at or beyond the left edge, redraw the entire line.
 			clear_text();
-			term->jump(pos.left + prefix.length(), pos.top);
+			term->jump(pos.left + prefix_length, pos.top);
 			*term << buffer.substr(scroll, text_width());
 			term->out_stream.restore();
 			flush();
@@ -313,6 +313,7 @@ namespace haunted::ui {
 	void textinput::set_prefix(const std::string &prefix_) {
 		if (prefix != prefix_) {
 			prefix = prefix_;
+			prefix_length = ansi::length(prefix);
 			draw();
 			update();
 		}

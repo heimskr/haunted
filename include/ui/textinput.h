@@ -31,6 +31,9 @@ namespace haunted::ui {
 			/** A string that's displayed at the left of the control before the contents of the buffer. */
 			std::string prefix;
 
+			/** The size in columns (not bytes) of the prefix. */
+			size_t prefix_length = 0;
+
 			/** The text that the user has entered so far. */
 			superstring buffer;
 
