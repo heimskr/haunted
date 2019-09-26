@@ -100,7 +100,7 @@ namespace haunted::ui {
 			superchar next_char();
 
 			/** Returns the width of the buffer area (i.e., the width of the control minus the prefix length). */
-			size_t text_width() const { return pos.width - prefix.length(); }
+			size_t text_width() const { return pos.width - prefix_length; }
 
 			/** Returns true if the cursor is at the right edge of the textinput. */
 			bool cursor_at_right() const { return cursor - scroll == text_width(); }
