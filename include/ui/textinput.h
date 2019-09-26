@@ -225,6 +225,9 @@ namespace haunted::ui {
 			/** Moves the terminal cursor to the position of the textinput cursor. */
 			void jump_cursor();
 
+			/** Jumps to the cursor. */
+			virtual void jump_focus() override;
+
 			/** Moves the terminal cursor to the position of the textinput cursor if the textinput is focused. Returns
 			 *  true if the textinput is focused and the cursor was moved. */
 			bool try_jump();

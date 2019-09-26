@@ -75,7 +75,10 @@ namespace haunted::ui {
 			haunted::position get_position() const { return pos; }
 
 			/** Moves the cursor on the screen to the top-left corner of the control. */
-			void jump();
+			virtual void jump();
+
+			/** Jumps to an appropriate location within the control. Useful for textinput. */
+			virtual void jump_focus();
 
 			/** Erases the portion of the display that this control occupies. */
 			virtual void clear_rect();

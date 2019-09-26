@@ -56,6 +56,7 @@ namespace haunted::ui {
 
 		term->reset_colors();
 		term->flush();
+		term->jump_to_focused();
 	}
 
 	bool label::can_draw() const {

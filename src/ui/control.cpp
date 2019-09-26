@@ -92,6 +92,10 @@ namespace haunted::ui {
 		pos.jump();
 	}
 
+	void control::jump_focus() {
+		jump();
+	}
+
 	void control::clear_rect() {
 		if (term == nullptr)
 			return;

@@ -258,6 +258,11 @@ namespace haunted {
 		return {0, 0, get_cols(), get_rows()};
 	}
 
+	void terminal::jump_to_focused() {
+		if (focused)
+			focused->jump_focus();
+	}
+
 	void terminal::jump(int x, int y) {
 		std::unique_lock uniq(output_mutex);
 		out_stream.jump(x, y);

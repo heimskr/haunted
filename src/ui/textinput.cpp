@@ -516,8 +516,8 @@ namespace haunted::ui {
 			*term << prefix;
 		}
 		
-		jump_cursor();
 		term->reset_colors();
+		term->jump_to_focused();
 	}
 
 	bool textinput::can_draw() const {
@@ -536,6 +536,10 @@ namespace haunted::ui {
 			point cpos = find_cursor();
 			term->jump(cpos.x, cpos.y);
 		}
+	}
+
+	void textinput::jump_focus() {
+		jump_cursor();
 	}
 
 	bool textinput::try_jump() {

@@ -120,6 +120,8 @@ namespace haunted::ui {
 
 			uncolor();
 		});
+
+		term->jump_to_focused();
 	}
 
 	int textbox::next_row(int offset_offset) const {
@@ -345,6 +347,8 @@ namespace haunted::ui {
 			uncolor();
 			term->show();
 		});
+
+		term->jump_to_focused();
 	}
 
 	bool textbox::on_key(const key &k) {

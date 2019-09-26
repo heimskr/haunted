@@ -138,6 +138,9 @@ namespace haunted {
 			/** Returns a (0, 0)-based position representing the terminal. */
 			virtual position get_position() const;
 
+			/** Jumps to the focused widget. */
+			virtual void jump_to_focused();
+
 			/** Jumps to a position on the screen. */
 			virtual void jump(int x, int y = -1);
 			virtual void    up(size_t n = 1) { out_stream.up(n);    }
