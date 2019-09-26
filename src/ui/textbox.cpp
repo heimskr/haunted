@@ -3,8 +3,7 @@
 #include <stdexcept>
 
 #include "ui/textbox.h"
-
-#define UDBG(x) { if (name == "sidebar") { DBG(x); } }
+#include "../../pingpong/include/core/pputil.h"
 
 namespace haunted::ui {
 	bool textline::operator==(const textline &other) const {
@@ -97,13 +96,13 @@ namespace haunted::ui {
 		const int offset = inserted? new_lines : 0;
 
 		int next = next_row() - offset;
-		if (voffset != -1 && next < 0)
+		if (!autoscroll && next < 0)
 			return;
 
 		try_margins([&]() {
 			apply_colors();
 
-			if (voffset == -1 && pos.height <= total_rows()) {
+			if (autoscroll && pos.height < total_rows() - voffset) {
 				term->vscroll(-new_lines);
 				// After we scroll the terminal, there's some new space for lines to be in, whereas there was no space
 				// before. Because of that, we have to recalculate the next row by using the number of new lines to
@@ -125,7 +124,7 @@ namespace haunted::ui {
 	}
 
 	int textbox::next_row(int offset_offset) const {
-		int offset = effective_voffset() + offset_offset;
+		int offset = voffset + offset_offset;
 		int total = total_rows();
 
 		// Return -1 if the next row is below the visible area.
@@ -170,7 +169,7 @@ namespace haunted::ui {
 			return "";
 
 		try {
-			std::tie(line, offset) = line_at_row(row + effective_voffset());
+			std::tie(line, offset) = line_at_row(row + voffset);
 		} catch (std::out_of_range &) {
 			return pad_right? std::string(cols, ' ') : "";
 		}
@@ -208,6 +207,15 @@ namespace haunted::ui {
 		return std::string(continuation, ' ') + str;
 	}
 
+	bool textbox::do_scroll(size_t rows) {
+		if (pos.height < total_rows() - voffset) {
+			vscroll(rows);
+			return true;
+		}
+
+		return false;
+	}
+
 
 // Public instance methods
 
@@ -220,39 +228,30 @@ namespace haunted::ui {
 	}
 
 	void textbox::vscroll(int delta) {
-		const int old_effective = effective_voffset();
+		const int old_voffset = voffset;
 
-		if (voffset == -1) {
-			voffset = old_effective + delta;
-		} else if (voffset + delta < 0) {
-			voffset = 0;
-		} else {
-			voffset += delta;
-		}
-
-		voffset = std::max(voffset, 0);
+		voffset = std::max(voffset + delta, 0);
 
 		// Don't let the voffset extend past the point where the last line of text is just above the first row.
 		const int total = total_rows();
 		if (pos.height < total)
 			voffset = std::min(voffset, total);
 
-		const int new_effective = effective_voffset();
-		const int diff = old_effective - new_effective;
+		const int diff = old_voffset - voffset;
 
 		try_margins([&]() {
 			apply_colors();
 			term->vscroll(diff);
 
 			// If new < old, we need to render newly exposed lines at the top. If old < new, we render at the bottom.
-			if (new_effective < old_effective) {
+			if (voffset < old_voffset) {
 				term->jump(0, 0);
 				for (int i = 0; i < diff; ++i) {
 					*term << text_at_row(i);
 					if (i < pos.height - 1)
 						*term << "\n";
 				}
-			} else if (old_effective < new_effective) {
+			} else if (old_voffset < voffset) {
 				term->jump(0, pos.height + diff);
 				for (int i = pos.height + diff; i < pos.height; ++i) {
 					*term << text_at_row(i);
@@ -263,37 +262,25 @@ namespace haunted::ui {
 
 			uncolor();
 		});
+
+		term->jump_to_focused();
 	}
 
 	int textbox::get_voffset() const {
 		return voffset;
 	}
 
-	int textbox::effective_voffset() const {
-		const int total = total_rows();
-
-		if (voffset == -1)
-			return total <= pos.height? 0 : total - pos.height;
-
-		return voffset;
+	void textbox::set_voffset(int new_voffset) {
+		const int old_voffset = voffset;
+		if (new_voffset != old_voffset) {
+			voffset = old_voffset;
+			vscroll(new_voffset - old_voffset);
+		}
 	}
 
-	void textbox::set_voffset(int new_voffset) {
-		const int old_effective = effective_voffset();
-		const int old_voffset = voffset;
-
-		voffset = new_voffset;
-
-		const int new_effective = effective_voffset();
-		if (old_effective != new_effective) {
-			// If the effective positions change, that means the content should update (scrolling would cause incorrect
-			// output otherwise). vscrolling fixes that, but as it assumes the content on the screen is already properly
-			// scrolled, we need to reset the voffset.
-			voffset = old_voffset;
-			vscroll(new_effective - old_effective);
-			if (new_voffset == -1)
-				voffset = -1;
-		}
+	void textbox::set_autoscroll(bool autoscroll_) {
+		if (autoscroll != autoscroll_)
+			autoscroll = autoscroll_;
 	}
 
 	int textbox::line_rows(const textline &line) const {
@@ -327,9 +314,7 @@ namespace haunted::ui {
 			apply_colors();
 			clear_rect();
 
-			int effective = effective_voffset();
-
-			if (0 <= effective && total_rows() <= effective) {
+			if (0 <= voffset && total_rows() <= voffset) {
 				// There's no need to draw anything if the box has been scrolled down beyond all its contents.
 			} else {
 				try {
@@ -363,7 +348,7 @@ namespace haunted::ui {
 			vscroll(1);
 			draw();
 		} else if (k == ktype::left_arrow) {
-			set_voffset(-1);
+			set_autoscroll(true);
 			draw();
 		} else {
 			return false;
@@ -386,8 +371,10 @@ namespace haunted::ui {
 			lines.pop_back();
 
 		std::unique_ptr<simpleline> ptr = std::make_unique<simpleline>(text, 0);
+		const size_t num_rows = ptr->num_rows(pos.width);
 		lines.push_back(std::move(ptr));
-		draw_new_line(*lines.back(), true);
+		if (!do_scroll(num_rows))
+			draw_new_line(*lines.back(), true);
 		return *this;
 	}
 

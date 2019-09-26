@@ -70,13 +70,11 @@ namespace haunted::ui {
 		private:
 			std::deque<line_ptr> lines;
 
-			/** The number of lines the container has been scrolled vertically. If -1, the textbox will always scroll to
-			 *  the bottom whenever a new line is added. For values >= 0, the textbox won't scroll, even if the new text
-			 *  is outside the visible region. */
+			/** The number of rows the container has been scrolled vertically. */
 			int voffset = 0;
 
-			/** The number of columns the container has been scrolled horizontally. */
-			// int hoffset = 0;
+			/** Whether the textbox should automatically scroll to keep up with lines added to the bottom. */
+			bool autoscroll = false;
 
 			/** Whether to wrap long lines based on the continuation column. */
 			bool wrap = true;
@@ -101,6 +99,11 @@ namespace haunted::ui {
 			/** Returns the string to print on a given row (zero-based) of the textbox. Handles text wrapping and
 			 *  scrolling automatically. */
 			std::string text_at_row(int, bool pad_right = true);
+
+			/** Performs vertical scrolling for a given number of rows if autoscrolling is enabled and the right
+			 *  conditions are met. This should be done after the line is added to the set of lines but before the line
+			 *  is drawn. Returns true if this method caused any scrolling.*/
+			bool do_scroll(size_t rows);
 
 		public:
 			/** Constructs a textbox with a parent, a position and initial contents. */
@@ -127,11 +130,12 @@ namespace haunted::ui {
 			/** Returns the vertical offset. */
 			int get_voffset() const;
 
-			/** Returns the effective vertical offset, accounting for forced scrolling (voffset = -1). */
-			int effective_voffset() const;
-
 			/** Sets the vertical offset. */
 			void set_voffset(int);
+
+			bool get_autoscroll() const { return autoscroll; }
+
+			void set_autoscroll(bool);
 
 			/** Returns the number of rows on the terminal a line of text would occupy. */
 			int line_rows(const textline &) const;
@@ -159,8 +163,9 @@ namespace haunted::ui {
 			template <EXTENDS(T, textline)>
 			textbox & operator+=(const T &line) {
 				std::unique_ptr<T> line_copy = std::make_unique<T>(line);
-				draw_new_line(*line_copy, false);
 				lines.push_back(std::move(line_copy));
+				if (!do_scroll(line.num_rows(pos.width)))
+					draw_new_line(*lines.back(), true);
 				return *this;
 			}
 
