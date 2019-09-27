@@ -233,6 +233,9 @@ namespace haunted::ui {
 	}
 
 	void textbox::vscroll(int delta) {
+		if (!can_draw())
+			return;
+
 		const int old_voffset = voffset;
 
 		voffset = std::max(voffset + delta, 0);
@@ -323,14 +326,16 @@ namespace haunted::ui {
 				// There's no need to draw anything if the box has been scrolled down beyond all its contents.
 			} else {
 				try {
+					std::string text {};
 					for (int i = 0; i < pos.height; ++i) {
-						apply_colors();
-						const std::string text = text_at_row(i, false);
-						if (!text.empty()) {
-							term->jump(0, i);
-							*term << text;
-						}
+						if (i != 0)
+							text.push_back('\n');
+						text += text_at_row(i, false);
 					}
+
+					apply_colors();
+					term->jump(0, 0);
+					*term << text;
 				} catch (std::out_of_range &err) {}
 			}
 			
