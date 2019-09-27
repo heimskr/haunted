@@ -110,6 +110,11 @@ namespace haunted::ui {
 				next = next_row(new_lines) - offset;
 			}
 
+			// Here's a kludge!
+			if (next < 0) {
+				next = pos.height - offset;
+			}
+
 			term->jump(0, next);
 			for (int row = next, i = 0; row < pos.height && i < new_lines; ++row, ++i) {
 				if (i > 0)
