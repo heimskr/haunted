@@ -53,7 +53,7 @@ namespace haunted {
 			static termios getattr();
 
 			/** Sets the terminal attributes with tcsetaddr. */
-			virtual void setattr(const termios &);
+			static void setattr(const termios &);
 
 			// signal() takes a pointer to a static function. To get around this, every terminal object whose
 			// watch_size() method is called adds itself to a static vector of terminal pointers. When the WINCH signal

@@ -15,7 +15,6 @@ namespace haunted {
 			void apply() override {}
 			void reset() override {}
 			void winch(int, int) override {}
-			void setattr(const termios &) override {}
 
 		public:
 			dummy_terminal() {
