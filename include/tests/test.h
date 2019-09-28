@@ -105,7 +105,27 @@ namespace haunted::tests {
 			template <typename A, typename B>
 			static std::string stringify(const std::pair<A, B> &p) {
 				using namespace ansi;
-				return "{"_d + stringify(p.first) + ", "_d + stringify(p.second) + "}"_d;
+				return "{"_bd + stringify(p.first) + ", "_d + stringify(p.second) + "}"_bd;
+			}
+
+			template <typename T>
+			static std::string stringify(const std::initializer_list<T> &list) {
+				std::ostringstream oss;
+
+				oss << "{"_bd;
+
+				bool first = true;
+				for (const T &item: list) {
+					if (!first)
+						oss << ", "_d;
+					else
+						first = false;
+
+					oss << stringify(item);
+				}
+
+				oss << "}"_bd;
+				return oss.str();
 			}
 
 			template <typename... Ts>
@@ -115,13 +135,13 @@ namespace haunted::tests {
 
 			template <typename... Ts, size_t... S>
 			static std::string stringify_impl(const std::tuple<Ts...> &tuple, std::index_sequence<S...>) {
-				std::stringstream ss;
-				ss << "{"_bd;
+				std::ostringstream oss;
+				oss << "{"_bd;
 				(void)(std::initializer_list<int> {
-					(ss << (S == 0? "" : ", "_d) << stringify(std::get<S>(tuple)), 0)...
+					(oss << (S == 0? "" : ", "_d) << stringify(std::get<S>(tuple)), 0)...
 				});
-				ss << "}"_bd;
-				return ss.str();
+				oss << "}"_bd;
+				return oss.str();
 			}
 
 			// We want to be able to compare the pairs returned by line_at_row as equal even if the addresses of the
