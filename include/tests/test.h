@@ -68,6 +68,14 @@ namespace haunted::tests {
 				return std::to_string(n);
 			}
 
+			template <typename T, std::enable_if_t<std::is_floating_point<T>::value, int> = 0>
+			static std::string stringify(const T n) {
+				std::string stringified = std::to_string(n);
+				while (stringified.back() == '0')
+					stringified.pop_back();
+				return stringified;
+			}
+
 			template <typename T,
 				std::enable_if_t<std::is_class<T>::value, int> = 0,
 				std::enable_if_t<!std::is_convertible<T, std::string>::value, int> = 0>
