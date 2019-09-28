@@ -46,10 +46,11 @@ namespace haunted::tests {
 				std::string escaped("");
 				for (char c: str) {
 					switch (c) {
-						case '"':  escaped += "\\\""; break;
-						case '\n': escaped += "\\n";  break;
-						case '\r': escaped += "\\r";  break;
-						case '\t': escaped += "\\t";  break;
+						case '"':  escaped += "\\\""_bd; break;
+						case '\n': escaped += "\\n"_bd;  break;
+						case '\r': escaped += "\\r"_bd;  break;
+						case '\t': escaped += "\\t"_bd;  break;
+						case '\\': escaped += "\\\\"_bd;  break;
 						default:   escaped += c;
 					}
 				}
