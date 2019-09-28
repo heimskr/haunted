@@ -28,17 +28,27 @@ namespace haunted {
 	}
 
 	terminal::~terminal() {
-		out_stream.reset_colors();
-		out_stream.clear();
-		reset();
-		join();
-		jump(0, 0);
+		if (!suppress_output) {
+			out_stream.reset_colors();
+			out_stream.clear();
+			reset();
+			join();
+			jump(0, 0);
+		}
+
 		delete root;
 	}
 
 
 // Private static methods
 
+
+	void terminal::winch_handler(int) {
+		winsize new_size;
+		ioctl(STDIN_FILENO, TIOCGWINSZ, &new_size);
+		for (terminal *ptr: winch_targets)
+			ptr->winch(new_size.ws_row, new_size.ws_col);
+	}
 
 	termios terminal::getattr() {
 		termios out;
@@ -53,13 +63,6 @@ namespace haunted {
 		int result;
 		if ((result = tcsetattr(STDIN_FILENO, TCSAFLUSH, &new_attrs)) < 0)
 			throw std::runtime_error("tcsetattr returned " + std::to_string(result));
-	}
-
-	void terminal::winch_handler(int) {
-		winsize new_size;
-		ioctl(STDIN_FILENO, TIOCGWINSZ, &new_size);
-		for (terminal *ptr: winch_targets)
-			ptr->winch(new_size.ws_row, new_size.ws_col);
 	}
 
 

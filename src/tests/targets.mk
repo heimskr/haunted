@@ -8,7 +8,9 @@ infer: build/tests/test.o $(OBJ)
 	@ $(MKBUILD)
 	infer run -- $(CC) $(INCLUDE) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 
-test: build/test
+test: utest
+
+dtest: build/test
 	./$^
 
 iltest: build/test
