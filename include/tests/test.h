@@ -270,8 +270,8 @@ namespace haunted::tests {
 
 			/** Used to check whether a function throws an exception of a given type. */
 			template <typename T, typename R, typename... A>
-			bool check(const std::string &fn_name, const std::type_info &errtype, R(T::*fn)(A...), T *target,
-			           const std::string &what, A... args) {
+			bool check(const std::string &fn_name, const std::type_info &errtype, const std::string &what,
+			           T *target, R(T::*fn)(A...), A... args) {
 				using namespace ansi;
 				const std::string demangled = util::demangle(std::string(errtype.name()));
 
@@ -301,6 +301,48 @@ namespace haunted::tests {
 				out << endl;
 				++total_failed;
 				return false;
+			}
+
+			/** Used to check whether a function throws an exception of a given type. */
+			template <typename O, typename... I>
+			bool check(const std::string &fn_name, const std::type_info &errtype, const std::string &what,
+			           const std::function<O(I...)> &fn, I... args) {
+				using namespace ansi;
+				const std::string demangled = util::demangle(std::string(errtype.name()));
+
+				try {
+					const std::string returned = stringify(fn(args...));
+					out << bad << fn_name << " == "_d << red(returned) << " (expected " << demangled;
+					if (!what.empty())
+						out << ", \"" << what << "\"";
+					out << ")";
+				} catch (std::exception &exc) {
+					std::string message = exc.what();
+					if (typeid(exc) == errtype && (what.empty() || what == std::string(exc.what()))) {
+						out << good << fn_name << " throws "_d << green(demangled);
+						if (!message.empty())
+							out << " (" << (what.empty()? message : green(message)) << ")";
+						out << endl;
+						++total_passed;
+						return true;
+					}
+
+					out << bad << fn_name << " throws "_d
+					    << wrap(demangled, typeid(exc) == errtype? color::green : color::red);
+					if (!message.empty())
+						out << " (" << wrap(message, message == what? color::green : color::red) << ")";
+				}
+
+				out << endl;
+				++total_failed;
+				return false;
+			}
+
+			/** Used to check whether a function throws an exception of a given type. */
+			template <typename O, typename... I>
+			bool check(const std::string &fn_name, const std::type_info &errtype, const std::string &what,
+			           O(*fn)(I...), I... args) {
+				return check(fn_name, errtype, what, std::function<O(I...)>(fn), args...);
 			}
 
 			void display_results() const {

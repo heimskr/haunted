@@ -324,8 +324,8 @@ namespace haunted::tests {
 			{{17}, {&*t5, 0}},
 		}, &textbox::line_at_row, tb, "line_at_row");
 
-		unit.check("line_at_row(" + std::to_string(rows) + ")", typeid(std::out_of_range), &textbox::line_at_row, tb,
-			"Invalid row index: " + std::to_string(rows), rows);
+		unit.check("line_at_row(" + std::to_string(rows) + ")", typeid(std::out_of_range), "Invalid row index: " +
+			std::to_string(rows), tb, &textbox::line_at_row, rows);
 
 		unit.check({
 			{{0, true}, "Hello               "},
@@ -363,7 +363,7 @@ namespace haunted::tests {
 		unit.check(tb->next_row(), -1, "next_row()");
 		INFO("Resetting textbox.");
 		tb->clear_lines();
-		unit.check("line_at_row(0)", typeid(std::out_of_range), &textbox::line_at_row, tb, "Invalid row index: 0", 0);
+		unit.check("line_at_row(0)", typeid(std::out_of_range), "Invalid row index: 0", tb, &textbox::line_at_row, 0);
 		unit.check(tb->voffset, 0, "voffset");
 		unit.check(tb->total_rows(), 0, "total_rows()");
 		// unit.check(tb->effective_voffset(), 0, "effective_voffset()");
