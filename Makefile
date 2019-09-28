@@ -60,7 +60,7 @@ depend:
 	@ echo $(SRC_ALL); echo
 
 	@ echo $(DEPTOKEN) > $(DEPFILE)
-	makedepend $(DEPFLAGS) -- $(CC) -- $(SRC_ALL) $(EXTRASRC) 2>/dev/null
+	makedepend $(DEPFLAGS) -- $(CC) $(INCLUDE) -- $(SOURCES) $(EXTRASRC) 2>/dev/null
 	@ sed -i.sed 's/^src\//build\//' $(DEPFILE)
 	@ rm $(DEPFILE).bak $(DEPFILE).sed
 
