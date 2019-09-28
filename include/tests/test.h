@@ -157,7 +157,7 @@ namespace haunted::tests {
 
 				size_t max_length = 0;
 				for (const std::pair<std::tuple<I...>, O> &p: pairs) {
-					size_t length = stringify(p.first).size();
+					const size_t length = ansi::length(stringify(p.first));
 					if (length > max_length)
 						max_length = length;
 				}
@@ -167,7 +167,7 @@ namespace haunted::tests {
 				for (const std::pair<std::tuple<I...>, O> &p: pairs) {
 					const std::tuple<I...> &input = p.first;
 					const O &expected = p.second;
-					size_t length = stringify(input).size();
+					const size_t length = ansi::length(stringify(input));
 					try {
 						const O &actual = std::apply(fn, input);
 						if (equal(expected, actual)) {
@@ -215,7 +215,7 @@ namespace haunted::tests {
 
 				size_t max_length = 0;
 				for (const std::pair<std::tuple<I...>, O> &p: pairs) {
-					size_t length = stringify(p.first).size();
+					const size_t length = ansi::length(stringify(p.first));
 					if (length > max_length)
 						max_length = length;
 				}
@@ -225,10 +225,9 @@ namespace haunted::tests {
 				for (const std::pair<std::tuple<I...>, O> &p: pairs) {
 					const std::tuple<I...> &input = p.first;
 					const O &expected = p.second;
-					size_t length = stringify(input).size();
+					const size_t length = ansi::length(stringify(input));
 					try {
 						const O &actual = multi_apply(fn, target, input);
-
 						if (equal(expected, actual)) {
 							display_passed(stringify(input), stringify(actual), prefix,
 							               padding.substr(0, max_length - length));
