@@ -456,12 +456,15 @@ namespace haunted::ui {
 				switch (type) {
 					case int(ktype::right_arrow): right(); break;
 					case int(ktype::left_arrow):   left(); break;
-					case int(ktype::down_arrow): return false;
-					case int(ktype::up_arrow):   return false;
 					case int(ktype::backspace):   erase(); break;
 					case int(ktype::enter):      submit(); break;
 					case int(ktype::home):        start(); break;
 					case int(ktype::end):           end(); break;
+					case int(ktype::down_arrow):
+					case int(ktype::up_arrow):
+					case int(ktype::page_down):
+					case int(ktype::page_up):
+						return false;
 					default:
 						insert(char(k));
 						if (check_scroll())
