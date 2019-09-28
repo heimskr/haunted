@@ -60,7 +60,7 @@ namespace haunted::tests {
 
 			/** Stringifies a bool into a single letter (T or F). */
 			static std::string stringify(bool b) {
-				return b? "⊤" : "⊥";
+				return b? "⊤"_b : "⊥"_b;
 			}
 
 			template <typename T, std::enable_if_t<std::is_integral<T>::value, int> = 0>
@@ -108,11 +108,11 @@ namespace haunted::tests {
 			template <typename... Ts, size_t... S>
 			static std::string stringify_impl(const std::tuple<Ts...> &tuple, std::index_sequence<S...>) {
 				std::stringstream ss;
-				ss << "{"_d;
+				ss << "{"_bd;
 				(void)(std::initializer_list<int> {
 					(ss << (S == 0? "" : ", "_d) << stringify(std::get<S>(tuple)), 0)...
 				});
-				ss << "}"_d;
+				ss << "}"_bd;
 				return ss.str();
 			}
 
