@@ -21,6 +21,8 @@ namespace haunted {
 				suppress_output = true;
 			}
 
+			~dummy_terminal() {}
+
 			void cbreak() override {}
 			void watch_size() override {}
 			void redraw() override {}

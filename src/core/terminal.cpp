@@ -32,6 +32,7 @@ namespace haunted {
 		out_stream.clear();
 		reset();
 		join();
+		jump(0, 0);
 		delete root;
 	}
 
