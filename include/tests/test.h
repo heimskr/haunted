@@ -315,6 +315,13 @@ namespace haunted::tests {
 				return check(fn_name, errtype, what, std::function<O(I...)>(fn), args...);
 			}
 
+			/** Used to check whether a function throws an exception of a given type. */
+			template <typename O, typename... I>
+			bool check(const std::string &fn_name, const std::type_info &errtype, const std::string &what,
+			           O(*fn)(const I &...), const I &... args) {
+				return check(fn_name, errtype, what, std::function<O(I...)>(fn), args...);
+			}
+
 			void display_results() const {
 				if (total_failed == 0 && total_passed == 0) {
 					ansi::out << ansi::warn << "No tests were run.\n";
