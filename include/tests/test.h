@@ -74,6 +74,11 @@ namespace haunted::tests {
 				return std::string(o);
 			}
 
+			template <typename E, std::enable_if_t<std::is_enum<E>::value, int> = 0>
+			static std::string stringify(E e) {
+				return stringify(static_cast<int>(e));
+			}
+
 			static std::string stringify(haunted::ui::textline *tl) {
 				return tl? std::to_string(tl->continuation) + ":["_d + std::string(*tl) + "]"_d : "null";
 			}
