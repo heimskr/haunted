@@ -54,12 +54,12 @@ namespace haunted::tests {
 					}
 				}
 
-				return "\"" + escaped + "\"";
+				return "\""_d + escaped + "\""_d;
 			}
 
 			/** Stringifies a bool into a single letter (T or F). */
-			std::string stringify(bool b) {
-				return b? "T" : "F";
+			static std::string stringify(bool b) {
+				return b? "⊤" : "⊥";
 			}
 
 			template <typename T, std::enable_if_t<std::is_integral<T>::value, int> = 0>
