@@ -172,7 +172,8 @@ namespace haunted::tests {
 
 			/** Runs a set of tests and displays the results. */
 			template <typename O, typename... I>
-			bool check(const std::vector<std::pair<std::tuple<I...>, O>> &pairs, std::function<O(const std::tuple<I...> &)> fn, const std::string &fn_name) {
+			bool check(const std::vector<std::pair<std::tuple<I...>, O>> &pairs,
+			           std::function<O(const std::tuple<I...> &)> fn, const std::string &fn_name) {
 				using namespace ansi;
 
 				if (pairs.size() == 0) {
@@ -265,44 +266,9 @@ namespace haunted::tests {
 			}
 
 			/** Used to check whether a function throws an exception of a given type. */
-			template <typename T, typename R, typename... A>
-			bool check(const std::string &fn_name, const std::type_info &errtype, const std::string &what,
-			           T *target, R(T::*fn)(A...), A... args) {
-				using namespace ansi;
-				const std::string demangled = util::demangle(std::string(errtype.name()));
-
-				try {
-					const std::string returned = stringify((target->*fn)(args...));
-					out << bad << fn_name << " == "_d << red(returned) << " (expected " << demangled;
-					if (!what.empty())
-						out << ", \"" << what << "\"";
-					out << ")";
-				} catch (std::exception &exc) {
-					std::string message = exc.what();
-					if (typeid(exc) == errtype && (what.empty() || what == std::string(exc.what()))) {
-						out << good << fn_name << " throws "_d << green(demangled);
-						if (!message.empty())
-							out << " (" << (what.empty()? message : green(message)) << ")";
-						out << endl;
-						++total_passed;
-						return true;
-					}
-
-					out << bad << fn_name << " throws "_d
-					    << wrap(demangled, typeid(exc) == errtype? color::green : color::red);
-					if (!message.empty())
-						out << " (" << wrap(message, message == what? color::green : color::red) << ")";
-				}
-
-				out << endl;
-				++total_failed;
-				return false;
-			}
-
-			/** Used to check whether a function throws an exception of a given type. */
 			template <typename O, typename... I>
 			bool check(const std::string &fn_name, const std::type_info &errtype, const std::string &what,
-			           const std::function<O(I...)> &fn, I... args) {
+			           std::function<O(I...)> fn, I... args) {
 				using namespace ansi;
 				const std::string demangled = util::demangle(std::string(errtype.name()));
 
@@ -332,6 +298,15 @@ namespace haunted::tests {
 				out << endl;
 				++total_failed;
 				return false;
+			}
+
+			/** Used to check whether a function throws an exception of a given type. */
+			template <typename T, typename O, typename... I>
+			bool check(const std::string &fn_name, const std::type_info &errtype, const std::string &what,
+			           T *target, O(T::*fn)(I...), I... args) {
+				return check(fn_name, errtype, what, std::function<O(I...)>([&](I... input) -> O {
+					return (target->*fn)(input...);
+				}), args...);
 			}
 
 			/** Used to check whether a function throws an exception of a given type. */
