@@ -172,8 +172,7 @@ namespace haunted::tests {
 
 			/** Runs a set of tests and displays the results. */
 			template <typename O, typename... I>
-			bool check(const std::vector<std::pair<std::tuple<I...>, O>> &pairs, std::function<O(I...)> fn,
-			const std::string &fn_name) {
+			bool check(const std::vector<std::pair<std::tuple<I...>, O>> &pairs, std::function<O(const std::tuple<I...> &)> fn, const std::string &fn_name) {
 				using namespace ansi;
 
 				if (pairs.size() == 0) {
@@ -198,7 +197,7 @@ namespace haunted::tests {
 					const O &expected = p.second;
 					const size_t length = ansi::length(stringify(input));
 					try {
-						const O &actual = std::apply(fn, input);
+						const O &actual = fn(input);
 						if (equal(expected, actual)) {
 							display_passed(stringify(input), stringify(actual), prefix,
 							               padding.substr(0, max_length - length));
@@ -223,60 +222,29 @@ namespace haunted::tests {
 
 			/** Runs a set of tests and displays the results. */
 			template <typename O, typename... I>
+			bool check(const std::vector<std::pair<std::tuple<I...>, O>> &pairs, std::function<O(I...)> fn,
+			const std::string &fn_name) {
+				return check(pairs, [&](const std::tuple<I...> &input) -> O {
+					return std::apply(fn, input);
+				}, fn_name);
+			}
+
+			/** Runs a set of tests and displays the results. */
+			template <typename O, typename... I>
 			bool check(const std::vector<std::pair<std::tuple<I...>, O>> &pairs, O(*fn)(I...),
 			const std::string &fn_name) {
-				return check(pairs, std::function<O(I...)>(fn), fn_name);
+				return check(pairs, std::function<O(const std::tuple<I...> &)>([&](const std::tuple<I...> &input) -> O {
+					return std::apply(std::function<O(I...)>(fn), input);
+				}), fn_name);
 			}
 
 			/** Runs a set of tests and displays the results. */
 			template <typename T, typename O, typename... I>
 			bool check(const std::vector<std::pair<std::tuple<I...>, O>> &pairs, O(T::*fn)(I...), T *target,
 			const std::string &fn_name) {
-				using namespace ansi;
-
-				if (pairs.size() == 0) {
-					out << warn << "No tests given." << endl;
-					return false;
-				}
-
-				const std::string prefix = fn_name.empty()? "fn" : fn_name;
-				size_t passed = 0, failed = 0;
-
-				size_t max_length = 0;
-				for (const std::pair<std::tuple<I...>, O> &p: pairs) {
-					const size_t length = ansi::length(stringify(p.first));
-					if (length > max_length)
-						max_length = length;
-				}
-
-				const std::string padding(max_length, ' ');
-
-				for (const std::pair<std::tuple<I...>, O> &p: pairs) {
-					const std::tuple<I...> &input = p.first;
-					const O &expected = p.second;
-					const size_t length = ansi::length(stringify(input));
-					try {
-						const O &actual = multi_apply(fn, target, input);
-						if (equal(expected, actual)) {
-							display_passed(stringify(input), stringify(actual), prefix,
-							               padding.substr(0, max_length - length));
-							passed++;
-						} else {
-							display_failed(stringify(input), stringify(actual), stringify(expected), prefix,
-							               padding.substr(0, max_length - length));
-							failed++;
-						}
-					} catch (std::exception &err) {
-						display_failed(stringify(input), "\e[31;1m" + util::demangle_object(err) + "\e[22m: " +
-						               std::string(err.what()) + "\e[0m", stringify(expected), prefix,
-						               padding.substr(0, max_length - length));
-						failed++;
-					}
-				}
-
-				total_passed += passed;
-				total_failed += failed;
-				return failed == 0;
+				return check(pairs, std::function<O(const std::tuple<I...> &)>([&](const std::tuple<I...> &args) -> O {
+					return multi_apply(fn, target, args);
+				}), fn_name);
 			}
 
 			/** Used for testing a single expected value with an actual value. */
