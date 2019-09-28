@@ -59,11 +59,13 @@ namespace haunted::tests {
 			}
 
 			/** Stringifies a bool into a single letter (T or F). */
-			static std::string stringify(bool b) {
+			template <typename T, std::enable_if_t<std::is_same<T, bool>::value, int> = 0>
+			static std::string stringify(T b) {
 				return b? "⊤"_b : "⊥"_b;
 			}
 
-			template <typename T, std::enable_if_t<std::is_integral<T>::value, int> = 0>
+			template <typename T, std::enable_if_t<std::is_integral<T>::value, int> = 0,
+			                      std::enable_if_t<!std::is_same<T, bool>::value, int> = 0>
 			static std::string stringify(const T n) {
 				return std::to_string(n);
 			}
@@ -76,9 +78,8 @@ namespace haunted::tests {
 				return stringified;
 			}
 
-			template <typename T,
-				std::enable_if_t<std::is_class<T>::value, int> = 0,
-				std::enable_if_t<!std::is_convertible<T, std::string>::value, int> = 0>
+			template <typename T, std::enable_if_t<std::is_class<T>::value, int> = 0,
+			                      std::enable_if_t<!std::is_convertible<T, std::string>::value, int> = 0>
 			static std::string stringify(const T &o) {
 				return std::string(o);
 			}
