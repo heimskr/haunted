@@ -105,7 +105,6 @@ namespace haunted::tests {
 
 			template <typename A, typename B>
 			static std::string stringify(const std::pair<A, B> &p) {
-				using namespace ansi;
 				return "{"_bd + stringify(p.first) + ", "_d + stringify(p.second) + "}"_bd;
 			}
 
@@ -177,7 +176,7 @@ namespace haunted::tests {
 				using namespace ansi;
 
 				if (pairs.size() == 0) {
-					out << warn << "No tests given." << endl;
+					ansi::out << ansi::warn << "No tests given." << ansi::endl;
 					return false;
 				}
 
@@ -251,15 +250,15 @@ namespace haunted::tests {
 			/** Used for testing a single expected value with an actual value. */
 			template <typename T>
 			bool check(const T &actual, const T &expected, const std::string &fn_name) {
-				using namespace ansi;
 				bool result = equal(actual, expected);
 				if (result) {
 					++total_passed;
-					out << good << fn_name << " " << "== "_d << ansi::green(stringify(actual)) << endl;
+					ansi::out << ansi::good << fn_name << " " << "== "_d << ansi::green(stringify(actual))
+					          << ansi::endl;
 				} else {
 					++total_failed;
-					out << bad << fn_name << " " << "== "_d << ansi::red(stringify(actual))
-					    << " (expected " << ansi::bold(stringify(expected)) << ")" << endl;
+					ansi::out << ansi::bad << fn_name << " " << "== "_d << ansi::red(stringify(actual))
+					          << " (expected " << ansi::bold(stringify(expected)) << ")" << ansi::endl;
 				}
 
 				return result;
@@ -269,33 +268,33 @@ namespace haunted::tests {
 			template <typename O, typename... I>
 			bool check(const std::string &fn_name, const std::type_info &errtype, const std::string &what,
 			           std::function<O(I...)> fn, I... args) {
-				using namespace ansi;
 				const std::string demangled = util::demangle(std::string(errtype.name()));
-
 				try {
 					const std::string returned = stringify(fn(args...));
-					out << bad << fn_name << " == "_d << red(returned) << " (expected " << demangled;
+					ansi::out << ansi::bad << fn_name << " == "_d << ansi::red(returned) << " (expected " << demangled;
 					if (!what.empty())
-						out << ", \"" << what << "\"";
-					out << ")";
+						ansi::out << ", \"" << what << "\"";
+					ansi::out << ")";
 				} catch (std::exception &exc) {
 					std::string message = exc.what();
 					if (typeid(exc) == errtype && (what.empty() || what == std::string(exc.what()))) {
-						out << good << fn_name << " throws "_d << green(demangled);
+						ansi::out << ansi::good << fn_name << " throws "_d << ansi::green(demangled);
 						if (!message.empty())
-							out << " (" << (what.empty()? message : green(message)) << ")";
-						out << endl;
+							ansi::out << " (" << (what.empty()? message : ansi::green(message)) << ")";
+						ansi::out << ansi::endl;
 						++total_passed;
 						return true;
 					}
 
-					out << bad << fn_name << " throws "_d
-					    << wrap(demangled, typeid(exc) == errtype? color::green : color::red);
-					if (!message.empty())
-						out << " (" << wrap(message, message == what? color::green : color::red) << ")";
+					ansi::out << ansi::bad << fn_name << " throws "_d
+					          << ansi::wrap(demangled, typeid(exc) == errtype? ansi::color::green : ansi::color::red);
+					if (!message.empty()) {
+						ansi::out << " (" << ansi::wrap(message, message == what? ansi::color::green : ansi::color::red)
+						          << ")";
+					}
 				}
 
-				out << endl;
+				ansi::out << ansi::endl;
 				++total_failed;
 				return false;
 			}
@@ -317,48 +316,45 @@ namespace haunted::tests {
 			}
 
 			void display_results() const {
-				using namespace ansi;
-
 				if (total_failed == 0 && total_passed == 0) {
-					out << warn << "No tests were run.\n";
+					ansi::out << ansi::warn << "No tests were run.\n";
 				} else if (total_failed == 0) {
 					if (total_passed == 1)
-						out << good << "Test passed.\n";
+						ansi::out << ansi::good << "Test passed.\n";
 					else
-						out << good << "All " << total_passed << " tests passed.\n";
+						ansi::out << ansi::good << "All " << total_passed << " tests passed.\n";
 				} else if (total_passed == 0) {
 					if (total_failed == 1)
-						out << bad << "Test failed.\n";
+						ansi::out << ansi::bad << "Test failed.\n";
 					else
-						out << bad << "All " << total_failed << " tests failed.\n";
+						ansi::out << ansi::bad << "All " << total_failed << " tests failed.\n";
 				} else {
-					out << warn
-						<< "Passed " << wrap(std::to_string(total_passed), color::green)
-						<< ", failed " << wrap(std::to_string(total_failed), color::red)
-						<< " (" << style::bold << std::setprecision(4)
-						<< (total_passed * 100.0 / (total_passed + total_failed)) << "%" >> style::bold
-						<< ")" << std::defaultfloat << endl;
+					ansi::out << ansi::warn
+						<< "Passed " << wrap(std::to_string(total_passed), ansi::color::green)
+						<< ", failed " << wrap(std::to_string(total_failed), ansi::color::red)
+						<< " (" << ansi::style::bold << std::setprecision(4)
+						<< (total_passed * 100.0 / (total_passed + total_failed)) << "%" >> ansi::style::bold
+						<< ")" << std::defaultfloat << ansi::endl;
 				}
 			}
 
 			static void display_failed(const std::string &input, const std::string &actual, const std::string &expected,
 			                           const std::string &prefix, const std::string &padding,
 			                           const std::exception *err = nullptr) {
-				using namespace ansi;
-				out << bad << prefix << parens << bold(input) << padding << " == "_d;
+				ansi::out << ansi::bad << prefix << ansi::parens << ansi::bold(input) << padding << " == "_d;
 
 				if (err != nullptr)
-					out << red(bold(util::demangle_object(err)) + ": " + std::string(err->what()));
+					ansi::out << ansi::red(ansi::bold(util::demangle_object(err)) + ": " + std::string(err->what()));
 				else
-					out << red(actual);
+					ansi::out << ansi::red(actual);
 
-				out << " Expected: "_d << yellow(expected) << endl;
+				ansi::out << " Expected: "_d << ansi::yellow(expected) << ansi::endl;
 			}
 
 			static void display_passed(const std::string &input, const std::string &actual, const std::string &prefix,
 			                           const std::string &padding) {
-				using namespace ansi;
-				out << good << prefix << parens << bold(input) << padding << " == "_d << green(actual) << endl;
+				ansi::out << ansi::good << prefix << ansi::parens << ansi::bold(input) << padding << " == "_d
+				          << ansi::green(actual) << ansi::endl;
 			}
 	};
 
