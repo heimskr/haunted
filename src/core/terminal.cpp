@@ -175,6 +175,9 @@ namespace haunted {
 			}
 		}
 
+		if (key_postlistener)
+			key_postlistener(k);
+
 		return ptr;
 	}
 

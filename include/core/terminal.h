@@ -70,6 +70,9 @@ namespace haunted {
 			ansi::ansistream &out_stream;
 			ui::coloration colors;
 
+			/** Called after a key is pressed and processed. */
+			std::function<void(const key &)> key_postlistener {};
+
 			terminal(std::istream &, ansi::ansistream &);
 			terminal(std::istream &in_stream): terminal(in_stream, ansi::out) {}
 			terminal(): terminal(std::cin) {}
