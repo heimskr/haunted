@@ -2,7 +2,6 @@
 #define HAUNTED_CORE_TERMINAL_H_
 
 #include <iostream>
-#include <list>
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -72,7 +71,7 @@ namespace haunted {
 			ui::coloration colors;
 
 			/** Called after a key is pressed and processed. */
-			std::list<std::function<void(const key &)>> key_postlisteners {};
+			std::function<void(const key &)> key_postlistener {};
 
 			terminal(std::istream &, ansi::ansistream &);
 			terminal(std::istream &in_stream): terminal(in_stream, ansi::out) {}
