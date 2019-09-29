@@ -1,8 +1,8 @@
 #ifndef HAUNTED_UI_BOXES_EXPANDOBOX_H_
 #define HAUNTED_UI_BOXES_EXPANDOBOX_H_
 
+#include <deque>
 #include <utility>
-#include <vector>
 
 #include "ui/colored.h"
 #include "ui/boxes/orientedbox.h"
@@ -30,11 +30,11 @@ namespace haunted::ui::boxes {
 			template <typename L, typename R>
 			class pair_iterator: public std::iterator<std::forward_iterator_tag, std::pair<L, R>> {
 				private:
-					std::vector<control *>::iterator child_iterator;
-					std::vector<int>::iterator size_iterator;
+					std::deque<control *>::iterator child_iterator;
+					std::deque<int>::iterator size_iterator;
 
 				public:
-					pair_iterator(std::vector<control *>::iterator c, std::vector<int>::iterator s):
+					pair_iterator(std::deque<control *>::iterator c, std::deque<int>::iterator s):
 						child_iterator(c), size_iterator(s) {}
 
 					std::pair<L &, R &> operator*() const;
@@ -50,7 +50,7 @@ namespace haunted::ui::boxes {
 
 		protected:
 			/** Contains the sizes of all the children. Children that expand have a size of -1. */
-			std::vector<int> sizes;
+			std::deque<int> sizes;
 
 		public:
 			typedef std::pair<control *, int> child_pair;

@@ -1,7 +1,7 @@
 #ifndef HAUNTED_UI_CONTAINER_H_
 #define HAUNTED_UI_CONTAINER_H_
 
-#include <vector>
+#include <deque>
 
 #include "core/hdefs.h"
 #include "ui/keyhandler.h"
@@ -21,8 +21,11 @@ namespace haunted::ui {
 	class container: public virtual keyhandler {
 		friend class control;
 
+		public:
+			using type = std::deque<control *>;
+
 		protected:
-			std::vector<control *> children;
+			type children;
 		
 		public:
 			virtual ~container();
@@ -37,7 +40,7 @@ namespace haunted::ui {
 			 *  A value of -1 means the container can hold an arbitrary number of children. */
 			virtual int max_children() const { return -1; }
 
-			std::vector<control *> & get_children() { return children; }
+			type & get_children() { return children; }
 
 			/** Returns the terminal associated with the container. */
 			virtual haunted::terminal * get_terminal() = 0;

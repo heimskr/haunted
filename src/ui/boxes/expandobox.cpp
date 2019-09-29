@@ -18,8 +18,8 @@ namespace haunted::ui::boxes {
 
 	template <>
 	expandobox::iterator expandobox::iterator::operator++(int) {
-		std::vector<control *>::iterator new_child_iterator(child_iterator);
-		std::vector<int>::iterator new_size_iterator(size_iterator);
+		std::deque<control *>::iterator new_child_iterator(child_iterator);
+		std::deque<int>::iterator new_size_iterator(size_iterator);
 		return {++new_child_iterator, ++new_size_iterator};
 	}
 
