@@ -155,8 +155,11 @@ namespace haunted {
 		if (!ctrl)
 			throw std::runtime_error("Focused control is null");
 
-		if (ctrl->on_key(k))
+		if (ctrl->on_key(k)) {
+			if (key_postlistener)
+				key_postlistener(k);
 			return ctrl;
+		}
 
 		ui::container *ptr = ctrl->get_parent();
 		
@@ -165,12 +168,16 @@ namespace haunted {
 		while (!ptr->on_key(k)) {
 			if (dynamic_cast<ui::control *>(ptr) == root) {
 				on_key(k);
+				if (key_postlistener)
+					key_postlistener(k);
 				return this;
 			}
 
 			if (ui::child *cptr = dynamic_cast<ui::child *>(ptr)) {
 				ptr = cptr->get_parent();
 			} else {
+				if (key_postlistener)
+					key_postlistener(k);
 				return nullptr;
 			}
 		}
