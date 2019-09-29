@@ -91,15 +91,16 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
-		// Unfortunately, the top and bottom margins can't be the same line. Because textinputs are assumed to be one
-		// line high, this means we can't use top and bottom margins. However, this isn't a complete tragedy here, as
-		// we're clearing only one line; instead of setting both margins, we set only the horizontal margins and then
-		// jump to the absolute vertical position of the textinput without the assistance of top/bottom margins.
-		set_hmargins();
 		term->jump(prefix_length + offset, pos.top);
 		apply_colors();
-		term->out_stream.clear_right();
-		reset_margins();
+		if (pos.right() == term->get_position().right()) {
+			// If the textinput stretches to the right edge of the terminal, we can use clear_right.
+			term->out_stream.clear_right();
+		} else {
+			// Horizontal margins don't work everywhere, and clear_right doesn't respect them anyway, so we have to use
+			// this unsavory hack to clear just part of the screen.
+			*term << std::string(pos.width - (prefix_length + offset), ' ');
+		}
 	}
 
 	point textinput::find_cursor() const {
@@ -208,8 +209,9 @@ namespace haunted::ui {
 	}
 
 	void textinput::erase_word() {
-		if (cursor == 0)
+		if (cursor == 0 || !can_draw())
 			return;
+
 		size_t to_erase = 0;
 		for (; prev_char() == " "; --cursor)
 			to_erase++;
@@ -230,6 +232,7 @@ namespace haunted::ui {
 				if (cursor == length() && scroll < cursor && cursor - scroll < text_width()) {
 					// If there's no text after the cursor and the cursor is in bounds,
 					// it should be sufficient to erase the old character from the screen.
+					apply_colors();
 					term->out_stream.save();
 					jump_cursor();
 					*term << ' ';
@@ -258,6 +261,7 @@ namespace haunted::ui {
 			return;
 
 		auto lock = term->lock_render();
+		apply_colors();
 		term->out_stream.save();
 		clear_line();
 		size_t old_cursor = cursor;
@@ -277,6 +281,7 @@ namespace haunted::ui {
 		}
 
 		auto lock = term->lock_render();
+		apply_colors();
 		term->out_stream.save();
 
 		if (cursor <= scroll) {
