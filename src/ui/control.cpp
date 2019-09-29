@@ -155,6 +155,9 @@ namespace haunted::ui {
 			for (auto iter = parent->begin(); iter != parent->end(); ++iter, ++i) {
 				if (*iter == this)
 					return i;
+
+				if ((*iter)->ignore_index)
+					--i;
 			}
 		}
 

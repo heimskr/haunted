@@ -25,6 +25,10 @@ namespace haunted::ui {
 			bool try_margins(std::function<void()>);
 
 		public:
+			/** Whether to ignore this control when calculating the indices of the other children of this control's
+			 *  parent. */
+			bool ignore_index = false;
+
 			control() = delete;
 			control(const control &) = delete;
 			control & operator=(const control &) = delete;
