@@ -150,7 +150,7 @@ namespace haunted::ui {
 	}
 
 	ssize_t control::get_index() const {
-		if (parent != nullptr) {
+		if (parent != nullptr && !ignore_index) {
 			ssize_t i = 0;
 			for (auto iter = parent->begin(); iter != parent->end(); ++iter, ++i) {
 				if (*iter == this)
