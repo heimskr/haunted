@@ -77,6 +77,14 @@ namespace haunted {
 		return mods == get_modset(mod);
 	}
 
+	bool key::operator==(ktype right) const {
+		return type == right && mods.none();
+	}
+
+	bool key::operator%(ktype right) const {
+		return type == right;
+	}
+
 	bool key::operator&(kmod mod) const {
 		switch (int(mod)) {
 			case int(kmod::shift): return mods.test(0);

@@ -103,6 +103,12 @@ namespace haunted {
 
 			bool operator==(kmod) const;
 
+			/** Returns whether the key is of a given type and has no modifiers. */
+			bool operator==(ktype) const;
+
+			/** Returns whether the key has a given type, regardless of modifiers. */
+			bool operator%(ktype) const;
+
 			bool operator&(kmod) const;
 
 			friend std::ostream & operator<<(std::ostream &, const key &);
