@@ -104,6 +104,10 @@ namespace haunted::ui {
 			/** Resets the scrollable region. */
 			void reset_margins();
 
+			/** Returns the control's index within its parent's children. If the control has no parent or if it somehow
+			 *  turned out not to be present among its parent's children, this function returns -1. */
+			ssize_t get_index();
+
 			friend class container;
 
 			friend void swap(control &left, control &right);

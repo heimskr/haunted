@@ -149,6 +149,18 @@ namespace haunted::ui {
 		}
 	}
 
+	ssize_t control::get_index() {
+		if (parent != nullptr) {
+			ssize_t i = 0;
+			for (auto iter = parent->begin(); iter != parent->end(); ++iter, ++i) {
+				if (*iter == this)
+					return i;
+			}
+		}
+
+		return -1;
+	}
+
 	void swap(control &left, control &right) {
 		swap(static_cast<child &>(left), static_cast<child &>(right));
 		std::swap(left.term, right.term);
