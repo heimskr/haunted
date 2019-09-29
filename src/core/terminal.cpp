@@ -175,8 +175,8 @@ namespace haunted {
 			}
 		}
 
-		if (key_postlistener)
-			key_postlistener(k);
+		for (const auto &fn: key_postlisteners)
+			fn(k);
 
 		return ptr;
 	}
