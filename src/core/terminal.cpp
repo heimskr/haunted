@@ -432,7 +432,14 @@ namespace haunted {
 				}
 
 				const csi parsed = buffer;
-				k = key(parsed.get_key(), modset((parsed.second - 1) & 7));
+
+				// Sometimes, get_key() returns keys with modifiers already set. For example, ^[Z represents shift+tab.
+				// If these modifiers are already set, then modifiers weren't specified the CSI u way and we shouldn't
+				// change them.
+				k = parsed.get_key();
+				if (k.mods.none())
+					k = key(k.type, modset((parsed.second - 1) & 7));
+
 				return *this;
 			}
 

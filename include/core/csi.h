@@ -28,7 +28,7 @@ namespace haunted {
 			/** Parses a CSI sequence. Throws an exception if the input is invalid. */
 			csi(const std::string &);
 
-			ktype get_key() const;
+			key get_key() const;
 
 			operator std::pair<int, int>() const;
 

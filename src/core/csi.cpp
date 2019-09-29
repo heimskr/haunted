@@ -86,7 +86,7 @@ namespace haunted {
 		}
 	}
 
-	ktype csi::get_key() const {
+	key csi::get_key() const {
 		switch (suffix) {
 			case 'A': return ktype::up_arrow;
 			case 'B': return ktype::down_arrow;
@@ -98,6 +98,7 @@ namespace haunted {
 			case 'Q': return ktype::f2;
 			case 'R': return ktype::f3;
 			case 'S': return ktype::f4;
+			case 'Z': return key(ktype::tab).shift();
 			case 'u': return ktype(first);
 			case '~':
 				switch (first) {
@@ -126,7 +127,7 @@ namespace haunted {
 	}
 	
 	csi::csi(const std::string &str): first(0), second(0) {
-		static const std::string endings = "u~ABCDFHPQRS";
+		static const std::string endings = "u~ABCDFHPQRSZ";
 		size_t len = str.length();
 
 		// If the string is empty, we need to give up immediately.
