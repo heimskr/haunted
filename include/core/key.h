@@ -97,14 +97,18 @@ namespace haunted {
 
 			/** Returns whether the key is identical to another key. The key type and modifiers must match. */
 			bool operator==(const key &) const;
+			bool operator!=(const key &right) const { return !(*this == right); }
 
 			/** Returns whether the key matches a character. Case sensitive. */
 			bool operator==(char) const;
+			bool operator!=(char right) const { return !(*this == right); }
 
 			bool operator==(kmod) const;
+			bool operator!=(kmod right) const { return !(*this == right); }
 
 			/** Returns whether the key is of a given type and has no modifiers. */
 			bool operator==(ktype) const;
+			bool operator!=(ktype right) const { return !(*this == right); }
 
 			/** Returns whether the key has a given type, regardless of modifiers. */
 			bool operator%(ktype) const;
