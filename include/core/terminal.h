@@ -73,6 +73,9 @@ namespace haunted {
 			/** Called after a key is pressed and processed. */
 			std::function<void(const key &)> key_postlistener {};
 
+			/** Called when the client receives ^c. If this returns true, the client will quit. */
+			std::function<bool()> on_interrupt {[]() { return true; }};
+
 			terminal(std::istream &, ansi::ansistream &);
 			terminal(std::istream &in_stream): terminal(in_stream, ansi::out) {}
 			terminal(): terminal(std::cin) {}

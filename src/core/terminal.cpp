@@ -85,7 +85,7 @@ namespace haunted {
 		cbreak();
 		cbreak();
 		while (*this >> k) {
-			if (k == key(ktype::c, kmod::ctrl))
+			if (k == key(ktype::c, kmod::ctrl) && on_interrupt())
 				break;
 
 			send_key(k);
