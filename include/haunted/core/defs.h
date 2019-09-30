@@ -1,5 +1,5 @@
-#ifndef HAUNTED_CORE_HDEFS_H_
-#define HAUNTED_CORE_HDEFS_H_
+#ifndef HAUNTED_CORE_DEFS_H_
+#define HAUNTED_CORE_DEFS_H_
 
 // #define NODEBUG
 
