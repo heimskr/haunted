@@ -7,11 +7,11 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#include "core/csi.h"
-#include "core/key.h"
-#include "core/terminal.h"
-#include "core/util.h"
-#include "ui/child.h"
+#include "haunted/core/csi.h"
+#include "haunted/core/key.h"
+#include "haunted/core/terminal.h"
+#include "haunted/core/util.h"
+#include "haunted/ui/child.h"
 
 namespace haunted {
 	using uchar = unsigned char;

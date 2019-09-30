@@ -3,10 +3,11 @@
 #include <iostream>
 #include <unistd.h>
 
-#include "core/hdefs.h"
+#include "haunted/core/defs.h"
+
 #include "lib/superstring.h"
 #include "lib/utf8.h"
-#include "formicine/ansi.h"
+#include "lib/formicine/ansi.h"
 
 namespace haunted {
 	superstring::superstring(const std::string &str) {

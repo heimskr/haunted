@@ -1,7 +1,7 @@
 #ifndef HAUNTED_UI_BOXES_DUALBOX_H_
 #define HAUNTED_UI_BOXES_DUALBOX_H_
 
-#include "ui/boxes/orientedbox.h"
+#include "haunted/ui/boxes/orientedbox.h"
 
 namespace haunted::ui::boxes {
 	/**

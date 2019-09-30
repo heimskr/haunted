@@ -7,12 +7,13 @@
 #include <string>
 #include <unordered_set>
 
-#include "core/hdefs.h"
-#include "core/key.h"
+#include "haunted/core/defs.h"
+#include "haunted/core/key.h"
+#include "haunted/ui/container.h"
+#include "haunted/ui/control.h"
+#include "haunted/ui/colored.h"
+
 #include "lib/utf8.h"
-#include "ui/container.h"
-#include "ui/control.h"
-#include "ui/colored.h"
 
 namespace haunted::ui {
 	/**

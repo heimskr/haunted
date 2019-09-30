@@ -3,7 +3,7 @@
 
 #include <functional>
 
-#include "core/key.h"
+#include "haunted/core/key.h"
 
 namespace haunted::ui {
 	/**

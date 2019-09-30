@@ -3,8 +3,8 @@
 
 #include <termios.h>
 
-#include "core/terminal.h"
-#include "ui/control.h"
+#include "haunted/core/terminal.h"
+#include "haunted/ui/control.h"
 
 namespace haunted {
 	/**

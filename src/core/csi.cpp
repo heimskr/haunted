@@ -1,8 +1,8 @@
 #include <stdexcept>
 
-#include "core/csi.h"
-#include "core/terminal.h"
-#include "core/util.h"
+#include "haunted/core/csi.h"
+#include "haunted/core/terminal.h"
+#include "haunted/core/util.h"
 
 namespace haunted {
 	void csi::scan_number(unsigned int &target, ssize_t &i, const std::string &str) {

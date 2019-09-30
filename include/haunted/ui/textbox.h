@@ -6,9 +6,9 @@
 #include <string>
 #include <utility>
 
-#include "ui/colored_control.h"
-#include "core/terminal.h"
-#include "core/util.h"
+#include "haunted/ui/colored_control.h"
+#include "haunted/core/terminal.h"
+#include "haunted/core/util.h"
 
 namespace haunted::tests {
 	class maintest;

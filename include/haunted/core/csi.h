@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "core/key.h"
+#include "haunted/core/key.h"
 
 // Enables a workaround for #7885, which was fixed in 3.3.20190615-nightly.
 // #define ITERM_HACK

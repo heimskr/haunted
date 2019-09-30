@@ -12,17 +12,17 @@
 #include <fcntl.h>
 
 #include "lib/formicine/ansi.h"
-#include "tests/test.h"
-#include "core/csi.h"
-#include "core/dummy_terminal.h"
-#include "core/key.h"
-#include "core/util.h"
-#include "core/terminal.h"
-#include "ui/boxes/simplebox.h"
-#include "ui/boxes/expandobox.h"
-#include "ui/label.h"
-#include "ui/textbox.h"
-#include "ui/textinput.h"
+#include "haunted/tests/test.h"
+#include "haunted/core/csi.h"
+#include "haunted/core/dummy_terminal.h"
+#include "haunted/core/key.h"
+#include "haunted/core/util.h"
+#include "haunted/core/terminal.h"
+#include "haunted/ui/boxes/simplebox.h"
+#include "haunted/ui/boxes/expandobox.h"
+#include "haunted/ui/label.h"
+#include "haunted/ui/textbox.h"
+#include "haunted/ui/textinput.h"
 
 #ifdef NODEBUG
 #define INFO(x)

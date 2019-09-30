@@ -9,10 +9,11 @@
 
 #include <cassert>
 
+#include "haunted/core/terminal.h"
+#include "haunted/core/util.h"
+#include "haunted/ui/textbox.h"
+
 #include "lib/formicine/ansi.h"
-#include "core/terminal.h"
-#include "core/util.h"
-#include "ui/textbox.h"
 
 namespace haunted::tests {
 	/**

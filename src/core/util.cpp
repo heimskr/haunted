@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "core/key.h"
-#include "core/util.h"
+#include "haunted/core/key.h"
+#include "haunted/core/util.h"
 
 namespace haunted {
 	bool util::is_alpha(char c) {

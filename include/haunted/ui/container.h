@@ -3,9 +3,9 @@
 
 #include <deque>
 
-#include "core/hdefs.h"
-#include "ui/keyhandler.h"
-#include "core/util.h"
+#include "haunted/core/defs.h"
+#include "haunted/core/util.h"
+#include "haunted/ui/keyhandler.h"
 
 namespace haunted {
 	class terminal;

@@ -1,8 +1,8 @@
 #include <stdexcept>
 
-#include "core/terminal.h"
-#include "ui/boxes/dualbox.h"
-#include "ui/boxes/propobox.h"
+#include "haunted/core/terminal.h"
+#include "haunted/ui/boxes/dualbox.h"
+#include "haunted/ui/boxes/propobox.h"
 
 namespace haunted::ui::boxes {
 	propobox::propobox(container *parent_, const position &pos_, double ratio_, box_orientation orientation_):

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "core/key.h"
+#include "haunted/core/key.h"
 
 namespace haunted {
 	bool key::is_ctrl(ktype other) const {

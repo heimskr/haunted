@@ -1,4 +1,4 @@
-#include "core/hdefs.h"
+#include "haunted/core/defs.h"
 
 namespace haunted {
 	std::ofstream dbgout(".log", std::ofstream::app);

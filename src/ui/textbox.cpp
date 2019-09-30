@@ -2,8 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "ui/textbox.h"
-#include "../../pingpong/include/core/pputil.h"
+#include "haunted/ui/textbox.h"
 
 namespace haunted::ui {
 	bool textline::operator==(const textline &other) const {

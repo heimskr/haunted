@@ -1,7 +1,7 @@
-#include "ui/container.h"
-#include "ui/control.h"
-#include "core/util.h"
-#include "core/terminal.h"
+#include "haunted/ui/container.h"
+#include "haunted/ui/control.h"
+#include "haunted/core/util.h"
+#include "haunted/core/terminal.h"
 
 namespace haunted::ui {
 	container::~container() {

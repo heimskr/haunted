@@ -3,10 +3,10 @@
 
 #include <list>
 
-#include "core/hdefs.h"
-#include "ui/boxes/box.h"
-#include "ui/container.h"
-#include "ui/control.h"
+#include "haunted/core/defs.h"
+#include "haunted/ui/boxes/box.h"
+#include "haunted/ui/container.h"
+#include "haunted/ui/control.h"
 
 namespace haunted::ui::boxes {
 	/**

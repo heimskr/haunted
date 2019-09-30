@@ -1,8 +1,8 @@
 #ifndef HAUNTED_UI_COLORED_CONTROL_H_
 #define HAUNTED_UI_COLORED_CONTROL_H_
 
-#include "ui/control.h"
-#include "ui/colored.h"
+#include "haunted/ui/control.h"
+#include "haunted/ui/colored.h"
 
 namespace haunted::ui {
 	class colored_control: public control, public colored {

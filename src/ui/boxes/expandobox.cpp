@@ -1,7 +1,7 @@
 #include <algorithm>
 
-#include "core/terminal.h"
-#include "ui/boxes/expandobox.h"
+#include "haunted/core/terminal.h"
+#include "haunted/ui/boxes/expandobox.h"
 
 namespace haunted::ui::boxes {
 	template <>

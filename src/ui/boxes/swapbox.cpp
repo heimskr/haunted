@@ -1,5 +1,5 @@
-#include "core/hdefs.h"
-#include "ui/boxes/swapbox.h"
+#include "haunted/core/defs.h"
+#include "haunted/ui/boxes/swapbox.h"
 
 namespace haunted::ui::boxes {
 	swapbox::swapbox(container *parent_, const position &pos_, std::initializer_list<control *> children_):

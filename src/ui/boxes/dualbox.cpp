@@ -1,4 +1,4 @@
-#include "ui/boxes/dualbox.h"
+#include "haunted/ui/boxes/dualbox.h"
 
 namespace haunted::ui::boxes {
 	void dualbox::resize(const position &new_pos) {

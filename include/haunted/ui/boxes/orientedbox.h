@@ -1,7 +1,7 @@
 #ifndef HAUNTED_UI_BOXES_ORIENTEDBOX_H_
 #define HAUNTED_UI_BOXES_ORIENTEDBOX_H_
 
-#include "ui/boxes/box.h"
+#include "haunted/ui/boxes/box.h"
 
 namespace haunted::ui::boxes {
 	enum class box_orientation {horizontal, vertical};

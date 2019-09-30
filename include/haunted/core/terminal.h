@@ -11,10 +11,10 @@
 
 #include "lib/formicine/ansi.h"
 
-#include "core/key.h"
-#include "ui/coloration.h"
-#include "ui/container.h"
-#include "ui/control.h"
+#include "haunted/core/key.h"
+#include "haunted/ui/coloration.h"
+#include "haunted/ui/container.h"
+#include "haunted/ui/control.h"
 
 namespace haunted {
 	/**

@@ -1,7 +1,7 @@
 #include <deque>
 
-#include "core/terminal.h"
-#include "ui/colored.h"
+#include "haunted/core/terminal.h"
+#include "haunted/ui/colored.h"
 
 namespace haunted::ui {
 	colored::~colored() = default;

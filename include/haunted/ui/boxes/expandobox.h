@@ -4,8 +4,8 @@
 #include <deque>
 #include <utility>
 
-#include "ui/colored.h"
-#include "ui/boxes/orientedbox.h"
+#include "haunted/ui/colored.h"
+#include "haunted/ui/boxes/orientedbox.h"
 
 namespace haunted::ui::boxes {
 	/**

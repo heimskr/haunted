@@ -1,9 +1,9 @@
 #ifndef HAUNTED_UI_BOXES_PROPOBOX_H_
 #define HAUNTED_UI_BOXES_PROPOBOX_H_
 
-#include "ui/boxes/box.h"
-#include "ui/boxes/dualbox.h"
-#include "ui/colored.h"
+#include "haunted/ui/boxes/box.h"
+#include "haunted/ui/boxes/dualbox.h"
+#include "haunted/ui/colored.h"
 
 namespace haunted::ui::boxes {
 	/**

@@ -1,5 +1,5 @@
-#include "core/terminal.h"
-#include "ui/boxes/simplebox.h"
+#include "haunted/core/terminal.h"
+#include "haunted/ui/boxes/simplebox.h"
 
 namespace haunted::ui::boxes {
 	void simplebox::resize(const position &pos) {

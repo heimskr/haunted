@@ -1,9 +1,10 @@
 #include <sstream>
 
+#include "haunted/core/terminal.h"
+#include "haunted/core/util.h"
+#include "haunted/ui/control.h"
+
 #include "lib/formicine/ansi.h"
-#include "core/terminal.h"
-#include "core/util.h"
-#include "ui/control.h"
 
 namespace haunted::ui {
 	control::~control() = default;

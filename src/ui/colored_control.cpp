@@ -1,4 +1,4 @@
-#include "ui/colored_control.h"
+#include "haunted/ui/colored_control.h"
 
 namespace haunted::ui {
 	void colored_control::clear_rect() {

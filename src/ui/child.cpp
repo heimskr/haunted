@@ -1,5 +1,5 @@
-#include "ui/container.h"
-#include "ui/child.h"
+#include "haunted/ui/container.h"
+#include "haunted/ui/child.h"
 
 namespace haunted::ui {
 	child::~child() = default;

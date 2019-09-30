@@ -1,12 +1,12 @@
 #ifndef HAUNTED_UI_CONTROL_H_
 #define HAUNTED_UI_CONTROL_H_
 
-#include "../core/hdefs.h"
-#include "../core/key.h"
-#include "child.h"
-#include "container.h"
-#include "control.h"
-#include "keyhandler.h"
+#include "haunted/core/defs.h"
+#include "haunted/core/key.h"
+#include "haunted/ui/child.h"
+#include "haunted/ui/container.h"
+#include "haunted/ui/control.h"
+#include "haunted/ui/keyhandler.h"
 
 namespace haunted::ui {
 	/**

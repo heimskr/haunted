@@ -1,5 +1,5 @@
-#include "core/hdefs.h"
-#include "ui/coloration.h"
+#include "haunted/core/defs.h"
+#include "haunted/ui/coloration.h"
 
 namespace haunted::ui {
 	bool coloration::set_foreground(ansi::color foreground) {

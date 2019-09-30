@@ -1,8 +1,8 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "core/terminal.h"
-#include "ui/textinput.h"
+#include "haunted/core/terminal.h"
+#include "haunted/ui/textinput.h"
 
 namespace haunted::ui {
 	std::unordered_set<unsigned char> textinput::whitelist = {9, 10, 11, 13};

@@ -1,5 +1,5 @@
-#include "core/terminal.h"
-#include "ui/label.h"
+#include "haunted/core/terminal.h"
+#include "haunted/ui/label.h"
 
 namespace haunted::ui {
 

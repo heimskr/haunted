@@ -1,7 +1,7 @@
 #ifndef HAUNTED_UI_CHILD_H_
 #define HAUNTED_UI_CHILD_H_
 
-#include "ui/container.h"
+#include "haunted/ui/container.h"
 
 namespace haunted::ui {
 	/**

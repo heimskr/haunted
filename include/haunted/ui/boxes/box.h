@@ -1,9 +1,9 @@
 #ifndef HAUNTED_UI_BOXES_BOX_H_
 #define HAUNTED_UI_BOXES_BOX_H_
 
-#include "core/hdefs.h"
-#include "ui/container.h"
-#include "ui/control.h"
+#include "haunted/core/defs.h"
+#include "haunted/ui/container.h"
+#include "haunted/ui/control.h"
 
 namespace haunted::ui::boxes {
 	/**
