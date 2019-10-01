@@ -67,7 +67,7 @@ namespace haunted::ui {
 		friend class haunted::tests::maintest;
 		using line_ptr = std::unique_ptr<textline>;
 
-		private:
+		protected:
 			std::deque<line_ptr> lines;
 
 			/** The number of rows the container has been scrolled vertically. */
