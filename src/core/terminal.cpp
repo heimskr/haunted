@@ -194,38 +194,7 @@ namespace haunted {
 				case ktype::l:
 					redraw();
 					break;
-				case ktype::y: {
-					ansi::ansistream &dbg = haunted::dbgstream;
-					dbg << "terminal"_b << ansi::endl;
-
-					if (root) {
-						std::deque<std::pair<int, ui::control *>> queue {{1, root}};
-
-						int depth;
-						ui::control *ctrl;
-
-						while (!queue.empty()) {
-							std::tie(depth, ctrl) = queue.back();
-							queue.pop_back();
-
-							const haunted::position &pos = ctrl->get_position();
-							int width = pos.width, height = pos.height, top = pos.top, left = pos.left;
-
-							dbg << ansi::color::gray << std::string(depth * 2, ' ') << ansi::action::reset
-							    << ctrl->get_id();
-							dbg.jump(25, -1).save()        << "("_d << left << ","_d;
-							dbg.restore().right(6)         << top << ") "_d;
-							dbg.restore().right(10).save() << width;
-							dbg.restore().right(3)         << " × "_d << height << ansi::endl;
-							if (ui::container *cont = dynamic_cast<ui::container *>(ctrl)) {
-								for (ui::control *child: cont->get_children())
-									queue.push_back({depth + 1, child});
-							}
-						}
-					}
-
-					break;
-				}
+				case ktype::y: debug_tree(); break;
 				default:
 					return false;
 			}
@@ -465,5 +434,36 @@ namespace haunted {
 		}
 
 		return *this;
+	}
+
+	void terminal::debug_tree() {
+		ansi::ansistream &dbg = haunted::dbgstream;
+		dbg << "terminal"_b << ansi::endl;
+
+		if (root) {
+			std::deque<std::pair<int, ui::control *>> queue {{1, root}};
+
+			int depth;
+			ui::control *ctrl;
+
+			while (!queue.empty()) {
+				std::tie(depth, ctrl) = queue.back();
+				queue.pop_back();
+
+				const haunted::position &pos = ctrl->get_position();
+				int width = pos.width, height = pos.height, top = pos.top, left = pos.left;
+
+				dbg << ansi::color::gray << std::string(depth * 2, ' ') << ansi::action::reset
+					<< ctrl->get_id();
+				dbg.jump(25, -1).save()        << "("_d << left << ","_d;
+				dbg.restore().right(6)         << top << ") "_d;
+				dbg.restore().right(10).save() << width;
+				dbg.restore().right(3)         << " × "_d << height << ansi::endl;
+				if (ui::container *cont = dynamic_cast<ui::container *>(ctrl)) {
+					for (ui::control *child: cont->get_children())
+						queue.push_back({depth + 1, child});
+				}
+			}
+		}
 	}
 }

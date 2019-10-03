@@ -196,6 +196,8 @@ namespace haunted {
 			/** Reads a key from the terminal. This conveniently handles much of the weirdness of terminal input. */
 			virtual terminal & operator>>(key &);
 
+			void debug_tree();
+
 			/** Writes pretty much anything to the terminal. */
 			template <typename T>
 			terminal & operator<<(const T &t) {
