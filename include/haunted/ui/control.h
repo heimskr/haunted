@@ -15,9 +15,16 @@ namespace haunted::ui {
 	 */
 	class control: public virtual keyhandler, public child {
 		protected:
+			/** The control's controlling terminal. */
 			terminal *term;
+
+			/** A name (ideally unique) that identifies the control. */
 			std::string name;
+
+			/** Whether margins are currently set for this component. */
 			bool in_margins = false;
+
+			/** The absolute position of the control on the screen. */
 			haunted::position pos = {};
 
 			/** Sets the margins if needed, executes a function and resets the margins if needed. Returns true if the

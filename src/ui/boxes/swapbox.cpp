@@ -1,4 +1,5 @@
 #include "haunted/core/defs.h"
+#include "haunted/core/terminal.h"
 #include "haunted/ui/boxes/swapbox.h"
 
 namespace haunted::ui::boxes {
@@ -25,6 +26,11 @@ namespace haunted::ui::boxes {
 
 
 	void swapbox::set_active(control *new_active) {
+		// To prevent children's terminals from disappearing mid-render, we need to acquire the terminal's render lock.
+		std::unique_lock<std::recursive_mutex> lock;
+		if (term)
+			lock = term->lock_render();
+
 		if (new_active == active)
 			return;
 

@@ -235,8 +235,9 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
-		const int old_voffset = voffset;
+		auto lock = term->lock_render();
 
+		const int old_voffset = voffset;
 		voffset = std::max(voffset + delta, 0);
 
 		// Don't let the voffset extend past the point where the last line of text is just above the first row.
