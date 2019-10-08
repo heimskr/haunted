@@ -124,7 +124,7 @@ namespace haunted::ui {
 			/** Deletes all lines in the textbox. */
 			void clear_lines();
 
-			const std::deque<line_ptr> & get_lines() const { return lines; }
+			std::deque<line_ptr> & get_lines() { return lines; }
 
 			/** Scrolls the textbox down (positive argument) or up (negative argument). */
 			void vscroll(int = 1);
