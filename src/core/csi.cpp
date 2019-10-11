@@ -104,9 +104,13 @@ namespace haunted {
 				switch (first) {
 					case 2:  return ktype::insert;
 					case 3:  return ktype::del;
+					case 147:
 					case 5:  return ktype::page_up;
+					case 148:
 					case 6:  return ktype::page_down;
+					case 1:
 					case 7:  return ktype::home;
+					case 4:
 					case 8:  return ktype::end;
 					case 11: return ktype::f1;
 					case 12: return ktype::f2;
