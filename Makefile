@@ -7,10 +7,6 @@ VALGRIND		:= valgrind --leak-check=full --show-leak-kinds=all --track-origins=ye
 MKBUILD			:= mkdir -p build
 OUTPUT			:= build/tests
 
-ifeq ($(shell uname -s), Darwin)
-	SDKFLAGS	:= --sysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
-endif
-
 ifeq ($(CHECK), asan)
 	CHECKFLAGS := -fsanitize=address -fno-common
 else ifeq ($(CHECK), msan)
@@ -30,11 +26,11 @@ all: $(OBJECTS) build/test
 
 build/tests: build/tests/tests.o $(OBJECTS)
 	@ $(MKBUILD)
-	$(CC) $(SDKFLAGS) $< $(filter-out $<,$+) -o $@ $(LDFLAGS) $(LDLIBS)
+	$(CC) $< $(filter-out $<,$+) -o $@ $(LDFLAGS) $(LDLIBS)
 
 build/%.o: src/%.cpp
 	@ mkdir -p "$(shell dirname "$@")"
-	$(CC) $(strip $(SDKFLAGS) $(INCLUDE)) -c $< -o $@
+	$(CC) $(strip $(INCLUDE)) -c $< -o $@
 
 grind: $(OUTPUT)
 	$(VALGRIND) ./$(OUTPUT)
