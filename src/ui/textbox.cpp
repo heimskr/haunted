@@ -4,6 +4,8 @@
 
 #include "haunted/ui/textbox.h"
 
+#include "../../../include/spjalla/tests/performance.h"
+
 namespace haunted::ui {
 	bool textline::operator==(const textline &other) const {
 		return continuation == other.continuation && std::string(*this) == std::string(other);
@@ -90,11 +92,12 @@ namespace haunted::ui {
 			return;
 
 		auto lock = term->lock_render();
+		auto w = spjalla::perf.watch("textbox::draw_new_line");
 
 		const int new_lines = line_rows(line);
 		const int offset = inserted? new_lines : 0;
 
-		int next = next_row() - offset;
+		int next = next_row(offset);
 		if (!autoscroll && next < 0)
 			return;
 
@@ -148,6 +151,8 @@ namespace haunted::ui {
 		if (lines.empty() || row >= total_rows())
 			throw std::out_of_range("Invalid row index: " + std::to_string(row));
 
+		auto w = spjalla::perf.watch("textbox::line_at_row");
+
 		if (!wrap)
 			return {lines[row].get(), 0};
 
@@ -171,7 +176,7 @@ namespace haunted::ui {
 
 	std::string textbox::text_at_row(int row, bool pad_right) {
 		const size_t cols = pos.width;
-		
+		auto w = spjalla::perf.watch("textbox::text_at_row");
 		textline *line;
 		size_t offset;
 
@@ -241,6 +246,7 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
+		auto w = spjalla::perf.watch("textbox::vscroll");
 		auto lock = term->lock_render();
 
 		const int old_voffset = voffset;
@@ -321,6 +327,7 @@ namespace haunted::ui {
 		if (!can_draw())
 			return;
 
+		auto w = spjalla::perf.watch("textbox::draw");
 		auto lock = term->lock_render();
 
 		try_margins([&]() {
@@ -383,6 +390,7 @@ namespace haunted::ui {
 	}
 
 	textbox & textbox::operator+=(const std::string &text) {
+		auto w = spjalla::perf.watch("textbox::operator+=");
 		if (!text.empty() && text.back() == '\n')
 			lines.pop_back();
 
@@ -395,6 +403,7 @@ namespace haunted::ui {
 	}
 
 	textbox::operator std::string() const {
+		auto w = spjalla::perf.watch("textbox::operator std::string");
 		std::string out = "";
 		for (const line_ptr &line: lines) {
 			if (!out.empty())
