@@ -123,7 +123,6 @@ namespace haunted {
 			colors.reset();
 			out_stream.clear().jump();
 			root->resize({0, 0, cols, rows});
-			// root->draw();
 		}
 	}
 
