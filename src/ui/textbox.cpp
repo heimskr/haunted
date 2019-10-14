@@ -4,7 +4,7 @@
 
 #include "haunted/ui/textbox.h"
 
-#include "../../../include/spjalla/tests/performance.h"
+#include "lib/formicine/performance.h"
 
 namespace haunted::ui {
 	bool textline::operator==(const textline &other) const {
