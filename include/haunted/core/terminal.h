@@ -10,6 +10,7 @@
 #include <termios.h>
 
 #include "haunted/core/key.h"
+#include "haunted/core/mouse.h"
 #include "haunted/ui/coloration.h"
 #include "haunted/ui/container.h"
 #include "haunted/ui/control.h"
@@ -72,6 +73,7 @@ namespace haunted {
 			bool suppress_output = false;
 			ansi::ansistream &out_stream;
 			ui::coloration colors;
+			bool dragging = false;
 
 			/** Called after a key is pressed and processed. */
 			std::function<void(const key &)> key_postlistener {};
@@ -112,7 +114,7 @@ namespace haunted {
 			 *  Returns a pointer to the control or container that ended up handling the key press. */
 			virtual ui::keyhandler * send_key(const key &);
 
-			virtual /* ui::mousehandler * */ void send_mouse(mouse_action, int x, int y);
+			virtual /* ui::mousehandler * */ void send_mouse(const mouse_report &);
 
 			/** Handles key combinations common to most console programs. */
 			virtual bool on_key(const key &) override;

@@ -49,6 +49,9 @@ namespace haunted::tests {
 		key k;
 		term.cbreak();
 		while (term >> k) {
+			if (k == ktype::mouse)
+				continue;
+
 			std::cout <<  "\r"  << std::setw(3) << std::left << std::setfill(' ')
 			          << int(k) <<  " "  <<  k  << std::endl;
 			if (k == '\\')

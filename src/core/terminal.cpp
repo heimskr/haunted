@@ -13,6 +13,8 @@
 #include "haunted/core/util.h"
 #include "haunted/ui/child.h"
 
+#include "lib/formicine/futil.h"
+
 namespace haunted {
 	using uchar = unsigned char;
 
@@ -187,8 +189,8 @@ namespace haunted {
 		return ptr;
 	}
 
-	void terminal::send_mouse(mouse_action action, int x, int y) {
-		DBG("mouse['" << int(action) << "', " << x << ", " << y << "]");
+	void terminal::send_mouse(const mouse_report &report) {
+		// DBG("mouse['" << int(action) << "', " << x << ", " << y << "]");
 	}
 
 	bool terminal::on_key(const key &k) {
@@ -426,7 +428,20 @@ namespace haunted {
 
 				const char back = buffer.back();
 				if (back == 'M' || back == 'm') {
-					DBG("This is a mouse thing? " << "["_d << buffer << "]"_d);
+					if (buffer.front() != '<') {
+						DBG("Unrecognized sequence: \"" << buffer << "\"");
+						throw std::invalid_argument("Unrecognized sequence");
+					}
+
+					mouse_report report {buffer};
+
+					if (report.action == mouse_action::down)
+						dragging = true;
+					else if (report.action == mouse_action::up)
+						dragging = false;
+
+					send_mouse(buffer);
+
 					k = ktype::mouse;
 					return *this;
 				}

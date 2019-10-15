@@ -33,6 +33,8 @@ namespace haunted {
 
 	/**
 	 * Represents a keyboard modifier in the CSI u representation (but 0-based).
+	 * For mouse reports, what's called alt here actually represents the meta key,
+	 * as alt-clicks don't seem to be reported.
 	 */
 	enum class kmod {none = 0, shift = 1, alt = 2, ctrl = 4};
 
