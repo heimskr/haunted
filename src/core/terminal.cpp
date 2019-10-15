@@ -192,12 +192,15 @@ namespace haunted {
 	}
 
 	void terminal::send_mouse(const mouse_report &report) {
-		DBG(report.str());
+		if (report.mods == kmod::shift) {
+			mouse(mouse_mode::none);
+		}
+
 		ui::control *ctrl = child_at_offset(report.x, report.y);
 		if (ctrl == nullptr) {
-			DBG("nullptr"_d);
+			DBG(report.str() << " nullptr"_d);
 		} else {
-			DBG(ctrl->get_id());
+			DBG(report.str() << " " << ctrl->get_id());
 		}
 	}
 
@@ -257,7 +260,6 @@ namespace haunted {
 	ui::control * terminal::child_at_offset(int x, int y) const {
 		ui::container *cont = dynamic_cast<container *>(root);
 		while (cont != nullptr) {
-			const position cpos = cont->get_position();
 			ui::control *ctrl = cont->child_at_offset(x, y);
 			if (ctrl == nullptr)
 				return nullptr;
@@ -285,6 +287,7 @@ namespace haunted {
 			if (mmode != mode) {
 				DBG("\\e[?" << std::to_string(int(mmode)) << ";1006l");
 				out_stream << "\e[?" << std::to_string(int(mmode)) << ";1006l";
+				mmode = mode;
 			}
 
 			return;

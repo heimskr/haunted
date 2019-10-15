@@ -175,6 +175,8 @@ namespace haunted {
 
 			/** Sets the mouse-reporting mode. */
 			virtual void mouse(mouse_mode);
+			/** Returns the current mouse mode. */
+			virtual mouse_mode mouse() const { return mmode; }
 
 			/** Scrolls the screen vertically. Negative numbers scroll up, positive numbers scroll down. */
 			virtual void vscroll(int rows = 1);
