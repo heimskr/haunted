@@ -139,4 +139,17 @@ namespace haunted {
 		if (mods.test(1)) out.append("⎇ "); // the extra space is because the character is wide but still one column.
 		return out;
 	}
+
+	bool operator==(kmod mod, const modset &mods) {
+		switch (mod) {
+			case kmod::shift: return mods == 1;
+			case kmod::alt:   return mods == 2;
+			case kmod::ctrl:  return mods == 4;
+			default: return false;
+		}
+	}
+
+	bool operator==(const modset &mods, kmod mod) {
+		return mod == mods;
+	}
 }

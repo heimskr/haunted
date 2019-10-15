@@ -123,6 +123,9 @@ namespace haunted {
 			/** Returns a string representing a set of modifiers. */
 			static std::string mod_str(const modset &);
 	};
+
+	bool operator==(kmod, const modset &);
+	bool operator==(const modset &, kmod);
 }
 
 #endif
