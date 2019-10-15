@@ -30,7 +30,7 @@ namespace haunted::ui {
 		return false;
 	}
 
-	control * container::child_at_offset(int x, int y) {
+	control * container::child_at_offset(int x, int y) const {
 		const position pos = get_position();
 		x += pos.left;
 		y += pos.top;

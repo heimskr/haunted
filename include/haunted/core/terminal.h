@@ -153,6 +153,10 @@ namespace haunted {
 			/** Returns a (0, 0)-based position representing the terminal. */
 			virtual position get_position() const override;
 
+			/** Recursively searches the all children within the terminal until a non-container control that contains
+			 *  the given coordinate is found. */
+			virtual ui::control * child_at_offset(int x, int y) const override;
+
 			/** Jumps to the focused widget. */
 			virtual void jump_to_focused();
 

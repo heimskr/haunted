@@ -469,6 +469,7 @@ namespace haunted::ui {
 					case int(ktype::up_arrow):
 					case int(ktype::page_down):
 					case int(ktype::page_up):
+					case int(ktype::mouse): return true;
 					case int(ktype::tab):
 						return false;
 					default:

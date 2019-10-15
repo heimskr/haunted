@@ -193,6 +193,12 @@ namespace haunted {
 
 	void terminal::send_mouse(const mouse_report &report) {
 		DBG(report.str());
+		ui::control *ctrl = child_at_offset(report.x, report.y);
+		if (ctrl == nullptr) {
+			DBG("nullptr"_d);
+		} else {
+			DBG(ctrl->get_id());
+		}
 	}
 
 	bool terminal::on_key(const key &k) {
@@ -246,6 +252,21 @@ namespace haunted {
 
 	position terminal::get_position() const {
 		return {0, 0, get_cols(), get_rows()};
+	}
+
+	ui::control * terminal::child_at_offset(int x, int y) const {
+		ui::container *cont = dynamic_cast<container *>(root);
+		while (cont != nullptr) {
+			const position cpos = cont->get_position();
+			ui::control *ctrl = cont->child_at_offset(x, y);
+			if (ctrl == nullptr)
+				return nullptr;
+			cont = dynamic_cast<container *>(ctrl);
+			if (cont == nullptr)
+				return ctrl;
+		}
+
+		return nullptr;
 	}
 
 	void terminal::jump_to_focused() {

@@ -56,7 +56,7 @@ namespace haunted::ui::boxes {
 			children.push_back(new_active);
 	}
 
-	control * swapbox::child_at_offset(int x, int y) {
+	control * swapbox::child_at_offset(int x, int y) const {
 		return (x < pos.width && y < pos.height)? active : nullptr;
 	}
 

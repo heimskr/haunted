@@ -24,6 +24,8 @@ namespace haunted {
 			throw std::invalid_argument("Couldn't parse mouse report x coordinate as a number");
 		if (!formicine::util::parse_long(numbers[2], y))
 			throw std::invalid_argument("Couldn't parse mouse report y coordinate as a number");
+		--x;
+		--y;
 		decode_type(type, combined.back(), action, button, mods);
 	}
 
