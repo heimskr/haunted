@@ -42,8 +42,13 @@ namespace haunted::ui {
 
 			type & get_children() { return children; }
 
+			virtual position get_position() const = 0;
+
 			/** Returns the terminal associated with the container. */
 			virtual haunted::terminal * get_terminal() = 0;
+
+			/** Returns the child control at an offset from the top left corner of this container. */
+			virtual control * child_at_offset(int x, int y);
 
 			/** Asks the parent to assign a new size to one of its children. Useful for expandoboxes.
 			 *  Returns true if the request was granted. */

@@ -7,11 +7,11 @@
 #include "lib/formicine/futil.h"
 
 namespace haunted {
-	mouse_report::mouse_report(long type, long x_, long y_): x(x_), y(y_) {
-		DBG("mouse_report::mouse_report(type=[" << type << "]");
+	mouse_report::mouse_report(long type, char final_char_, long x_, long y_): final_char(final_char_), x(x_), y(y_) {
+		decode_type(type, final_char_, action, button, mods);
 	}
 
-	mouse_report::mouse_report(const std::string &combined) {
+	mouse_report::mouse_report(const std::string &combined): final_char(combined.back()) {
 		std::vector<std::string> numbers = formicine::util::split(combined.substr(1, combined.length() - 2), ";");
 
 		if (numbers.size() != 3)

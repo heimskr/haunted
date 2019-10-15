@@ -18,7 +18,7 @@ namespace haunted {
 			modset mods;
 			long x, y; // zero-based.
 
-			mouse_report(long, long, long);
+			mouse_report(long type, char fchar, long x, long y);
 
 			/** Parses a mouse report from a raw mouse report, which is expected to be /^<\d+;\d+;\d+[Mm]$/. */
 			mouse_report(const std::string &);

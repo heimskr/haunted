@@ -30,6 +30,20 @@ namespace haunted::ui {
 		return false;
 	}
 
+	control * container::child_at_offset(int x, int y) {
+		const position pos = get_position();
+		x += pos.left;
+		y += pos.top;
+
+		for (control *child: children) {
+			const position &cpos = child->get_position();
+			if ((cpos.left <= x) && (x <= cpos.right()) && (cpos.top <= y) && (y <= cpos.bottom()))
+				return child;
+		}
+
+		return nullptr;
+	}
+
 	bool container::request_resize(control *, size_t, size_t) {
 		return false;
 	}

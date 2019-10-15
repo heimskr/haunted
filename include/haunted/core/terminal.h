@@ -151,7 +151,7 @@ namespace haunted {
 			/** Returns the width (in columns) of the terminal. */
 			virtual int get_cols() const { return cols; }
 			/** Returns a (0, 0)-based position representing the terminal. */
-			virtual position get_position() const;
+			virtual position get_position() const override;
 
 			/** Jumps to the focused widget. */
 			virtual void jump_to_focused();

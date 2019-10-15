@@ -16,6 +16,8 @@ namespace haunted::ui::boxes {
 			box(container *parent_, const position &pos_ = {}): control(parent_, pos_) {}
 
 			virtual terminal * get_terminal() override { return term; }
+
+			virtual position get_position() const override { return control::get_position(); }
 	};
 }
 

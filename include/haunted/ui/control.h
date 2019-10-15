@@ -83,7 +83,7 @@ namespace haunted::ui {
 			void set_terminal(terminal *term_) { term = term_;  }
 
 			/** Returns the control's position. */
-			haunted::position get_position() const { return pos; }
+			virtual position get_position() const { return pos; }
 
 			/** Moves the cursor on the screen to the top-left corner of the control. */
 			virtual void jump();

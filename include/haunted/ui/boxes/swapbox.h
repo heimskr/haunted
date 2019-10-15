@@ -24,6 +24,9 @@ namespace haunted::ui::boxes {
 			void set_active(control *);
 			control * get_active() { return active; }
 
+			/** Returns the active control if the given coordinates are within the swapbox's area. */
+			virtual control * child_at_offset(int x, int y) override;
+
 			virtual void resize(const position &) override;
 			virtual void draw() override;
 			bool on_key(const key &) override;
