@@ -9,12 +9,13 @@
 
 #include <termios.h>
 
-#include "lib/formicine/ansi.h"
-
 #include "haunted/core/key.h"
 #include "haunted/ui/coloration.h"
 #include "haunted/ui/container.h"
 #include "haunted/ui/control.h"
+
+#include "lib/formicine/ansi.h"
+#include "lib/formicine/performance.h"
 
 namespace haunted {
 	/**
@@ -201,6 +202,7 @@ namespace haunted {
 			/** Writes pretty much anything to the terminal. */
 			template <typename T>
 			terminal & operator<<(const T &t) {
+				auto w = formicine::perf.watch("template <T> operator<<(terminal, T)");
 				if (!suppress_output) {
 					std::unique_lock uniq(output_mutex);
 					out_stream << t;

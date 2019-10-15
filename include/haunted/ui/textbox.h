@@ -10,6 +10,8 @@
 #include "haunted/core/terminal.h"
 #include "haunted/core/util.h"
 
+#include "lib/formicine/performance.h"
+
 namespace haunted::tests {
 	class maintest;
 }
@@ -56,7 +58,7 @@ namespace haunted::ui {
 		// virtual std::string text_at_row(size_t width, int row) const override;
 		// virtual int num_rows(int width) const override;
 
-		virtual operator std::string() const override { return text; }
+		virtual operator std::string() const override { auto w = formicine::perf.watch("simpleline::operator std::string"); return text; }
 		virtual bool operator==(const simpleline &) const;
 	};
 
@@ -84,8 +86,7 @@ namespace haunted::ui {
 
 			/** When a new line is added, it's usually not necessary to completely redraw the component. Instead,
 			 *  scrolling the component and printing only the new line is sufficient.
-			 *  @param inserted Whether the line has already been inserted into the textbox's collection.
-			 */
+			 *  @param inserted Whether the line has already been inserted into the textbox's collection. */
 			void draw_new_line(const textline &, bool inserted = false);
 
 			/** Returns the row on which the next line should be drawn or -1 if it's out of bounds. */
@@ -164,9 +165,11 @@ namespace haunted::ui {
 			/** Adds a line to the end of the textbox. */
 			template <EXTENDS(T, textline)>
 			textbox & operator+=(const T &line) {
+				auto w = formicine::perf.watch("template textbox::operator+=");
 				std::unique_ptr<T> line_copy = std::make_unique<T>(line);
+				const bool did_scroll = do_scroll(line.num_rows(pos.width));
 				lines.push_back(std::move(line_copy));
-				if (!do_scroll(line.num_rows(pos.width)))
+				if (!did_scroll)
 					draw_new_line(*lines.back(), true);
 				return *this;
 			}
