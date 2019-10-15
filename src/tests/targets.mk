@@ -47,3 +47,15 @@ dbg: build/test
 
 ktest: build/test
 	./$^ key
+
+k0test: build/test
+	./$^ key none
+
+kbtest: build/test
+	./$^ key basic
+
+kntest: build/test
+	./$^ key normal
+
+katest: build/test
+	./$^ key any

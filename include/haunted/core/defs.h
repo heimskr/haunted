@@ -24,6 +24,9 @@ namespace haunted {
 	extern ansi::ansistream dbgstream;
 
 	enum class side {left, right, top, bottom};
+	enum class mouse_mode: int {none = 0, basic = 9, normal = 1000, highlight = 1001, motion = 1002, any = 1003};
+
+	enum class mouse_action: char {move, down, up, drag, scrollup, scrolldown};
 
 	struct point {
 		int x, y;

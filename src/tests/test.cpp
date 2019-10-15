@@ -477,7 +477,36 @@ int main(int argc, char **argv) {
 	haunted::tests::testing unit;
 
 #define MKTERM terminal term(std::cin, ansi::out); term.watch_size();
-	if (arg == "key") { MKTERM
+	if (arg == "key") {
+		mouse_mode mode = mouse_mode::none;
+		if (2 < argc) {
+			const std::string marg = argv[2];
+			if (marg == "basic") {
+				mode = mouse_mode::basic;
+			} else if (marg == "normal") {
+				mode = mouse_mode::normal;
+			} else if (marg == "highlight") {
+				mode = mouse_mode::highlight;
+			} else if (marg == "motion") {
+				mode = mouse_mode::motion;
+			} else if (marg == "any") {
+				mode = mouse_mode::any;
+			} else if (marg == "none") {
+				std::cout << "\e[?9l\e[?1000l\e[?1001l\e[?1002l\e[?1003l";
+				return 0;
+			} else {
+				std::cerr << "Unknown mouse mode: " << marg << "\n";
+				return 1;
+			}
+
+			std::cerr << "Enabled mouse mode " << marg << ".\n";
+		}
+
+		MKTERM
+
+		if (mode != mouse_mode::none)
+			term.mouse(mode);
+
 		haunted::tests::maintest::test_key(term);
 	} else if (arg == "input") { MKTERM
 		haunted::tests::maintest::test_textinput(term);

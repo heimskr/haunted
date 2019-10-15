@@ -13,6 +13,7 @@ namespace haunted {
 	 * Represents a key code.
 	 */
 	enum class ktype: int {
+		      mouse =  -1,
 		       bell =   7,        bs,          tab,  enter,
 		      space =  32,      bang,       dquote,   hash,      dollar,  percent, ampersand, squote,
 		     oparen =  40,    cparen,         star,   plus,       comma,    minus,    period,  slash,

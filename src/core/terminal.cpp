@@ -187,6 +187,10 @@ namespace haunted {
 		return ptr;
 	}
 
+	void terminal::send_mouse(mouse_action action, int x, int y) {
+		DBG("mouse['" << int(action) << "', " << x << ", " << y << "]");
+	}
+
 	bool terminal::on_key(const key &k) {
 		if (k == kmod::ctrl) {
 			switch (k.type) {
@@ -248,6 +252,20 @@ namespace haunted {
 	void terminal::jump(int x, int y) {
 		std::unique_lock uniq(output_mutex);
 		out_stream.jump(x, y);
+	}
+
+	void terminal::mouse(mouse_mode mode) {
+		std::unique_lock uniq(output_mutex);
+		if (mode == mouse_mode::none) {
+			if (mmode != mode)
+				out_stream << "\e[?" << std::to_string(int(mode)) << ";1006l";
+			return;
+		}
+
+		if (mode != mmode) {
+			DBG("\\e[?" << std::to_string(int(mmode)) << "h");
+			out_stream << "\e[?" << std::to_string(int(mode)) << ";1006h";
+		}
 	}
 
 	void terminal::vscroll(int rows) {
@@ -364,7 +382,7 @@ namespace haunted {
 				return *this;
 
 			if (c == uchar(ktype::escape)) {
-				// We can't tell the difference between an actual press of the/ escape key and the beginning of a CSI.
+				// We can't tell the difference between an actual press of the escape key and the beginning of a CSI.
 				// Perhaps it would be possible with the use of some timing trickery, but I don't consider that
 				// necessary right now (YAGNI!). Instead, the user will have to press the escape key twice.
 				k = {c, kmod::none};
@@ -404,6 +422,13 @@ namespace haunted {
 						return *this;
 
 					buffer += c;
+				}
+
+				const char back = buffer.back();
+				if (back == 'M' || back == 'm') {
+					DBG("This is a mouse thing? " << "["_d << buffer << "]"_d);
+					k = ktype::mouse;
+					return *this;
 				}
 
 				const csi parsed = buffer;

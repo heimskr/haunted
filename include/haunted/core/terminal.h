@@ -31,6 +31,8 @@ namespace haunted {
 			std::thread input_thread;
 			termios original;
 
+			mouse_mode mmode = mouse_mode::none;
+
 			ui::control *root = nullptr;
 
 			// Input is sent to the focused control.
@@ -110,6 +112,8 @@ namespace haunted {
 			 *  Returns a pointer to the control or container that ended up handling the key press. */
 			virtual ui::keyhandler * send_key(const key &);
 
+			virtual /* ui::mousehandler * */ void send_mouse(mouse_action, int x, int y);
+
 			/** Handles key combinations common to most console programs. */
 			virtual bool on_key(const key &) override;
 
@@ -160,6 +164,9 @@ namespace haunted {
 			virtual void show() { out_stream.show(); }
 			/** Makes the cursor invisible. */
 			virtual void hide() { out_stream.hide(); }
+
+			/** Sets the mouse-reporting mode. */
+			virtual void mouse(mouse_mode);
 
 			/** Scrolls the screen vertically. Negative numbers scroll up, positive numbers scroll down. */
 			virtual void vscroll(int rows = 1);
