@@ -40,7 +40,7 @@ namespace haunted::ui {
 
 	int textline::num_rows(int width) const {
 		const std::string text = ansi::strip(*this);
-		auto w = formicine::perf.watch("textline::num_rows");
+		// auto w = formicine::perf.watch("textline::num_rows");
 
 		int length = ansi::length(text);
 		if (length <= width)
@@ -170,7 +170,7 @@ namespace haunted::ui {
 				row_count += last_count;
 			}
 		}
-		
+
 		if (line_count <= index)
 			throw std::out_of_range("Line index too large: " + std::to_string(index));
 
@@ -311,9 +311,11 @@ namespace haunted::ui {
 	int textbox::line_rows(const textline &line) const {
 		// TODO: support doublewide characters.
 
+		auto w = formicine::perf.watch("textbox::line_rows");
+
 		if (!wrap)
 			return 1;
-		
+
 		return line.num_rows(pos.width);
 	}
 

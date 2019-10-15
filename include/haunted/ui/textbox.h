@@ -55,9 +55,6 @@ namespace haunted::ui {
 		simpleline(int continuation_): textline(continuation_) {}
 		simpleline(): simpleline("", 0) {}
 
-		// virtual std::string text_at_row(size_t width, int row) const override;
-		// virtual int num_rows(int width) const override;
-
 		virtual operator std::string() const override { auto w = formicine::perf.watch("simpleline::operator std::string"); return text; }
 		virtual bool operator==(const simpleline &) const;
 	};

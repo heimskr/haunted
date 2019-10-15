@@ -482,6 +482,7 @@ namespace haunted::ui {
 				switch (type) {
 					case 'a':      start(); break;
 					case 'e':        end(); break;
+					case 'h':      erase(); break;
 					case 't':  transpose(); break;
 					case 'u':      clear(); break;
 					case 'w': erase_word(); break;
