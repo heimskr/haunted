@@ -119,6 +119,9 @@ namespace haunted {
 			bool operator&(kmod) const;
 
 			friend std::ostream & operator<<(std::ostream &, const key &);
+
+			/** Returns a string representing a set of modifiers. */
+			static std::string mod_str(const modset &);
 	};
 }
 

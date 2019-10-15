@@ -59,3 +59,9 @@ kntest: build/test
 
 katest: build/test
 	./$^ key any
+
+khtest: build/test
+	./$^ key highlight
+
+kmtest: build/test
+	./$^ key motion

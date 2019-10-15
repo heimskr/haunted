@@ -76,8 +76,10 @@ namespace haunted {
 	}
 
 	void terminal::reset() {
+		mouse(mouse_mode::none);
 		setattr(original);
 		attrs = original;
+		DBG("reset()");
 	}
 
 	void terminal::work_input() {
@@ -190,7 +192,7 @@ namespace haunted {
 	}
 
 	void terminal::send_mouse(const mouse_report &report) {
-		// DBG("mouse['" << int(action) << "', " << x << ", " << y << "]");
+		DBG(report.str());
 	}
 
 	bool terminal::on_key(const key &k) {
@@ -259,14 +261,23 @@ namespace haunted {
 	void terminal::mouse(mouse_mode mode) {
 		std::unique_lock uniq(output_mutex);
 		if (mode == mouse_mode::none) {
-			if (mmode != mode)
-				out_stream << "\e[?" << std::to_string(int(mode)) << ";1006l";
+			if (mmode != mode) {
+				DBG("\\e[?" << std::to_string(int(mmode)) << ";1006l");
+				out_stream << "\e[?" << std::to_string(int(mmode)) << ";1006l";
+			}
+
 			return;
 		}
 
 		if (mode != mmode) {
-			DBG("\\e[?" << std::to_string(int(mmode)) << "h");
+			if (mmode != mouse_mode::none) {
+				out_stream << "\e[?" << std::to_string(int(mmode)) << "l";
+				DBG("\\e[?" << std::to_string(int(mmode)) << "l");
+			}
+
+			DBG("\\e[?" << std::to_string(int(mode)) << ";1006h");
 			out_stream << "\e[?" << std::to_string(int(mode)) << ";1006h";
+			mmode = mode;
 		}
 	}
 
@@ -435,12 +446,19 @@ namespace haunted {
 
 					mouse_report report {buffer};
 
-					if (report.action == mouse_action::down)
+					if (report.action == mouse_action::down) {
 						dragging = true;
-					else if (report.action == mouse_action::up)
+						drag_button = report.button;
+					} else if (report.action == mouse_action::up) {
 						dragging = false;
+					}
 
-					send_mouse(buffer);
+					if (dragging && report.action == mouse_action::move) {
+						report.action = mouse_action::drag;
+						report.button = drag_button;
+					}
+
+					send_mouse(report);
 
 					k = ktype::mouse;
 					return *this;

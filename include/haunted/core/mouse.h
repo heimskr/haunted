@@ -23,6 +23,9 @@ namespace haunted {
 			/** Parses a mouse report from a raw mouse report, which is expected to be /^<\d+;\d+;\d+[Mm]$/. */
 			mouse_report(const std::string &);
 
+			/** Returns a string that describes the mouse report. */
+			std::string str() const;
+
 			/** Splits a first parameter and a final character into an action, button and modset. */
 			static void decode_type(long, char, mouse_action &, mouse_button &, modset &);
 	};

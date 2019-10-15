@@ -73,7 +73,9 @@ namespace haunted {
 			bool suppress_output = false;
 			ansi::ansistream &out_stream;
 			ui::coloration colors;
+
 			bool dragging = false;
+			mouse_button drag_button = mouse_button::left;
 
 			/** Called after a key is pressed and processed. */
 			std::function<void(const key &)> key_postlistener {};

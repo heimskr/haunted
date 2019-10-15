@@ -45,16 +45,10 @@ namespace haunted {
 	}
 
 	key::operator std::string() const {
-		std::string out;
-		if (*this & kmod::shift) out.append("⇧");
-		if (*this & kmod::ctrl)  out.append("⌃");
-		if (*this & kmod::alt)   out.append("⎇ ");
 		auto found = keymap.find(type);
 		if (found != keymap.end())
-			out += found->second;
-		else
-			out += static_cast<char>(type);
-		return out;
+			return mod_str(mods) + found->second;
+		return mod_str(mods) + static_cast<char>(type);
 	}
 
 	bool key::operator%(int right) const {
@@ -136,5 +130,13 @@ namespace haunted {
 			case int(kmod::ctrl):  return modset().set(2);
 			default: return modset();
 		}
+	}
+
+	std::string key::mod_str(const modset &mods) {
+		std::string out;
+		if (mods.test(0)) out.append("⇧");
+		if (mods.test(2)) out.append("⌃");
+		if (mods.test(1)) out.append("⎇ "); // the extra space is because the character is wide but still one column.
+		return out;
 	}
 }
