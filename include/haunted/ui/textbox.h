@@ -170,7 +170,7 @@ namespace haunted::ui {
 			textbox & operator+=(const T &line) {
 				auto w = formicine::perf.watch("template textbox::operator+=");
 				std::unique_ptr<T> line_copy = std::make_unique<T>(line);
-				const bool did_scroll = do_scroll(line.num_rows(pos.width));
+				const bool did_scroll = autoscroll && do_scroll(line.num_rows(pos.width));
 				lines.push_back(std::move(line_copy));
 				if (!did_scroll)
 					draw_new_line(*lines.back(), true);

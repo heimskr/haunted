@@ -248,11 +248,7 @@ namespace haunted::ui {
 	}
 
 	void textbox::vscroll(int delta) {
-		if (!can_draw())
-			return;
-
 		auto w = formicine::perf.watch("textbox::vscroll");
-		auto lock = term->lock_render();
 
 		const int old_voffset = voffset;
 		voffset = std::max(voffset + delta, 0);
@@ -262,6 +258,10 @@ namespace haunted::ui {
 		if (pos.height < total)
 			voffset = std::min(voffset, total);
 
+		if (!can_draw())
+			return;
+
+		auto lock = term->lock_render();
 		const int diff = old_voffset - voffset;
 
 		try_margins([&]() {

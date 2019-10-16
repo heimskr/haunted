@@ -341,12 +341,12 @@ namespace haunted::tests {
 			{{7, true}, "          tinuation "},
 			{{8, true}, "          should ali"},
 			{{9, true}, "          gn with th"},
-			{{1, true}, ""},
+			{{10, true}, ""},
 		}, &textbox::text_at_row, tb, "text_at_row");
 
-		INFO("Trying to scroll 10 lines down (current voffset is " << ansi::wrap(std::to_string(tb->voffset),
+		INFO("Trying to scroll 8 lines down (current voffset is " << ansi::wrap(std::to_string(tb->voffset),
 			ansi::style::bold) << ").");
-		tb->vscroll(10);
+		tb->vscroll(8);
 		unit.check(tb->voffset, 8, "voffset");
 
 		unit.check({
