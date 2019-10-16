@@ -374,14 +374,16 @@ namespace haunted::ui {
 		mouse_report relative = report;
 		relative.x -= pos.left;
 		relative.y -= pos.top;
+
 		try {
 			textline *line;
 			std::tie(line, relative.y) = line_at_row(relative.y + voffset);
 			if (line) {
-				line->on_click(relative);
+				line->on_mouse(relative);
 				return true;
 			}
 		} catch(const std::out_of_range &) {}
+
 		return false;
 	}
 
