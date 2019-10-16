@@ -5,7 +5,7 @@
 
 #include "haunted/core/defs.h"
 #include "haunted/core/util.h"
-#include "haunted/ui/keyhandler.h"
+#include "haunted/ui/inputhandler.h"
 
 namespace haunted {
 	class terminal;
@@ -18,7 +18,7 @@ namespace haunted::ui {
 	/**
 	 * Containers contain controls.
 	 */
-	class container: public virtual keyhandler {
+	class container: public virtual inputhandler {
 		friend class control;
 
 		public:

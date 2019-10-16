@@ -113,7 +113,7 @@ namespace haunted::ui {
 	}
 
 	bool control::has_focus() const {
-		return term->has_focus(this);
+		return term && term->has_focus(this);
 	}
 
 	bool control::at_right() const {

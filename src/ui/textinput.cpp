@@ -452,6 +452,11 @@ namespace haunted::ui {
 		return buffer.empty();
 	}
 
+	bool textinput::on_mouse(const mouse_report &m) {
+		focus();
+		return true;
+	}
+
 	bool textinput::on_key(const key &k) {
 		int type = int(k.type);
 		modset mods = k.mods;

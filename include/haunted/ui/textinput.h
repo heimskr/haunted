@@ -212,6 +212,8 @@ namespace haunted::ui {
 			/** Returns whether the buffer is empty. */
 			bool empty() const;
 
+			bool on_mouse(const mouse_report &) override;
+
 			/** Handles key presses. */
 			bool on_key(const key &) override;
 

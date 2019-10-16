@@ -6,14 +6,14 @@
 #include "haunted/ui/child.h"
 #include "haunted/ui/container.h"
 #include "haunted/ui/control.h"
-#include "haunted/ui/keyhandler.h"
+#include "haunted/ui/inputhandler.h"
 
 namespace haunted::ui {
 	/**
 	 * Represents a control.
 	 * This includes things like boxes, text views and text inputs.
 	 */
-	class control: public virtual keyhandler, public child {
+	class control: public virtual inputhandler, public child {
 		protected:
 			/** The control's controlling terminal. */
 			terminal *term;

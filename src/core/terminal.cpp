@@ -148,7 +148,7 @@ namespace haunted {
 		colors.reset();
 	}
 
-	ui::keyhandler * terminal::send_key(const key &k) {
+	ui::inputhandler * terminal::send_key(const key &k) {
 		// If the root is null, there are no controls and nothing to send key presses to.
 		if (root == nullptr)
 			return nullptr;
@@ -168,7 +168,7 @@ namespace haunted {
 		
 		// Keep trying on_key, going up to the root as long as we keep getting false. If we're at the root and on_key
 		// still returns false, let the terminal itself handle the keypress as a last resort.
-		while (!ptr->on_key(k)) {
+		while (ptr && !ptr->on_key(k)) {
 			if (dynamic_cast<ui::control *>(ptr) == root) {
 				on_key(k);
 				if (key_postlistener)
@@ -191,17 +191,45 @@ namespace haunted {
 		return ptr;
 	}
 
-	void terminal::send_mouse(const mouse_report &report) {
-		if (report.mods == kmod::shift) {
-			mouse(mouse_mode::none);
-		}
-
+	ui::inputhandler * terminal::send_mouse(const mouse_report &report) {
 		ui::control *ctrl = child_at_offset(report.x, report.y);
+
 		if (ctrl == nullptr) {
 			DBG(report.str() << " nullptr"_d);
+			return nullptr;
 		} else {
 			DBG(report.str() << " " << ctrl->get_id());
 		}
+
+		if (ctrl->on_mouse(report)) {
+			if (mouse_postlistener)
+				mouse_postlistener(report);
+			return ctrl;
+		}
+
+		ui::container *ptr = ctrl->get_parent();
+
+		while (ptr && !ptr->on_mouse(report)) {
+			if (dynamic_cast<ui::control *>(ptr) == root) {
+				on_mouse(report);
+				if (mouse_postlistener)
+					mouse_postlistener(report);
+				return this;
+			}
+
+			if (ui::child *cptr = dynamic_cast<ui::child *>(ptr)) {
+				ptr = cptr->get_parent();
+			} else {
+				if (mouse_postlistener)
+					mouse_postlistener(report);
+				return nullptr;
+			}
+		}
+
+		if (mouse_postlistener)
+			mouse_postlistener(report);
+
+		return ptr;
 	}
 
 	bool terminal::on_key(const key &k) {
@@ -535,7 +563,7 @@ namespace haunted {
 				int width = pos.width, height = pos.height, top = pos.top, left = pos.left;
 
 				dbg << ansi::color::gray << std::string(depth * 2, ' ') << ansi::action::reset
-					<< ctrl->get_id();
+					<< ctrl->get_id() << (ctrl->has_focus()? " *"_d : "");
 				dbg.jump(25, -1).save()        << "("_d << left << ","_d;
 				dbg.restore().right(6)         << top << ") "_d;
 				dbg.restore().right(10).save() << width;

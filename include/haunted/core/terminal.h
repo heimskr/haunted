@@ -80,6 +80,9 @@ namespace haunted {
 			/** Called after a key is pressed and processed. */
 			std::function<void(const key &)> key_postlistener {};
 
+			/** Called after a mouse event is processed. */
+			std::function<void(const mouse_report &)> mouse_postlistener {};
+
 			/** Called when the client receives ^c. If this returns true, the client will quit. */
 			std::function<bool()> on_interrupt {[]() { return true; }};
 
@@ -114,9 +117,9 @@ namespace haunted {
 			
 			/** Sends a key press to whichever control is most appropriate and willing to receive it.
 			 *  Returns a pointer to the control or container that ended up handling the key press. */
-			virtual ui::keyhandler * send_key(const key &);
+			virtual ui::inputhandler * send_key(const key &);
 
-			virtual /* ui::mousehandler * */ void send_mouse(const mouse_report &);
+			virtual ui::inputhandler * send_mouse(const mouse_report &);
 
 			/** Handles key combinations common to most console programs. */
 			virtual bool on_key(const key &) override;
