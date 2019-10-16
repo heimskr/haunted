@@ -371,6 +371,14 @@ namespace haunted::ui {
 	}
 
 	bool textbox::on_mouse(const mouse_report &report) {
+		if (report.action == mouse_action::scrollup) {
+			vscroll(-1);
+			return true;
+		} else if (report.action == mouse_action::scrolldown) {
+			vscroll(1);
+			return true;
+		}
+
 		mouse_report relative = report;
 		relative.x -= pos.left;
 		relative.y -= pos.top;
