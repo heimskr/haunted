@@ -376,7 +376,7 @@ namespace haunted::ui {
 		relative.y -= pos.top;
 		try {
 			textline *line;
-			std::tie(line, relative.y) = line_at_row(relative.y);
+			std::tie(line, relative.y) = line_at_row(relative.y + voffset);
 			if (line) {
 				line->on_click(relative);
 				return true;
