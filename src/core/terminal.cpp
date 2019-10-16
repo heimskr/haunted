@@ -197,8 +197,6 @@ namespace haunted {
 		if (ctrl == nullptr) {
 			DBG(report.str() << " nullptr"_d);
 			return nullptr;
-		} else {
-			DBG(report.str() << " " << ctrl->get_id());
 		}
 
 		if (ctrl->on_mouse(report)) {

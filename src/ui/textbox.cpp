@@ -370,6 +370,21 @@ namespace haunted::ui {
 		return key_fn? key_fn(k) : default_on_key(k);
 	}
 
+	bool textbox::on_mouse(const mouse_report &report) {
+		mouse_report relative = report;
+		relative.x -= pos.left;
+		relative.y -= pos.top;
+		try {
+			textline *line;
+			std::tie(line, relative.y) = line_at_row(relative.y);
+			if (line) {
+				line->on_click(relative);
+				return true;
+			}
+		} catch(const std::out_of_range &) {}
+		return false;
+	}
+
 	bool textbox::default_on_key(const key &k) {
 		if (k == ktype::up_arrow) {
 			vscroll(-1);

@@ -39,6 +39,9 @@ namespace haunted::ui {
 		/** Returns the number of rows the line will occupy for a given width. */
 		virtual int num_rows(int width) const;
 
+		/** Called when the line is clicked on. The mouse_report's position is relative to the top left of the line. */
+		virtual void on_click(const haunted::mouse_report &) {}
+
 		/** Returns the raw text of the line. */
 		virtual operator std::string() const = 0;
 		bool operator==(const textline &) const;
@@ -148,6 +151,9 @@ namespace haunted::ui {
 
 			/** Handles keyboard input. */
 			bool on_key(const key &) override;
+
+			/** Calls the clicked textline's on_click method. */
+			bool on_mouse(const mouse_report &) override;
 
 			/** Handles textbox-related keyboard input. */
 			bool default_on_key(const key &);
