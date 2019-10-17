@@ -73,6 +73,7 @@ namespace haunted::ui {
 		using line_ptr = std::unique_ptr<textline>;
 
 		protected:
+			/** Holds all the textlines in the box. */
 			std::deque<line_ptr> lines;
 
 			/** The number of rows the container has been scrolled vertically. */
@@ -110,6 +111,9 @@ namespace haunted::ui {
 			bool do_scroll(size_t rows);
 
 		public:
+			/** The minimum number of lines that must be visible at the top. */
+			unsigned int scroll_buffer = 0;
+
 			/** Constructs a textbox with a parent, a position and initial contents. */
 			textbox(container *parent_, position pos_, const std::vector<std::string> &contents_);
 

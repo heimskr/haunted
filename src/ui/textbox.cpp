@@ -250,13 +250,15 @@ namespace haunted::ui {
 	void textbox::vscroll(int delta) {
 		auto w = formicine::perf.watch("textbox::vscroll");
 
-		const int old_voffset = voffset;
-		voffset = std::max(voffset + delta, 0);
-
-		// Don't let the voffset extend past the point where the last line of text is just above the first row.
 		const int total = total_rows();
+		const int old_voffset = voffset;
+
+		voffset = std::max(std::min(total - static_cast<int>(scroll_buffer), voffset + delta), 0);
+
+		// Don't let the voffset extend past the point where the (scroll_buffer + 1)th-last line of text is just above
+		// the first row.
 		if (pos.height < total)
-			voffset = std::min(voffset, total);
+			voffset = std::min(voffset, total - static_cast<int>(scroll_buffer));
 
 		if (!can_draw())
 			return;
@@ -320,6 +322,8 @@ namespace haunted::ui {
 	}
 
 	int textbox::total_rows() const {
+		auto w = formicine::perf.watch("textbox::total_rows");
+
 		if (!wrap)
 			return lines.size();
 
