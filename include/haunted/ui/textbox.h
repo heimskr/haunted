@@ -17,6 +17,8 @@ namespace haunted::tests {
 }
 
 namespace haunted::ui {
+	class textbox;
+
 	/**
 	 * Represents a line of text. This is a base class that includes a continuation column; subclasses are responsible
 	 * for producing the actual text. (Note that the text is assumed to contain no newlines.)
@@ -28,6 +30,7 @@ namespace haunted::ui {
 		/** The number of blank spaces at the beginning of a row to use when the line is longer than the width of its
 		 *  container and has to be wrapped. The first row of the line isn't padded, but all subsequent rows are. */
 		int continuation = 0;
+		haunted::ui::textbox *box = nullptr;
 
 		textline(int continuation_): continuation(continuation_) {}
 
