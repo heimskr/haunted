@@ -452,7 +452,7 @@ namespace haunted::ui {
 		return buffer.empty();
 	}
 
-	bool textinput::on_mouse(const mouse_report &m) {
+	bool textinput::on_mouse(const mouse_report &) {
 		focus();
 		return true;
 	}
@@ -473,8 +473,8 @@ namespace haunted::ui {
 					case int(ktype::down_arrow):
 					case int(ktype::up_arrow):
 					case int(ktype::page_down):
-					case int(ktype::page_up):
-					case int(ktype::mouse): return true;
+					case int(ktype::page_up): return false;
+					case int(ktype::mouse):   return true;
 					case int(ktype::tab):
 						return false;
 					default:
