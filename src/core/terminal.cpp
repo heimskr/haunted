@@ -311,7 +311,6 @@ namespace haunted {
 		std::unique_lock uniq(output_mutex);
 		if (mode == mouse_mode::none) {
 			if (mmode != mode) {
-				DBG("\\e[?" << std::to_string(int(mmode)) << ";1006l");
 				out_stream << "\e[?" << std::to_string(int(mmode)) << ";1006l";
 				mmode = mode;
 			}
@@ -320,12 +319,8 @@ namespace haunted {
 		}
 
 		if (mode != mmode) {
-			if (mmode != mouse_mode::none) {
+			if (mmode != mouse_mode::none)
 				out_stream << "\e[?" << std::to_string(int(mmode)) << "l";
-				DBG("\\e[?" << std::to_string(int(mmode)) << "l");
-			}
-
-			DBG("\\e[?" << std::to_string(int(mode)) << ";1006h");
 			out_stream << "\e[?" << std::to_string(int(mode)) << ";1006h";
 			mmode = mode;
 		}
