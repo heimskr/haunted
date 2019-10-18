@@ -79,7 +79,6 @@ namespace haunted {
 		mouse(mouse_mode::none);
 		setattr(original);
 		attrs = original;
-		DBG("reset()");
 	}
 
 	void terminal::work_input() {
