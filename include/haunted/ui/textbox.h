@@ -70,7 +70,9 @@ namespace haunted::ui {
 	 */
 	class textbox: public colored_control {
 		friend class haunted::tests::maintest;
-		using line_ptr = std::unique_ptr<textline>;
+
+		public:
+			using line_ptr = std::shared_ptr<textline>;
 
 		protected:
 			/** Holds all the textlines in the box. */
