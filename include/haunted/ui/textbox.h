@@ -37,17 +37,17 @@ namespace haunted::ui {
 		virtual ~textline() = default;
 
 		/** Returns the text for a given row relative to the line for a given textbox width. */
-		virtual std::string text_at_row(size_t width, int row, bool pad_right = true) const;
+		virtual std::string text_at_row(size_t width, int row, bool pad_right = true);
 
 		/** Returns the number of rows the line will occupy for a given width. */
-		virtual int num_rows(int width) const;
+		virtual int num_rows(int width);
 
 		/** Called when the line is clicked on. The mouse_report's position is relative to the top left of the line. */
 		virtual void on_mouse(const haunted::mouse_report &) {}
 
 		/** Returns the raw text of the line. */
-		virtual operator std::string() const = 0;
-		bool operator==(const textline &) const;
+		virtual operator std::string() = 0;
+		bool operator==(textline &);
 	};
 
 	/**
@@ -61,8 +61,8 @@ namespace haunted::ui {
 		simpleline(int continuation_): textline(continuation_) {}
 		simpleline(): simpleline("", 0) {}
 
-		virtual operator std::string() const override { auto w = formicine::perf.watch("simpleline::operator std::string"); return text; }
-		virtual bool operator==(const simpleline &) const;
+		virtual operator std::string() override { auto w = formicine::perf.watch("simpleline::operator std::string"); return text; }
+		virtual bool operator==(const simpleline &);
 	};
 
 	/**
@@ -93,10 +93,10 @@ namespace haunted::ui {
 			/** When a new line is added, it's usually not necessary to completely redraw the component. Instead,
 			 *  scrolling the component and printing only the new line is sufficient.
 			 *  @param inserted Whether the line has already been inserted into the textbox's collection. */
-			void draw_new_line(const textline &, bool inserted = false);
+			void draw_new_line(textline &, bool inserted = false);
 
 			/** Returns the row on which the next line should be drawn or -1 if it's out of bounds. */
-			int next_row(int offset_offset = 0) const;
+			int next_row(int offset_offset = 0);
 
 			/** Returns a pair of the line at a given row (ignoring voffset and zero-based) and the number of rows past
 			 *  the start of the line. For example, if the textbox contains one line that occupies a single row and a
@@ -150,10 +150,10 @@ namespace haunted::ui {
 			void set_autoscroll(bool);
 
 			/** Returns the number of rows on the terminal a line of text would occupy. */
-			int line_rows(const textline &) const;
+			int line_rows(textline &);
 
 			/** Returns the total number of rows occupied by all the lines in the text box. */
-			int total_rows() const;
+			int total_rows();
 
 			/** Draws the textbox on the terminal. */
 			void draw() override;
@@ -187,7 +187,7 @@ namespace haunted::ui {
 			}
 
 			/** Returns the textbox's contents. */
-			operator std::string() const;
+			operator std::string();
 
 			virtual terminal * get_terminal() override { return term; }
 			virtual container * get_parent() const override { return parent; }

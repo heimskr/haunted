@@ -7,7 +7,7 @@
 #include "lib/formicine/performance.h"
 
 namespace haunted::ui {
-	bool textline::operator==(const textline &other) const {
+	bool textline::operator==(textline &other) {
 		return continuation == other.continuation && std::string(*this) == std::string(other);
 	}
 
@@ -16,7 +16,7 @@ namespace haunted::ui {
 		text.erase(std::remove(text.begin(), text.end(), '\n'), text.end());
 	}
 
-	std::string textline::text_at_row(size_t width, int row, bool pad_right) const {
+	std::string textline::text_at_row(size_t width, int row, bool pad_right) {
 		auto w = formicine::perf.watch("textline::text_at_row");
 		const std::string text = std::string(*this);
 		const size_t text_length = ansi::length(text);
@@ -38,7 +38,7 @@ namespace haunted::ui {
 		return chunk;
 	}
 
-	int textline::num_rows(int width) const {
+	int textline::num_rows(int width) {
 		const std::string text = ansi::strip(*this);
 		// auto w = formicine::perf.watch("textline::num_rows");
 
@@ -53,7 +53,7 @@ namespace haunted::ui {
 		return length / adjusted_continuation + (length % adjusted_continuation? 2 : 1);
 	}
 
-	bool simpleline::operator==(const simpleline &other) const {
+	bool simpleline::operator==(const simpleline &other) {
 		return continuation == other.continuation && text == other.text;
 	}
 
@@ -90,7 +90,7 @@ namespace haunted::ui {
 		}
 	}
 
-	void textbox::draw_new_line(const textline &line, bool inserted) {
+	void textbox::draw_new_line(textline &line, bool inserted) {
 		if (!can_draw())
 			return;
 
@@ -139,7 +139,7 @@ namespace haunted::ui {
 		term->jump_to_focused();
 	}
 
-	int textbox::next_row(int offset_offset) const {
+	int textbox::next_row(int offset_offset) {
 		int offset = voffset + offset_offset;
 		int total = total_rows();
 
@@ -310,7 +310,7 @@ namespace haunted::ui {
 			autoscroll = autoscroll_;
 	}
 
-	int textbox::line_rows(const textline &line) const {
+	int textbox::line_rows(textline &line) {
 		// TODO: support doublewide characters.
 
 		auto w = formicine::perf.watch("textbox::line_rows");
@@ -321,7 +321,7 @@ namespace haunted::ui {
 		return line.num_rows(pos.width);
 	}
 
-	int textbox::total_rows() const {
+	int textbox::total_rows() {
 		auto w = formicine::perf.watch("textbox::total_rows");
 
 		if (!wrap)
@@ -438,7 +438,7 @@ namespace haunted::ui {
 		return *this;
 	}
 
-	textbox::operator std::string() const {
+	textbox::operator std::string() {
 		auto w = formicine::perf.watch("textbox::operator std::string");
 		std::string out = "";
 		for (const line_ptr &line: lines) {
