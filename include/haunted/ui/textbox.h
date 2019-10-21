@@ -37,16 +37,17 @@ namespace haunted::ui {
 		virtual ~textline() = default;
 
 		/** Returns the text for a given row relative to the line for a given textbox width. */
-		virtual std::string text_at_row(size_t width, int row, bool pad_right = true);
+		virtual std::string text_at_row(size_t width, int row, textbox * = nullptr, bool pad_right = true);
 
 		/** Returns the number of rows the line will occupy for a given width. */
-		virtual int num_rows(int width);
+		virtual int num_rows(int width, textbox * = nullptr);
 
 		/** Called when the line is clicked on. The mouse_report's position is relative to the top left of the line. */
 		virtual void on_mouse(const haunted::mouse_report &) {}
 
 		/** Returns the raw text of the line. */
-		virtual operator std::string() = 0;
+		virtual std::string to_string(textbox * = nullptr) = 0;
+
 		bool operator==(textline &);
 	};
 
@@ -61,7 +62,8 @@ namespace haunted::ui {
 		simpleline(int continuation_): textline(continuation_) {}
 		simpleline(): simpleline("", 0) {}
 
-		virtual operator std::string() override { auto w = formicine::perf.watch("simpleline::operator std::string"); return text; }
+		virtual std::string to_string(textbox * = nullptr) override;
+
 		virtual bool operator==(const simpleline &);
 	};
 
@@ -179,7 +181,7 @@ namespace haunted::ui {
 			textbox & operator+=(const T &line) {
 				auto w = formicine::perf.watch("template textbox::operator+=");
 				std::unique_ptr<T> line_copy = std::make_unique<T>(line);
-				const bool did_scroll = autoscroll && do_scroll(line.num_rows(pos.width));
+				const bool did_scroll = autoscroll && do_scroll(line.num_rows(pos.width, this));
 				lines.push_back(std::move(line_copy));
 				if (!did_scroll)
 					draw_new_line(*lines.back(), true);

@@ -91,7 +91,7 @@ namespace haunted::tests {
 			}
 
 			static std::string stringify(haunted::ui::textline *tl) {
-				return tl? std::to_string(tl->continuation) + ":["_d + std::string(*tl) + "]"_d : "null";
+				return tl? std::to_string(tl->continuation) + ":["_d + tl->to_string(nullptr) + "]"_d : "null";
 			}
 
 			template <typename T>

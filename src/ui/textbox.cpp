@@ -8,7 +8,7 @@
 
 namespace haunted::ui {
 	bool textline::operator==(textline &other) {
-		return continuation == other.continuation && std::string(*this) == std::string(other);
+		return continuation == other.continuation && to_string(nullptr) == other.to_string(nullptr);
 	}
 
 	simpleline::simpleline(const std::string &text_, int continuation_): textline(continuation_), text(text_) {
@@ -16,9 +16,9 @@ namespace haunted::ui {
 		text.erase(std::remove(text.begin(), text.end(), '\n'), text.end());
 	}
 
-	std::string textline::text_at_row(size_t width, int row, bool pad_right) {
+	std::string textline::text_at_row(size_t width, int row, textbox *tbox, bool pad_right) {
 		auto w = formicine::perf.watch("textline::text_at_row");
-		const std::string text = std::string(*this);
+		const std::string text = this->to_string(tbox);
 		const size_t text_length = ansi::length(text);
 
 		if (row == 0) {
@@ -38,8 +38,8 @@ namespace haunted::ui {
 		return chunk;
 	}
 
-	int textline::num_rows(int width) {
-		const std::string text = ansi::strip(*this);
+	int textline::num_rows(int width, textbox *tbox) {
+		const std::string text = ansi::strip(to_string(tbox));
 		// auto w = formicine::perf.watch("textline::num_rows");
 
 		int length = ansi::length(text);
@@ -51,6 +51,11 @@ namespace haunted::ui {
 
 		const int adjusted_continuation = width - (width == continuation? continuation - 1 : continuation);
 		return length / adjusted_continuation + (length % adjusted_continuation? 2 : 1);
+	}
+
+	std::string simpleline::to_string(textbox *) {
+		auto w = formicine::perf.watch("simpleline::to_string");
+		return text;
 	}
 
 	bool simpleline::operator==(const simpleline &other) {
@@ -129,7 +134,7 @@ namespace haunted::ui {
 			for (int row = next, i = 0; row < pos.height && i < new_lines; ++row, ++i) {
 				if (i > 0)
 					*term << "\n";
-				*term << line.text_at_row(pos.width, i, true);
+				*term << line.text_at_row(pos.width, i, this, true);
 			}
 
 			voffset += upscroll;
@@ -194,7 +199,7 @@ namespace haunted::ui {
 			std::tie(line, offset) = line_at_row(row + voffset);
 		}
 
-		const std::string line_text = std::string(*line);
+		const std::string line_text = line->to_string(this);
 		const int continuation = line->continuation;
 
 		if (offset == 0) {
@@ -318,7 +323,7 @@ namespace haunted::ui {
 		if (!wrap)
 			return 1;
 
-		return line.num_rows(pos.width);
+		return line.num_rows(pos.width, this);
 	}
 
 	int textbox::total_rows() {
@@ -431,9 +436,9 @@ namespace haunted::ui {
 			lines.pop_back();
 
 		std::unique_ptr<simpleline> ptr = std::make_unique<simpleline>(text, 0);
-		const size_t num_rows = ptr->num_rows(pos.width);
+		const size_t nrows = ptr->num_rows(pos.width, this);
 		lines.push_back(std::move(ptr));
-		if (!do_scroll(num_rows))
+		if (!do_scroll(nrows))
 			draw_new_line(*lines.back(), true);
 		return *this;
 	}
@@ -444,7 +449,7 @@ namespace haunted::ui {
 		for (const line_ptr &line: lines) {
 			if (!out.empty())
 				out += "\n";
-			out += std::string(*line);
+			out += line->to_string(this);
 		}
 
 		return out;
