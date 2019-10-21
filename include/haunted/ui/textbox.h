@@ -27,26 +27,27 @@ namespace haunted::ui {
 	 * possible in textbox.
 	 */
 	struct textline {
-		/** The number of blank spaces at the beginning of a row to use when the line is longer than the width of its
-		 *  container and has to be wrapped. The first row of the line isn't padded, but all subsequent rows are. */
-		int continuation = 0;
 		haunted::ui::textbox *box = nullptr;
 
-		textline(int continuation_): continuation(continuation_) {}
+		textline() {}
 
 		virtual ~textline() = default;
 
+		/** Returns the number of blank spaces at the beginning of a row to use when the line's longer than the width of
+		 *  its container and has to be wrapped. The first row of the line isn't padded, but all subsequent rows are. */
+		virtual int get_continuation() const = 0;
+
 		/** Returns the text for a given row relative to the line for a given textbox width. */
-		virtual std::string text_at_row(size_t width, int row, textbox * = nullptr, bool pad_right = true);
+		virtual std::string text_at_row(size_t width, int row, bool pad_right = true);
 
 		/** Returns the number of rows the line will occupy for a given width. */
-		virtual int num_rows(int width, textbox * = nullptr);
+		virtual int num_rows(int width);
 
 		/** Called when the line is clicked on. The mouse_report's position is relative to the top left of the line. */
 		virtual void on_mouse(const haunted::mouse_report &) {}
 
 		/** Returns the raw text of the line. */
-		virtual std::string to_string(textbox * = nullptr) = 0;
+		virtual operator std::string()= 0;
 
 		bool operator==(textline &);
 	};
@@ -55,14 +56,18 @@ namespace haunted::ui {
 	 * Represents a line of text with static, unchanging content.
 	 */
 	struct simpleline: public textline {
+		int continuation = 0;
+
 		/** The raw text of the line. */
 		std::string text = "";
 
 		simpleline(const std::string &text_, int continuation_ = 0);
-		simpleline(int continuation_): textline(continuation_) {}
+		simpleline(int continuation_): continuation(continuation_) {}
 		simpleline(): simpleline("", 0) {}
 
-		virtual std::string to_string(textbox * = nullptr) override;
+		virtual operator std::string() override;
+
+		int get_continuation() const override { return continuation; }
 
 		virtual bool operator==(const simpleline &);
 	};

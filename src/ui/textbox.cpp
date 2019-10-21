@@ -8,17 +8,17 @@
 
 namespace haunted::ui {
 	bool textline::operator==(textline &other) {
-		return continuation == other.continuation && to_string(nullptr) == other.to_string(nullptr);
+		return get_continuation() == other.get_continuation() && std::string(*this) == std::string(other);
 	}
 
-	simpleline::simpleline(const std::string &text_, int continuation_): textline(continuation_), text(text_) {
+	simpleline::simpleline(const std::string &text_, int continuation_): continuation(continuation_), text(text_) {
 		text.erase(std::remove(text.begin(), text.end(), '\r'), text.end());
 		text.erase(std::remove(text.begin(), text.end(), '\n'), text.end());
 	}
 
-	std::string textline::text_at_row(size_t width, int row, textbox *tbox, bool pad_right) {
+	std::string textline::text_at_row(size_t width, int row, bool pad_right) {
 		auto w = formicine::perf.watch("textline::text_at_row");
-		const std::string text = this->to_string(tbox);
+		const std::string text = std::string(*this);
 		const size_t text_length = ansi::length(text);
 
 		if (row == 0) {
@@ -26,6 +26,8 @@ namespace haunted::ui {
 			     : ansi::substr(text, 0, width);
 		}
 
+		const int continuation = get_continuation();
+		DBG("continuation[" << continuation << "]");
 		const size_t index = continuation + row * (width - continuation);
 		if (index >= text_length)
 			return pad_right? std::string(width, ' ') : "";
@@ -38,8 +40,8 @@ namespace haunted::ui {
 		return chunk;
 	}
 
-	int textline::num_rows(int width, textbox *tbox) {
-		const std::string text = ansi::strip(to_string(tbox));
+	int textline::num_rows(int width) {
+		const std::string text = ansi::strip(*this);
 		// auto w = formicine::perf.watch("textline::num_rows");
 
 		int length = ansi::length(text);
@@ -49,17 +51,18 @@ namespace haunted::ui {
 		// Ignore all the text on the first line because it's not affected by continuation.
 		length -= width;
 
+		const int continuation = get_continuation();
 		const int adjusted_continuation = width - (width == continuation? continuation - 1 : continuation);
 		return length / adjusted_continuation + (length % adjusted_continuation? 2 : 1);
 	}
 
-	std::string simpleline::to_string(textbox *) {
-		auto w = formicine::perf.watch("simpleline::to_string");
+	simpleline::operator std::string() {
+		auto w = formicine::perf.watch("simpleline::operator std::string()");
 		return text;
 	}
 
 	bool simpleline::operator==(const simpleline &other) {
-		return continuation == other.continuation && text == other.text;
+		return get_continuation() == other.get_continuation() && text == other.text;
 	}
 
 	std::ostream & operator<<(std::ostream &os, const simpleline &line) {
@@ -134,7 +137,7 @@ namespace haunted::ui {
 			for (int row = next, i = 0; row < pos.height && i < new_lines; ++row, ++i) {
 				if (i > 0)
 					*term << "\n";
-				*term << line.text_at_row(pos.width, i, this, true);
+				*term << line.text_at_row(pos.width, i, true);
 			}
 
 			voffset += upscroll;
@@ -199,8 +202,8 @@ namespace haunted::ui {
 			std::tie(line, offset) = line_at_row(row + voffset);
 		}
 
-		const std::string line_text = line->to_string(this);
-		const int continuation = line->continuation;
+		const std::string line_text = std::string(*line);
+		const int continuation = line->get_continuation();
 
 		if (offset == 0) {
 			const size_t line_length = ansi::length(line_text);
@@ -213,7 +216,7 @@ namespace haunted::ui {
 		}
 
 		// Number of chars visible per row on a continued line
-		size_t continuation_chars = cols - line->continuation;
+		size_t continuation_chars = cols - continuation;
 
 		// Ignore the first line. 
 		std::string str = ansi::substr(line_text, cols);
@@ -323,7 +326,7 @@ namespace haunted::ui {
 		if (!wrap)
 			return 1;
 
-		return line.num_rows(pos.width, this);
+		return line.num_rows(pos.width);
 	}
 
 	int textbox::total_rows() {
@@ -436,7 +439,7 @@ namespace haunted::ui {
 			lines.pop_back();
 
 		std::unique_ptr<simpleline> ptr = std::make_unique<simpleline>(text, 0);
-		const size_t nrows = ptr->num_rows(pos.width, this);
+		const size_t nrows = ptr->num_rows(pos.width);
 		lines.push_back(std::move(ptr));
 		if (!do_scroll(nrows))
 			draw_new_line(*lines.back(), true);
@@ -449,7 +452,7 @@ namespace haunted::ui {
 		for (const line_ptr &line: lines) {
 			if (!out.empty())
 				out += "\n";
-			out += line->to_string(this);
+			out += std::string(*line);
 		}
 
 		return out;
