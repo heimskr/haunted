@@ -526,12 +526,16 @@ namespace haunted::ui {
 		jump();
 
 		try {
-			*term << prefix << buffer.substr(scroll, twidth);
+			signed long sscroll = scroll;
+			if (sscroll < 0)
+				sscroll = -sscroll;
+			*term << prefix << buffer.substr(sscroll, twidth);
 		} catch (std::out_of_range &) {
-			DBGT("std::out_of_range in textinput::draw(): buffer[" << buffer.size() << "] = \"" << std::string(buffer) << "\"");
+			DBGT("std::out_of_range in textinput::draw(): scroll[" << static_cast<signed long>(scroll) << "], twidth[" << twidth << "], buffer["
+				<< buffer.size() << "] = \"" << std::string(buffer) << "\"");
 			*term << prefix;
 		}
-		
+
 		term->reset_colors();
 		term->jump_to_focused();
 	}

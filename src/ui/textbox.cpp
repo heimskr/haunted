@@ -27,7 +27,6 @@ namespace haunted::ui {
 		}
 
 		const int continuation = get_continuation();
-		DBG("continuation[" << continuation << "]");
 		const size_t index = continuation + row * (width - continuation);
 		if (index >= text_length)
 			return pad_right? std::string(width, ' ') : "";
