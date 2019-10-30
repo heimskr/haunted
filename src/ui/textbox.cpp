@@ -111,7 +111,7 @@ namespace haunted::ui {
 		if (!autoscroll && next < 0)
 			return;
 
-		try_margins([&]() {
+		try_margins([&, this]() {
 			apply_colors();
 
 			int upscroll = 0;
@@ -273,7 +273,7 @@ namespace haunted::ui {
 		auto lock = term->lock_render();
 		const int diff = old_voffset - voffset;
 
-		try_margins([&]() {
+		try_margins([&, this]() {
 			apply_colors();
 			term->vscroll(diff);
 
@@ -348,7 +348,7 @@ namespace haunted::ui {
 		auto w = formicine::perf.watch("textbox::draw");
 		auto lock = term->lock_render();
 
-		try_margins([&]() {
+		try_margins([&, this]() {
 			term->hide();
 			apply_colors();
 			clear_rect();

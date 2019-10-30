@@ -101,7 +101,7 @@ namespace haunted::ui {
 		if (term == nullptr)
 			return;
 
-		try_margins([&]() {
+		try_margins([&, this]() {
 			// Galaxy brain trickery here.
 			term->vscroll(pos.height);
 		});
