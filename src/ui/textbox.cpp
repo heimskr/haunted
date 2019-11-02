@@ -116,7 +116,7 @@ namespace haunted::ui {
 
 			int upscroll = 0;
 
-			if (autoscroll && pos.height < total_rows() - voffset) {
+			if (autoscroll && pos.height == total_rows() - voffset) {
 				const int blanks_at_bottom = pos.height - (inserted? total_rows() - new_lines : total_rows()) + voffset;
 				upscroll = inserted? new_lines - blanks_at_bottom : blanks_at_bottom;
 				term->vscroll(-upscroll);
@@ -127,10 +127,12 @@ namespace haunted::ui {
 				next = next_row(new_lines) - offset + blanks_at_bottom;
 			}
 
-			// Here's a kludge!
-			if (next < 0) {
-				next = pos.height - offset;
-			}
+			// If next < 0, it's because autoscrolling didn't scroll to make space for the line, which means it's below
+			// the visible area. (Maybe above if scrolling up doesn't have a boundary?) Because it's out of sight,
+			// there's no need to print anything. Doing so would overwrite the bottom line with text that shouldn't be
+			// there.
+			if (next < 0)
+				return;
 
 			term->jump(0, next);
 			for (int row = next, i = 0; row < pos.height && i < new_lines; ++row, ++i) {
@@ -235,7 +237,7 @@ namespace haunted::ui {
 	}
 
 	bool textbox::do_scroll(size_t rows) {
-		if (pos.height < total_rows() - voffset) {
+		if (autoscroll && pos.height == total_rows() - voffset) {
 			vscroll(rows);
 			return true;
 		}

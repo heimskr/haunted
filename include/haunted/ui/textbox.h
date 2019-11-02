@@ -47,7 +47,7 @@ namespace haunted::ui {
 		virtual void on_mouse(const haunted::mouse_report &) {}
 
 		/** Returns the raw text of the line. */
-		virtual operator std::string()= 0;
+		virtual operator std::string() = 0;
 
 		bool operator==(textline &);
 	};
@@ -183,13 +183,13 @@ namespace haunted::ui {
 			
 			/** Adds a line to the end of the textbox. */
 			template <EXTENDS(T, textline)>
-			textbox & operator+=(const T &line) {
+			textbox & operator+=(T &line) {
 				auto w = formicine::perf.watch("template textbox::operator+=");
 				std::unique_ptr<T> line_copy = std::make_unique<T>(line);
-				const bool did_scroll = autoscroll && do_scroll(line.num_rows(pos.width, this));
+				line_copy->box = this;
+				autoscroll && do_scroll(line_copy->num_rows(pos.width));
 				lines.push_back(std::move(line_copy));
-				if (!did_scroll)
-					draw_new_line(*lines.back(), true);
+				draw_new_line(*lines.back(), true);
 				return *this;
 			}
 

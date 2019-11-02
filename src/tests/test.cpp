@@ -142,7 +142,7 @@ namespace haunted::tests {
 				*tb += simpleline("This is a very long line. Its purpose is to test the continuation of lines in a textbox. Its continuation value is set to 26, so the wrapped text should line up with the start of the second sentence in the line.", 26);
 			} else if (k == ktype::star) {
 				for (const haunted::ui::textbox::line_ptr &line: tb->lines) {
-					DBG(line->continuation << "[" << std::string(*line) << "]");
+					DBG(line->get_continuation() << "[" << std::string(*line) << "]");
 				}
 			} else {
 				*tb += "Key: [" + std::string(k) + "]";
