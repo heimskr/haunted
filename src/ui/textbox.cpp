@@ -114,23 +114,11 @@ namespace haunted::ui {
 		try_margins([&, this]() {
 			apply_colors();
 
-			int upscroll = 0;
-
-			if (autoscroll && pos.height == total_rows() - voffset) {
-				const int blanks_at_bottom = pos.height - (inserted? total_rows() - new_lines : total_rows()) + voffset;
-				upscroll = inserted? new_lines - blanks_at_bottom : blanks_at_bottom;
-				term->vscroll(-upscroll);
-
-				// After we scroll the terminal, there's some new space for lines to be in, whereas there was no space
-				// before. Because of that, we have to recalculate the next row by using the number of new lines to
-				// decrease the vertical offset the next_row method uses.
-				next = next_row(new_lines) - offset + blanks_at_bottom;
-			}
+			// It's assumed that whatever's calling this method will deal with autoscroll on its own.
 
 			// If next < 0, it's because autoscrolling didn't scroll to make space for the line, which means it's below
 			// the visible area. (Maybe above if scrolling up doesn't have a boundary?) Because it's out of sight,
-			// there's no need to print anything. Doing so would overwrite the bottom line with text that shouldn't be
-			// there.
+			// there's no need to print anything. Doing so would overwrite the bottom line with incorrect text.
 			if (next < 0)
 				return;
 
@@ -141,7 +129,6 @@ namespace haunted::ui {
 				*term << line.text_at_row(pos.width, i, true);
 			}
 
-			voffset += upscroll;
 			uncolor();
 		});
 
