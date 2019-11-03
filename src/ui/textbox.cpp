@@ -152,9 +152,6 @@ namespace haunted::ui {
 
 		auto w = formicine::perf.watch("textbox::line_at_row");
 
-		if (!wrap)
-			return {lines[row].get(), 0};
-
 		int line_count = lines.size(), index = 0, row_count = 0, last_count = 0, offset = -1;
 
 		for (index = 0, row_count = 0; index < line_count; ++index) {
@@ -311,17 +308,11 @@ namespace haunted::ui {
 
 		auto w = formicine::perf.watch("textbox::line_rows");
 
-		if (!wrap)
-			return 1;
-
 		return line.num_rows(pos.width);
 	}
 
 	int textbox::total_rows() {
 		auto w = formicine::perf.watch("textbox::total_rows");
-
-		if (!wrap)
-			return lines.size();
 
 		int rows = 0;
 		for (const line_ptr &line: lines)
@@ -451,6 +442,5 @@ namespace haunted::ui {
 		swap(static_cast<colored &>(left), static_cast<colored &>(right));
 		std::swap(left.lines,      right.lines);
 		std::swap(left.voffset,	   right.voffset);
-		std::swap(left.wrap,       right.wrap);
 	}
 }

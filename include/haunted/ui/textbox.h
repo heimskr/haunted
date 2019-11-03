@@ -91,9 +91,6 @@ namespace haunted::ui {
 			/** Whether the textbox should automatically scroll to keep up with lines added to the bottom. */
 			bool autoscroll = false;
 
-			/** Whether to wrap long lines based on the continuation column. */
-			bool wrap = true;
-
 			/** Empties the buffer and replaces it with 0-continuation lines from a vector of string. */
 			void set_lines(const std::vector<std::string> &);
 
