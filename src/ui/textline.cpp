@@ -2,11 +2,43 @@
 #include "lib/formicine/performance.h"
 
 namespace haunted::ui {
-	bool textline::operator==(textline &other) {
-		return get_continuation() == other.get_continuation() && std::string(*this) == std::string(other);
+
+
+// Protected instance methods
+
+
+	void textline::mark_dirty() {
+		dirty = true;
+		num_rows_ = -1;
+		lines_.clear();
 	}
 
+	void textline::clean(int width) {
+		if (!dirty)
+			return;
+
+		cleaning = true;
+
+		num_rows_ = num_rows(width);
+		for (int row = 0; row < num_rows_; ++row)
+			lines_.push_back(text_at_row(width, row));
+
+		cleaning = false;
+		dirty = false;
+	}
+
+
+// Public instance methods
+
+
 	std::string textline::text_at_row(size_t width, int row, bool pad_right) {
+		if (!dirty) {
+			return lines_[row];
+		} else if (!cleaning) {
+			clean(width);
+			return lines_[row];
+		}
+
 		auto w = formicine::perf.watch("textline::text_at_row");
 		const std::string text = std::string(*this);
 		const size_t text_length = ansi::length(text);
@@ -30,6 +62,13 @@ namespace haunted::ui {
 	}
 
 	int textline::num_rows(int width) {
+		if (!dirty) {
+			return num_rows_;
+		} else if (!cleaning) {
+			clean(width);
+			return num_rows_;
+		}
+
 		const std::string text = ansi::strip(*this);
 		// auto w = formicine::perf.watch("textline::num_rows");
 
@@ -43,5 +82,9 @@ namespace haunted::ui {
 		const int continuation = get_continuation();
 		const int adjusted_continuation = width - (width == continuation? continuation - 1 : continuation);
 		return length / adjusted_continuation + (length % adjusted_continuation? 2 : 1);
+	}
+
+	bool textline::operator==(textline &other) {
+		return get_continuation() == other.get_continuation() && std::string(*this) == std::string(other);
 	}
 }

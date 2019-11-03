@@ -8,6 +8,10 @@
 
 namespace haunted::ui {
 
+
+// Public constructors
+
+
 	textbox::textbox(container *parent_, position pos_, const std::vector<std::string> &contents):
 	colored_control(parent_, pos_) {
 		if (parent_ != nullptr)

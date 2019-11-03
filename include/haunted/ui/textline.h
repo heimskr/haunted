@@ -17,11 +17,17 @@ namespace haunted::ui {
 	 * possible in textbox.
 	 */
 	class textline {
-		protected:
+		private:
 			std::vector<std::string> lines_ {};
 			int num_rows_ = -1;
 			bool dirty = true;
+			bool cleaning = false;
+
+			/** Removes all cached data and marks the textline as dirty. */
 			void mark_dirty();
+
+			/** Caches the return values of num_rows and text_at_row. */
+			void clean(int width);
 
 		public:
 			haunted::ui::textbox *box = nullptr;
@@ -30,8 +36,9 @@ namespace haunted::ui {
 
 			virtual ~textline() = default;
 
-			/** Returns the number of blank spaces at the beginning of a row to use when the line's longer than the width of
-			 *  its container and has to be wrapped. The first row of the line isn't padded, but all subsequent rows are. */
+			/** Returns the number of blank spaces at the beginning of a row to use when the line's longer than the
+			 *  width of its container and has to be wrapped. The first row of the line isn't padded, but all subsequent
+			 *  rows are. */
 			virtual int get_continuation() const = 0;
 
 			/** Returns the text for a given row relative to the line for a given textbox width. */
@@ -40,7 +47,8 @@ namespace haunted::ui {
 			/** Returns the number of rows the line will occupy for a given width. */
 			virtual int num_rows(int width);
 
-			/** Called when the line is clicked on. The mouse_report's position is relative to the top left of the line. */
+			/** Called when the line is clicked on. 
+			 *  The mouse_report's position is relative to the top left of the line. */
 			virtual void on_mouse(const haunted::mouse_report &) {}
 
 			/** Returns the raw text of the line. */
