@@ -116,6 +116,12 @@ namespace haunted::ui {
 			 *  is drawn. Returns true if this method caused any scrolling.*/
 			bool do_scroll(size_t rows);
 
+			/** The cached return value of total_rows(). */
+			int total_rows_ = -1;
+
+			/** Marks the cached return value of total_rows() as dirty. */
+			void rows_dirty();
+
 		public:
 			/** The minimum number of lines that must be visible at the top. */
 			unsigned int scroll_buffer = 0;
@@ -186,6 +192,7 @@ namespace haunted::ui {
 				line_copy->box = this;
 				autoscroll && do_scroll(line_copy->num_rows(pos.width));
 				lines.push_back(std::move(line_copy));
+				rows_dirty();
 				draw_new_line(*lines.back(), true);
 				return *this;
 			}

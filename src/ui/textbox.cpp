@@ -95,6 +95,8 @@ namespace haunted::ui {
 			std::unique_ptr<simpleline> ptr = std::make_unique<simpleline>(str, 0);
 			lines.push_back(std::move(ptr));
 		}
+
+		rows_dirty();
 	}
 
 	void textbox::draw_new_line(textline &line, bool inserted) {
@@ -229,12 +231,17 @@ namespace haunted::ui {
 		return false;
 	}
 
+	void textbox::rows_dirty() {
+		total_rows_ = -1;
+	}
+
 
 // Public instance methods
 
 
 	void textbox::clear_lines() {
 		lines.clear();
+		rows_dirty();
 		if (0 < voffset)
 			voffset = 0;
 		draw();
@@ -314,11 +321,16 @@ namespace haunted::ui {
 	int textbox::total_rows() {
 		auto w = formicine::perf.watch("textbox::total_rows");
 
-		int rows = 0;
-		for (const line_ptr &line: lines)
-			rows += line_rows(*line);
+		if (total_rows_ != -1) {
+			return total_rows_;
+		}
 
-		return rows;
+
+		total_rows_ = 0;
+		for (const line_ptr &line: lines)
+			total_rows_ += line_rows(*line);
+
+		return total_rows_;
 	}
 
 	void textbox::draw() {
@@ -422,6 +434,7 @@ namespace haunted::ui {
 		lines.push_back(std::move(ptr));
 		if (!do_scroll(nrows))
 			draw_new_line(*lines.back(), true);
+		rows_dirty();
 		return *this;
 	}
 
