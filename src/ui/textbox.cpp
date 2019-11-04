@@ -285,22 +285,47 @@ namespace haunted::ui {
 		try_margins([&, this]() {
 			term->hide();
 			apply_colors();
-			clear_rect();
 
 			if (0 <= voffset && total_rows() <= voffset) {
+				clear_rect();
 				// There's no need to draw anything if the box has been scrolled down beyond all its contents.
 			} else {
 				try {
-					std::string text {};
-					for (int i = 0; i < pos.height; ++i) {
-						if (i != 0)
-							text.push_back('\n');
-						text += text_at_row(i, false);
-					}
-
 					apply_colors();
-					term->jump(0, 0);
-					*term << text;
+					if (at_right() && at_left()) {
+						for (int i = 0; i < pos.height; ++i) {
+							term->jump(0, i);
+							term->clear_line();
+							*term << text_at_row(i, false);
+						}
+					} else if (at_right()) {
+						for (int i = 0; i < pos.height; ++i) {
+							term->jump(pos.left, i);
+							*term << text_at_row(i, false);
+							term->clear_right();
+						}
+					} else if (at_left()) {
+						for (int i = 0; i < pos.height; ++i) {
+							term->jump(0, i);
+							term->back();
+							term->clear_left();
+							term->front();
+							*term << text_at_row(i, false);
+						}
+					} else {
+						clear_rect();
+						std::string text {};
+						text.reserve(pos.height * pos.width);
+						for (int i = 0; i < pos.height; ++i) {
+							if (i != 0)
+								text.push_back('\n');
+							text += text_at_row(i, false);
+						}
+
+						term->jump(0, 0);
+						*term << text;
+					}
+					apply_colors();
 				} catch (std::out_of_range &err) {}
 			}
 			
