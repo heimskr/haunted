@@ -63,7 +63,7 @@ namespace haunted::ui {
 			 *  conditions are met. This should be done after the line is added to the set of lines but before the line
 			 *  is drawn. Returns true if this method caused any scrolling.*/
 			bool do_scroll(size_t rows);
-
+		public:
 			/** The cached return value of total_rows(). */
 			int total_rows_ = -1;
 

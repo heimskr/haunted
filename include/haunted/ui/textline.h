@@ -17,7 +17,7 @@ namespace haunted::ui {
 	 * possible in textbox.
 	 */
 	class textline {
-		private:
+		public:
 			std::vector<std::string> lines_ {};
 			int num_rows_ = -1;
 			bool dirty = true;

@@ -102,8 +102,34 @@ namespace haunted::ui {
 			return;
 
 		try_margins([&, this]() {
-			// Galaxy brain trickery here.
-			term->vscroll(pos.height);
+			if (at_left() && at_right()) {
+				// Galaxy brain trickery here. If this control is as wide as the entire terminal, we can vscroll the
+				// contents into oblivion very efficiently.
+				term->vscroll(pos.height);
+			} else if (at_left()) {
+				// If we're at the left, we can clear each line from the end of the line to the left edge of the screen.
+				term->jump(pos.width, pos.top);
+				for (int i = 0; i < pos.height; ++i) {
+					if (i)
+						term->down();
+					term->clear_left();
+				}
+			} else if (at_right()) {
+				// If we're at the right, we can clear each line from the start of the line to the right edge.
+				term->jump(pos.left, pos.top);
+				for (int i = 0; i < pos.height; ++i) {
+					if (i)
+						term->down();
+					term->clear_right();
+				}
+			} else {
+				// If we're at neither edge, we have to print a total of width*height spaces. Very sad.
+				std::string spaces {pos.width, ' '};
+				for (int i = 0; i < pos.height; ++i) {
+					term->jump(pos.left, pos.top + i);
+					*term << spaces;
+				}
+			}
 		});
 	}
 

@@ -169,7 +169,9 @@ namespace haunted {
 			virtual void  down(size_t n = 1) { out_stream.down(n);  }
 			virtual void right(size_t n = 1) { out_stream.right(n); }
 			virtual void  left(size_t n = 1) { out_stream.left(n);  }
-			virtual void clear_line() { out_stream.clear_line(); }
+			virtual void clear_line()  { out_stream.clear_line();  }
+			virtual void clear_right() { out_stream.clear_right(); }
+			virtual void clear_left()  { out_stream.clear_left();  }
 
 			/** Makes the cursor visible. */
 			virtual void show() { out_stream.show(); }
