@@ -279,7 +279,7 @@ namespace haunted {
 	}
 
 	position terminal::get_position() const {
-		return {0, 0, get_cols(), get_rows()};
+		return {0, 0, cols, rows};
 	}
 
 	ui::control * terminal::child_at_offset(int x, int y) const {

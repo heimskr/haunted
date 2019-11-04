@@ -108,7 +108,7 @@ namespace haunted::ui {
 				term->vscroll(pos.height);
 			} else if (at_left()) {
 				// If we're at the left, we can clear each line from the end of the line to the left edge of the screen.
-				term->jump(pos.width - 1, pos.top);
+				term->jump(pos.width - 1, 0);
 				for (int i = 0; i < pos.height; ++i) {
 					if (i)
 						term->down();
@@ -116,7 +116,7 @@ namespace haunted::ui {
 				}
 			} else if (at_right()) {
 				// If we're at the right, we can clear each line from the start of the line to the right edge.
-				term->jump(pos.left, pos.top);
+				term->jump(pos.left, 0);
 				for (int i = 0; i < pos.height; ++i) {
 					if (i)
 						term->down();
@@ -124,9 +124,9 @@ namespace haunted::ui {
 				}
 			} else {
 				// If we're at neither edge, we have to print a total of width*height spaces. Very sad.
-				std::string spaces {pos.width, ' '};
+				std::string spaces(static_cast<size_t>(pos.width), ' ');
 				for (int i = 0; i < pos.height; ++i) {
-					term->jump(pos.left, pos.top + i);
+					term->jump(pos.left, i);
 					*term << spaces;
 				}
 			}

@@ -172,6 +172,8 @@ namespace haunted {
 			virtual void clear_line()  { out_stream.clear_line();  }
 			virtual void clear_right() { out_stream.clear_right(); }
 			virtual void clear_left()  { out_stream.clear_left();  }
+			virtual void front() { out_stream.hpos(0); }
+			virtual void back()  { out_stream.hpos(cols); }
 
 			/** Makes the cursor visible. */
 			virtual void show() { out_stream.show(); }
