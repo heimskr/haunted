@@ -285,6 +285,7 @@ namespace haunted::ui {
 		try_margins([&, this]() {
 			term->hide();
 			apply_colors();
+			clear_rect();
 
 			if (0 <= voffset && total_rows() <= voffset) {
 				// There's no need to draw anything if the box has been scrolled down beyond all its contents.
