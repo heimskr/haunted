@@ -108,7 +108,7 @@ namespace haunted::ui {
 				term->vscroll(pos.height);
 			} else if (at_left()) {
 				// If we're at the left, we can clear each line from the end of the line to the left edge of the screen.
-				term->jump(pos.width, pos.top);
+				term->jump(pos.width - 1, pos.top);
 				for (int i = 0; i < pos.height; ++i) {
 					if (i)
 						term->down();
