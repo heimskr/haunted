@@ -23,9 +23,6 @@ namespace haunted::ui {
 			bool dirty = true;
 			bool cleaning = false;
 
-			/** Removes all cached data and marks the textline as dirty. */
-			void mark_dirty();
-
 			/** Caches the return values of num_rows and text_at_row. */
 			void clean(int width);
 
@@ -35,6 +32,9 @@ namespace haunted::ui {
 			textline() {}
 
 			virtual ~textline() = default;
+
+			/** Removes all cached data and marks the textline as dirty. */
+			void mark_dirty();
 
 			/** Returns the number of blank spaces at the beginning of a row to use when the line's longer than the
 			 *  width of its container and has to be wrapped. The first row of the line isn't padded, but all subsequent
