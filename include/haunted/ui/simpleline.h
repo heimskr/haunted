@@ -19,9 +19,9 @@ namespace haunted::ui {
 
 		virtual operator std::string() override;
 
-		int get_continuation() const override { return continuation; }
+		int get_continuation() override { return continuation; }
 
-		virtual bool operator==(const simpleline &);
+		virtual bool operator==(simpleline &);
 	};
 }
 

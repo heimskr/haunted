@@ -12,7 +12,7 @@ namespace haunted::ui {
 		return text;
 	}
 
-	bool simpleline::operator==(const simpleline &other) {
+	bool simpleline::operator==(simpleline &other) {
 		return get_continuation() == other.get_continuation() && text == other.text;
 	}
 }

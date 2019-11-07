@@ -39,7 +39,7 @@ namespace haunted::ui {
 			/** Returns the number of blank spaces at the beginning of a row to use when the line's longer than the
 			 *  width of its container and has to be wrapped. The first row of the line isn't padded, but all subsequent
 			 *  rows are. */
-			virtual int get_continuation() const = 0;
+			virtual int get_continuation() = 0;
 
 			/** Returns the text for a given row relative to the line for a given textbox width. */
 			virtual std::string text_at_row(size_t width, int row, bool pad_right = true);
