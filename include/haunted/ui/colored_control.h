@@ -9,7 +9,6 @@ namespace haunted::ui {
 		public:
 			using control::control;
 
-			using colored::draw;
 			virtual void clear_rect() override;
 	};
 }

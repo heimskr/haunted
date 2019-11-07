@@ -7,6 +7,15 @@
 #include "lib/formicine/ansi.h"
 
 namespace haunted::ui {
+	control::control(container *parent_, haunted::position pos_): child(parent_), term(nullptr), pos(pos_) {
+		if (parent_ != nullptr)
+			term = parent_->get_terminal();
+	}
+
+	control::control(container *parent_, terminal *term_): child(parent_), term(term_) {}
+
+	control::control(container *parent_): control(parent_, parent_ == nullptr? nullptr : parent_->get_terminal()) {}
+
 	control::~control() = default;
 
 

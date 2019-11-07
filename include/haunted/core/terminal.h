@@ -5,6 +5,7 @@
 #include <memory>
 #include <mutex>
 #include <thread>
+#include <unordered_set>
 #include <vector>
 
 #include <termios.h>
@@ -13,7 +14,6 @@
 #include "haunted/core/mouse.h"
 #include "haunted/ui/coloration.h"
 #include "haunted/ui/container.h"
-#include "haunted/ui/control.h"
 
 #include "lib/formicine/ansi.h"
 #include "lib/formicine/performance.h"

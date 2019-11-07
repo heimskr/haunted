@@ -12,6 +12,7 @@
 #include "haunted/core/terminal.h"
 #include "haunted/core/util.h"
 #include "haunted/ui/child.h"
+#include "haunted/ui/control.h"
 
 #include "lib/formicine/futil.h"
 

@@ -177,6 +177,16 @@ namespace haunted::ui {
 		total_rows_ = -1;
 	}
 
+	void textbox::lines_dirty() {
+		for (line_ptr line: lines)
+			line->mark_dirty();
+	}
+
+	void textbox::mark_dirty() {
+		rows_dirty();
+		lines_dirty();
+	}
+
 
 // Public instance methods
 
@@ -310,6 +320,11 @@ namespace haunted::ui {
 		});
 
 		term->jump_to_focused();
+	}
+
+	void textbox::resize(const haunted::position &new_pos) {
+		colored_control::resize(new_pos);
+		mark_dirty();
 	}
 
 	bool textbox::on_key(const key &k) {

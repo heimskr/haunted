@@ -5,7 +5,6 @@
 #include "haunted/core/key.h"
 #include "haunted/ui/child.h"
 #include "haunted/ui/container.h"
-#include "haunted/ui/control.h"
 #include "haunted/ui/inputhandler.h"
 
 namespace haunted::ui {
@@ -40,14 +39,10 @@ namespace haunted::ui {
 			control(const control &) = delete;
 			control & operator=(const control &) = delete;
 
-			control(container *parent_, haunted::position pos_): child(parent_), term(nullptr), pos(pos_) {
-				if (parent_ != nullptr)
-					term = parent_->get_terminal();
-			}
-
+			control(container *parent_, haunted::position pos_);
 			control(const haunted::position &pos_): child(nullptr), term(nullptr), pos(pos_) {}
-			control(container *parent_, terminal *term_): child(parent_), term(term_) {}
-			control(container *parent_): control(parent_, parent_ == nullptr? nullptr : parent_->get_terminal()) {}
+			control(container *parent_, terminal *term_);
+			control(container *parent_);
 
 			virtual ~control() = 0;
 
