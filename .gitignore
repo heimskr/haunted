@@ -23,4 +23,5 @@ build
 .dep
 .log
 **/.DS_Store
+Makefile
 

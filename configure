@@ -1,0 +1,126 @@
+#!/bin/bash
+
+export YIKES="\x1b[2m[\x1b[0;31m\xe2\x9c\x98\x1b[0;2m]\x1b[0m"
+export INFO="\x1b[2m[\x1b[0;36mi\x1b[0;2m]\x1b[0m"
+export GOOD="\x1b[2m[\x1b[0;32m\xe2\x9c\x94\x1b[0;2m]\x1b[0m"
+
+yikes() { echo -e "$YIKES $*"; exit 1; }
+info()  { echo -e "$INFO $*"; }
+good()  { echo -e "$GOOD $*"; }
+
+escape_name() { echo "$1" | sed -E 's/[^A-Za-z0-9]/_/g'; }
+to_upper()    { printf '%s\n' "$1" | awk '{ print toupper($0) }'; }
+
+check_for() {
+	for dep in "$@"; do
+		info "Checking for $dep..."
+		pkg-config --exists "$dep" 2>/dev/null
+		if [ $? -eq 0 ]; then
+			good "Found $dep version `pkg-config --modversion "$dep"`."
+			echo
+		else
+			yikes "Couldn't find $dep."
+		fi
+		upper=$(to_upper `escape_name "$dep"`)
+		export LD_$upper="`pkg-config --libs "$dep"`"
+		export CFLAGS_$upper="`pkg-config --cflags "$dep"`"
+	done
+}
+
+add_dep() {
+	for dep in "$@"; do
+		upper=$(to_upper `escape_name "$dep"`)
+		libs="LD_$upper"
+		cflags="CFLAGS_$upper"
+		printf "%-16s:= " "LD_$upper" >> Makefile
+		echo ${!libs} >> Makefile
+		printf "%-16s:= " "CFLAGS_$upper" >> Makefile
+		echo ${!cflags} >> Makefile
+		echo "DEP_LD          += \$($libs)" >> Makefile
+		echo "DEP_CFLAGS      += \$($cflags)" >> Makefile
+		echo >> Makefile
+	done
+}
+
+init_makefile() {
+	echo "DEP_LD          :=" > Makefile
+	echo "DEP_CFLAGS      :=" >> Makefile
+	echo >> Makefile
+}
+
+do_all() {
+	check_for $*
+	add_dep $*
+}
+
+init_makefile
+
+do_all icu-uc
+
+cat >> Makefile <<"BASE"
+COMPILER		:= g++
+CFLAGS			:= -std=c++2a -g -ggdb -O0 -Wall -Wextra $(DEP_CFLAGS)
+INCLUDE			:= -Iinclude
+LDFLAGS			:= $(strip -pthread $(DEP_LD))
+CC				 = $(COMPILER) $(strip $(CFLAGS) $(CHECKFLAGS))
+VALGRIND		:= valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=no
+MKBUILD			:= mkdir -p build
+OUTPUT			:= build/tests
+
+ifeq ($(CHECK), asan)
+	CHECKFLAGS := -fsanitize=address -fno-common
+else ifeq ($(CHECK), msan)
+	CHECKFLAGS := -fsanitize=memory -fno-common
+endif
+
+.PHONY: all test clean depend spotless vars
+
+
+SOURCES			:= $(shell find -L src -name '*.cpp' | sed -nE '/(tests?|test_.+)\.cpp$$/!p')
+OBJECTS			:= $(patsubst src/%.cpp,build/%.o, $(SOURCES))
+
+sinclude $(shell find src -name 'targets.mk')
+
+
+all: $(OBJECTS) build/test
+
+build/tests: build/tests/tests.o $(OBJECTS)
+	@ $(MKBUILD)
+	$(CC) $< $(filter-out $<,$+) -o $@ $(LDFLAGS) $(LDLIBS)
+
+build/%.o: src/%.cpp
+	@ mkdir -p "$(shell dirname "$@")"
+	$(CC) $(strip $(INCLUDE)) -c $< -o $@
+
+grind: $(OUTPUT)
+	$(VALGRIND) ./$(OUTPUT)
+
+vars:
+	@ echo $(DEPTOKEN) > $(DEPFILE)
+	makedepend $(DEPFLAGS) -- $(CC) -- $(SRC_ALL) 2>/dev/null
+	@ sed -i .sed 's/^src\//build\//' $(DEPFILE)
+	@ rm $(DEPFILE).bak $(DEPFILE).sed
+
+clean:
+	rm -rf build
+	if [ -e .log ]; then > .log; fi
+
+spotless:
+	rm -rf build .log $(DEPFILE)
+
+DEPFILE  = .dep
+DEPTOKEN = "\# MAKEDEPENDS"
+DEPFLAGS = -Y -f $(DEPFILE) -s $(DEPTOKEN)
+
+depend:
+	@ echo $(SRC_ALL); echo
+
+	@ echo $(DEPTOKEN) > $(DEPFILE)
+	makedepend $(DEPFLAGS) -- $(CC) $(INCLUDE) -- $(SOURCES) $(EXTRASRC) 2>/dev/null
+	@ sed -i.sed 's/^src\//build\//' $(DEPFILE)
+	@ rm $(DEPFILE).bak $(DEPFILE).sed
+
+sinclude $(DEPFILE)
+BASE
+
+good "Wrote Makefile."
