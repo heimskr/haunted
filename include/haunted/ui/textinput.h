@@ -12,6 +12,7 @@
 #include "haunted/ui/colored.h"
 #include "haunted/ui/container.h"
 #include "haunted/ui/control.h"
+#include "lib/ustring.h"
 
 #include "lib/utf8.h"
 

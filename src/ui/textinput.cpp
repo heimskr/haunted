@@ -492,6 +492,24 @@ namespace haunted::ui {
 					case 't':  transpose(); break;
 					case 'u':      clear(); break;
 					case 'w': erase_word(); break;
+					case 'm': {
+						icu::UnicodeString us = icu::UnicodeString::fromUTF8(get_text());
+						UErrorCode code = U_ZERO_ERROR;
+						icu::BreakIterator *bi = icu::BreakIterator::createCharacterInstance(icu::Locale::getUS(), code);
+						// BreakIterator::createWordInstance(Locale::getUS(), status);
+						bi->setText(us);
+						int32_t last = 0, p = bi->first();
+						while (p != icu::BreakIterator::DONE) {
+							std::string utf8str;
+							us.tempSubString(last, p - last).toUTF8String(utf8str);
+							DBG(p << ": '" << utf8str << "'");
+							last = p;
+							p = bi->next();
+						}
+						DBG("end: [" << p << "], last[" << bi->last() << "]");
+						delete bi;
+						break;
+					}
 					default: return false;
 				}
 				break;

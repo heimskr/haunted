@@ -23,6 +23,7 @@
 #include "haunted/ui/label.h"
 #include "haunted/ui/textbox.h"
 #include "haunted/ui/textinput.h"
+#include "lib/ustring.h"
 
 #ifdef NODEBUG
 #define INFO(x)
@@ -466,6 +467,19 @@ namespace haunted::tests {
 
 		ansi::out << ansi::endl;
 	}
+
+	void maintest::unittest_ustring(testing &unit) {
+		std::string example = "foo🎉🇩🇪👮🏻‍♂️bar";
+		ustring uexample(example);
+		std::string pieces[] = {"f", "o", "o", "🎉", "🇩🇪", "👮🏻‍♂️", "b", "a", "r"};
+		int i = 0;
+		for (std::string piece: uexample) {
+			unit.check(piece, pieces[i], "pieces[" + std::to_string(i) + "]");
+			i++;
+		}
+
+		ansi::out << ansi::endl;
+	}
 }
 
 
@@ -527,14 +541,16 @@ int main(int argc, char **argv) {
 		haunted::tests::maintest::unittest_textbox(unit);
 	} else if (arg == "unitexpandobox") {
 		haunted::tests::maintest::unittest_expandobox(unit);
+	} else if (arg == "unitustring") {
+		haunted::tests::maintest::unittest_ustring(unit);
 	} else if (arg == "unit") {
 		ansi::out << ansi::endl;
 		haunted::tests::maintest::unittest_csiu(unit);
 		haunted::tests::maintest::unittest_textbox(unit);
 		haunted::tests::maintest::unittest_expandobox(unit);
+		haunted::tests::maintest::unittest_ustring(unit);
 	} else {
 		haunted::tests::maintest::unittest_textbox(unit);
 	}
 #undef MKTERM
 }
-

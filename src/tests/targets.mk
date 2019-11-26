@@ -65,3 +65,6 @@ khtest: build/test
 
 kmtest: build/test
 	./$^ key motion
+
+ustest: build/test
+	./$^ unitustring

@@ -378,6 +378,7 @@ namespace haunted::tests {
 			static void unittest_csiu(testing &);
 			static void unittest_textbox(testing &);
 			static void unittest_expandobox(testing &);
+			static void unittest_ustring(testing &);
 	};
 }
 
