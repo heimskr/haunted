@@ -13,11 +13,17 @@ namespace haunted {
 	class ustring {
 		private:
 			icu::UnicodeString data;
+			size_t length_;
+			size_t & scan_length();
 
 		public:
+			ustring(const char *);
 			ustring(const std::string &);
 			ustring(const icu::UnicodeString &);
 
+			void check_index(size_t) const;
+
+			ustring raw_substr(size_t, size_t = std::string::npos);
 			ustring substr(size_t, size_t = std::string::npos);
 
 			size_t length() const;
@@ -45,6 +51,8 @@ namespace haunted {
 					~iterator();
 					iterator & operator++();
 					iterator & operator--();
+					iterator & operator+=(ssize_t);
+					iterator & operator-=(ssize_t);
 					std::string operator*();
 					bool operator==(const iterator &) const;
 					bool operator!=(const iterator &) const;
