@@ -432,7 +432,7 @@ namespace haunted::ui {
 			size_t blen = buffer.length();
 			std::string penultimate = buffer[blen - 2], ultimate = buffer[blen - 1];
 			buffer.erase(blen - 2);
-			buffer.insert(blen - 2, ultimate + penultimate);
+			buffer += ultimate + penultimate;
 			draw_right(-2);
 		} else {
 			std::string before_cursor = buffer[cursor - 1], at_cursor = buffer[cursor];

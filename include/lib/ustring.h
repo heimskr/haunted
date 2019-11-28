@@ -16,7 +16,7 @@ namespace haunted {
 		private:
 			icu::UnicodeString data;
 			size_t length_;
-			const char *cached_cstr;
+			const char *cached_cstr = nullptr;
 
 			size_t & scan_length();
 			void delete_cached();
@@ -48,6 +48,8 @@ namespace haunted {
 
 			/** Returns the width (in columns) of the character at a given index. */
 			size_t width_at(size_t) const;
+			/** Returns the width (in columns) of all text before a given index and optionally after a given offset. */
+			size_t width_until(size_t index, size_t offset = 0) const;
 
 #include "ustring.tcc"
 

@@ -168,6 +168,13 @@ namespace haunted {
 		return 1;
 	}
 
+	size_t ustring::width_until(size_t index, size_t offset) const {
+		size_t total_width = 0;
+		for (size_t i = offset; i < index; ++i)
+			total_width += width_at(i);
+		return total_width;
+	}
+
 // Operators
 
 	bool ustring::operator==(const std::string &str) const {

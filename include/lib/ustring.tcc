@@ -22,3 +22,9 @@ template <typename... Args>
 size_t find_last_not_of(Args && ...args) const {
 	return std::string(*this).find_last_not_of(std::forward<Args>(args)...);
 }
+
+template <typename T>
+ustring & operator+=(const T &to_add) {
+	insert(length_, to_add);
+	return *this;
+}

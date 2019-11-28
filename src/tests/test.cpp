@@ -491,6 +491,8 @@ namespace haunted::tests {
 		ansi::out << ansi::info << "Inserting " << "\""_d << "baz"_b << "\""_d << " at index 4." << ansi::endl;
 		uexample.insert(4, "baz");
 		unit.check(uexample, "foo🎉baz🇩🇪👮🏻‍♂️bar👨‍👨‍👧‍👦", "uexample");
+		unit.check(uexample.width_until(11), 14UL, "uexample.width_until(11)");
+		unit.check(uexample.width_until(13), 17UL, "uexample.width_until(13)");
 		unit.check(uexample.substr(7, 2), "🇩🇪👮🏻‍♂️", "substr(7, 2)");
 		unit.check(uexample.length(), 13UL, "length()");
 		i = 0;
