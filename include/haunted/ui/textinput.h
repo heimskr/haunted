@@ -23,7 +23,7 @@ namespace haunted::ui {
 	 * any rows below the first will be unused.
 	 */
 	class textinput: public control, public colored {
-		using update_fn = std::function<void(const superstring &, int)>;
+		using update_fn = std::function<void(const ustring &, int)>;
 
 		private:
 			/** By default, all characters below 0x20 are ignored by insert(). However, if the character is contained in
@@ -37,7 +37,7 @@ namespace haunted::ui {
 			size_t prefix_length = 0;
 
 			/** The text that the user has entered so far. */
-			superstring buffer;
+			ustring buffer;
 
 			/** The offset within the text where new input will be inserted. */
 			size_t cursor = 0;
@@ -120,10 +120,10 @@ namespace haunted::ui {
 			std::string unicode_buffer;
 
 			/** Constructs a textinput with a parent and a position and an initial buffer and cursor. */
-			textinput(container *parent, position pos, const superstring &buffer, size_t cursor);
+			textinput(container *parent, position pos, const ustring &buffer, size_t cursor);
 
 			/** Constructs a textinput with a parent and a position and an initial buffer and a default cursor. */
-			textinput(container *parent, position pos, const superstring &buffer):
+			textinput(container *parent, position pos, const ustring &buffer):
 				textinput(parent, pos, buffer, 0) {}
 
 			/** Constructs a textinput with a parent and position and a default buffer and cursor. */
@@ -131,10 +131,10 @@ namespace haunted::ui {
 				textinput(parent, pos, "") {}
 
 			/** Constructs a textinput with a parent, a default position and an initial buffer and cursor. */
-			textinput(container *parent, const superstring &buffer, size_t cursor);
+			textinput(container *parent, const ustring &buffer, size_t cursor);
 
 			/** Constructs a textinput with a parent, a default position and an initial buffer and default cursor. */
-			textinput(container *parent, const superstring &buffer):
+			textinput(container *parent, const ustring &buffer):
 				textinput(parent, buffer, 0) {}
 
 			/** Constructs a textinput with a parent and a default position, buffer and cursor. */
@@ -144,10 +144,10 @@ namespace haunted::ui {
 			textinput(): textinput(nullptr, "") {}
 
 			/** Returns the contents of the buffer as a string. */
-			std::string str() const { return buffer.str(); }
+			std::string str() const { return buffer; }
 
 			/** Converts the contents of the buffer to a string. */
-			operator std::string() const { return buffer.str(); }
+			operator std::string() const { return buffer; }
 
 			/** Sets a function to listen for updates to the buffer. */
 			void listen(event, const update_fn &);

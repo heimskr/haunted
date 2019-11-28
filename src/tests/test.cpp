@@ -172,7 +172,7 @@ namespace haunted::tests {
 		tlb->set_colors(ansi::color::white, ansi::color::blue);
 		slb->set_colors(ansi::color::white, ansi::color::blue);
 
-		ti->listen(textinput::event::submit, [&](const superstring &sstr, int) {
+		ti->listen(textinput::event::submit, [&](const ustring &sstr, int) {
 			if (!sstr.empty()) {
 				*tb += sstr;
 				ti->clear();

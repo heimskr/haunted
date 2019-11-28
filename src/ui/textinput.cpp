@@ -7,13 +7,13 @@
 namespace haunted::ui {
 	std::unordered_set<unsigned char> textinput::whitelist = {9, 10, 11, 13};
 
-	textinput::textinput(container *parent_, position pos_, const superstring &buffer_, size_t cursor_):
+	textinput::textinput(container *parent_, position pos_, const ustring &buffer_, size_t cursor_):
 	control(parent_, pos_), buffer(buffer_), cursor(cursor_) {
 		if (parent_ != nullptr)
 			parent_->add_child(this);
 	}
 
-	textinput::textinput(container *parent_, const superstring &buffer_, size_t cursor_):
+	textinput::textinput(container *parent_, const ustring &buffer_, size_t cursor_):
 	control(parent_), buffer(buffer_), cursor(cursor_) {
 		if (parent_ != nullptr)
 			parent_->add_child(this);
@@ -159,9 +159,9 @@ namespace haunted::ui {
 	}
 
 	void textinput::insert(const std::string &str) {
-		superstring newstr = str;
+		ustring newstr = str;
 		buffer.insert(cursor, newstr);
-		cursor += newstr.size();
+		cursor += ansi::length(newstr);
 		update();
 	}
 
@@ -430,10 +430,14 @@ namespace haunted::ui {
 
 		if (cursor == len) {
 			size_t blen = buffer.length();
-			std::swap(buffer[blen - 1], buffer[blen - 2]);
+			std::string penultimate = buffer[blen - 2], ultimate = buffer[blen - 1];
+			buffer.erase(blen - 2);
+			buffer.insert(blen - 2, ultimate + penultimate);
 			draw_right(-2);
 		} else {
-			std::swap(buffer[cursor], buffer[cursor - 1]);
+			std::string before_cursor = buffer[cursor - 1], at_cursor = buffer[cursor];
+			buffer.erase(cursor - 1, 2);
+			buffer.insert(cursor - 1, at_cursor + before_cursor);
 			draw_right(-1);
 			++cursor;
 			jump_cursor();
