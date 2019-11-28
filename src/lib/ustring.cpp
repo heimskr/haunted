@@ -63,13 +63,17 @@ namespace haunted {
 	}
 	
 	ustring & ustring::insert(size_t pos, const ustring &str) {
-		data.insert(pos, str.data);
+		ustring::iterator iter = begin();
+		iter += pos;
+		data.insert(iter.prev, str.data);
 		length_ += str.length_;
 		return *this;
 	}
 	
 	ustring & ustring::insert(size_t pos, char16_t ch) {
-		data.insert(pos, ch);
+		ustring::iterator iter = begin();
+		iter += pos;
+		data.insert(iter.prev, ch);
 		++length_;
 		return *this;
 	}
