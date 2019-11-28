@@ -123,6 +123,12 @@ namespace haunted {
 		return *this;
 	}
 
+	void ustring::pop_back() {
+		if (length_ == 0)
+			return;
+		data.remove(length_ - 1);
+	}
+
 	std::string ustring::at(size_t index) const {
 		// Not pretty.
 		return substr(index, 1UL);
@@ -171,9 +177,13 @@ namespace haunted {
 
 	size_t ustring::width_until(size_t index, size_t offset) const {
 		size_t total_width = 0;
-		for (size_t i = offset; i < index; ++i)
+		for (size_t i = offset; i < index && i < length_; ++i)
 			total_width += width_at(i);
 		return total_width;
+	}
+
+	size_t ustring::width() const {
+		return width_until(length_, 0);
 	}
 
 // Operators

@@ -578,7 +578,23 @@ namespace haunted::ui {
 			signed long sscroll = scroll;
 			if (sscroll < 0)
 				sscroll = -sscroll;
-			*term << prefix << buffer.substr(sscroll, twidth);
+			*term << prefix;
+			ustring to_print = buffer.substr(sscroll);
+			size_t width = to_print.width();
+			while (twidth < width)
+				to_print.pop_back();
+
+			size_t i = 0;
+			for (const std::string &grapheme: to_print) {
+				size_t width = to_print.width_at(i++);
+				if (width == 1) {
+					*term << grapheme;
+				} else {
+					term->out_stream.save();
+					*term << grapheme;
+					term->out_stream.restore().right(width);
+				}
+			}
 		} catch (std::out_of_range &) {
 			DBGT("std::out_of_range in textinput::draw(): scroll[" << static_cast<signed long>(scroll) << "], twidth[" << twidth << "], buffer[" << buffer.size() << "] = \"" << std::string(buffer) << "\"");
 			*term << prefix;

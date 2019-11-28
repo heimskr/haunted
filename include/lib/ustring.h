@@ -43,6 +43,7 @@ namespace haunted {
 			ustring & insert(size_t, const ustring &);
 			ustring & insert(size_t, char16_t);
 			ustring & erase(size_t, size_t = std::string::npos);
+			void pop_back();
 
 			std::string at(size_t) const;
 
@@ -50,6 +51,8 @@ namespace haunted {
 			size_t width_at(size_t) const;
 			/** Returns the width (in columns) of all text before a given index and optionally after a given offset. */
 			size_t width_until(size_t index, size_t offset = 0) const;
+			/** Returns the total width of the text. */
+			size_t width() const;
 
 #include "ustring.tcc"
 
