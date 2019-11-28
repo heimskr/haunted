@@ -469,40 +469,47 @@ namespace haunted::tests {
 	}
 
 	void maintest::unittest_ustring(testing &unit) {
-		std::string example = "foo🎉🇩🇪👮🏻‍♂️bar";
+		std::string example = "foo🎉🇩🇪👮🏻‍♂️bar👨‍👨‍👧‍👦";
 		ustring uexample(example);
-		std::string pieces[] = {"f", "o", "o", "🎉", "🇩🇪", "👮🏻‍♂️", "b", "a", "r"};
+		std::string pieces[] = {"f", "o", "o", "🎉", "🇩🇪", "👮🏻‍♂️", "b", "a", "r", "👨‍👨‍👧‍👦"};
 		int i = 0;
 		for (std::string piece: uexample) {
 			unit.check(piece, pieces[i], "pieces[" + std::to_string(i) + "]");
-			i++;
+			++i;
 		}
 
-		unit.check(uexample.substr(0, 1), "f",  "uexample.substr(0, 1)");
-		unit.check(uexample.substr(1, 2), "oo", "uexample.substr(1, 2)");
-		unit.check(uexample.substr(3, 1), "🎉", "uexample.substr(3, 1)");
-		unit.check(uexample.length(), 9UL, "uexample.length()");
-		unit.check(uexample.substr(uexample.length(), 10), "", "uexample.substr(uexample.length(), 10)");
-		unit.check(uexample.substr(uexample.length() - 1, 10), "r", "uexample.substr(uexample.length() - 1, 10)");
-		unit.check("uexample.substr(uexample.length() + 1, 1)", typeid(std::out_of_range),
-			"Invalid index: 10 (length is 9)", &uexample, &ustring::substr, uexample.length() + 1, 1UL);
+		unit.check(uexample.substr(0, 1), "f",  "substr(0, 1)");
+		unit.check(uexample.substr(1, 2), "oo", "substr(1, 2)");
+		unit.check(uexample.substr(3, 1), "🎉", "substr(3, 1)");
+		unit.check(uexample.length(), 10UL, "length()");
+		unit.check(uexample.substr(uexample.length(), 10), "", "substr(length(), 10)");
+		unit.check(uexample.substr(uexample.length() - 1, 10), "👨‍👨‍👧‍👦", "substr(length() - 1, 10)");
+		unit.check("substr(length() + 1, 1)", typeid(std::out_of_range), "Invalid index: 11 (length is 10)", &uexample,
+			&ustring::substr, uexample.length() + 1, 1UL);
 		unit.check(uexample[5], "👮🏻‍♂️", "uexample[5]");
+		unit.check(uexample.at(5), "👮🏻‍♂️", "at(5)");
 		ansi::out << ansi::info << "Inserting " << "\""_d << "baz"_b << "\""_d << " at index 4." << ansi::endl;
 		uexample.insert(4, "baz");
-		unit.check(uexample, "foo🎉baz🇩🇪👮🏻‍♂️bar", "uexample");
-		unit.check(uexample.length(), 12UL, "uexample.length()");
+		unit.check(uexample, "foo🎉baz🇩🇪👮🏻‍♂️bar👨‍👨‍👧‍👦", "uexample");
+		unit.check(uexample.substr(7, 2), "🇩🇪👮🏻‍♂️", "substr(7, 2)");
+		unit.check(uexample.length(), 13UL, "length()");
+		i = 0;
+		for (size_t len: {1, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1, 1, 2}) {
+			unit.check(uexample.width_at(i), len, "width_at(" + std::to_string(i) + ")");
+			++i;
+		}
 		ansi::out << ansi::info << "Erasing 3 characters at index 6." << ansi::endl;
 		uexample.erase(6, 3);
-		unit.check(uexample, "foo🎉babar", "uexample");
-		unit.check(uexample.length(), 9UL, "uexample.length()");
+		unit.check(uexample, "foo🎉babar👨‍👨‍👧‍👦", "uexample");
+		unit.check(uexample.length(), 10UL, "length()");
 		ansi::out << ansi::info << "Erasing 10 characters at index 7." << ansi::endl;
 		uexample.erase(7, 10);
 		unit.check(uexample, "foo🎉bab", "uexample");
-		unit.check(uexample.length(), 7UL, "uexample.length()");
+		unit.check(uexample.length(), 7UL, "length()");
 		ansi::out << ansi::info << "Erasing 0 characters at index 0." << ansi::endl;
 		uexample.erase(0, 0);
 		unit.check(uexample, "foo🎉bab", "uexample");
-		unit.check(uexample.length(), 7UL, "uexample.length()");
+		unit.check(uexample.length(), 7UL, "length()");
 
 		ansi::out << ansi::endl;
 	}

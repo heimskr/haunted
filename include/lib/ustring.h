@@ -6,6 +6,8 @@
 #include <unicode/ustring.h>
 #include <unicode/brkiter.h>
 
+#define USTRING_WIDTH_AT_BUFFER_SIZE 10
+
 namespace haunted {
 	/**
 	 * This is a wrapper class for icu::UnicodeString that indexes strings by graphemes rather than codepoints.
@@ -21,6 +23,8 @@ namespace haunted {
 			ustring(const std::string &);
 			ustring(const icu::UnicodeString &);
 
+			icu::UnicodeString & get_data() { return data; }
+
 			void check_index(size_t) const;
 
 			ustring raw_substr(size_t, size_t = std::string::npos) const;
@@ -34,6 +38,9 @@ namespace haunted {
 			ustring & erase(size_t, size_t = std::string::npos);
 
 			std::string at(size_t) const;
+
+			/** Returns the width (in columns) of the character at a given index. */
+			size_t width_at(size_t) const;
 
 #include "ustring.tcc"
 

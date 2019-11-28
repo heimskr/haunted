@@ -99,6 +99,47 @@ namespace haunted {
 		return substr(index, 1UL);
 	}
 
+	size_t ustring::width_at(size_t index) const {
+		check_index(index);
+
+		ustring::iterator iter = begin() + index;
+
+
+		std::string piece = at(index);
+
+		UChar32 buf[USTRING_WIDTH_AT_BUFFER_SIZE];
+		UErrorCode code = U_ZERO_ERROR;
+		raw_substr(iter.prev, iter.pos - iter.prev).data.toUTF32(buf, USTRING_WIDTH_AT_BUFFER_SIZE, code);
+		UChar32 ch = buf[0];
+
+		if (0 < code)
+			throw std::runtime_error("icu::UnicodeString::toUTF32 returned error code " + std::to_string(code));
+
+		// https://www.rdocumentation.org/packages/stringi/versions/1.4.3/topics/stri_width
+		for (UCharCategory type: {U_CONTROL_CHAR, U_ENCLOSING_MARK, U_NON_SPACING_MARK, U_FORMAT_CHAR}) {
+			if (u_charType(ch) == type)
+				return 0;
+		}
+
+		for (auto prop: {UCHAR_EMOJI}) {
+			if (u_hasBinaryProperty(ch, prop))
+				return 2;
+		}
+
+		UEastAsianWidth ea = static_cast<UEastAsianWidth>(u_getIntPropertyValue(ch, UCHAR_EAST_ASIAN_WIDTH));
+		if (ea == U_EA_FULLWIDTH || ea == U_EA_WIDE)
+			return 2;
+
+		UHangulSyllableType hst = static_cast<UHangulSyllableType>(u_getIntPropertyValue(ch, UCHAR_HANGUL_SYLLABLE_TYPE));
+		if (hst == U_HST_VOWEL_JAMO || hst == U_HST_TRAILING_JAMO)
+			return 2;
+
+		if (ch == 0x200B) // ZERO WIDTH SPACE (U+200B)
+			return 0;
+
+		return 1;
+	}
+
 // Operators
 
 	bool ustring::operator==(const std::string &str) const {
