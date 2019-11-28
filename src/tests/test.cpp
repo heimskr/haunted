@@ -478,9 +478,9 @@ namespace haunted::tests {
 			i++;
 		}
 
-		unit.check(std::string(uexample.substr(0, 1)), std::string("f"),  "uexample.substr(0, 1)");
-		unit.check(std::string(uexample.substr(1, 2)), std::string("oo"), "uexample.substr(1, 2)");
-		unit.check(std::string(uexample.substr(3, 1)), std::string("🎉"), "uexample.substr(3, 1)");
+		unit.check(uexample.substr(0, 1), "f",  "uexample.substr(0, 1)");
+		unit.check(uexample.substr(1, 2), "oo", "uexample.substr(1, 2)");
+		unit.check(uexample.substr(3, 1), "🎉", "uexample.substr(3, 1)");
 		unit.check(uexample.length(), 9UL, "uexample.length()");
 
 		ansi::out << ansi::endl;

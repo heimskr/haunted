@@ -152,8 +152,8 @@ namespace haunted::tests {
 				return left.second == right.second && *left.first == *right.first;
 			}
 
-			template <typename T>
-			static bool equal(const T &left, const T &right) {
+			template <typename L, typename R>
+			static bool equal(const L &left, const R &right) {
 				return left == right;
 			}
 
@@ -247,10 +247,9 @@ namespace haunted::tests {
 					return multi_apply(fn, target, args);
 				}), fn_name);
 			}
-
 			/** Used for testing a single expected value with an actual value. */
-			template <typename T>
-			bool check(const T &actual, const T &expected, const std::string &fn_name) {
+			template <typename A, typename E>
+			bool check(const A &actual, const E &expected, const std::string &fn_name) {
 				bool result = equal(actual, expected);
 				if (result) {
 					++total_passed;
@@ -263,6 +262,12 @@ namespace haunted::tests {
 				}
 
 				return result;
+			}
+
+			/** Used for testing a single expected value with an actual value. */
+			template <typename T>
+			bool check(const T &actual, const T &expected, const std::string &fn_name) {
+				return check<T, T>(actual, expected, fn_name);
 			}
 
 			/** Used to check whether a function throws an exception of a given type. */
