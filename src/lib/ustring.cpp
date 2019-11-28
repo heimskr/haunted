@@ -29,11 +29,11 @@ namespace haunted {
 		}
 	}
 
-	ustring ustring::raw_substr(size_t start, size_t length) {
+	ustring ustring::raw_substr(size_t start, size_t length) const {
 		return ustring(data.tempSubString(start, length));
 	}
 
-	ustring ustring::substr(size_t start, size_t length) {
+	ustring ustring::substr(size_t start, size_t length) const {
 		check_index(start);
 
 		if (length == 0)
@@ -74,10 +74,23 @@ namespace haunted {
 		return *this;
 	}
 
+	std::string ustring::at(size_t index) const {
+		// Not pretty.
+		return substr(index, 1UL);
+	}
+
 // Operators
 
 	bool ustring::operator==(const std::string &str) const {
 		return std::string(*this) == str;
+	}
+
+	bool ustring::operator!=(const std::string &str) const {
+		return std::string(*this) != str;
+	}
+
+	std::string ustring::operator[](size_t index) const {
+		return at(index);
 	}
 
 	ustring::operator std::string() const {
@@ -92,7 +105,7 @@ namespace haunted {
 
 // Iterator
 
-	ustring::iterator::iterator(ustring &ustr_, const icu::Locale &locale_): ustr(ustr_), locale(locale_) {
+	ustring::iterator::iterator(const ustring &ustr_, const icu::Locale &locale_): ustr(ustr_), locale(locale_) {
 		UErrorCode code = U_ZERO_ERROR;
 		bi = icu::BreakIterator::createCharacterInstance(locale, code);
 		if (0 < code) {
@@ -180,19 +193,19 @@ namespace haunted {
 		return *this;
 	}
 
-	ustring::iterator ustring::begin() {
+	ustring::iterator ustring::begin() const {
 		return ustring::iterator(*this);
 	}
 
-	ustring::iterator ustring::end() {
+	ustring::iterator ustring::end() const {
 		return ustring::iterator(*this).end();
 	}
 
-	ustring::iterator ustring::begin(const icu::Locale &locale) {
+	ustring::iterator ustring::begin(const icu::Locale &locale) const {
 		return ustring::iterator(*this, locale);
 	}
 
-	ustring::iterator ustring::end(const icu::Locale &locale) {
+	ustring::iterator ustring::end(const icu::Locale &locale) const {
 		return ustring::iterator(*this, locale).end();
 	}
 }

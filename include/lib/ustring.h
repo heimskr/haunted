@@ -23,17 +23,19 @@ namespace haunted {
 
 			void check_index(size_t) const;
 
-			ustring raw_substr(size_t, size_t = std::string::npos);
-			ustring substr(size_t, size_t = std::string::npos);
+			ustring raw_substr(size_t, size_t = std::string::npos) const;
+			ustring substr(size_t, size_t = std::string::npos) const;
 
 			size_t length() const;
 			bool empty() const;
 
 			ustring & insert(size_t, const ustring &);
 			ustring & insert(size_t, char16_t);
+			std::string at(size_t) const;
 
 			bool operator==(const std::string &) const;
-
+			bool operator!=(const std::string &) const;
+			std::string operator[](size_t) const;
 			operator std::string() const;
 			friend std::ostream & operator<<(std::ostream &, const ustring &);
 
@@ -41,11 +43,11 @@ namespace haunted {
 				friend class ustring;
 
 				private:
-					ustring &ustr;
+					const ustring &ustr;
 					icu::BreakIterator *bi;
 					icu::Locale locale;
 					size_t prev, pos;
-					iterator(ustring &, const icu::Locale & = icu::Locale::getUS());
+					iterator(const ustring &, const icu::Locale & = icu::Locale::getUS());
 					iterator & end();
 
 				public:
@@ -60,10 +62,10 @@ namespace haunted {
 					bool operator!=(const iterator &) const;
 			};
 
-			iterator begin();
-			iterator end();
-			iterator begin(const icu::Locale &);
-			iterator end(const icu::Locale &);
+			iterator begin() const;
+			iterator end() const;
+			iterator begin(const icu::Locale &) const;
+			iterator end(const icu::Locale &) const;
 	};
 
 	std::ostream & operator<<(std::ostream &, const ustring &);

@@ -315,6 +315,15 @@ namespace haunted::tests {
 			}
 
 			/** Used to check whether a function throws an exception of a given type. */
+			template <typename T, typename O, typename... I>
+			bool check(const std::string &fn_name, const std::type_info &errtype, const std::string &what,
+			           const T *target, O(T::*fn)(I...) const, I... args) {
+				return check(fn_name, errtype, what, std::function<O(I...)>([&](I... input) -> O {
+					return (target->*fn)(input...);
+				}), args...);
+			}
+
+			/** Used to check whether a function throws an exception of a given type. */
 			template <typename O, typename... I>
 			bool check(const std::string &fn_name, const std::type_info &errtype, const std::string &what,
 			           O(*fn)(I...), I... args) {

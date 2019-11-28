@@ -486,6 +486,7 @@ namespace haunted::tests {
 		unit.check(uexample.substr(uexample.length() - 1, 10), "r", "uexample.substr(uexample.length() - 1, 10)");
 		unit.check("uexample.substr(uexample.length() + 1, 1)", typeid(std::out_of_range),
 			"Invalid index: 10 (length is 9)", &uexample, &ustring::substr, uexample.length() + 1, 1UL);
+		unit.check(uexample[5], "👮🏻‍♂️", "uexample[5]");
 
 		ansi::out << ansi::endl;
 	}
