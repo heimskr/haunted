@@ -31,6 +31,8 @@ namespace haunted {
 
 			ustring & insert(size_t, const ustring &);
 			ustring & insert(size_t, char16_t);
+			ustring & erase(size_t, size_t = std::string::npos);
+
 			std::string at(size_t) const;
 
 			bool operator==(const std::string &) const;
@@ -51,12 +53,14 @@ namespace haunted {
 					iterator & end();
 
 				public:
-					iterator(iterator &);
+					iterator(const iterator &);
 					~iterator();
 					iterator & operator++();
 					iterator & operator--();
 					iterator & operator+=(ssize_t);
 					iterator & operator-=(ssize_t);
+					iterator operator+(ssize_t) const;
+					iterator operator-(ssize_t) const;
 					std::string operator*();
 					bool operator==(const iterator &) const;
 					bool operator!=(const iterator &) const;
@@ -68,6 +72,7 @@ namespace haunted {
 			iterator end(const icu::Locale &) const;
 	};
 
+	ustring::iterator operator+(ssize_t, const ustring::iterator &);
 	std::ostream & operator<<(std::ostream &, const ustring &);
 }
 

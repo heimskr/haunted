@@ -29,14 +29,14 @@ namespace haunted {
 		}
 	}
 
-	ustring ustring::raw_substr(size_t start, size_t length) const {
-		return ustring(data.tempSubString(start, length));
+	ustring ustring::raw_substr(size_t start, size_t len) const {
+		return ustring(data.tempSubString(start, len));
 	}
 
-	ustring ustring::substr(size_t start, size_t length) const {
+	ustring ustring::substr(size_t start, size_t len) const {
 		check_index(start);
 
-		if (length == 0)
+		if (len == 0)
 			return "";
 
 		ustring::iterator iter = begin();
@@ -46,7 +46,7 @@ namespace haunted {
 
 		icu::UnicodeString raw;
 		ustring::iterator end_ = end();
-		for (size_t i = 0; i < length && iter != end_; ++i) {
+		for (size_t i = 0; i < len && iter != end_; ++i) {
 			raw.append(data.tempSubString(iter.prev, iter.pos - iter.prev));
 			++iter;
 		}
@@ -63,18 +63,22 @@ namespace haunted {
 	}
 	
 	ustring & ustring::insert(size_t pos, const ustring &str) {
-		ustring::iterator iter = begin();
-		iter += pos;
+		ustring::iterator iter = begin() + pos;
 		data.insert(iter.prev, str.data);
 		length_ += str.length_;
 		return *this;
 	}
 	
 	ustring & ustring::insert(size_t pos, char16_t ch) {
-		ustring::iterator iter = begin();
-		iter += pos;
+		ustring::iterator iter = begin() + pos;
 		data.insert(iter.prev, ch);
 		++length_;
+		return *this;
+	}
+
+	ustring & ustring::erase(size_t pos, size_t len) {
+		size_t raw_pos, to_erase = 0;
+		ustring::iterator iter = begin() + pos;
 		return *this;
 	}
 
@@ -122,7 +126,7 @@ namespace haunted {
 		pos = bi->next();
 	}
 
-	ustring::iterator::iterator(ustring::iterator &iter): ustr(iter.ustr) {
+	ustring::iterator::iterator(const ustring::iterator &iter): ustr(iter.ustr) {
 		bi = iter.bi->clone();
 		locale = iter.locale;
 		prev = iter.prev;
@@ -176,6 +180,22 @@ namespace haunted {
 		prev = bi->previous();
 		pos = bi->next();
 		return *this;
+	}
+
+	ustring::iterator ustring::iterator::operator+(ssize_t to_add) const {
+		ustring::iterator copy = *this;
+		copy += to_add;
+		return copy;
+	}
+
+	ustring::iterator operator+(ssize_t to_add, const ustring::iterator &iter) {
+		return iter + to_add;
+	}
+
+	ustring::iterator ustring::iterator::operator-(ssize_t to_subtract) const {
+		ustring::iterator copy = *this;
+		copy -= to_subtract;
+		return copy;
 	}
 
 	std::string ustring::iterator::operator*() {
