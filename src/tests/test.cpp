@@ -482,6 +482,10 @@ namespace haunted::tests {
 		unit.check(uexample.substr(1, 2), "oo", "uexample.substr(1, 2)");
 		unit.check(uexample.substr(3, 1), "🎉", "uexample.substr(3, 1)");
 		unit.check(uexample.length(), 9UL, "uexample.length()");
+		unit.check(uexample.substr(uexample.length(), 10), "", "uexample.substr(uexample.length(), 10)");
+		unit.check(uexample.substr(uexample.length() - 1, 10), "r", "uexample.substr(uexample.length() - 1, 10)");
+		unit.check("uexample.substr(uexample.length() + 1, 1)", typeid(std::out_of_range),
+			"Invalid index: 10 (length is 9)", &uexample, &ustring::substr, uexample.length() + 1, 1UL);
 
 		ansi::out << ansi::endl;
 	}
