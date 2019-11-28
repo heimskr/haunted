@@ -491,6 +491,10 @@ namespace haunted::tests {
 		uexample.insert(4, "baz");
 		unit.check(uexample, "foo🎉baz🇩🇪👮🏻‍♂️bar", "uexample");
 		unit.check(uexample.length(), 12UL, "uexample.length()");
+		ansi::out << ansi::info << "Erasing 3 characters at index 6." << ansi::endl;
+		uexample.erase(6, 3);
+		unit.check(uexample, "foo🎉babar", "uexample");
+		unit.check(uexample.length(), 9UL, "uexample.length()");
 
 		ansi::out << ansi::endl;
 	}

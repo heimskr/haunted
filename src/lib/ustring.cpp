@@ -77,8 +77,14 @@ namespace haunted {
 	}
 
 	ustring & ustring::erase(size_t pos, size_t len) {
-		size_t raw_pos, to_erase = 0;
-		ustring::iterator iter = begin() + pos;
+		size_t raw_pos, raw_erase = 0;
+		ustring::iterator iter = begin() + pos, end_ = end();
+		raw_pos = iter.prev;
+		size_t to_erase;
+		for (to_erase = 0; to_erase < len && iter != end_; ++to_erase, ++iter);
+		raw_erase = iter.prev - raw_pos;
+		data.remove(raw_pos, raw_erase);
+		length_ -= to_erase;
 		return *this;
 	}
 
