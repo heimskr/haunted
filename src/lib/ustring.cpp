@@ -16,10 +16,19 @@ namespace haunted {
 		scan_length();
 	}
 
+	ustring::~ustring() {
+		delete_cached();
+	}
+
 	size_t & ustring::scan_length() {
 		length_ = 0;
 		for (ustring::iterator iter = begin(), end_ = end(); iter != end_; ++iter, ++length_);
 		return length_;
+	}
+
+	void ustring::delete_cached() {
+		if (cached_cstr)
+			delete cached_cstr;
 	}
 
 	void ustring::check_index(size_t index) const {
@@ -61,12 +70,29 @@ namespace haunted {
 	bool ustring::empty() const {
 		return data.isEmpty();
 	}
+
+	const char * ustring::c_str() {
+		if (cached_cstr)
+			return cached_cstr;
+		std::string str = *this;
+		const size_t len = str.length() + 1;
+		cached_cstr = static_cast<const char *>(std::calloc(len, sizeof(char)));
+		std::memcpy(reinterpret_cast<void *>(const_cast<char *>(cached_cstr)), str.c_str(), len);
+		return cached_cstr;
+	}
+
+	void ustring::clear() {
+		delete_cached();
+		length_ = 0;
+		data.remove();
+	}
 	
 	ustring & ustring::insert(size_t pos, const ustring &str) {
 		if (!str.empty()) {
 			ustring::iterator iter = begin() + pos;
 			data.insert(iter.prev, str.data);
 			length_ += str.length_;
+			delete_cached();
 		}
 
 		return *this;
@@ -76,6 +102,7 @@ namespace haunted {
 		ustring::iterator iter = begin() + pos;
 		data.insert(iter.prev, ch);
 		++length_;
+		delete_cached();
 		return *this;
 	}
 
@@ -89,6 +116,7 @@ namespace haunted {
 			raw_erase = iter.prev - raw_pos;
 			data.remove(raw_pos, raw_erase);
 			length_ -= to_erase;
+			delete_cached();
 		}
 
 		return *this;

@@ -16,12 +16,16 @@ namespace haunted {
 		private:
 			icu::UnicodeString data;
 			size_t length_;
+			const char *cached_cstr;
+
 			size_t & scan_length();
+			void delete_cached();
 
 		public:
 			ustring(const char *);
 			ustring(const std::string &);
 			ustring(const icu::UnicodeString &);
+			~ustring();
 
 			icu::UnicodeString & get_data() { return data; }
 
@@ -31,7 +35,10 @@ namespace haunted {
 			ustring substr(size_t, size_t = std::string::npos) const;
 
 			size_t length() const;
+			size_t size() const { return length(); }
 			bool empty() const;
+			const char * c_str();
+			void clear();
 
 			ustring & insert(size_t, const ustring &);
 			ustring & insert(size_t, char16_t);
