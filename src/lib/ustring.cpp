@@ -74,11 +74,23 @@ namespace haunted {
 		return *this;
 	}
 
+// Operators
+
+	bool ustring::operator==(const std::string &str) const {
+		return std::string(*this) == str;
+	}
+
 	ustring::operator std::string() const {
 		std::string out;
 		data.toUTF8String(out);
 		return out;
 	}
+
+	std::ostream & operator<<(std::ostream &os, const ustring &us) {
+		return os << std::string(us);
+	}
+
+// Iterator
 
 	ustring::iterator::iterator(ustring &ustr_, const icu::Locale &locale_): ustr(ustr_), locale(locale_) {
 		UErrorCode code = U_ZERO_ERROR;
@@ -182,9 +194,5 @@ namespace haunted {
 
 	ustring::iterator ustring::end(const icu::Locale &locale) {
 		return ustring::iterator(*this, locale).end();
-	}
-
-	std::ostream & operator<<(std::ostream &os, const ustring &us) {
-		return os << std::string(us);
 	}
 }

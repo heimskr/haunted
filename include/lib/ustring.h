@@ -32,6 +32,8 @@ namespace haunted {
 			ustring & insert(size_t, const ustring &);
 			ustring & insert(size_t, char16_t);
 
+			bool operator==(const std::string &) const;
+
 			operator std::string() const;
 			friend std::ostream & operator<<(std::ostream &, const ustring &);
 
