@@ -487,6 +487,9 @@ namespace haunted::tests {
 		unit.check("uexample.substr(uexample.length() + 1, 1)", typeid(std::out_of_range),
 			"Invalid index: 10 (length is 9)", &uexample, &ustring::substr, uexample.length() + 1, 1UL);
 		unit.check(uexample[5], "👮🏻‍♂️", "uexample[5]");
+		ansi::out << ansi::info << "Inserting " << "\""_d << "baz"_b << "\""_d << " at index 4." << ansi::endl;
+		uexample.insert(4, "baz");
+		unit.check(uexample, "foo🎉baz🇩🇪👮🏻‍♂️bar", "uexample");
 
 		ansi::out << ansi::endl;
 	}
