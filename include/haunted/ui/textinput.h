@@ -117,7 +117,11 @@ namespace haunted::ui {
 			enum class event: int {update = 1, submit = 2};
 
 			/** When a multibyte UTF-8 codepoint is being received, the individual bytes are stored in this buffer. */
-			std::string unicode_buffer;
+			std::string unicode_byte_buffer;
+
+			/** When a multi-codepoint UTF-8 grapheme is being received, the individual codepoints are stored in this
+			 *  buffer. */
+			std::vector<uint32_t> unicode_codepoint_buffer;
 
 			/** Constructs a textinput with a parent and a position and an initial buffer and cursor. */
 			textinput(container *parent, position pos, const ustring &buffer, size_t cursor);

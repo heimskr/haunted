@@ -3,6 +3,7 @@
 
 #include "haunted/core/terminal.h"
 #include "haunted/ui/textinput.h"
+#include "lib/uutil.h"
 
 namespace haunted::ui {
 	std::unordered_set<unsigned char> textinput::whitelist = {9, 10, 11, 13};
@@ -104,7 +105,7 @@ namespace haunted::ui {
 	}
 
 	point textinput::find_cursor() const {
-		return {static_cast<int>(pos.left + prefix_length + cursor - scroll), pos.top};
+		return {static_cast<int>(pos.left + prefix_length + buffer.width_until(cursor, scroll)), pos.top};
 	}
 
 	bool textinput::check_scroll() {
@@ -169,19 +170,51 @@ namespace haunted::ui {
 		if (ch < 0x20 && whitelist.find(ch) == whitelist.end())
 			return;
 
-		if (!unicode_buffer.empty()) {
-			unicode_buffer.push_back(ch);
-			if (unicode_buffer.size() == bytes_expected) {
-				// The Unicode buffer now contains a complete and valid codepoint (the first byte is valid, at least).
-				// Insert the buffer's contents into the primary buffer.
-				DBG("Length before: " << buffer.length());
-				buffer.insert(cursor++, unicode_buffer);
-				DBG("Length after: " << buffer.length());
-				DBG("Inserting character from Unicode buffer: \"" << unicode_buffer << "\"");
-				unicode_buffer.clear();
+		if (!unicode_byte_buffer.empty()) {
+			unicode_byte_buffer.push_back(ch);
+			if (unicode_byte_buffer.size() == bytes_expected) {
+				// The Unicode buffer now contains a complete and valid codepoint. (The first byte is valid, at least.)
+
+				// Extract the full codepoint from the buffer.
+				uint32_t uchar;
+				UErrorCode code = U_ZERO_ERROR;
+				icu::UnicodeString::fromUTF8(unicode_byte_buffer).toUTF32(reinterpret_cast<int *>(&uchar), 1, code);
+				if (0 < code)
+					throw std::runtime_error("textinput::insert: toUTF32 returned " + std::to_string(code));
+
+				bool do_insert = true;
+
+				// If this is half a flag...
+				if (uutil::is_regional_indicator(uchar)) {
+					if (unicode_codepoint_buffer.empty()) {
+						// ...and it's the first half, don't insert it into the textinput yet, but insert it into the
+						// codepoint buffer.
+						do_insert = false;
+						unicode_codepoint_buffer.push_back(uchar);
+					} else {
+						// Otherwise, if it's the second half, insert both halves into the textinput.
+						// int uchars[] = {static_cast<int>(unicode_codepoint_buffer[0]), static_cast<int>(uchar)};
+						int uchars[] = {static_cast<int>(unicode_codepoint_buffer[0]), static_cast<int>(uchar)};
+						unicode_byte_buffer.clear();
+						icu::UnicodeString::fromUTF32(uchars, 2).toUTF8String(unicode_byte_buffer);
+						unicode_codepoint_buffer.clear();
+					}
+				}
+
+				if (do_insert) {
+					size_t old_length = buffer.length();
+					DBG("Old length: " << old_length);
+					buffer.insert(cursor, unicode_byte_buffer);
+					DBG("New length: " << buffer.length());
+					cursor += buffer.length() - old_length;
+					DBG("Inserting character from Unicode buffer: \"" << unicode_byte_buffer << "\" (raw length: " <<
+						unicode_byte_buffer.length() << ")");
+					draw_insert();
+					update();
+				}
+
+				unicode_byte_buffer.clear();
 				bytes_expected = 0;
-				draw_insert();
-				update();
 			}
 		} else {
 			size_t width = utf8::width(ch);
@@ -195,7 +228,7 @@ namespace haunted::ui {
 				// This byte is the first of a multi-byte codepoint.
 				// Set the expected width and initialize the Unicode buffer with the byte.
 				bytes_expected = width;
-				unicode_buffer.push_back(ch);
+				unicode_byte_buffer.push_back(ch);
 			}
 		}
 	}
@@ -497,21 +530,14 @@ namespace haunted::ui {
 					case 'u':      clear(); break;
 					case 'w': erase_word(); break;
 					case 'm': {
-						icu::UnicodeString us = icu::UnicodeString::fromUTF8(get_text());
-						UErrorCode code = U_ZERO_ERROR;
-						icu::BreakIterator *bi = icu::BreakIterator::createCharacterInstance(icu::Locale::getUS(), code);
-						// BreakIterator::createWordInstance(Locale::getUS(), status);
-						bi->setText(us);
-						int32_t last = 0, p = bi->first();
-						while (p != icu::BreakIterator::DONE) {
-							std::string utf8str;
-							us.tempSubString(last, p - last).toUTF8String(utf8str);
-							DBG(p << ": '" << utf8str << "'");
-							last = p;
-							p = bi->next();
+						DBG("Length: " << buffer.length() << "; raw length: " << buffer.get_data().length());
+						for (size_t i = 0, len = buffer.length(); i < len; ++i) {
+							std::string piece = buffer[i];
+							DBG(i << ": " << "[" << piece << "] " << buffer.width_at(i) << "w " << piece.length() << "l");
 						}
-						DBG("end: [" << p << "], last[" << bi->last() << "]");
-						delete bi;
+
+						buffer.scan_length();
+						DBG("Scanned length. New length: " << buffer.length());
 						break;
 					}
 					default: return false;

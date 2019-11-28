@@ -18,10 +18,10 @@ namespace haunted {
 			size_t length_;
 			const char *cached_cstr = nullptr;
 
-			size_t & scan_length();
 			void delete_cached();
 
 		public:
+			size_t & scan_length();
 			ustring(const char *);
 			ustring(const std::string &);
 			ustring(const icu::UnicodeString &);

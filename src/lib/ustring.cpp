@@ -91,6 +91,7 @@ namespace haunted {
 		if (!str.empty()) {
 			ustring::iterator iter = begin() + pos;
 			data.insert(iter.prev, str.data);
+			DBG("inserting [" << str << "] (raw length: " << std::string(str).length() << ")");
 			length_ += str.length_;
 			delete_cached();
 		}
