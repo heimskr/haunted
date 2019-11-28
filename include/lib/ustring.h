@@ -8,7 +8,7 @@
 
 namespace haunted {
 	/**
-	 * This is a wrapper class for icu::UnicodeString.
+	 * This is a wrapper class for icu::UnicodeString that indexes strings by graphemes rather than codepoints.
 	 */
 	class ustring {
 		private:
@@ -34,6 +34,8 @@ namespace haunted {
 			ustring & erase(size_t, size_t = std::string::npos);
 
 			std::string at(size_t) const;
+
+#include "ustring.tcc"
 
 			bool operator==(const std::string &) const;
 			bool operator!=(const std::string &) const;
