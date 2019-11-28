@@ -27,6 +27,7 @@ namespace haunted {
 			ustring & insert(size_t, char16_t);
 
 			operator std::string() const;
+			friend std::ostream & operator<<(std::ostream &, const ustring &);
 
 			class iterator {
 				friend class ustring;
@@ -37,7 +38,7 @@ namespace haunted {
 					icu::Locale locale;
 					size_t prev, pos;
 					iterator(ustring &, const icu::Locale & = icu::Locale::getUS());
-					iterator & last();
+					iterator & end();
 
 				public:
 					iterator(iterator &);
@@ -54,6 +55,8 @@ namespace haunted {
 			iterator begin(const icu::Locale &);
 			iterator end(const icu::Locale &);
 	};
+
+	std::ostream & operator<<(std::ostream &, const ustring &);
 }
 
 #endif

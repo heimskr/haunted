@@ -1,4 +1,5 @@
 #include "lib/ustring.h"
+#include "lib/formicine/ansi.h"
 
 namespace haunted {
 	ustring::ustring(const std::string &str) {
@@ -37,8 +38,9 @@ namespace haunted {
 
 	ustring::iterator::iterator(ustring &ustr_, const icu::Locale &locale_): ustr(ustr_), locale(locale_) {
 		UErrorCode code = U_ZERO_ERROR;
-		bi = icu::BreakIterator::createCharacterInstance(icu::Locale::getUS(), code);
-		if (code != U_ZERO_ERROR) {
+		bi = icu::BreakIterator::createCharacterInstance(locale, code);
+		DBG("ustr[" << ustr_ << "]");
+		if (0 < code) {
 			throw std::runtime_error("icu::BreakIterator::createCharacterInstance returned error code " +
 				std::to_string(code));
 		}
@@ -76,17 +78,17 @@ namespace haunted {
 	}
 
 	bool ustring::iterator::operator==(const ustring::iterator &rhs) const {
-		return &ustr == &rhs.ustr && pos == rhs.pos && prev == rhs.prev;
+		return &ustr == &rhs.ustr &&
+			((pos == rhs.pos && prev == rhs.prev) || (pos == std::string::npos && prev == rhs.prev));
 	}
 
 	bool ustring::iterator::operator!=(const ustring::iterator &rhs) const {
-		return &ustr != &rhs.ustr || pos != rhs.pos || prev != rhs.prev;
+		return &ustr != &rhs.ustr ||
+			((pos != rhs.pos || prev != rhs.prev) && (pos != std::string::npos || prev != rhs.prev));
 	}
 
-	ustring::iterator & ustring::iterator::last() {
-		pos = bi->last();
-		prev = bi->previous();
-		bi->last();
+	ustring::iterator & ustring::iterator::end() {
+		prev = pos = bi->last();
 		return *this;
 	}
 
@@ -95,7 +97,7 @@ namespace haunted {
 	}
 
 	ustring::iterator ustring::end() {
-		return ustring::iterator(*this).last();
+		return ustring::iterator(*this).end();
 	}
 
 	ustring::iterator ustring::begin(const icu::Locale &locale) {
@@ -103,6 +105,10 @@ namespace haunted {
 	}
 
 	ustring::iterator ustring::end(const icu::Locale &locale) {
-		return ustring::iterator(*this, locale).last();
+		return ustring::iterator(*this, locale).end();
+	}
+
+	std::ostream & operator<<(std::ostream &os, const ustring &us) {
+		return os << std::string(us);
 	}
 }
