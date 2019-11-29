@@ -72,12 +72,6 @@ namespace haunted::ui {
 			/** Partially re-renders the control onto the terminal in response to an insertion. */
 			void draw_insert();
 
-			/** Partially re-renders the control onto the terminal in response to a deletion. */
-			void draw_erase();
-
-			/** Clears the space to the right of the cursor and redraws the text. */
-			void draw_right(int offset = 0);
-
 			/** Blanks out the spaces to the right of the buffer. */
 			void clear_line();
 
@@ -224,6 +218,14 @@ namespace haunted::ui {
 
 			/** Renders the control onto the terminal. */
 			virtual void draw() override;
+
+			/** Clears the space to the right of the cursor and redraws the text. */
+			void draw_right(int offset = 0);
+
+			/** Partially re-renders the control onto the terminal in response to a deletion. */
+			void draw_erase();
+
+			void print_graphemes(ustring);
 
 			virtual bool can_draw() const override;
 

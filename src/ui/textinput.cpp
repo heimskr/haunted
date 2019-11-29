@@ -289,52 +289,6 @@ namespace haunted::ui {
 		update();
 	}
 
-	void textinput::draw_right(int offset) {
-		if (!can_draw())
-			return;
-
-		auto lock = term->lock_render();
-		apply_colors();
-		term->out_stream.save();
-		clear_line();
-		size_t old_cursor = cursor;
-		cursor = offset < 0 && -offset > static_cast<int>(cursor)? 0 : cursor + offset;
-		if (cursor > length())
-			cursor = length();
-		jump_cursor();
-		*term << buffer.substr(cursor, text_width() - cursor + scroll);
-		cursor = old_cursor;
-		term->out_stream.restore();
-	}
-
-	void textinput::draw_erase() {
-		if (!can_draw() || text_width() <= cursor - scroll) {
-			// If the cursor is at or beyond the right edge, do nothing.
-			return;
-		}
-
-		auto lock = term->lock_render();
-		apply_colors();
-		term->out_stream.save();
-
-		if (cursor <= scroll) {
-			// If the cursor is at or beyond the left edge, redraw the entire line.
-			clear_text();
-			term->jump(pos.left + prefix_length, pos.top);
-			*term << buffer.substr(scroll, text_width());
-			term->out_stream.restore();
-			flush();
-		} else {
-			// If the cursor is somewhere between the two edges, clear part of the line and print part of the buffer.
-			clear_right(cursor - scroll);
-			jump_cursor();
-			*term << buffer.substr(cursor, text_width() - cursor + scroll);
-		}
-
-		term->out_stream.restore();
-		flush();
-	}
-
 	std::string textinput::get_text() const {
 		return buffer;
 	}
@@ -568,6 +522,7 @@ namespace haunted::ui {
 		colored::draw();
 
 		auto lock = term->lock_render();
+		DBG("draw()");
 		size_t twidth = text_width();
 
 		clear_line();
@@ -575,33 +530,90 @@ namespace haunted::ui {
 
 		try {
 			// This is a kludge.
-			signed long sscroll = scroll;
+			ssize_t sscroll = scroll;
 			if (sscroll < 0)
 				sscroll = -sscroll;
-			*term << prefix;
-			ustring to_print = buffer.substr(sscroll);
-			size_t width = to_print.width();
-			while (twidth < width)
-				to_print.pop_back();
 
-			size_t i = 0;
-			for (const std::string &grapheme: to_print) {
-				size_t width = to_print.width_at(i++);
-				if (width == 1) {
-					*term << grapheme;
-				} else {
-					term->out_stream.save();
-					*term << grapheme;
-					term->out_stream.restore().right(width);
-				}
-			}
+			*term << prefix;
+			print_graphemes(buffer.substr(sscroll));
 		} catch (std::out_of_range &) {
-			DBGT("std::out_of_range in textinput::draw(): scroll[" << static_cast<signed long>(scroll) << "], twidth[" << twidth << "], buffer[" << buffer.size() << "] = \"" << std::string(buffer) << "\"");
+			DBGT("std::out_of_range in textinput::draw(): scroll[" << static_cast<ssize_t>(scroll) << "], twidth[" <<
+				twidth << "], buffer[" << buffer.size() << "] = \"" << std::string(buffer) << "\"");
 			*term << prefix;
 		}
 
 		term->reset_colors();
 		term->jump_to_focused();
+	}
+
+	void textinput::draw_right(int offset) {
+		if (!can_draw())
+			return;
+
+		auto lock = term->lock_render();
+		DBG("draw_right(" << offset << ")");
+		apply_colors();
+		term->out_stream.save();
+		clear_line();
+		size_t old_cursor = cursor;
+		cursor = offset < 0 && -offset > static_cast<int>(cursor)? 0 : cursor + offset;
+		if (cursor > length())
+			cursor = length();
+		jump_cursor();
+		size_t twidth = text_width();
+		*term << buffer.substr(cursor, twidth - cursor + scroll);
+		cursor = old_cursor;
+		term->out_stream.restore();
+	}
+
+	void textinput::draw_erase() {
+		DBG("draw_erase()");
+		if (!can_draw() || text_width() <= cursor - scroll) {
+			// If the cursor is at or beyond the right edge, do nothing.
+			return;
+		}
+
+		auto lock = term->lock_render();
+		apply_colors();
+		term->out_stream.save();
+
+		if (cursor <= scroll) {
+			// If the cursor is at or beyond the left edge, redraw the entire line.
+			clear_text();
+			term->jump(pos.left + prefix_length, pos.top);
+			// *term << buffer.substr(scroll, text_width());
+			print_graphemes(buffer.substr(scroll));
+			jump_cursor();
+			flush();
+		} else {
+			// If the cursor is somewhere between the two edges, clear part of the line and print part of the buffer.
+			clear_right(cursor - scroll);
+			jump_cursor();
+			// *term << buffer.substr(cursor, text_width() - cursor + scroll);
+			print_graphemes(buffer.substr(cursor));
+		}
+
+		term->out_stream.restore();
+		flush();
+	}
+
+	void textinput::print_graphemes(ustring to_print) {
+		size_t twidth = text_width();
+		size_t width = to_print.width();
+		while (twidth < width)
+			to_print.pop_back();
+
+		size_t i = 0;
+		for (const std::string &grapheme: to_print) {
+			width = to_print.width_at(i++);
+			if (width == 1) {
+				*term << grapheme;
+			} else {
+				term->out_stream.save();
+				*term << grapheme;
+				term->out_stream.restore().right(width);
+			}
+		}
 	}
 
 	bool textinput::can_draw() const {
