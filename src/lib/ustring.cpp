@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "lib/ustring.h"
 #include "lib/formicine/ansi.h"
 
