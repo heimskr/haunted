@@ -64,7 +64,6 @@ namespace haunted::ui {
 		auto lock = term->lock_render();
 		try_colors();
 		term->out_stream.save();
-
 		jump_cursor();
 		term->out_stream.left();
 		point cpos = find_cursor();

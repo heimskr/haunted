@@ -158,18 +158,28 @@ namespace haunted {
 				return 0;
 		}
 
+		// For some reason, '#', '*' and 0-9 have the UCHAR_EMOJI property.
+		if (' ' <= ch && ch <= '~')
+			return 1;
+
 		for (auto prop: {UCHAR_EMOJI}) {
-			if (u_hasBinaryProperty(ch, prop))
+			if (u_hasBinaryProperty(ch, prop)) {
+				DBG("2: has binary property (" << ch << ", " << prop << ")");
 				return 2;
+			}
 		}
 
 		UEastAsianWidth ea = static_cast<UEastAsianWidth>(u_getIntPropertyValue(ch, UCHAR_EAST_ASIAN_WIDTH));
-		if (ea == U_EA_FULLWIDTH || ea == U_EA_WIDE)
+		if (ea == U_EA_FULLWIDTH || ea == U_EA_WIDE) {
+			DBG("2: ea == U_EA_FULLWIDTH || ea == U_EA_WIDE");
 			return 2;
+		}
 
 		UHangulSyllableType hst = static_cast<UHangulSyllableType>(u_getIntPropertyValue(ch, UCHAR_HANGUL_SYLLABLE_TYPE));
-		if (hst == U_HST_VOWEL_JAMO || hst == U_HST_TRAILING_JAMO)
+		if (hst == U_HST_VOWEL_JAMO || hst == U_HST_TRAILING_JAMO) {
+			DBG("2: hst == U_HST_VOWEL_JAMO || hst == U_HST_TRAILING_JAMO");
 			return 2;
+		}
 
 		if (ch == 0x200B) // ZERO WIDTH SPACE (U+200B)
 			return 0;
@@ -179,8 +189,10 @@ namespace haunted {
 
 	size_t ustring::width_until(size_t index, size_t offset) const {
 		size_t total_width = 0;
-		for (size_t i = offset; i < index && i < length_; ++i)
+		for (size_t i = offset; i < index && i < length_; ++i) {
+			// DBG("width('" << at(i) << "') == " << width_at(i));
 			total_width += width_at(i);
+		}
 		return total_width;
 	}
 
