@@ -521,7 +521,6 @@ namespace haunted::ui {
 		colored::draw();
 
 		auto lock = term->lock_render();
-		DBG("draw()");
 		size_t twidth = text_width();
 
 		clear_line();
