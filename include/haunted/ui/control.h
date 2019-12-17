@@ -52,6 +52,9 @@ namespace haunted::ui {
 			/** Sets the control's name. */
 			virtual control & set_name(const std::string &name_) { name = name_; return *this; }
 			
+			/** Gets the control's name. */
+			virtual const std::string & get_name() { return name; }
+
 			/** Renders the control on the terminal. */
 			virtual void draw() = 0;
 
