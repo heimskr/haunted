@@ -21,7 +21,7 @@ namespace Haunted::UI {
 				// If we find a control that's also an instance of colored, let it determine the color for us.
 				ansi::color found = pcolored->find_color(type);
 				return found;
-			} else if (control *pcontrol = dynamic_cast<control *>(p)) {
+			} else if (Control *pcontrol = dynamic_cast<Control *>(p)) {
 				if (pcontrol->get_terminal() == pcontrol->get_parent()) {
 					// If we've reached the terminal and still haven't found any control with a color preference,
 					// give up.
@@ -90,10 +90,10 @@ namespace Haunted::UI {
 		bool is_bg = (static_cast<int>(type) & static_cast<int>(ansi::color_type::background)) != 0;
 		bool is_fg = (static_cast<int>(type) & static_cast<int>(ansi::color_type::foreground)) != 0;
 
-		std::deque<control *> queue(cont->get_children().begin(), cont->get_children().end());
+		std::deque<Control *> queue(cont->get_children().begin(), cont->get_children().end());
 
 		while (!queue.empty()) {
-			control *child = queue.front();
+			Control *child = queue.front();
 			queue.pop_front();
 
 			colored *colored_child = dynamic_cast<colored *>(child);

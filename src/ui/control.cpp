@@ -7,22 +7,22 @@
 #include "lib/formicine/ansi.h"
 
 namespace Haunted::UI {
-	control::control(container *parent_, Haunted::position pos_): child(parent_), term(nullptr), pos(pos_) {
+	Control::Control(container *parent_, Haunted::position pos_): child(parent_), term(nullptr), pos(pos_) {
 		if (parent_ != nullptr)
 			term = parent_->get_terminal();
 	}
 
-	control::control(container *parent_, terminal *term_): child(parent_), term(term_) {}
+	Control::Control(container *parent_, terminal *term_): child(parent_), term(term_) {}
 
-	control::control(container *parent_): control(parent_, parent_ == nullptr? nullptr : parent_->get_terminal()) {}
+	Control::Control(container *parent_): Control(parent_, parent_ == nullptr? nullptr : parent_->get_terminal()) {}
 
-	control::~control() = default;
+	Control::~Control() = default;
 
 
 // Protected instance methods
 
 
-	bool control::try_margins(std::function<void()> fn) {
+	bool Control::try_margins(std::function<void()> fn) {
 		const bool should_reset_margins = !in_margins;
 
 		if (should_reset_margins)
@@ -40,12 +40,12 @@ namespace Haunted::UI {
 // Public instance methods
 
 
-	void control::resize(const Haunted::position &new_pos) {
+	void Control::resize(const Haunted::position &new_pos) {
 		// It's up to the caller of resize() to also call draw().
 		pos = new_pos;
 	}
 
-	std::string control::get_id(bool pad) const {
+	std::string Control::get_id(bool pad) const {
 		std::stringstream ss;
 		if (name.empty()) {
 			std::string demangled = util::demangle_object(*this);
@@ -71,25 +71,25 @@ namespace Haunted::UI {
 		return ss.str();
 	}
 
-	bool control::can_draw() const {
+	bool Control::can_draw() const {
 		return parent != nullptr && term != nullptr && 0 <= pos.left && 0 <= pos.top;
 	}
 
-	void control::resize() {
+	void Control::resize() {
 		resize(pos);
 	}
 
-	void control::move(int left, int top) {
+	void Control::move(int left, int top) {
 		pos.left = left;
 		pos.top = top;
 	}
 
-	void control::focus() {
+	void Control::focus() {
 		if (term)
 			term->focus(this);
 	}
 
-	void control::set_parent(container *parent_) {
+	void Control::set_parent(container *parent_) {
 		child::set_parent(parent_);
 		if (parent_ != nullptr) {
 			terminal *parent_term = parent_->get_terminal();
@@ -98,15 +98,15 @@ namespace Haunted::UI {
 		}
 	}
 
-	void control::jump() {
+	void Control::jump() {
 		pos.jump();
 	}
 
-	void control::jump_focus() {
+	void Control::jump_focus() {
 		jump();
 	}
 
-	void control::clear_rect() {
+	void Control::clear_rect() {
 		if (term == nullptr)
 			return;
 
@@ -142,24 +142,24 @@ namespace Haunted::UI {
 		});
 	}
 
-	void control::flush() {
+	void Control::flush() {
 		if (term != nullptr)
 			term->flush();
 	}
 
-	bool control::has_focus() const {
+	bool Control::has_focus() const {
 		return term && term->has_focus(this);
 	}
 
-	bool control::at_right() const {
+	bool Control::at_right() const {
 		return term != nullptr && pos.left + pos.width == term->get_cols();
 	}
 
-	bool control::at_left() const {
+	bool Control::at_left() const {
 		return pos.left == 0;
 	}
 
-	void control::set_margins() {
+	void Control::set_margins() {
 		if (term != nullptr) {
 			term->enable_hmargins();
 			term->margins(pos.top, pos.bottom(), pos.left, pos.right());
@@ -168,7 +168,7 @@ namespace Haunted::UI {
 		}
 	}
 
-	void control::set_hmargins() {
+	void Control::set_hmargins() {
 		if (term != nullptr) {
 			term->enable_hmargins();
 			term->hmargins(pos.left, pos.right());
@@ -176,7 +176,7 @@ namespace Haunted::UI {
 		}
 	}
 
-	void control::reset_margins() {
+	void Control::reset_margins() {
 		if (term != nullptr) {
 			term->reset_origin();
 			term->margins();
@@ -185,7 +185,7 @@ namespace Haunted::UI {
 		}
 	}
 
-	ssize_t control::get_index() const {
+	ssize_t Control::get_index() const {
 		if (parent != nullptr && !ignore_index) {
 			ssize_t i = 0;
 			for (auto iter = parent->begin(); iter != parent->end(); ++iter, ++i) {
@@ -200,7 +200,7 @@ namespace Haunted::UI {
 		return -1;
 	}
 
-	void swap(control &left, control &right) {
+	void swap(Control &left, Control &right) {
 		swap(static_cast<child &>(left), static_cast<child &>(right));
 		std::swap(left.term, right.term);
 		std::swap(left.name, right.name);

@@ -5,11 +5,11 @@
 
 namespace Haunted::UI {
 	container::~container() {
-		for (control *child: children)
+		for (Control *child: children)
 			delete child;
 	}
 
-	control * container::operator[](size_t index) {
+	Control * container::operator[](size_t index) {
 		return index < children.size()? children.at(index) : nullptr;
 	}
 

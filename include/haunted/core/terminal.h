@@ -34,10 +34,10 @@ namespace Haunted {
 
 			mouse_mode mmode = mouse_mode::none;
 
-			UI::control *root = nullptr;
+			UI::Control *root = nullptr;
 
 			// Input is sent to the focused control.
-			UI::control *focused = nullptr;
+			UI::Control *focused = nullptr;
 
 			int rows, cols;
 
@@ -110,7 +110,7 @@ namespace Haunted {
 
 			/** Sets the terminal's root control. If the new root isn't the same as the old root and the `delete_old`
 			 *  parameter is `true`, this function deletes the old root. */
-			virtual void set_root(UI::control *, bool delete_old = true);
+			virtual void set_root(UI::Control *, bool delete_old = true);
 			
 			/** Draws the root control if one exists. */
 			virtual void draw();
@@ -134,20 +134,20 @@ namespace Haunted {
 			virtual void flush();
 
 			/** Focuses a control. */
-			virtual void focus(UI::control *);
+			virtual void focus(UI::Control *);
 			/** Returns the focused control. If none is currently selected, this function focuses the root control. */
-			virtual UI::control * get_focused();
+			virtual UI::Control * get_focused();
 
 			/** Adding a child to the terminal the normal way does nothing. This is so that controls whose parents
 			 *  don't exist yet can use the terminal as the parent without being set as the root. The program using this
 			 *  library is responsible for passing the intended root control to set_root. */
-			virtual bool add_child(UI::control *) override;
+			virtual bool add_child(UI::Control *) override;
 
 			/** Returns the terminal. Required by haunted::ui::container. */
 			virtual Terminal * get_terminal() override { return this; }
 
 			/** Returns true if a given control is the focused control. */
-			virtual bool has_focus(const UI::control *) const;
+			virtual bool has_focus(const UI::Control *) const;
 
 			/** Returns the height (in rows) of the terminal. */
 			virtual int get_rows() const { return rows; }
@@ -158,7 +158,7 @@ namespace Haunted {
 
 			/** Recursively searches the all children within the terminal until a non-container control that contains
 			 *  the given coordinate is found. */
-			virtual UI::control * child_at_offset(int x, int y) const override;
+			virtual UI::Control * child_at_offset(int x, int y) const override;
 
 			/** Jumps to the focused widget. */
 			virtual void jump_to_focused();

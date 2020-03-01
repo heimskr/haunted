@@ -6,7 +6,7 @@ namespace Haunted::UI {
 			return;
 		
 		apply_colors();
-		control::clear_rect();
+		Control::clear_rect();
 		uncolor();
 	}
 }

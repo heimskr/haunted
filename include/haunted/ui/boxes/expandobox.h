@@ -25,16 +25,16 @@ namespace Haunted::UI::Boxes {
 			int expanded_size(int order) const;
 
 			/** Resizes a child with a given size. */
-			void resize_child(control *child, int offset, int size);
+			void resize_child(Control *child, int offset, int size);
 
 			template <typename L, typename R>
 			class pair_iterator: public std::iterator<std::forward_iterator_tag, std::pair<L, R>> {
 				private:
-					std::deque<control *>::iterator child_iterator;
+					std::deque<Control *>::iterator child_iterator;
 					std::deque<int>::iterator size_iterator;
 
 				public:
-					pair_iterator(std::deque<control *>::iterator c, std::deque<int>::iterator s):
+					pair_iterator(std::deque<Control *>::iterator c, std::deque<int>::iterator s):
 						child_iterator(c), size_iterator(s) {}
 
 					std::pair<L &, R &> operator*() const;
@@ -53,8 +53,8 @@ namespace Haunted::UI::Boxes {
 			std::deque<int> sizes;
 
 		public:
-			typedef std::pair<control *, int> child_pair;
-			typedef pair_iterator<control *, int> iterator;
+			typedef std::pair<Control *, int> child_pair;
+			typedef pair_iterator<Control *, int> iterator;
 
 			expandobox(Container *, const position &, const box_orientation, std::initializer_list<child_pair>);
 			expandobox(Container *parent, const position &pos, const box_orientation orientation):
@@ -62,11 +62,11 @@ namespace Haunted::UI::Boxes {
 			expandobox(Container *parent, const box_orientation orientation = box_orientation::horizontal,
 				std::initializer_list<child_pair> child_pairs = {}): expandobox(parent, {}, orientation, child_pairs) {}
 
-			using control::resize;
+			using Control::resize;
 			void resize(const position &) override;
 			void draw() override;
 			int max_children() const override { return -1; }
-			bool request_resize(control *, size_t, size_t) override;
+			bool request_resize(Control *, size_t, size_t) override;
 
 			virtual Terminal * get_terminal() override { return term; }
 			virtual Container * get_parent() const override { return parent; }

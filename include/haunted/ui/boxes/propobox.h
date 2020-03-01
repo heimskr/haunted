@@ -25,12 +25,12 @@ namespace Haunted::UI::Boxes {
 			double ratio;
 
 		public:
-			propobox(Container *, double, box_orientation, control * = nullptr, control * = nullptr,
+			propobox(Container *, double, box_orientation, Control * = nullptr, Control * = nullptr,
 				const position & = {});
 			double get_ratio() const { return ratio; }
 			void set_ratio(const double);
 
-			using control::resize;
+			using Control::resize;
 			void resize(const position &) override;
 
 			virtual void draw() override;

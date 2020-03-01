@@ -3,13 +3,13 @@
 
 namespace Haunted::UI::Boxes {
 	void simplebox::resize(const position &pos) {
-		control::resize(pos);
+		Control::resize(pos);
 		if (!children.empty())
 			children.at(0)->move(pos.left, pos.top);
 	}
 
 	void simplebox::move(int left, int top) {
-		control::move(left, top);
+		Control::move(left, top);
 		if (!children.empty())
 			children.at(0)->move(left, top);
 	}

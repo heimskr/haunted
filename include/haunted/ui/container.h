@@ -22,7 +22,7 @@ namespace Haunted::UI {
 		friend class Control;
 
 		public:
-			using Children = std::deque<control *>;
+			using Children = std::deque<Control *>;
 
 		protected:
 			Children children;
@@ -31,7 +31,7 @@ namespace Haunted::UI {
 			virtual ~Container();
 
 			/** Adds a child to the container. Returns true if successful. */
-			virtual bool add_child(control *);
+			virtual bool add_child(Control *);
 
 			/** Removes a child from the container. Returns true if successful. */
 			virtual bool remove_child(child *);
@@ -48,11 +48,11 @@ namespace Haunted::UI {
 			virtual Haunted::Terminal * get_terminal() = 0;
 
 			/** Returns the child control at an offset from the top left corner of this container. */
-			virtual control * child_at_offset(int x, int y) const;
+			virtual Control * child_at_offset(int x, int y) const;
 
 			/** Asks the parent to assign a new size to one of its children. Useful for expandoboxes.
 			 *  Returns true if the request was granted. */
-			virtual bool request_resize(control *, size_t width, size_t height);
+			virtual bool request_resize(Control *, size_t width, size_t height);
 
 			/** Redraws all the container's children in order. */
 			virtual void redraw();
@@ -64,7 +64,7 @@ namespace Haunted::UI {
 			BEGIN_END(children)
 
 			/** Returns the nth child (indexes `children`). */
-			control * operator[](size_t);
+			Control * operator[](size_t);
 	};
 }
 

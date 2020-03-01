@@ -378,7 +378,7 @@ namespace Haunted::UI {
 	}
 
 	void textbox::focus() {
-		control::focus();
+		Control::focus();
 		colored::focus();
 	}
 
@@ -409,7 +409,7 @@ namespace Haunted::UI {
 	}
 
 	void swap(textbox &left, textbox &right) {
-		swap(static_cast<control &>(left), static_cast<control &>(right));
+		swap(static_cast<Control &>(left), static_cast<Control &>(right));
 		swap(static_cast<colored &>(left), static_cast<colored &>(right));
 		std::swap(left.lines,      right.lines);
 		std::swap(left.voffset,	   right.voffset);
