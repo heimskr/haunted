@@ -48,7 +48,7 @@ namespace Haunted::UI {
 	std::string Control::get_id(bool pad) const {
 		std::stringstream ss;
 		if (name.empty()) {
-			std::string demangled = Util::demangle_object(*this);
+			std::string demangled = util::demangle_object(*this);
 			if (pad)
 				ss << std::setw(10);
 			ss << demangled.substr(demangled.find_last_of(':') + 1) << "\e[2m|\e[0;33m" << this << "\e[39m";

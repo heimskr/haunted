@@ -33,7 +33,7 @@
 
 namespace Haunted::tests {
 	std::pair<int, int> maintest::parse_csi(const std::string &input) {
-		Haunted::CSI testcsi(input);
+		Haunted::csi testcsi(input);
 		return {testcsi.first, testcsi.second};
 	}
 
@@ -256,7 +256,7 @@ namespace Haunted::tests {
 			{{"42;0u"s },  true},
 			{{"3;911u"s},  true},
 			{{"5;5U"s  }, false},
-		}, &CSI::is_csiu, "is_csiu");
+		}, &csi::is_csiu, "is_csiu");
 
 		// ansi::out << "\nTesting CSI u parsing.\n";
 		// unit.check({

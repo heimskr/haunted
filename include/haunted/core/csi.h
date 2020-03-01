@@ -3,37 +3,38 @@
 
 #include <string>
 
-#include "haunted/core/Key.h"
+#include "haunted/core/key.h"
 
 // Enables a workaround for #7885, which was fixed in 3.3.20190615-nightly.
 // #define ITERM_HACK
 
 namespace Haunted {
-	enum class CSIType {U, Special, ReallySpecial};
+	enum class csi_type {u, special, really_special};
 
-	class CSI {
+	class csi {
 		private:
-			void parseU(const std::string &);
-			void parseSpecial(const std::string &);
+			void parse_u(const std::string &);
+			void parse_special(const std::string &);
 
-			static void scanNumber(unsigned int &, ssize_t &, const std::string &);
+			static void scan_number(unsigned int &, ssize_t &, const std::string &);
 
 		public:
 			unsigned int first, second;
 			char suffix;
-			CSIType type;
+			csi_type type;
 
-			CSI(int first, int second, char suffix);
+			csi(int first, int second, char suffix);
 
 			/** Parses a CSI sequence. Throws an exception if the input is invalid. */
-			CSI(const std::string &);
+			csi(const std::string &);
 
-			key getKey() const;
+			key get_key() const;
 
 			operator std::pair<int, int>() const;
 
+
 			/** Determines whether a string looks like a CSI u sequence (numbers, semicolon, numbers, letter). */
-			static bool isCSIu(const std::string &);
+			static bool is_csiu(const std::string &);
 	};
 }
 
