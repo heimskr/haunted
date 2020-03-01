@@ -14,7 +14,7 @@
 #include "lib/formicine/ansi.h"
 #include "haunted/tests/test.h"
 #include "haunted/core/csi.h"
-#include "haunted/core/DummyTerminal.h"
+#include "haunted/core/dummy_terminal.h"
 #include "haunted/core/key.h"
 #include "haunted/core/util.h"
 #include "haunted/core/terminal.h"
@@ -31,14 +31,14 @@
 #define INFO(x) ansi::out << ansi::info << x << ansi::endl
 #endif
 
-namespace Haunted::tests {
+namespace haunted::tests {
 	std::pair<int, int> maintest::parse_csi(const std::string &input) {
-		Haunted::csi testcsi(input);
+		haunted::csi testcsi(input);
 		return {testcsi.first, testcsi.second};
 	}
 
 	void maintest::test_textinput(terminal &term) {
-		Haunted::UI::textinput *ti = new Haunted::UI::textinput(&term);
+		haunted::ui::textinput *ti = new haunted::ui::textinput(&term);
 		term.set_root(ti);
 		ti->focus();
 		ti->resize({0, 0, term.get_cols(), 1});
@@ -118,10 +118,10 @@ namespace Haunted::tests {
 	}
 
 	void maintest::test_textbox(terminal &term) {
-		using Haunted::UI::textline, Haunted::UI::simpleline;
+		using haunted::ui::textline, haunted::ui::simpleline;
 
 		term.cbreak();
-		Haunted::UI::textbox *tb = new Haunted::UI::textbox(&term);
+		haunted::ui::textbox *tb = new haunted::ui::textbox(&term);
 		*tb += "hi";
 		*tb += "what's up :)";
 		*tb += "third line.";
@@ -142,7 +142,7 @@ namespace Haunted::tests {
 			} else if (k == ktype::hash) {
 				*tb += simpleline("This is a very long line. Its purpose is to test the continuation of lines in a textbox. Its continuation value is set to 26, so the wrapped text should line up with the start of the second sentence in the line.", 26);
 			} else if (k == ktype::star) {
-				for (const Haunted::UI::textbox::line_ptr &line: tb->lines) {
+				for (const haunted::ui::textbox::line_ptr &line: tb->lines) {
 					DBG(line->get_continuation() << "[" << std::string(*line) << "]");
 				}
 			} else {
@@ -152,8 +152,8 @@ namespace Haunted::tests {
 	}
 
 	void maintest::test_expandobox(terminal &term) {
-		using namespace Haunted::UI;
-		using namespace Haunted::UI::Boxes;
+		using namespace haunted::ui;
+		using namespace haunted::ui::boxes;
 
 		term.cbreak();
 		textbox   *tb  = new textbox();               tb->set_name("tb");
@@ -279,12 +279,12 @@ namespace Haunted::tests {
 	}
 
 	void maintest::unittest_textbox(testing &unit) {
-		using namespace Haunted::UI;
+		using namespace haunted::ui;
 		INFO(wrap("Testing haunted::ui::textbox.\n", ansi::style::bold));
 		
-		DummyTerminal dummy;
+		dummy_terminal dummy;
 
-		Boxes::simplebox wrapper(&dummy);
+		boxes::simplebox wrapper(&dummy);
 		wrapper.resize({0, 0, 20, 10});
 		
 		textbox *tb = new textbox(&wrapper, wrapper.get_position());
@@ -406,18 +406,18 @@ namespace Haunted::tests {
 	}
 
 	void maintest::unittest_expandobox(testing &unit) {
-		using namespace Haunted::UI::Boxes;
-		INFO(wrap("Testing haunted::ui::Boxes::expandobox.\n", ansi::style::bold));
+		using namespace haunted::ui::boxes;
+		INFO(wrap("Testing haunted::ui::boxes::expandobox.\n", ansi::style::bold));
 
-		DummyTerminal dummy;
+		dummy_terminal dummy;
 
 		simplebox wrapper(&dummy);
 		wrapper.resize({10, 10, 500, 100});
 
-		UI::textbox *tb1 = new UI::textbox(nullptr);
-		UI::textbox *tb2 = new UI::textbox(nullptr);
-		UI::textbox *tb3 = new UI::textbox(nullptr);
-		UI::textbox *tb4 = new UI::textbox(nullptr);
+		ui::textbox *tb1 = new ui::textbox(nullptr);
+		ui::textbox *tb2 = new ui::textbox(nullptr);
+		ui::textbox *tb3 = new ui::textbox(nullptr);
+		ui::textbox *tb4 = new ui::textbox(nullptr);
 
 		expandobox *expando = new expandobox(&wrapper, wrapper.get_position(), box_orientation::horizontal,
 			{{tb1, 10}, {tb2, -1}});
@@ -519,14 +519,14 @@ namespace Haunted::tests {
 
 
 int main(int argc, char **argv) {
-	using namespace Haunted;
+	using namespace haunted;
 	
 	const std::string arg = argc < 2? "" : argv[1];
 
 	// terminal term(std::cin, ansi::out);
 	// term.watch_size();
 
-	Haunted::tests::testing unit;
+	haunted::tests::testing unit;
 
 #define MKTERM terminal term(std::cin, ansi::out); term.watch_size();
 	if (arg == "key") {
@@ -559,33 +559,33 @@ int main(int argc, char **argv) {
 		if (mode != mouse_mode::none)
 			term.mouse(mode);
 
-		Haunted::tests::maintest::test_key(term);
+		haunted::tests::maintest::test_key(term);
 	} else if (arg == "input") { MKTERM
-		Haunted::tests::maintest::test_textinput(term);
+		haunted::tests::maintest::test_textinput(term);
 	} else if (arg == "cursor") { MKTERM
-		Haunted::tests::maintest::test_cursor(term);
+		haunted::tests::maintest::test_cursor(term);
 	} else if (arg == "margins") { MKTERM
-		Haunted::tests::maintest::test_margins(term);
+		haunted::tests::maintest::test_margins(term);
 	} else if (arg == "textbox") { MKTERM
-		Haunted::tests::maintest::test_textbox(term);
+		haunted::tests::maintest::test_textbox(term);
 	} else if (arg == "expandobox") { MKTERM
-		Haunted::tests::maintest::test_expandobox(term);
+		haunted::tests::maintest::test_expandobox(term);
 	} else if (arg == "unitcsiu") {
-		Haunted::tests::maintest::unittest_csiu(unit);
+		haunted::tests::maintest::unittest_csiu(unit);
 	} else if (arg == "unittextbox") {
-		Haunted::tests::maintest::unittest_textbox(unit);
+		haunted::tests::maintest::unittest_textbox(unit);
 	} else if (arg == "unitexpandobox") {
-		Haunted::tests::maintest::unittest_expandobox(unit);
+		haunted::tests::maintest::unittest_expandobox(unit);
 	} else if (arg == "unitustring") {
-		Haunted::tests::maintest::unittest_ustring(unit);
+		haunted::tests::maintest::unittest_ustring(unit);
 	} else if (arg == "unit") {
 		ansi::out << ansi::endl;
-		Haunted::tests::maintest::unittest_csiu(unit);
-		Haunted::tests::maintest::unittest_textbox(unit);
-		Haunted::tests::maintest::unittest_expandobox(unit);
-		Haunted::tests::maintest::unittest_ustring(unit);
+		haunted::tests::maintest::unittest_csiu(unit);
+		haunted::tests::maintest::unittest_textbox(unit);
+		haunted::tests::maintest::unittest_expandobox(unit);
+		haunted::tests::maintest::unittest_ustring(unit);
 	} else {
-		Haunted::tests::maintest::unittest_textbox(unit);
+		haunted::tests::maintest::unittest_textbox(unit);
 	}
 #undef MKTERM
 }

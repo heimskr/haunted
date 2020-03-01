@@ -2,9 +2,9 @@
 #include "haunted/core/terminal.h"
 #include "haunted/ui/boxes/swapbox.h"
 
-namespace Haunted::UI::Boxes {
-	SwapBox::SwapBox(container *parent_, const position &pos_, std::initializer_list<control *> children_):
-	Box(parent_, pos_) {
+namespace haunted::ui::boxes {
+	swapbox::swapbox(container *parent_, const position &pos_, std::initializer_list<control *> children_):
+	box(parent_, pos_) {
 		if (parent_)
 			parent_->add_child(this);
 
@@ -25,7 +25,7 @@ namespace Haunted::UI::Boxes {
 // Public instance methods
 
 
-	void SwapBox::set_active(control *new_active) {
+	void swapbox::set_active(control *new_active) {
 		// To prevent children's terminals from disappearing mid-render, we need to acquire the terminal's render lock.
 		std::unique_lock<std::recursive_mutex> lock;
 		if (term)
@@ -56,17 +56,17 @@ namespace Haunted::UI::Boxes {
 			children.push_back(new_active);
 	}
 
-	control * SwapBox::child_at_offset(int x, int y) const {
+	control * swapbox::child_at_offset(int x, int y) const {
 		return (x - pos.left < pos.width && y - pos.top < pos.height)? active : nullptr;
 	}
 
-	void SwapBox::resize(const position &new_pos) {
+	void swapbox::resize(const position &new_pos) {
 		control::resize(new_pos);
 		if (active)
 			active->resize(new_pos);
 	}
 
-	void SwapBox::draw() {
+	void swapbox::draw() {
 		if (!can_draw())
 			return;
 
@@ -76,7 +76,7 @@ namespace Haunted::UI::Boxes {
 			clear_rect();
 	}
 
-	bool SwapBox::on_key(const key &k) {
+	bool swapbox::on_key(const key &k) {
 		return key_fn? key_fn(k) : active && active->on_key(k);
 	}
 }

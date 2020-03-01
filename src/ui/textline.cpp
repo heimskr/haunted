@@ -1,7 +1,7 @@
 #include "haunted/ui/textline.h"
 #include "lib/formicine/performance.h"
 
-namespace Haunted::UI {
+namespace haunted::ui {
 
 
 // Protected instance methods

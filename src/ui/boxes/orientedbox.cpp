@@ -1,6 +1,6 @@
 #include "haunted/ui/boxes/orientedbox.h"
 
-namespace Haunted::UI::Boxes {
+namespace haunted::ui::boxes {
 	int orientedbox::get_size() const {
 		return orientation == box_orientation::horizontal? pos.width : pos.height;
 	}

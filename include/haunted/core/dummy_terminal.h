@@ -1,32 +1,32 @@
-#ifndef HAUNTED_CORE_DUMMYTERMINAL_H_
-#define HAUNTED_CORE_DUMMYTERMINAL_H_
+#ifndef HAUNTED_CORE_DUMMY_TERMINAL_H_
+#define HAUNTED_CORE_DUMMY_TERMINAL_H_
 
 #include <termios.h>
 
 #include "haunted/core/terminal.h"
 #include "haunted/ui/control.h"
 
-namespace Haunted {
+namespace haunted {
 	/**
 	 * Represents a virtual terminal whose output is suppressed. Useful for unit testing.
 	 */
-	class DummyTerminal: public Terminal {
+	class dummy_terminal: public terminal {
 		private:
 			void apply() override {}
 			void reset() override {}
 			void winch(int, int) override {}
 
 		public:
-			DummyTerminal() {
+			dummy_terminal() {
 				suppress_output = true;
 			}
 
-			~DummyTerminal() {}
+			~dummy_terminal() {}
 
 			void cbreak() override {}
 			void watch_size() override {}
 			void redraw() override {}
-			void set_root(UI::control *, bool) override {}
+			void set_root(ui::control *, bool) override {}
 			void draw() override {}
 			void start_input() override {}
 			void flush() override {}
@@ -50,9 +50,9 @@ namespace Haunted {
 			void show() override {}
 			void hide() override {}
 			operator bool() const override { return true; }
-			Terminal & operator>>(int &)  override { return *this; }
-			Terminal & operator>>(char &) override { return *this; }
-			Terminal & operator>>(key &)  override { return *this; }
+			terminal & operator>>(int &)  override { return *this; }
+			terminal & operator>>(char &) override { return *this; }
+			terminal & operator>>(key &)  override { return *this; }
 	};
 }
 

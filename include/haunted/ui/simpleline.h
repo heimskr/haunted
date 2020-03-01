@@ -3,7 +3,7 @@
 
 #include "haunted/ui/textline.h"
 
-namespace Haunted::UI {
+namespace haunted::ui {
 	/**
 	 * Represents a line of text with static, unchanging content.
 	 */

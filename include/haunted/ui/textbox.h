@@ -15,16 +15,16 @@
 
 #include "lib/formicine/performance.h"
 
-namespace Haunted::tests {
+namespace haunted::tests {
 	class maintest;
 }
 
-namespace Haunted::UI {
+namespace haunted::ui {
 	/**
 	 * Represents a multiline box of text.
 	 */
 	class textbox: public colored_control {
-		friend class Haunted::tests::maintest;
+		friend class haunted::tests::maintest;
 
 		public:
 			using line_ptr = std::shared_ptr<textline>;
@@ -124,7 +124,7 @@ namespace Haunted::UI {
 			void draw() override;
 
 			/** Resizes the textbox to fit a new position. */
-			void resize(const Haunted::position &) override;
+			void resize(const haunted::position &) override;
 
 			/** Handles keyboard input. */
 			bool on_key(const key &) override;
@@ -158,8 +158,8 @@ namespace Haunted::UI {
 			/** Returns the textbox's contents. */
 			operator std::string();
 
-			virtual Terminal * get_terminal() override { return term; }
-			virtual Container * get_parent() const override { return parent; }
+			virtual terminal * get_terminal() override { return term; }
+			virtual container * get_parent() const override { return parent; }
 
 			size_t size() const { return lines.size(); }
 

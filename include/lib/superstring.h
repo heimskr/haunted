@@ -4,7 +4,7 @@
 #include <list>
 #include <string>
 
-namespace Haunted {
+namespace haunted {
 	/** Represents a character made of any number of codepoints. */
 	using superchar = std::string;
 

@@ -3,7 +3,7 @@
 #include "haunted/core/util.h"
 #include "haunted/core/terminal.h"
 
-namespace Haunted::UI {
+namespace haunted::ui {
 	container::~container() {
 		for (control *child: children)
 			delete child;

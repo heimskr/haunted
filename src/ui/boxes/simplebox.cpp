@@ -1,7 +1,7 @@
 #include "haunted/core/terminal.h"
 #include "haunted/ui/boxes/simplebox.h"
 
-namespace Haunted::UI::Boxes {
+namespace haunted::ui::boxes {
 	void simplebox::resize(const position &pos) {
 		control::resize(pos);
 		if (!children.empty())

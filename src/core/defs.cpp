@@ -1,6 +1,6 @@
 #include "haunted/core/defs.h"
 
-namespace Haunted {
+namespace haunted {
 	std::ofstream dbgout(".log", std::ofstream::app);
 	ansi::ansistream dbgstream(dbgout, dbgout);
 

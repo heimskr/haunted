@@ -5,7 +5,7 @@
 #include "haunted/ui/textinput.h"
 #include "lib/uutil.h"
 
-namespace Haunted::UI {
+namespace haunted::ui {
 	std::unordered_set<unsigned char> textinput::whitelist = {9, 10, 11, 13};
 
 	textinput::textinput(container *parent_, position pos_, const ustring &buffer_, size_t cursor_):

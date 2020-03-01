@@ -4,7 +4,7 @@
 #include "haunted/core/terminal.h"
 #include "haunted/core/util.h"
 
-namespace Haunted {
+namespace haunted {
 	void csi::scan_number(unsigned int &target, ssize_t &i, const std::string &str) {
 		for (ssize_t p = 1; 0 <= i && util::is_numeric(str[i]); --i) {
 			target += p * (str[i] - '0');

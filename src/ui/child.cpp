@@ -1,24 +1,24 @@
-#include "haunted/ui/Container.h"
-#include "haunted/ui/Child.h"
+#include "haunted/ui/container.h"
+#include "haunted/ui/child.h"
 
-namespace Haunted::UI {
-	Child::~Child() = default;
+namespace haunted::ui {
+	child::~child() = default;
 
-	Container * Child::getParent() {
+	container * child::get_parent() {
 		return parent;
 	}
 
-	void Child::setParent(Container *new_parent) {
+	void child::set_parent(container *new_parent) {
 		if (parent == new_parent)
 			return;
 
 		if (parent != nullptr)
-			parent->removeChild(this);
+			parent->remove_child(this);
 
 		parent = new_parent;
 	}
 
-	void swap(Child &left, Child &right) {
+	void swap(child &left, child &right) {
 		std::swap(left.parent, right.parent);
 	}
 }

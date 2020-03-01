@@ -2,7 +2,7 @@
 
 #include "haunted/core/key.h"
 
-namespace Haunted {
+namespace haunted {
 	bool key::is_ctrl(ktype other) const {
 		return type == other && *this == kmod::ctrl;
 	}

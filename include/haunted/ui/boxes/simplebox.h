@@ -6,16 +6,16 @@
 #include "haunted/ui/container.h"
 #include "haunted/ui/control.h"
 
-namespace Haunted::UI::Boxes {
+namespace haunted::ui::boxes {
 	/**
 	 * Represents a simple box that can contain one child. When the box is moved or resized, the child is moved to the
 	 * same position as the box but not resized.
 	 */
-	class simplebox: public virtual Box {
+	class simplebox: public virtual box {
 		protected:
 
 		public:
-			using Box::Box;
+			using box::box;
 
 			virtual int max_children() const override { return 1; }
 			virtual void resize(const position &) override;

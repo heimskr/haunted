@@ -5,7 +5,7 @@
 
 #include "lib/formicine/ansi.h"
 
-namespace Haunted::UI {
+namespace haunted::ui {
 	/**
 	 * Represents something that can be colored.
 	 */
@@ -50,8 +50,8 @@ namespace Haunted::UI {
 			virtual void draw();
 			virtual void focus();
 
-			virtual Container * get_parent() const = 0;
-			virtual Terminal * get_terminal() = 0;
+			virtual container * get_parent() const = 0;
+			virtual terminal * get_terminal() = 0;
 
 			friend void swap(colored &left, colored &right);
 	};

@@ -9,7 +9,7 @@
 #include "lib/utf8.h"
 #include "lib/formicine/ansi.h"
 
-namespace Haunted {
+namespace haunted {
 	superstring::superstring(const std::string &str) {
 		size_t length = str.length();
 		for (size_t i = 0; i < length; ++i) {

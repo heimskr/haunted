@@ -3,7 +3,7 @@
 
 #include "haunted/ui/boxes/orientedbox.h"
 
-namespace Haunted::UI::Boxes {
+namespace haunted::ui::boxes {
 	/**
 	 * Base class for boxes that contain exactly two children.
 	 */

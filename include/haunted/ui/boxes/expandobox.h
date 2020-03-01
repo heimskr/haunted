@@ -7,7 +7,7 @@
 #include "haunted/ui/colored.h"
 #include "haunted/ui/boxes/orientedbox.h"
 
-namespace Haunted::UI::Boxes {
+namespace haunted::ui::boxes {
 	/**
 	 * Represents a box that contains some number of children with fixed sizes
 	 * and one or more children that expand to fill the remaining space.
@@ -56,10 +56,10 @@ namespace Haunted::UI::Boxes {
 			typedef std::pair<control *, int> child_pair;
 			typedef pair_iterator<control *, int> iterator;
 
-			expandobox(Container *, const position &, const box_orientation, std::initializer_list<child_pair>);
-			expandobox(Container *parent, const position &pos, const box_orientation orientation):
+			expandobox(container *, const position &, const box_orientation, std::initializer_list<child_pair>);
+			expandobox(container *parent, const position &pos, const box_orientation orientation):
 				expandobox(parent, pos, orientation, {}) {}
-			expandobox(Container *parent, const box_orientation orientation = box_orientation::horizontal,
+			expandobox(container *parent, const box_orientation orientation = box_orientation::horizontal,
 				std::initializer_list<child_pair> child_pairs = {}): expandobox(parent, {}, orientation, child_pairs) {}
 
 			using control::resize;
@@ -68,8 +68,8 @@ namespace Haunted::UI::Boxes {
 			int max_children() const override { return -1; }
 			bool request_resize(control *, size_t, size_t) override;
 
-			virtual Terminal * get_terminal() override { return term; }
-			virtual Container * get_parent() const override { return parent; }
+			virtual terminal * get_terminal() override { return term; }
+			virtual container * get_parent() const override { return parent; }
 
 			expandobox & operator+=(child_pair);
 

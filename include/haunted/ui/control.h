@@ -3,11 +3,11 @@
 
 #include "haunted/core/defs.h"
 #include "haunted/core/key.h"
-#include "haunted/ui/Child.h"
+#include "haunted/ui/child.h"
 #include "haunted/ui/container.h"
 #include "haunted/ui/inputhandler.h"
 
-namespace Haunted::UI {
+namespace haunted::ui {
 	/**
 	 * Represents a control.
 	 * This includes things like boxes, text views and text inputs.
@@ -15,7 +15,7 @@ namespace Haunted::UI {
 	class control: public virtual inputhandler, public child {
 		protected:
 			/** The control's controlling terminal. */
-			Terminal *term;
+			terminal *term;
 
 			/** A name (ideally unique) that identifies the control. */
 			std::string name;
@@ -24,7 +24,7 @@ namespace Haunted::UI {
 			bool in_margins = false;
 
 			/** The absolute position of the control on the screen. */
-			Haunted::position pos = {};
+			haunted::position pos = {};
 
 			/** Sets the margins if needed, executes a function and resets the margins if needed. Returns true if the
 			 *  margins were set. */
@@ -39,8 +39,8 @@ namespace Haunted::UI {
 			control(const control &) = delete;
 			control & operator=(const control &) = delete;
 
-			control(container *parent_, Haunted::position pos_);
-			control(const Haunted::position &pos_): child(nullptr), term(nullptr), pos(pos_) {}
+			control(container *parent_, haunted::position pos_);
+			control(const haunted::position &pos_): child(nullptr), term(nullptr), pos(pos_) {}
 			control(container *parent_, terminal *term_);
 			control(container *parent_);
 
@@ -62,7 +62,7 @@ namespace Haunted::UI {
 			virtual bool can_draw() const;
 
 			/** Resizes the control to fit a new position. */
-			virtual void resize(const Haunted::position &);
+			virtual void resize(const haunted::position &);
 
 			/** Reassigns the control's current position to itself. Useful for container. */
 			virtual void resize();
@@ -77,8 +77,8 @@ namespace Haunted::UI {
 			virtual void set_parent(container *) override;
 
 			virtual container * get_parent() const { return parent; }
-			virtual Terminal * get_terminal() { return term; }
-			void set_terminal(Terminal *term_) { term = term_;  }
+			virtual terminal * get_terminal() { return term; }
+			void set_terminal(terminal *term_) { term = term_;  }
 
 			/** Returns the control's position. */
 			virtual position get_position() const { return pos; }

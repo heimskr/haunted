@@ -3,7 +3,7 @@
 #include "haunted/core/terminal.h"
 #include "haunted/ui/colored.h"
 
-namespace Haunted::UI {
+namespace haunted::ui {
 	colored::~colored() = default;
 
 	ansi::color colored::find_color(ansi::color_type type) const {

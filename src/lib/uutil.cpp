@@ -1,6 +1,6 @@
 #include "lib/uutil.h"
 
-namespace Haunted {
+namespace haunted {
 	bool uutil::is_regional_indicator(uint32_t ch) {
 		return 0x1f1e6 <= ch && ch <= 0x1f1ff;
 	}

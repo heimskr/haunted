@@ -1,7 +1,7 @@
 #include "haunted/core/defs.h"
 #include "haunted/ui/coloration.h"
 
-namespace Haunted::UI {
+namespace haunted::ui {
 	bool coloration::set_foreground(ansi::color foreground) {
 		if (foreground == last_foreground)
 			return false;

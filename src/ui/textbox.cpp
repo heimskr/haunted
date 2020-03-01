@@ -6,7 +6,7 @@
 
 #include "lib/formicine/performance.h"
 
-namespace Haunted::UI {
+namespace haunted::ui {
 
 
 // Public constructors
@@ -322,7 +322,7 @@ namespace Haunted::UI {
 		term->jump_to_focused();
 	}
 
-	void textbox::resize(const Haunted::position &new_pos) {
+	void textbox::resize(const haunted::position &new_pos) {
 		colored_control::resize(new_pos);
 		mark_dirty();
 	}

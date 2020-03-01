@@ -1,6 +1,6 @@
 #include "haunted/ui/boxes/dualbox.h"
 
-namespace Haunted::UI::Boxes {
+namespace haunted::ui::boxes {
 	void dualbox::resize(const position &new_pos) {
 		if (orientation == box_orientation::horizontal) {
 			if (control *left = (*this)[0])

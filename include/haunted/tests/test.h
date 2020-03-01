@@ -15,7 +15,7 @@
 
 #include "lib/formicine/ansi.h"
 
-namespace Haunted::tests {
+namespace haunted::tests {
 	/**
 	 * Contains general utilities for testing.
 	 */
@@ -90,7 +90,7 @@ namespace Haunted::tests {
 				return stringify(static_cast<int>(e));
 			}
 
-			static std::string stringify(Haunted::UI::textline *tl) {
+			static std::string stringify(haunted::ui::textline *tl) {
 				return tl? std::to_string(tl->get_continuation()) + ":["_d + std::string(*tl) + "]"_d : "null";
 			}
 
@@ -147,7 +147,7 @@ namespace Haunted::tests {
 
 			// We want to be able to compare the pairs returned by line_at_row as equal even if the addresses of the
 			// pointers differ, as long as the content of the textlines is the same.
-			using tl_pair = std::pair<Haunted::UI::textline *, int>;
+			using tl_pair = std::pair<haunted::ui::textline *, int>;
 			static bool equal(tl_pair left, tl_pair right) {
 				return left.second == right.second && *left.first == *right.first;
 			}
@@ -383,12 +383,12 @@ namespace Haunted::tests {
 	class maintest {
 		public:
 			static std::pair<int, int> parse_csi(const std::string &);
-			static void test_textinput(Terminal &);
-			static void test_key(Terminal &);
-			static void test_cursor(Terminal &);
-			static void test_margins(Terminal &);
-			static void test_textbox(Terminal &);
-			static void test_expandobox(Terminal &);
+			static void test_textinput(terminal &);
+			static void test_key(terminal &);
+			static void test_cursor(terminal &);
+			static void test_margins(terminal &);
+			static void test_textbox(terminal &);
+			static void test_expandobox(terminal &);
 			static void unittest_csiu(testing &);
 			static void unittest_textbox(testing &);
 			static void unittest_expandobox(testing &);
