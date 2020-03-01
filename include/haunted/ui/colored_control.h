@@ -5,9 +5,9 @@
 #include "haunted/ui/colored.h"
 
 namespace Haunted::UI {
-	class colored_control: public Control, public colored {
+	class colored_control: public control, public colored {
 		public:
-			using Control::Control;
+			using control::control;
 
 			virtual void clear_rect() override;
 	};

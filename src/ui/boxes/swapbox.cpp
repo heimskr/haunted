@@ -3,12 +3,12 @@
 #include "haunted/ui/boxes/swapbox.h"
 
 namespace Haunted::UI::Boxes {
-	SwapBox::SwapBox(container *parent_, const position &pos_, std::initializer_list<Control *> children_):
+	SwapBox::SwapBox(container *parent_, const position &pos_, std::initializer_list<control *> children_):
 	Box(parent_, pos_) {
 		if (parent_)
 			parent_->add_child(this);
 
-		for (Control *ctrl: children_) {
+		for (control *ctrl: children_) {
 			ctrl->set_parent(this);
 			ctrl->set_terminal(nullptr);
 			children.push_back(ctrl);
@@ -25,7 +25,7 @@ namespace Haunted::UI::Boxes {
 // Public instance methods
 
 
-	void SwapBox::set_active(Control *new_active) {
+	void SwapBox::set_active(control *new_active) {
 		// To prevent children's terminals from disappearing mid-render, we need to acquire the terminal's render lock.
 		std::unique_lock<std::recursive_mutex> lock;
 		if (term)
@@ -56,12 +56,12 @@ namespace Haunted::UI::Boxes {
 			children.push_back(new_active);
 	}
 
-	Control * SwapBox::child_at_offset(int x, int y) const {
+	control * SwapBox::child_at_offset(int x, int y) const {
 		return (x - pos.left < pos.width && y - pos.top < pos.height)? active : nullptr;
 	}
 
 	void SwapBox::resize(const position &new_pos) {
-		Control::resize(new_pos);
+		control::resize(new_pos);
 		if (active)
 			active->resize(new_pos);
 	}

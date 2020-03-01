@@ -12,7 +12,7 @@ namespace Haunted::UI {
 	 * Represents a control.
 	 * This includes things like boxes, text views and text inputs.
 	 */
-	class Control: public virtual inputhandler, public child {
+	class control: public virtual inputhandler, public child {
 		protected:
 			/** The control's controlling terminal. */
 			Terminal *term;
@@ -35,22 +35,22 @@ namespace Haunted::UI {
 			 *  parent. */
 			bool ignore_index = false;
 
-			Control() = delete;
-			Control(const control &) = delete;
-			Control & operator=(const control &) = delete;
+			control() = delete;
+			control(const control &) = delete;
+			control & operator=(const control &) = delete;
 
-			Control(container *parent_, Haunted::position pos_);
-			Control(const Haunted::position &pos_): child(nullptr), term(nullptr), pos(pos_) {}
-			Control(container *parent_, terminal *term_);
-			Control(container *parent_);
+			control(container *parent_, Haunted::position pos_);
+			control(const Haunted::position &pos_): child(nullptr), term(nullptr), pos(pos_) {}
+			control(container *parent_, terminal *term_);
+			control(container *parent_);
 
-			virtual ~Control() = 0;
+			virtual ~control() = 0;
 
 			/** Returns the control's identifier. */
 			virtual std::string get_id(bool pad = false) const;
 
 			/** Sets the control's name. */
-			virtual Control & set_name(const std::string &name_) { name = name_; return *this; }
+			virtual control & set_name(const std::string &name_) { name = name_; return *this; }
 			
 			/** Gets the control's name. */
 			virtual const std::string & get_name() { return name; }
@@ -119,7 +119,7 @@ namespace Haunted::UI {
 
 			friend class container;
 
-			friend void swap(Control &left, Control &right);
+			friend void swap(control &left, control &right);
 	};
 }
 

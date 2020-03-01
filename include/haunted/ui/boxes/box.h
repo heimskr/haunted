@@ -10,14 +10,14 @@ namespace Haunted::UI::Boxes {
 	 * Base class representing boxes, which are controls that contain at least two subcontrols
 	 * and resize them as appropriate.
 	 */
-	class Box: public virtual Container, public Control {
+	class Box: public virtual Container, public control {
 		public:
 			Box() = delete;
-			Box(Container *parent_, const position &pos_ = {}): Control(parent_, pos_) {}
+			Box(Container *parent_, const position &pos_ = {}): control(parent_, pos_) {}
 
 			virtual Terminal * get_terminal() override { return term; }
 
-			virtual position get_position() const override { return Control::get_position(); }
+			virtual position get_position() const override { return control::get_position(); }
 	};
 }
 

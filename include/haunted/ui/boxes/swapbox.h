@@ -15,17 +15,17 @@ namespace Haunted::UI::Boxes {
 	 */
 	class SwapBox: public virtual Box {
 		protected:
-			Control *active = nullptr;
+			control *active = nullptr;
 
 		public:
 			SwapBox(const SwapBox &) = delete;
-			SwapBox(container *, const position &, std::initializer_list<Control *> = {});
+			SwapBox(container *, const position &, std::initializer_list<control *> = {});
 
-			void set_active(Control *);
-			Control * get_active() { return active; }
+			void set_active(control *);
+			control * get_active() { return active; }
 
 			/** Returns the active control if the given coordinates are within the SwapBox's area. */
-			virtual Control * child_at_offset(int x, int y) const override;
+			virtual control * child_at_offset(int x, int y) const override;
 
 			virtual void resize(const position &) override;
 			virtual void draw() override;

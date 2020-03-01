@@ -26,7 +26,7 @@ namespace Haunted {
 			void cbreak() override {}
 			void watch_size() override {}
 			void redraw() override {}
-			void set_root(UI::Control *, bool) override {}
+			void set_root(UI::control *, bool) override {}
 			void draw() override {}
 			void start_input() override {}
 			void flush() override {}

@@ -82,7 +82,7 @@ namespace Haunted {
 }
 
 namespace Haunted::UI {
-	class Control;
+	class control;
 	class child;
 }
 

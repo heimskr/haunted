@@ -18,7 +18,7 @@ namespace Haunted::UI::Boxes {
 
 	template <>
 	expandobox::iterator expandobox::iterator::operator++(int) {
-		std::deque<Control *>::iterator new_child_iterator(child_iterator);
+		std::deque<control *>::iterator new_child_iterator(child_iterator);
 		std::deque<int>::iterator new_size_iterator(size_iterator);
 		return {++new_child_iterator, ++new_size_iterator};
 	}

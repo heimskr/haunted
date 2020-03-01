@@ -14,9 +14,9 @@ namespace Haunted::UI::Boxes {
 			throw std::domain_error("Box ratio cannot be negative");
 	}
 
-	propobox::propobox(container *parent_, double ratio_, box_orientation orientation_, Control *one, Control *two,
+	propobox::propobox(container *parent_, double ratio_, box_orientation orientation_, control *one, control *two,
 	const position &pos_): propobox(parent_, pos_, ratio_, orientation_) {
-		for (Control *ctrl: {one, two}) {
+		for (control *ctrl: {one, two}) {
 			ctrl->set_parent(this);
 			ctrl->set_terminal(term);
 			children.push_back(ctrl);
@@ -31,7 +31,7 @@ namespace Haunted::UI::Boxes {
 	}
 
 	void propobox::resize(const position &new_pos) {
-		Control::resize(new_pos);
+		control::resize(new_pos);
 
 		if (children.size() == 0) {
 			return;
@@ -57,7 +57,7 @@ namespace Haunted::UI::Boxes {
 		colored::draw();
 
 		auto lock = term->lock_render();
-		for (Control *child: children)
+		for (control *child: children)
 			child->draw();
 	}
 
