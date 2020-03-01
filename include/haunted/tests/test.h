@@ -209,7 +209,7 @@ namespace Haunted::tests {
 							failed++;
 						}
 					} catch (std::exception &err) {
-						display_failed(stringify(input), "\e[31;1m" + util::demangle_object(err) + "\e[22m: " +
+						display_failed(stringify(input), "\e[31;1m" + Util::demangleObject(err) + "\e[22m: " +
 						               std::string(err.what()) + "\e[0m", stringify(expected), prefix,
 						               padding.substr(0, max_length - length));
 						failed++;
@@ -274,7 +274,7 @@ namespace Haunted::tests {
 			template <typename O, typename... I>
 			bool check(const std::string &fn_name, const std::type_info &errtype, const std::string &what,
 			           std::function<O(I...)> fn, I... args) {
-				const std::string demangled = util::demangle(std::string(errtype.name()));
+				const std::string demangled = Util::demangle(std::string(errtype.name()));
 				try {
 					const std::string returned = stringify(fn(args...));
 					ansi::out << ansi::bad << fn_name << " == "_d << ansi::red(returned) << " (expected " << demangled;
@@ -366,7 +366,7 @@ namespace Haunted::tests {
 				ansi::out << ansi::bad << prefix << ansi::parens << ansi::bold(input) << padding << " == "_d;
 
 				if (err != nullptr)
-					ansi::out << ansi::red(ansi::bold(util::demangle_object(err)) + ": " + std::string(err->what()));
+					ansi::out << ansi::red(ansi::bold(Util::demangleObject(err)) + ": " + std::string(err->what()));
 				else
 					ansi::out << ansi::red(actual);
 
