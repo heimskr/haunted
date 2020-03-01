@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-namespace haunted {
+namespace Haunted {
 	struct uutil {
 		static bool is_regional_indicator(uint32_t);
 		static bool is_regional_indicator(int);

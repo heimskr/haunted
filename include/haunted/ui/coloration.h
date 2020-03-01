@@ -5,12 +5,12 @@
 
 #include "lib/formicine/ansi.h"
 
-namespace haunted::ui {
+namespace Haunted::UI {
 	/**
-	 * Class for handling terminal colors. Each haunted::terminal keeps one of these.
+	 * Class for handling terminal colors. Each Haunted::Terminal keeps one of these.
 	 * 
 	 */
-	class coloration {
+	class Coloration {
 		private:
 			ansi::ansistream *out_stream;
 			std::mutex *mux;
@@ -20,7 +20,7 @@ namespace haunted::ui {
 			std::unique_lock<std::mutex> get_lock() { return std::unique_lock(*mux); }
 
 		public:
-			coloration(ansi::ansistream *out_stream_, std::mutex *mux_): out_stream(out_stream_), mux(mux_) {}
+			Coloration(ansi::ansistream *out_stream_, std::mutex *mux_): out_stream(out_stream_), mux(mux_) {}
 
 			/** Attempts to set the foreground. Returns whether the given foreground is different from the last one. */
 			bool set_foreground(ansi::color);

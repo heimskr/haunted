@@ -6,7 +6,7 @@
 #include "haunted/core/key.h"
 #include "haunted/core/mouse.h"
 
-namespace haunted::ui {
+namespace Haunted::UI {
 	/**
 	 * An input handler is anything that can handle key presses or mouse events.
 	 * This includes controls and containers.

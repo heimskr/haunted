@@ -3,7 +3,7 @@
 #include "haunted/core/terminal.h"
 #include "haunted/ui/boxes/expandobox.h"
 
-namespace haunted::ui::boxes {
+namespace Haunted::UI::Boxes {
 	template <>
 	std::pair<control *&, int &> expandobox::iterator::operator*() const {
 		return {*child_iterator, *size_iterator};

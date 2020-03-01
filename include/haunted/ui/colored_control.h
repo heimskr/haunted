@@ -4,7 +4,7 @@
 #include "haunted/ui/control.h"
 #include "haunted/ui/colored.h"
 
-namespace haunted::ui {
+namespace Haunted::UI {
 	class colored_control: public control, public colored {
 		public:
 			using control::control;

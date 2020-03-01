@@ -19,7 +19,7 @@
 #define DBGTFN() DBGT(ansi::dim(__PRETTY_FUNCTION__))
 #define DBGFN() DBG(ansi::style::bold << this << ": " << ansi::action::reset << __PRETTY_FUNCTION__)
 
-namespace haunted {
+namespace Haunted {
 	extern std::ofstream dbgout;
 	extern ansi::ansistream dbgstream;
 
@@ -81,7 +81,7 @@ namespace haunted {
 	};
 }
 
-namespace haunted::ui {
+namespace Haunted::UI {
 	class control;
 	class child;
 }

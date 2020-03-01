@@ -6,7 +6,7 @@
 
 #include "lib/formicine/futil.h"
 
-namespace haunted {
+namespace Haunted {
 	mouse_report::mouse_report(long type, char final_char_, long x_, long y_): final_char(final_char_), x(x_), y(y_) {
 		decode_type(type, final_char_, action, button, mods);
 	}

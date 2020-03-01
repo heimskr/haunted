@@ -7,28 +7,28 @@
 #include "haunted/core/util.h"
 #include "haunted/ui/inputhandler.h"
 
-namespace haunted {
-	class terminal;
+namespace Haunted {
+	class Terminal;
 }
 
-namespace haunted::ui {
-	class control;
-	class child;
+namespace Haunted::UI {
+	class Control;
+	class Child;
 
 	/**
 	 * Containers contain controls.
 	 */
-	class container: public virtual inputhandler {
-		friend class control;
+	class Container: public virtual inputhandler {
+		friend class Control;
 
 		public:
-			using type = std::deque<control *>;
+			using Children = std::deque<control *>;
 
 		protected:
-			type children;
+			Children children;
 		
 		public:
-			virtual ~container();
+			virtual ~Container();
 
 			/** Adds a child to the container. Returns true if successful. */
 			virtual bool add_child(control *);
@@ -40,12 +40,12 @@ namespace haunted::ui {
 			 *  A value of -1 means the container can hold an arbitrary number of children. */
 			virtual int max_children() const { return -1; }
 
-			type & get_children() { return children; }
+			Children & get_children() { return children; }
 
 			virtual position get_position() const = 0;
 
 			/** Returns the terminal associated with the container. */
-			virtual haunted::terminal * get_terminal() = 0;
+			virtual Haunted::Terminal * get_terminal() = 0;
 
 			/** Returns the child control at an offset from the top left corner of this container. */
 			virtual control * child_at_offset(int x, int y) const;

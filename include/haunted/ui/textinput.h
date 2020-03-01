@@ -16,7 +16,7 @@
 
 #include "lib/utf8.h"
 
-namespace haunted::ui {
+namespace Haunted::UI {
 	/**
 	 * Represents a control that accepts user input.
 	 * This control should have a height of one row;
@@ -242,8 +242,8 @@ namespace haunted::ui {
 			 *  true if the textinput is focused and the cursor was moved. */
 			bool try_jump();
 
-			virtual terminal * get_terminal() override { return term; }
-			virtual container * get_parent() const override { return parent; }
+			virtual Terminal * get_terminal() override { return term; }
+			virtual Container * get_parent() const override { return parent; }
 
 			/** Writes the contents of the buffer to an output stream. */
 			friend std::ostream & operator<<(std::ostream &os, const textinput &input);

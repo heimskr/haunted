@@ -3,10 +3,10 @@
 
 #include "haunted/ui/boxes/box.h"
 
-namespace haunted::ui::boxes {
+namespace Haunted::UI::Boxes {
 	enum class box_orientation {horizontal, vertical};
 
-	class orientedbox: public box {
+	class orientedbox: public Box {
 		protected:
 			box_orientation orientation;
 
@@ -15,10 +15,10 @@ namespace haunted::ui::boxes {
 			orientedbox(orientedbox &&) = delete;
 			orientedbox(const orientedbox &) = delete;
 
-			orientedbox(container *parent_, const haunted::position &pos_, box_orientation orientation_):
-			box(parent_, pos_), orientation(orientation_) {}
+			orientedbox(Container *parent_, const Haunted::position &pos_, box_orientation orientation_):
+			Box(parent_, pos_), orientation(orientation_) {}
 
-			orientedbox(container *parent_, box_orientation orientation_): orientedbox(parent_, {}, orientation_) {}
+			orientedbox(Container *parent_, box_orientation orientation_): orientedbox(parent_, {}, orientation_) {}
 
 			/** Returns the length of the axis of orientation.
 			 *  For horizontal boxes, this is the width of the box. For vertical boxes, it's the height. */

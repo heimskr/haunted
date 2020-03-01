@@ -6,7 +6,7 @@
 
 #include "haunted/core/mouse.h"
 
-namespace haunted::ui {
+namespace Haunted::UI {
 	class textbox;
 
 	/**
@@ -27,7 +27,7 @@ namespace haunted::ui {
 			void clean(int width);
 
 		public:
-			haunted::ui::textbox *box = nullptr;
+			Haunted::UI::textbox *box = nullptr;
 
 			textline() {}
 
@@ -49,7 +49,7 @@ namespace haunted::ui {
 
 			/** Called when the line is clicked on. 
 			 *  The mouse_report's position is relative to the top left of the line. */
-			virtual void on_mouse(const haunted::mouse_report &) {}
+			virtual void on_mouse(const Haunted::mouse_report &) {}
 
 			/** Returns the raw text of the line. */
 			virtual operator std::string() = 0;

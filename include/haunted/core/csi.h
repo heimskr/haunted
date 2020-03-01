@@ -8,7 +8,7 @@
 // Enables a workaround for #7885, which was fixed in 3.3.20190615-nightly.
 // #define ITERM_HACK
 
-namespace haunted {
+namespace Haunted {
 	enum class csi_type {u, special, really_special};
 
 	class csi {

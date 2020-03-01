@@ -5,7 +5,7 @@
 
 #include "lib/superstring.h"
 
-namespace haunted {
+namespace Haunted {
 	class utf8 {
 		public:
 			/** Determines the expected codepoint width for a given start byte.

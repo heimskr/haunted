@@ -3,7 +3,7 @@
 #include "haunted/core/key.h"
 #include "haunted/core/util.h"
 
-namespace haunted {
+namespace Haunted {
 	bool util::is_alpha(char c) {
 		return in_range(c, 'A', 'Z') || in_range(c, 'a', 'z');
 	}

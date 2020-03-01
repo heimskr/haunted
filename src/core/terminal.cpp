@@ -11,12 +11,12 @@
 #include "haunted/core/key.h"
 #include "haunted/core/terminal.h"
 #include "haunted/core/util.h"
-#include "haunted/ui/child.h"
+#include "haunted/ui/Child.h"
 #include "haunted/ui/control.h"
 
 #include "lib/formicine/futil.h"
 
-namespace haunted {
+namespace Haunted {
 	using uchar = unsigned char;
 
 	std::vector<terminal *> terminal::winch_targets {};
@@ -130,7 +130,7 @@ namespace haunted {
 		}
 	}
 
-	void terminal::set_root(ui::control *new_root, bool delete_old) {
+	void terminal::set_root(UI::control *new_root, bool delete_old) {
 		if (root != new_root) {
 			if (delete_old)
 				delete root;
@@ -148,12 +148,12 @@ namespace haunted {
 		colors.reset();
 	}
 
-	ui::inputhandler * terminal::send_key(const key &k) {
+	UI::inputhandler * terminal::send_key(const key &k) {
 		// If the root is null, there are no controls and nothing to send key presses to.
 		if (root == nullptr)
 			return nullptr;
 
-		ui::control *ctrl = get_focused();
+		UI::control *ctrl = get_focused();
 
 		if (!ctrl)
 			throw std::runtime_error("Focused control is null");
@@ -164,19 +164,19 @@ namespace haunted {
 			return ctrl;
 		}
 
-		ui::container *ptr = ctrl->get_parent();
+		UI::container *ptr = ctrl->get_parent();
 		
 		// Keep trying on_key, going up to the root as long as we keep getting false. If we're at the root and on_key
 		// still returns false, let the terminal itself handle the keypress as a last resort.
 		while (ptr && !ptr->on_key(k)) {
-			if (dynamic_cast<ui::control *>(ptr) == root) {
+			if (dynamic_cast<UI::control *>(ptr) == root) {
 				on_key(k);
 				if (key_postlistener)
 					key_postlistener(k);
 				return this;
 			}
 
-			if (ui::child *cptr = dynamic_cast<ui::child *>(ptr)) {
+			if (UI::child *cptr = dynamic_cast<UI::child *>(ptr)) {
 				ptr = cptr->get_parent();
 			} else {
 				if (key_postlistener)
@@ -191,8 +191,8 @@ namespace haunted {
 		return ptr;
 	}
 
-	ui::inputhandler * terminal::send_mouse(const mouse_report &report) {
-		ui::control *ctrl = child_at_offset(report.x, report.y);
+	UI::inputhandler * terminal::send_mouse(const mouse_report &report) {
+		UI::control *ctrl = child_at_offset(report.x, report.y);
 
 		if (ctrl == nullptr) {
 			DBG(report.str() << " nullptr"_d);
@@ -205,17 +205,17 @@ namespace haunted {
 			return ctrl;
 		}
 
-		ui::container *ptr = ctrl->get_parent();
+		UI::container *ptr = ctrl->get_parent();
 
 		while (ptr && !ptr->on_mouse(report)) {
-			if (dynamic_cast<ui::control *>(ptr) == root) {
+			if (dynamic_cast<UI::control *>(ptr) == root) {
 				on_mouse(report);
 				if (mouse_postlistener)
 					mouse_postlistener(report);
 				return this;
 			}
 
-			if (ui::child *cptr = dynamic_cast<ui::child *>(ptr)) {
+			if (UI::child *cptr = dynamic_cast<UI::child *>(ptr)) {
 				ptr = cptr->get_parent();
 			} else {
 				if (mouse_postlistener)
@@ -260,22 +260,22 @@ namespace haunted {
 		out_stream.flush();
 	}
 
-	void terminal::focus(ui::control *to_focus) {
+	void terminal::focus(UI::control *to_focus) {
 		focused = to_focus;
 	}
 
-	ui::control * terminal::get_focused() {
+	UI::control * terminal::get_focused() {
 		if (focused)
 			return focused;
 		focused = root;
 		return root;
 	}
 
-	bool terminal::add_child(ui::control *) {
+	bool terminal::add_child(UI::control *) {
 		return false;
 	}
 
-	bool terminal::has_focus(const ui::control *ctrl) const {
+	bool terminal::has_focus(const UI::control *ctrl) const {
 		return focused == ctrl;
 	}
 
@@ -283,10 +283,10 @@ namespace haunted {
 		return {0, 0, cols, rows};
 	}
 
-	ui::control * terminal::child_at_offset(int x, int y) const {
-		ui::container *cont = dynamic_cast<container *>(root);
+	UI::control * terminal::child_at_offset(int x, int y) const {
+		UI::container *cont = dynamic_cast<container *>(root);
 		while (cont != nullptr) {
-			ui::control *ctrl = cont->child_at_offset(x, y);
+			UI::control *ctrl = cont->child_at_offset(x, y);
 			if (ctrl == nullptr)
 				return nullptr;
 			cont = dynamic_cast<container *>(ctrl);
@@ -539,20 +539,20 @@ namespace haunted {
 	}
 
 	void terminal::debug_tree() {
-		ansi::ansistream &dbg = haunted::dbgstream;
+		ansi::ansistream &dbg = Haunted::dbgstream;
 		dbg << "terminal"_b << ansi::endl;
 
 		if (root) {
-			std::deque<std::pair<int, ui::control *>> queue {{1, root}};
+			std::deque<std::pair<int, UI::control *>> queue {{1, root}};
 
 			int depth;
-			ui::control *ctrl;
+			UI::control *ctrl;
 
 			while (!queue.empty()) {
 				std::tie(depth, ctrl) = queue.back();
 				queue.pop_back();
 
-				const haunted::position &pos = ctrl->get_position();
+				const Haunted::position &pos = ctrl->get_position();
 				int width = pos.width, height = pos.height, top = pos.top, left = pos.left;
 
 				dbg << ansi::color::gray << std::string(depth * 2, ' ') << ansi::action::reset
@@ -561,8 +561,8 @@ namespace haunted {
 				dbg.restore().right(6)         << top << ") "_d;
 				dbg.restore().right(10).save() << width;
 				dbg.restore().right(3)         << " × "_d << height << ansi::endl;
-				if (ui::container *cont = dynamic_cast<ui::container *>(ctrl)) {
-					for (ui::control *child: cont->get_children())
+				if (UI::container *cont = dynamic_cast<UI::container *>(ctrl)) {
+					for (UI::control *child: cont->get_children())
 						queue.push_back({depth + 1, child});
 				}
 			}

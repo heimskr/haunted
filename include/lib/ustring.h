@@ -8,7 +8,7 @@
 
 #define USTRING_WIDTH_AT_BUFFER_SIZE 10
 
-namespace haunted {
+namespace Haunted {
 	/**
 	 * This is a wrapper class for icu::UnicodeString that indexes strings by graphemes rather than codepoints.
 	 */

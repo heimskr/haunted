@@ -7,7 +7,7 @@
 
 #include <cxxabi.h>
 
-namespace haunted {
+namespace Haunted {
 	class util {
 		public:
 			/** Returns true if the character is in the range [A-Za-z]. */

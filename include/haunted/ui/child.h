@@ -1,27 +1,27 @@
 #ifndef HAUNTED_UI_CHILD_H_
 #define HAUNTED_UI_CHILD_H_
 
-namespace haunted::ui {
-	class container;
+namespace Haunted::UI {
+	class Container;
 
 	/**
-	 * A child is anything that has a parent. This includes controls and all containers except terminals.
+	 * A Child is anything that has a parent. This includes controls and all containers except terminals.
 	 */
-	class child {
+	class Child {
 		protected:
-			container *parent;
+			Container *parent;
 
 		public:
-			child(container *parent_ = nullptr): parent(parent_) {}
-			child(const child &) = delete;
-			child & operator=(const child &) = delete;
+			Child(Container *parent_ = nullptr): parent(parent_) {}
+			Child(const Child &) = delete;
+			Child & operator=(const Child &) = delete;
 
-			virtual ~child() = 0;
+			virtual ~Child() = 0;
 
-			container * get_parent();
-			virtual void set_parent(container *);
+			Container * getParent();
+			virtual void setParent(Container *);
 
-			friend void swap(child &left, child &right);
+			friend void swap(Child &left, Child &right);
 	};
 }
 

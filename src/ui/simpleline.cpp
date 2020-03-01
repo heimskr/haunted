@@ -1,7 +1,7 @@
 #include "haunted/ui/simpleline.h"
 #include "lib/formicine/performance.h"
 
-namespace haunted::ui {
+namespace Haunted::UI {
 	simpleline::simpleline(const std::string &text_, int continuation_): continuation(continuation_), text(text_) {
 		text.erase(std::remove(text.begin(), text.end(), '\r'), text.end());
 		text.erase(std::remove(text.begin(), text.end(), '\n'), text.end());
@@ -17,7 +17,7 @@ namespace haunted::ui {
 	}
 }
 
-std::ostream & operator<<(std::ostream &os, const haunted::ui::simpleline &line) {
+std::ostream & operator<<(std::ostream &os, const Haunted::UI::simpleline &line) {
 	auto w = formicine::perf.watch("operator<<(std::ostream, simpleline)");
 	os << line.text;
 	return os;

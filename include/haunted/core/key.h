@@ -8,7 +8,7 @@
 #include <iostream>
 #include "haunted/core/defs.h"
 
-namespace haunted {
+namespace Haunted {
 	/**
 	 * Represents a key code.
 	 */

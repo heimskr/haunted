@@ -6,8 +6,8 @@
 
 #include "lib/formicine/ansi.h"
 
-namespace haunted::ui {
-	control::control(container *parent_, haunted::position pos_): child(parent_), term(nullptr), pos(pos_) {
+namespace Haunted::UI {
+	control::control(container *parent_, Haunted::position pos_): child(parent_), term(nullptr), pos(pos_) {
 		if (parent_ != nullptr)
 			term = parent_->get_terminal();
 	}
@@ -40,7 +40,7 @@ namespace haunted::ui {
 // Public instance methods
 
 
-	void control::resize(const haunted::position &new_pos) {
+	void control::resize(const Haunted::position &new_pos) {
 		// It's up to the caller of resize() to also call draw().
 		pos = new_pos;
 	}

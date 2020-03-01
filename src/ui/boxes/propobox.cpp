@@ -4,7 +4,7 @@
 #include "haunted/ui/boxes/dualbox.h"
 #include "haunted/ui/boxes/propobox.h"
 
-namespace haunted::ui::boxes {
+namespace Haunted::UI::Boxes {
 	propobox::propobox(container *parent_, const position &pos_, double ratio_, box_orientation orientation_):
 	dualbox(parent_, pos_, orientation_), ratio(ratio_) {
 		if (parent_)

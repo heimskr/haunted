@@ -5,7 +5,7 @@
 #include "haunted/ui/boxes/dualbox.h"
 #include "haunted/ui/colored.h"
 
-namespace haunted::ui::boxes {
+namespace Haunted::UI::Boxes {
 	/**
 	 * Represents a box whose two children's lengths are determined with a ratio. 
 	 * For example, if the ratio is 1.5, the first child's size will be 1.5x
@@ -19,13 +19,13 @@ namespace haunted::ui::boxes {
 	 * 
 	 *     size_two = size_box/(1 + ratio)
 	 */
-	class propobox: public dualbox, public haunted::ui::colored {
+	class propobox: public dualbox, public Haunted::UI::colored {
 		protected:
-			propobox(container *, const position &, double, box_orientation);
+			propobox(Container *, const position &, double, box_orientation);
 			double ratio;
 
 		public:
-			propobox(container *, double, box_orientation, control * = nullptr, control * = nullptr,
+			propobox(Container *, double, box_orientation, control * = nullptr, control * = nullptr,
 				const position & = {});
 			double get_ratio() const { return ratio; }
 			void set_ratio(const double);
@@ -39,8 +39,8 @@ namespace haunted::ui::boxes {
 			virtual int size_two() const override;
 			virtual int get_size() const override;
 
-			virtual terminal * get_terminal() override { return term; }
-			virtual container * get_parent() const override { return parent; }
+			virtual Terminal * get_terminal() override { return term; }
+			virtual Container * get_parent() const override { return parent; }
 	};
 }
 
