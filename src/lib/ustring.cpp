@@ -1,3 +1,5 @@
+#ifndef DISABLE_ICU
+
 #include <cstring>
 
 #include "lib/ustring.h"
@@ -346,3 +348,5 @@ namespace haunted {
 		return ustring::iterator(*this, locale).end();
 	}
 }
+
+#endif

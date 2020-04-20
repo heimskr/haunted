@@ -1,6 +1,8 @@
 #ifndef HAUNTED_LIB_USTRING_H_
 #define HAUNTED_LIB_USTRING_H_
 
+#ifndef DISABLE_ICU
+
 #include <string>
 
 #include <unicode/ustring.h>
@@ -97,4 +99,5 @@ namespace haunted {
 	std::ostream & operator<<(std::ostream &, const ustring &);
 }
 
+#endif
 #endif

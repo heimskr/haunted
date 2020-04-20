@@ -8,13 +8,13 @@
 namespace haunted::ui {
 	std::unordered_set<unsigned char> textinput::whitelist = {9, 10, 11, 13};
 
-	textinput::textinput(container *parent_, position pos_, const ustring &buffer_, size_t cursor_):
+	textinput::textinput(container *parent_, position pos_, const textinput::string &buffer_, size_t cursor_):
 	control(parent_, pos_), buffer(buffer_), cursor(cursor_) {
 		if (parent_ != nullptr)
 			parent_->add_child(this);
 	}
 
-	textinput::textinput(container *parent_, const ustring &buffer_, size_t cursor_):
+	textinput::textinput(container *parent_, const textinput::string &buffer_, size_t cursor_):
 	control(parent_), buffer(buffer_), cursor(cursor_) {
 		if (parent_ != nullptr)
 			parent_->add_child(this);
@@ -104,7 +104,11 @@ namespace haunted::ui {
 	}
 
 	point textinput::find_cursor() const {
+#ifdef DISABLE_ICU
+		return {static_cast<int>(pos.left + prefix_length + cursor - scroll), pos.top};
+#else
 		return {static_cast<int>(pos.left + prefix_length + buffer.width_until(cursor, scroll)), pos.top};
+#endif
 	}
 
 	bool textinput::check_scroll() {
@@ -125,6 +129,15 @@ namespace haunted::ui {
 		return false;
 	}
 
+#ifdef DISABLE_ICU
+	char textinput::prev_char() {
+		return cursor > 0? buffer[cursor - 1]  : '\0';
+	}
+
+	char textinput::next_char() {
+		return cursor < size()? buffer[cursor] : '\0';
+	}
+#else
 	superchar textinput::prev_char() {
 		return cursor > 0? buffer[cursor - 1]  : superchar();
 	}
@@ -132,6 +145,7 @@ namespace haunted::ui {
 	superchar textinput::next_char() {
 		return cursor < size()? buffer[cursor] : superchar();
 	}
+#endif
 
 
 // Public instance methods
@@ -159,7 +173,7 @@ namespace haunted::ui {
 	}
 
 	void textinput::insert(const std::string &str) {
-		ustring newstr = str;
+		textinput::string newstr = str;
 		buffer.insert(cursor, newstr);
 		cursor += ansi::length(newstr);
 		update();
@@ -174,6 +188,9 @@ namespace haunted::ui {
 			if (unicode_byte_buffer.size() == bytes_expected) {
 				// The Unicode buffer now contains a complete and valid codepoint. (The first byte is valid, at least.)
 
+				bool do_insert = true;
+
+#ifndef DISABLE_ICU
 				// Extract the full codepoint from the buffer.
 				uint32_t uchar;
 				UErrorCode code = U_ZERO_ERROR;
@@ -181,7 +198,6 @@ namespace haunted::ui {
 				if (0 < code)
 					throw std::runtime_error("textinput::insert: toUTF32 returned " + std::to_string(code));
 
-				bool do_insert = true;
 
 				// If this is half a flag...
 				if (uutil::is_regional_indicator(uchar)) {
@@ -199,6 +215,7 @@ namespace haunted::ui {
 						unicode_codepoint_buffer.clear();
 					}
 				}
+#endif
 
 				if (do_insert) {
 					size_t old_length = buffer.length();
@@ -220,7 +237,11 @@ namespace haunted::ui {
 			if (width < 2) {
 				// It seems we've received a plain old ASCII character or an invalid UTF8 start byte.
 				// Either way, append it to the buffer.
+#ifdef DISABLE_ICU
+				buffer.insert(cursor++, 1, ch);
+#else
 				buffer.insert(cursor++, ch);
+#endif
 				draw_insert();
 				update();
 			} else {
@@ -245,10 +266,17 @@ namespace haunted::ui {
 			return;
 
 		size_t to_erase = 0;
+#ifdef DISABLE_ICU
+		for (; prev_char() == ' '; --cursor)
+			to_erase++;
+		for (; prev_char() != '\0' && prev_char() != ' '; --cursor)
+			to_erase++;
+#else
 		for (; prev_char() == " "; --cursor)
 			to_erase++;
 		for (; prev_char() != "" && prev_char() != " "; --cursor)
 			to_erase++;
+#endif
 		buffer.erase(cursor, to_erase);
 		check_scroll();
 		draw_right();
@@ -373,8 +401,13 @@ namespace haunted::ui {
 
 		size_t old_cursor = cursor;
 
+#ifdef DISABLE_ICU
+		for (; prev_char() == ' '; --cursor);
+		for (; prev_char() != '\0' && prev_char() != ' '; --cursor);
+#else
 		for (; prev_char() == " "; --cursor);
 		for (; !prev_char().empty() && prev_char() != " "; --cursor);
+#endif
 
 		if (cursor != old_cursor) {
 			if (cursor < scroll) {
@@ -392,8 +425,13 @@ namespace haunted::ui {
 
 		size_t old_cursor = cursor;
 
+#ifdef DISABLE_ICU
+		for (; next_char() == ' '; ++cursor);
+		for (; next_char() != '\0' && next_char() != ' '; ++cursor);
+#else
 		for (; next_char() == " "; ++cursor);
 		for (; !next_char().empty() && next_char() != " "; ++cursor);
+#endif
 
 		if (cursor != old_cursor) {
 			if (cursor - scroll > text_width()) {
@@ -416,12 +454,20 @@ namespace haunted::ui {
 
 		if (cursor == len) {
 			size_t blen = buffer.length();
+#ifdef DISABLE_ICU
+			std::string penultimate = {1, buffer[blen - 2]}, ultimate = {1, buffer[blen - 1]};
+#else
 			std::string penultimate = buffer[blen - 2], ultimate = buffer[blen - 1];
+#endif
 			buffer.erase(blen - 2);
 			buffer += ultimate + penultimate;
 			draw_right(-2);
 		} else {
+#ifdef DISABLE_ICU
+			std::string before_cursor = {1, buffer[cursor - 1]}, at_cursor = {1, buffer[cursor]};
+#else
 			std::string before_cursor = buffer[cursor - 1], at_cursor = buffer[cursor];
+#endif
 			buffer.erase(cursor - 1, 2);
 			buffer.insert(cursor - 1, at_cursor + before_cursor);
 			draw_right(-1);
@@ -483,14 +529,25 @@ namespace haunted::ui {
 					case 'u':      clear(); break;
 					case 'w': erase_word(); break;
 					case 'm': {
+#ifdef DISABLE_ICU
+						DBG("Length: " << buffer.length());
+#else
 						DBG("Length: " << buffer.length() << "; raw length: " << buffer.get_data().length());
+#endif
 						for (size_t i = 0, len = buffer.length(); i < len; ++i) {
+#ifdef DISABLE_ICU
+							std::string piece = {1, buffer[i]};
+							DBG(i << ": " << "[" << piece << "] " << piece.length() << "l");
+#else
 							std::string piece = buffer[i];
 							DBG(i << ": " << "[" << piece << "] " << buffer.width_at(i) << "w " << piece.length() << "l");
+#endif
 						}
 
+#ifndef DISABLE_ICU
 						buffer.scan_length();
 						DBG("Scanned length. New length: " << buffer.length());
+#endif
 						break;
 					}
 					default: return false;
@@ -595,12 +652,20 @@ namespace haunted::ui {
 		flush();
 	}
 
-	void textinput::print_graphemes(ustring to_print) {
+	void textinput::print_graphemes(textinput::string to_print) {
 		size_t twidth = text_width();
+#ifdef DISABLE_ICU
+		size_t width = to_print.size();
+#else
 		size_t width = to_print.width();
+#endif
 		while (twidth < width)
 			to_print.pop_back();
 
+#ifdef DISABLE_ICU
+		for (const char grapheme: to_print) {
+			*term << grapheme;
+#else
 		size_t i = 0;
 		for (const std::string &grapheme: to_print) {
 			width = to_print.width_at(i++);
@@ -611,6 +676,7 @@ namespace haunted::ui {
 				*term << grapheme;
 				term->out_stream.restore().right(width);
 			}
+#endif
 		}
 	}
 
