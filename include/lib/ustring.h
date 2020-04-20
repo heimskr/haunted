@@ -1,7 +1,12 @@
 #ifndef HAUNTED_LIB_USTRING_H_
 #define HAUNTED_LIB_USTRING_H_
 
-#ifdef ENABLE_ICU
+#ifndef ENABLE_ICU
+namespace haunted {
+	using ustring = std::string;
+}
+
+#else
 
 #include <string>
 
