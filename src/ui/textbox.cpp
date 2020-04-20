@@ -66,13 +66,11 @@ namespace haunted::ui {
 			if (next < 0)
 				return;
 
-			DBG("jumping to next = " << next);
 			term->jump(0, next);
 			for (int row = next, i = 0; row < pos.height && i < new_lines; ++row, ++i) {
 				if (i > 0)
 					*term << "\n";
 				*term << line.text_at_row(pos.width, i, true);
-				DBG("tar[" << line.text_at_row(pos.width, i, true) << "]");
 			}
 
 			uncolor();
@@ -168,7 +166,6 @@ namespace haunted::ui {
 
 	bool textbox::do_scroll(size_t rows) {
 		if (autoscroll && pos.height == total_rows() - voffset) {
-			DBG("pos.height=" << pos.height << ", total_rows() = " << total_rows() << ", voffset = " << voffset);
 			vscroll(rows);
 			return true;
 		}
@@ -234,10 +231,8 @@ namespace haunted::ui {
 						*term << "\n";
 				}
 			} else if (old_voffset < voffset) {
-				DBG("jumping to pos.height+diff = " << pos.height << "+" << diff);
 				term->jump(0, pos.height + diff);
 				for (int i = pos.height + diff; i < pos.height; ++i) {
-					DBG("drawing text [" << text_at_row(i) << "]");
 					*term << text_at_row(i);
 					if (i < pos.height - 1)
 						*term << "\n";
@@ -388,13 +383,13 @@ namespace haunted::ui {
 	textbox & textbox::operator+=(const std::string &text) {
 		auto w = formicine::perf.watch("textbox::operator+=");
 		if (!text.empty() && text.back() == '\n')
-			lines.pop_back();
+			return *this += text.substr(0, text.size() - 1);
 
 		std::unique_ptr<simpleline> ptr = std::make_unique<simpleline>(text, 0);
 		const size_t nrows = ptr->num_rows(pos.width);
+		do_scroll(nrows);
 		lines.push_back(std::move(ptr));
 		rows_dirty();
-		do_scroll(nrows);
 		draw_new_line(*lines.back(), true);
 		return *this;
 	}
