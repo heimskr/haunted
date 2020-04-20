@@ -72,7 +72,7 @@ namespace haunted::ui {
 	}
 
 	bool control::can_draw() const {
-		return parent != nullptr && term != nullptr && 0 <= pos.left && 0 <= pos.top;
+		return parent != nullptr && term != nullptr && 0 <= pos.left && 0 <= pos.top && !suppress_draw;
 	}
 
 	void control::resize() {

@@ -1,8 +1,8 @@
 #ifndef HAUNTED_UI_TEXTBOX_H_
 #define HAUNTED_UI_TEXTBOX_H_
 
-#include <deque>
 #include <functional>
+#include <list>
 #include <string>
 #include <utility>
 
@@ -31,7 +31,7 @@ namespace haunted::ui {
 
 		protected:
 			/** Holds all the textlines in the box. */
-			std::deque<line_ptr> lines;
+			std::list<line_ptr> lines;
 
 			/** The number of rows the container has been scrolled vertically. */
 			int voffset = 0;
@@ -99,7 +99,7 @@ namespace haunted::ui {
 			/** Deletes all lines in the textbox. */
 			void clear_lines();
 
-			std::deque<line_ptr> & get_lines() { return lines; }
+			std::list<line_ptr> & get_lines() { return lines; }
 
 			/** Scrolls the textbox down (positive argument) or up (negative argument). */
 			void vscroll(int = 1);

@@ -34,7 +34,7 @@ namespace haunted::ui {
 	void textbox::set_lines(const std::vector<std::string> &strings) {
 		lines.clear();
 		for (const std::string &str: strings) {
-			std::unique_ptr<simpleline> ptr = std::make_unique<simpleline>(str, 0);
+			std::shared_ptr<simpleline> ptr = std::make_shared<simpleline>(str, 0);
 			lines.push_back(std::move(ptr));
 		}
 
@@ -98,8 +98,9 @@ namespace haunted::ui {
 
 		int line_count = lines.size(), index = 0, row_count = 0, last_count = 0, offset = -1;
 
+		auto iter = lines.begin();
 		for (index = 0, row_count = 0; index < line_count; ++index) {
-			last_count = line_rows(*lines[index]);
+			last_count = line_rows(**(iter++));
 			if (row_count <= row && row < row_count + last_count) {
 				offset = row - row_count;
 				break;
@@ -111,7 +112,7 @@ namespace haunted::ui {
 		if (line_count <= index)
 			throw std::out_of_range("Line index too large: " + std::to_string(index));
 
- 		return {lines[index].get(), offset == -1? row - row_count : offset};
+		return {std::next(lines.begin(), index)->get(), offset == -1? row - row_count : offset};
 	}
 
 	std::string textbox::text_at_row(int row, bool pad_right) {
@@ -372,7 +373,7 @@ namespace haunted::ui {
 	}
 
 	bool textbox::can_draw() const {
-		return parent != nullptr && term != nullptr && !term->suppress_output;
+		return parent != nullptr && term != nullptr && !term->suppress_output && !suppress_draw;
 	}
 
 	void textbox::focus() {
@@ -385,7 +386,7 @@ namespace haunted::ui {
 		if (!text.empty() && text.back() == '\n')
 			return *this += text.substr(0, text.size() - 1);
 
-		std::unique_ptr<simpleline> ptr = std::make_unique<simpleline>(text, 0);
+		std::shared_ptr<simpleline> ptr = std::make_shared<simpleline>(text, 0);
 		const size_t nrows = ptr->num_rows(pos.width);
 		do_scroll(nrows);
 		lines.push_back(std::move(ptr));
