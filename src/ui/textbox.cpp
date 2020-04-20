@@ -273,10 +273,8 @@ namespace haunted::ui {
 	int textbox::total_rows() {
 		auto w = formicine::perf.watch("textbox::total_rows");
 
-		if (total_rows_ != -1) {
+		if (total_rows_ != -1)
 			return total_rows_;
-		}
-
 
 		total_rows_ = 0;
 		for (const line_ptr &line: lines)
@@ -390,9 +388,9 @@ namespace haunted::ui {
 		std::unique_ptr<simpleline> ptr = std::make_unique<simpleline>(text, 0);
 		const size_t nrows = ptr->num_rows(pos.width);
 		lines.push_back(std::move(ptr));
+		rows_dirty();
 		if (!do_scroll(nrows))
 			draw_new_line(*lines.back(), true);
-		rows_dirty();
 		return *this;
 	}
 
