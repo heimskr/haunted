@@ -1,4 +1,4 @@
-#ifndef DISABLE_ICU
+#ifdef ENABLE_ICU
 
 #include <cstring>
 

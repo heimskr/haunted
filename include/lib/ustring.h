@@ -1,7 +1,7 @@
 #ifndef HAUNTED_LIB_USTRING_H_
 #define HAUNTED_LIB_USTRING_H_
 
-#ifndef DISABLE_ICU
+#ifdef ENABLE_ICU
 
 #include <string>
 

@@ -23,7 +23,7 @@ namespace haunted::ui {
 	 * any rows below the first will be unused.
 	 */
 	class textinput: public control, public colored {
-#ifdef DISABLE_ICU
+#ifndef ENABLE_ICU
 		using string = std::string;
 #else
 		using string = ustring;
@@ -94,7 +94,7 @@ namespace haunted::ui {
 			 *  current position. Returns true if the scroll was changed. */
 			bool check_scroll();
 
-#ifdef DISABLE_ICU
+#ifndef ENABLE_ICU
 			/** Returns the character to the left of the cursor. */
 			char prev_char();
 
