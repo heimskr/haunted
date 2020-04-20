@@ -304,6 +304,7 @@ namespace haunted {
 
 	void terminal::jump(int x, int y) {
 		std::unique_lock uniq(output_mutex);
+		DBG("J(" << x << ", " << y << ")");
 		out_stream.jump(x, y);
 	}
 
