@@ -139,6 +139,8 @@ namespace haunted::ui {
 
 			void focus() override;
 
+			void redraw_line(textline &);
+
 			/** Adds a string to the end of the textbox. */
 			textbox & operator+=(const std::string &);
 			

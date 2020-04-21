@@ -4,7 +4,7 @@
 namespace haunted::ui {
 
 
-// Protected instance methods
+// Public instance methods
 
 
 	void textline::mark_dirty() {
@@ -26,10 +26,6 @@ namespace haunted::ui {
 		cleaning = false;
 		dirty = false;
 	}
-
-
-// Public instance methods
-
 
 	std::string textline::text_at_row(size_t width, int row, bool pad_right) {
 		if (!dirty) {

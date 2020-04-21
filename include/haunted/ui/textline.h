@@ -26,7 +26,6 @@ namespace haunted::ui {
 			/** Caches the return values of num_rows and text_at_row. */
 			void clean(int width);
 
-		public:
 			haunted::ui::textbox *box = nullptr;
 
 			textline() {}

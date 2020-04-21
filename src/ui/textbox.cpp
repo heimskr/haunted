@@ -381,6 +381,35 @@ namespace haunted::ui {
 		colored::focus();
 	}
 
+	void textbox::redraw_line(textline &to_redraw) {
+		int rows = 0;
+		for (line_ptr &line: lines) {
+			if (line.get() == &to_redraw)
+				break;
+			rows += line_rows(*line);
+		}
+
+		int next = rows - voffset;
+		if (voffset <= rows && next < pos.height) {
+			// The line is in view.
+			to_redraw.mark_dirty();
+			to_redraw.clean(pos.width);
+			const int new_lines = line_rows(to_redraw);
+			try_margins([&, this]() {
+				apply_colors();
+
+				term->jump(0, next);
+				for (int row = next, i = 0; row < pos.height && i < new_lines; ++row, ++i) {
+					if (i > 0)
+						*term << "\n";
+					*term << to_redraw.text_at_row(pos.width, i, true);
+				}
+
+				uncolor();
+			});
+		}
+	}
+
 	textbox & textbox::operator+=(const std::string &text) {
 		auto w = formicine::perf.watch("textbox::operator+=");
 		if (!text.empty() && text.back() == '\n')
