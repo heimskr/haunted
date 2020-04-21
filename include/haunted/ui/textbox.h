@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <list>
+#include <mutex>
 #include <string>
 #include <utility>
 
@@ -38,6 +39,11 @@ namespace haunted::ui {
 
 			/** Whether the textbox should automatically scroll to keep up with lines added to the bottom. */
 			bool autoscroll = false;
+
+			/** Used for locking when doing operations on lines. */
+			std::recursive_mutex line_mutex;
+
+			std::unique_lock<std::recursive_mutex> lock_lines() { return std::unique_lock(line_mutex); }
 
 			/** Empties the buffer and replaces it with 0-continuation lines from a vector of string. */
 			void set_lines(const std::vector<std::string> &);

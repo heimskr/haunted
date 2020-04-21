@@ -1,3 +1,4 @@
+#include "haunted/ui/textbox.h"
 #include "haunted/ui/textline.h"
 #include "lib/formicine/performance.h"
 
@@ -14,11 +15,10 @@ namespace haunted::ui {
 	}
 
 	void textline::clean(int width) {
-		if (!dirty)
+		if (!dirty || cleaning)
 			return;
 
 		cleaning = true;
-
 		num_rows_ = num_rows(width);
 		for (int row = 0; row < num_rows_; ++row)
 			lines_.push_back(text_at_row(width, row));

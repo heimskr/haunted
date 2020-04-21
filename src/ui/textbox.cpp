@@ -122,9 +122,8 @@ namespace haunted::ui {
 		textline *line;
 		size_t offset;
 
-		if (pos.height <= row || row < 0) {
+		if (pos.height <= row || row < 0)
 			return "";
-		}
 
 		if (lines.empty() || (row + voffset) >= total_rows()) {
 			return pad_right? std::string(cols, ' ') : "";
@@ -267,12 +266,13 @@ namespace haunted::ui {
 		// TODO: support doublewide characters.
 
 		auto w = formicine::perf.watch("textbox::line_rows");
-
+		auto lock = lock_lines();
 		return line.num_rows(pos.width);
 	}
 
 	int textbox::total_rows() {
 		auto w = formicine::perf.watch("textbox::total_rows");
+		auto lock = lock_lines();
 
 		if (total_rows_ != -1)
 			return total_rows_;
@@ -290,6 +290,7 @@ namespace haunted::ui {
 
 		auto w = formicine::perf.watch("textbox::draw");
 		auto lock = term->lock_render();
+		auto line_lock = lock_lines();
 
 		try_margins([&, this]() {
 			term->hide();
@@ -383,6 +384,7 @@ namespace haunted::ui {
 
 	void textbox::redraw_line(textline &to_redraw) {
 		int rows = 0;
+		auto lock = lock_lines();
 		for (line_ptr &line: lines) {
 			if (line.get() == &to_redraw)
 				break;
@@ -412,6 +414,7 @@ namespace haunted::ui {
 
 	textbox & textbox::operator+=(const std::string &text) {
 		auto w = formicine::perf.watch("textbox::operator+=");
+		auto lock = lock_lines();
 		if (!text.empty() && text.back() == '\n')
 			return *this += text.substr(0, text.size() - 1);
 
@@ -426,6 +429,7 @@ namespace haunted::ui {
 
 	textbox::operator std::string() {
 		auto w = formicine::perf.watch("textbox::operator std::string");
+		auto lock = lock_lines();
 		std::string out = "";
 		for (const line_ptr &line: lines) {
 			if (!out.empty())
