@@ -1,6 +1,7 @@
 #ifndef HAUNTED_UI_TEXTLINE_H_
 #define HAUNTED_UI_TEXTLINE_H_
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,9 @@ namespace haunted::ui {
 			/** Caches the return values of num_rows and text_at_row. */
 			void clean(int width);
 
+		public:
 			haunted::ui::textbox *box = nullptr;
+			std::function<void(const haunted::mouse_report &)> mouse_fn;
 
 			textline() {}
 
@@ -48,7 +51,7 @@ namespace haunted::ui {
 
 			/** Called when the line is clicked on. 
 			 *  The mouse_report's position is relative to the top left of the line. */
-			virtual void on_mouse(const haunted::mouse_report &) {}
+			virtual void on_mouse(const haunted::mouse_report &report) { if (mouse_fn) mouse_fn(report); }
 
 			/** Returns the raw text of the line. */
 			virtual operator std::string() = 0;
