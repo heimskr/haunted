@@ -67,6 +67,9 @@ namespace haunted::ui::boxes {
 			void draw() override;
 			int max_children() const override { return -1; }
 			bool request_resize(control *, size_t, size_t) override;
+			virtual bool add_child(control *) override;
+			virtual bool remove_child(child *) override;
+			bool add_child(control *, int size);
 
 			virtual terminal * get_terminal() override { return term; }
 			virtual container * get_parent() const override { return parent; }
