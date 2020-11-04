@@ -1,35 +1,35 @@
 #include <deque>
 
-#include "haunted/core/terminal.h"
-#include "haunted/ui/colored.h"
+#include "haunted/core/Terminal.h"
+#include "haunted/ui/Colored.h"
 
-namespace haunted::ui {
-	colored::~colored() = default;
+namespace Haunted::UI {
+	Colored::~Colored() = default;
 
-	ansi::color colored::find_color(ansi::color_type type) const {
-		container *p = get_parent();
+	ansi::color Colored::findColor(ansi::color_type type) const {
+		Container *p = getParent();
 
 		// If the control doesn't need to inherit a color, that would save us the effort of checking its ancestors.
-		if (type == ansi::color_type::background && !inherit_background)
+		if (type == ansi::color_type::background && !inheritBackground)
 			return background;
 
-		if (type == ansi::color_type::foreground && !inherit_foreground)
+		if (type == ansi::color_type::foreground && !inheritForeground)
 			return foreground;
 
 		while (p != nullptr) {
-			if (colored *pcolored = dynamic_cast<colored *>(p)) {
+			if (Colored *pcolored = dynamic_cast<Colored *>(p)) {
 				// If we find a control that's also an instance of colored, let it determine the color for us.
-				ansi::color found = pcolored->find_color(type);
+				ansi::color found = pcolored->findColor(type);
 				return found;
-			} else if (control *pcontrol = dynamic_cast<control *>(p)) {
-				if (pcontrol->get_terminal() == pcontrol->get_parent()) {
+			} else if (Control *pcontrol = dynamic_cast<Control *>(p)) {
+				if (pcontrol->getTerminal() == pcontrol->getParent()) {
 					// If we've reached the terminal and still haven't found any control with a color preference,
 					// give up.
 					break;
 				}
 
 				// Otherwise, keep going up.
-				p = pcontrol->get_parent();
+				p = pcontrol->getParent();
 			} else {
 				// At this point, because the parent of the previous control isn't null, but it (almost surely) also
 				// isn't a terminal and it isn't a control, the parent must surely be a plain container or some unknown
@@ -45,62 +45,62 @@ namespace haunted::ui {
 		return ansi::color::normal;
 	}
 
-	void colored::draw() {
-		apply_colors();
+	void Colored::draw() {
+		applyColors();
 	}
 
-	void colored::focus() {
-		apply_colors();
+	void Colored::focus() {
+		applyColors();
 	}
 
-	colored & colored::apply_colors() {
-		if (terminal *term = get_terminal())
-			term->colors.set_both(find_color(ansi::color_type::foreground), find_color(ansi::color_type::background));
+	Colored & Colored::applyColors() {
+		if (Terminal *term = getTerminal())
+			term->colors.setBoth(findColor(ansi::color_type::foreground), findColor(ansi::color_type::background));
 
 		return *this;
 	}
 
-	colored & colored::try_colors(bool find) {
-		if (terminal *term = get_terminal()) {
+	Colored & Colored::tryColors(bool find) {
+		if (Terminal *term = getTerminal()) {
 			ansi::color fg = foreground, bg = background;
 			if (find) {
-				fg = find_color(ansi::color_type::foreground);
-				bg = find_color(ansi::color_type::background);
+				fg = findColor(ansi::color_type::foreground);
+				bg = findColor(ansi::color_type::background);
 			}
 
-			term->colors.set_foreground(fg);
-			term->colors.set_background(bg);
+			term->colors.setForeground(fg);
+			term->colors.setBackground(bg);
 		}
 
 		return *this;
 	}
 
-	colored & colored::uncolor() {
-		if (terminal *term = get_terminal())
-			term->reset_colors();
+	Colored & Colored::uncolor() {
+		if (Terminal *term = getTerminal())
+			term->resetColors();
 		return *this;
 	}
 
-	bool colored::propagate(ansi::color_type type) {
+	bool Colored::propagate(ansi::color_type type) {
 		// If this isn't a container, there's nothing to propagate to.
-		container *cont = dynamic_cast<container *>(this);
+		Container *cont = dynamic_cast<Container *>(this);
 		if (cont == nullptr)
 			return false;
 
 		bool is_bg = (static_cast<int>(type) & static_cast<int>(ansi::color_type::background)) != 0;
 		bool is_fg = (static_cast<int>(type) & static_cast<int>(ansi::color_type::foreground)) != 0;
 
-		std::deque<control *> queue(cont->get_children().begin(), cont->get_children().end());
+		std::deque<Control *> queue(cont->getChildren().begin(), cont->getChildren().end());
 
 		while (!queue.empty()) {
-			control *child = queue.front();
+			Control *child = queue.front();
 			queue.pop_front();
 
-			colored *colored_child = dynamic_cast<colored *>(child);
+			Colored *colored_child = dynamic_cast<Colored *>(child);
 			if (colored_child == nullptr) {
-				if (container *container_child = dynamic_cast<container *>(child)) {
-					queue.insert(queue.end(), container_child->get_children().begin(),
-					                          container_child->get_children().end());
+				if (Container *container_child = dynamic_cast<Container *>(child)) {
+					queue.insert(queue.end(), container_child->getChildren().begin(),
+					                          container_child->getChildren().end());
 				}
 
 				continue;
@@ -108,20 +108,20 @@ namespace haunted::ui {
 
 			bool changed = false;
 
-			if (is_bg && colored_child->inherit_background && colored_child->get_background() != background) {
+			if (is_bg && colored_child->inheritBackground && colored_child->getBackground() != background) {
 				colored_child->background = background;
 				changed = true;
 			}
 			
-			if (is_fg && colored_child->inherit_foreground && colored_child->get_foreground() != foreground) {
+			if (is_fg && colored_child->inheritForeground && colored_child->getForeground() != foreground) {
 				colored_child->foreground = foreground;
 				changed = true;
 			}
 
 			if (changed) {
-				if (container *container_child = dynamic_cast<container *>(child)) {
-					queue.insert(queue.end(), container_child->get_children().begin(),
-					                          container_child->get_children().end());
+				if (Container *container_child = dynamic_cast<Container *>(child)) {
+					queue.insert(queue.end(), container_child->getChildren().begin(),
+					                          container_child->getChildren().end());
 				}
 			}
 		}
@@ -130,7 +130,7 @@ namespace haunted::ui {
 		return true;
 	}
 
-	bool colored::set_foreground(ansi::color foreground_) {
+	bool Colored::setForeground(ansi::color foreground_) {
 		if (foreground != foreground_) {
 			foreground = foreground_;
 			propagate(ansi::color_type::foreground);
@@ -140,7 +140,7 @@ namespace haunted::ui {
 		return false;
 	}
 
-	bool colored::set_background(ansi::color background_) {
+	bool Colored::setBackground(ansi::color background_) {
 		if (background != background_) {
 			background = background_;
 			propagate(ansi::color_type::background);
@@ -150,9 +150,9 @@ namespace haunted::ui {
 		return false;
 	}
 
-	bool colored::set_colors(ansi::color foreground_, ansi::color background_) {
-		bool fg_changed = set_foreground(foreground_);
-		bool bg_changed = set_background(background_);
+	bool Colored::setColors(ansi::color foreground_, ansi::color background_) {
+		bool fg_changed = setForeground(foreground_);
+		bool bg_changed = setBackground(background_);
 
 		if (fg_changed || bg_changed) {
 			draw();
@@ -162,34 +162,34 @@ namespace haunted::ui {
 		return false;
 	}
 
-	bool colored::set_colors(ansi::color foreground_, ansi::color background_, bool inherit_fg, bool inherit_bg) {
-		bool inherit_changed = set_inherit(inherit_fg, inherit_bg);
-		bool colors_changed = set_colors(foreground_, background_);
+	bool Colored::setColors(ansi::color foreground_, ansi::color background_, bool inherit_fg, bool inherit_bg) {
+		bool inherit_changed = setInherit(inherit_fg, inherit_bg);
+		bool colors_changed = setColors(foreground_, background_);
 		return inherit_changed || colors_changed;
 	}
 
-	bool colored::set_inherit(bool inherit_fg, bool inherit_bg) {
+	bool Colored::setInherit(bool inherit_fg, bool inherit_bg) {
 		bool changed = false;
 
-		if (inherit_foreground != inherit_fg) {
-			inherit_foreground = inherit_fg;
+		if (inheritForeground != inherit_fg) {
+			inheritForeground = inherit_fg;
 			changed = true;
-			set_foreground(find_color(ansi::color_type::foreground));
+			setForeground(findColor(ansi::color_type::foreground));
 		}
 
-		if (inherit_background != inherit_bg) {
-			inherit_background = inherit_bg;
+		if (inheritBackground != inherit_bg) {
+			inheritBackground = inherit_bg;
 			changed = true;
-			set_background(find_color(ansi::color_type::background));
+			setBackground(findColor(ansi::color_type::background));
 		}
 		
 		return changed;
 	}
 
-	void swap(colored &left, colored &right) {
+	void swap(Colored &left, Colored &right) {
 		std::swap(left.background, right.background);
 		std::swap(left.foreground, right.foreground);
-		std::swap(left.inherit_foreground, right.inherit_foreground);
-		std::swap(left.inherit_background, right.inherit_background);
+		std::swap(left.inheritForeground, right.inheritForeground);
+		std::swap(left.inheritBackground, right.inheritBackground);
 	}
 }

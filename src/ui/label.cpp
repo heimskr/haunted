@@ -1,70 +1,69 @@
-#include "haunted/core/terminal.h"
-#include "haunted/ui/label.h"
+#include "haunted/core/Terminal.h"
+#include "haunted/ui/Label.h"
 
-namespace haunted::ui {
+namespace Haunted::UI {
 
-	label::label(container *parent_, const position &pos_, const std::string &text_, bool autoresize_,
-	const std::string &cutoff): control(parent_, pos_), text(text_), cutoff(cutoff), autoresize(autoresize_) {
-		if (parent_ != nullptr)
-			parent_->add_child(this);
+	Label::Label(Container *parent_, const Position &pos, const std::string &text_, bool autoresize_,
+	const std::string &cutoff): Control(parent_, pos), text(text_), cutoff(cutoff), autoresize(autoresize_) {
+		if (parent_)
+			parent_->addChild(this);
 	}
 
 
 // Public instance methods
 
 
-	void label::clear() {
-		set_text("");
+	void Label::clear() {
+		setText("");
 	}
 
-	void label::set_text(const std::string &text_) {
+	void Label::setText(const std::string &text_) {
 		if (text != text_) {
 			text = text_;
 			draw();
 		}
 	}
 
-	void label::set_autoresize(bool autoresize_) {
+	void Label::setAutoresize(bool autoresize_) {
 		autoresize = autoresize_;
-		if (autoresize_ && static_cast<size_t>(pos.width) < length() && parent != nullptr)
-			parent->request_resize(this, length(), pos.height);
+		if (autoresize_ && static_cast<size_t>(position.width) < length() && parent != nullptr)
+			parent->requestResize(this, length(), position.height);
 	}
 
-	void label::draw() { // TODO: proper Unicode :~)
-		if (!can_draw())
+	void Label::draw() { // TODO: proper Unicode :~)
+		if (!canDraw())
 			return;
 
-		auto lock = term->lock_render();
-		colored::draw();
+		auto lock = terminal->lockRender();
+		Colored::draw();
 		jump();
 
-		size_t tlen = ansi::strip(text).length(), clen = ansi::strip(cutoff).length(), width = pos.width;
+		const size_t tlen = ansi::strip(text).length(), clen = ansi::strip(cutoff).length(), width = position.width;
 
 		if (tlen == width) {
-			*term << text;
+			*terminal << text;
 		} else if (tlen < width) {
-			*term << text << std::string(width - tlen, ' ');
+			*terminal << text << std::string(width - tlen, ' ');
 		} else if (cutoff.empty()) {
-			*term << ansi::substr(text, 0, width);
+			*terminal << ansi::substr(text, 0, width);
 		} else if (clen == width) {
-			*term << cutoff;
+			*terminal << cutoff;
 		} else if (width < clen) {
-			*term << ansi::substr(cutoff, 0, width);
+			*terminal << ansi::substr(cutoff, 0, width);
 		} else {
-			*term << ansi::substr(text, 0, width - clen) << cutoff;
+			*terminal << ansi::substr(text, 0, width - clen) << cutoff;
 		}
 
-		term->reset_colors();
-		term->flush();
-		term->jump_to_focused();
+		terminal->resetColors();
+		terminal->flush();
+		terminal->jumpToFocused();
 	}
 
-	bool label::can_draw() const {
-		return parent != nullptr && term != nullptr && !term->suppress_output;
+	bool Label::canDraw() const {
+		return parent != nullptr && terminal != nullptr && !terminal->suppressOutput;
 	}
+}
 
-	std::ostream & operator<<(std::ostream &os, const label &input) {
-		os << std::string(input);
-		return os;
-	}
+std::ostream & operator<<(std::ostream &os, const Haunted::UI::Label &label) {
+	return os << std::string(label);
 }

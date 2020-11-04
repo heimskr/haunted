@@ -6,29 +6,29 @@
 #include <unordered_map>
 
 #include <iostream>
-#include "haunted/core/defs.h"
+#include "haunted/core/Defs.h"
 
-namespace haunted {
+namespace Haunted {
 	/**
 	 * Represents a key code.
 	 */
-	enum class ktype: int {
-		      mouse =  -1,
-		       bell =   7,        bs,          tab,  enter,
-		      space =  32,      bang,       dquote,   hash,      dollar,  percent, ampersand, squote,
-		     oparen =  40,    cparen,         star,   plus,       comma,    minus,    period,  slash,
-		      colon =  58, semicolon,   open_angle, equals, close_angle, question,        at,
-		open_square =  91, backslash, close_square,  caret,  underscore,     tick,
-		 open_curly = 123,      pipe,        ccurl,  tilde,         del,
-		         _0 =  48, _1, _2, _3, _4, _5, _6, _7, _8, _9,
-		          A =  65, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
-		          a =  97, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z,
-		carriage_return = 13, escape = 27, less_than = 60,  greater_than = 62, backspace = 127,
+	enum class KeyType: int {
+		     Mouse =  -1,
+		      Bell =   7,        BS,          Tab,  Enter,
+		     Space =  32,      Bang,       DQuote,   Hash,      Dollar,  Percent, Ampersand, SQuote,
+		    OParen =  40,    CParen,         Star,   Plus,       Comma,    Minus,    Period,  Slash,
+		     Colon =  58, Semicolon,    OpenAngle, Equals,  CloseAngle, Question,        At,
+		OpenSquare =  91, Backslash,  CloseSquare,  Caret,  Underscore,     Tick,
+		 OpenCurly = 123,      Pipe,   CloseCurly,  Tilde,         Del,
+		        _0 =  48, _1, _2, _3, _4, _5, _6, _7, _8, _9,
+		         A =  65, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
+		         a =  97, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z,
+		CarriageReturn = 13, Escape = 27, LessThan = 60,  GreaterThan = 62, Backspace = 127,
 
 		// Here be dragons.
-		home = 128, end, insert,
-		f1 = 131, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12,
-		up_arrow, down_arrow, right_arrow, left_arrow, page_up, page_down
+		Home = 128, End, Insert,
+		F1 = 131, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
+		UpArrow, DownArrow, RightArrow, LeftArrow, PageUp, PageDown
 	};
 
 	/**
@@ -36,52 +36,52 @@ namespace haunted {
 	 * For mouse reports, what's called alt here actually represents the meta key,
 	 * as alt-clicks don't seem to be reported.
 	 */
-	enum class kmod {none = 0, shift = 1, alt = 2, ctrl = 4};
+	enum class KeyMod {None = 0, Shift = 1, Alt = 2, Ctrl = 4};
 
-	using modset = std::bitset<3>;
+	using ModSet = std::bitset<3>;
 
 	/**
 	 * Represents a keypress, including any modifiers.
 	 */
-	struct key {
+	struct Key {
 		private:
-			static std::unordered_map<ktype, std::string> keymap;
+			static std::unordered_map<KeyType, std::string> keymap;
 
 		public:
-			ktype type;
-			modset mods;
+			KeyType type;
+			ModSet mods;
 
-			key(ktype type, modset mods): type(type), mods(mods) {}
-			key(ktype type, kmod mod):    key(type, get_modset(mod)) {}
-			key(ktype type):              key(type, kmod::none) {}
+			Key(KeyType type, ModSet mods): type(type), mods(mods) {}
+			Key(KeyType type, KeyMod mod):  Key(type, getModSet(mod)) {}
+			Key(KeyType type):              Key(type, KeyMod::None) {}
 
-			key(int t, modset mods): key(ktype(t), mods) {}
-			key(int t, kmod mod):    key(ktype(t), mod) {}
-			key(int t):              key(t,        kmod::none) {}
-			key():                   key('\0',     kmod::none) {}
+			Key(int t, ModSet mods): Key(KeyType(t), mods) {}
+			Key(int t, KeyMod mod):  Key(KeyType(t), mod) {}
+			Key(int t):              Key(t,    KeyMod::None) {}
+			Key():                   Key('\0', KeyMod::None) {}
 
-			static modset get_modset(kmod);
+			static ModSet getModSet(KeyMod);
 
 			/** Returns true if this key's type is equal to a given key type and this key's only modifier is control. */
-			bool is_ctrl(ktype) const;
+			bool isCtrl(KeyType) const;
 
 			/** Returns true if this key's type is equal to a given key type and this key's only modifier is alt. */
-			bool is_alt(ktype) const;
+			bool isAlt(KeyType) const;
 
 			/** Returns true if this key's type is equal to a given key type and this key's only modifier is shift. */
-			bool is_shift(ktype) const;
+			bool isShift(KeyType) const;
 
 			/** Returns true if the key is one of the arrow keys. */
-			bool is_arrow() const;
+			bool isArrow() const;
 
 			/** Returns a copy of the key with the shift modifier set. */
-			key shift() const;
+			Key shift() const;
 
 			/** Returns a copy of the key with the alt modifier set. */
-			key alt() const;
+			Key alt() const;
 
 			/** Returns a copy of the key with the control modifier set. */
-			key ctrl() const;
+			Key ctrl() const;
 
 			/** Returns false if the key is null/invalid. */
 			operator bool() const;
@@ -99,33 +99,33 @@ namespace haunted {
 			bool operator%(int) const;
 
 			/** Returns whether the key is identical to another key. The key type and modifiers must match. */
-			bool operator==(const key &) const;
-			bool operator!=(const key &right) const { return !(*this == right); }
+			bool operator==(const Key &) const;
+			bool operator!=(const Key &right) const { return !(*this == right); }
 
 			/** Returns whether the key matches a character. Case sensitive. */
 			bool operator==(char) const;
 			bool operator!=(char right) const { return !(*this == right); }
 
-			bool operator==(kmod) const;
-			bool operator!=(kmod right) const { return !(*this == right); }
+			bool operator==(KeyMod) const;
+			bool operator!=(KeyMod right) const { return !(*this == right); }
 
 			/** Returns whether the key is of a given type and has no modifiers. */
-			bool operator==(ktype) const;
-			bool operator!=(ktype right) const { return !(*this == right); }
+			bool operator==(KeyType) const;
+			bool operator!=(KeyType right) const { return !(*this == right); }
 
 			/** Returns whether the key has a given type, regardless of modifiers. */
-			bool operator%(ktype) const;
+			bool operator%(KeyType) const;
 
-			bool operator&(kmod) const;
+			bool operator&(KeyMod) const;
 
-			friend std::ostream & operator<<(std::ostream &, const key &);
+			friend std::ostream & operator<<(std::ostream &, const Key &);
 
 			/** Returns a string representing a set of modifiers. */
-			static std::string mod_str(const modset &);
+			static std::string modString(const ModSet &);
 	};
 
-	bool operator==(kmod, const modset &);
-	bool operator==(const modset &, kmod);
+	bool operator==(KeyMod, const ModSet &);
+	bool operator==(const ModSet &, KeyMod);
 }
 
 #endif

@@ -3,10 +3,10 @@
 
 #include <cstdlib>
 
-#include "lib/superstring.h"
+#include "lib/Superstring.h"
 
-namespace haunted {
-	class utf8 {
+namespace Haunted {
+	class UTF8 {
 		public:
 			/** Determines the expected codepoint width for a given start byte.
 			 *  @return The expected width in bytes if the byte is a valid starting byte; 0 otherwise. */

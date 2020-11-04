@@ -1,10 +1,10 @@
 EXTRASRC += src/tests/test.cpp
 
-build/test: build/tests/test.o $(OBJECTS)
+build/test: build/tests/Test.o $(OBJECTS)
 	@ $(MKBUILD)
 	$(CC) $(INCLUDE) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 
-infer: build/tests/test.o $(OBJ)
+infer: build/tests/Test.o $(OBJ)
 	@ $(MKBUILD)
 	infer run -- $(CC) $(INCLUDE) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 

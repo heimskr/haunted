@@ -1,53 +1,53 @@
 #include <algorithm>
 
-#include "haunted/core/terminal.h"
-#include "haunted/ui/boxes/expandobox.h"
+#include "haunted/core/Terminal.h"
+#include "haunted/ui/boxes/ExpandoBox.h"
 
-namespace haunted::ui::boxes {
+namespace Haunted::UI::Boxes {
 	template <>
-	std::pair<control *&, int &> expandobox::iterator::operator*() const {
+	std::pair<Control *&, int &> ExpandoBox::iterator::operator*() const {
 		return {*child_iterator, *size_iterator};
 	}
 
 	template <>
-	expandobox::iterator & expandobox::iterator::operator++() {
+	ExpandoBox::iterator & ExpandoBox::iterator::operator++() {
 		++child_iterator;
 		++size_iterator;
 		return *this;
 	}
 
 	template <>
-	expandobox::iterator expandobox::iterator::operator++(int) {
-		std::deque<control *>::iterator new_child_iterator(child_iterator);
+	ExpandoBox::iterator ExpandoBox::iterator::operator++(int) {
+		std::deque<Control *>::iterator new_child_iterator(child_iterator);
 		std::deque<int>::iterator new_size_iterator(size_iterator);
 		return {++new_child_iterator, ++new_size_iterator};
 	}
 
 	template <>
-	bool expandobox::iterator::operator==(expandobox::iterator other) {
+	bool ExpandoBox::iterator::operator==(ExpandoBox::iterator other) {
 		return child_iterator == other.child_iterator && size_iterator == other.size_iterator;
 	}
 
 	template <>
-	bool expandobox::iterator::operator!=(expandobox::iterator other) {
+	bool ExpandoBox::iterator::operator!=(ExpandoBox::iterator other) {
 		return child_iterator != other.child_iterator || size_iterator != other.size_iterator;
 	}
 
-	expandobox::expandobox(container *parent_, const position &pos, const box_orientation orientation,
-	std::initializer_list<child_pair> pairs): orientedbox(parent_, pos, orientation) {
+	ExpandoBox::ExpandoBox(Container *parent_, const Position &pos, const BoxOrientation orientation,
+	std::initializer_list<ChildPair> pairs): OrientedBox(parent_, pos, orientation) {
 		if (parent_)
-			parent_->add_child(this);
+			parent_->addChild(this);
 
-		for (const child_pair &p: pairs) {
-			p.first->set_parent(this);
-			p.first->set_terminal(term);
+		for (const ChildPair &p: pairs) {
+			p.first->setParent(this);
+			p.first->setTerminal(terminal);
 			children.push_back(p.first);
 			sizes.push_back(p.second);
 		}
 	}
 
 
-	int expandobox::fixed_sum() const {
+	int ExpandoBox::fixedSum() const {
 		int sum = 0;
 		for (const int size: sizes) {
 			if (size > 0)
@@ -57,14 +57,14 @@ namespace haunted::ui::boxes {
 		return sum;
 	}
 
-	int expandobox::expanded_size(int order) const {
+	int ExpandoBox::expandedSize(int order) const {
 		if (children.empty())
 			return 0;
 
-		const int sum = fixed_sum();
-		const int length = get_size();
+		const int sum = fixedSum();
+		const int length = getSize();
 
-		// If the fixed-size children fill the expandobox or even overflow it,
+		// If the fixed-size children fill the ExpandoBox or even overflow it,
 		// there's no room for the expanding children.
 		if (length <= sum)
 			return 0;
@@ -84,17 +84,17 @@ namespace haunted::ui::boxes {
 		return quotient + (order < remainder? 1 : 0);
 	}
 
-	void expandobox::resize_child(control *child, int offset, int size) {
-		if (orientation == box_orientation::horizontal) {
-			child->resize({pos.left + offset, pos.top, size, pos.height});
+	void ExpandoBox::resizeChild(Control *child, int offset, int size) {
+		if (orientation == BoxOrientation::Horizontal) {
+			child->resize({position.left + offset, position.top, size, position.height});
 		} else {
-			child->resize({pos.left, pos.top + offset, pos.width, size});
+			child->resize({position.left, position.top + offset, position.width, size});
 		}
 	}
 
-	void expandobox::resize(const position &new_pos) {
-		control::resize(new_pos);
-		const int size = get_size();
+	void ExpandoBox::resize(const Position &new_pos) {
+		Control::resize(new_pos);
+		const int size = getSize();
 
 		// Number of times an expanding child has been resized.
 		int expanded = 0;
@@ -102,17 +102,17 @@ namespace haunted::ui::boxes {
 		// The amount of space that has been allocated to children so far.
 		int offset = 0;
 
-		for (const child_pair p: *this) {
-			control *child = p.first;
+		for (const ChildPair p: *this) {
+			Control *child = p.first;
 			const int child_size = p.second;
 
 			if (offset >= size) {
 				// If there's no space left, assign the child a size of zero and place it at the far edge.
-				DBG("Resizing " << child->get_id() << " with offset " << get_size() << " and size " << 0 << " (no space left)");
-				resize_child(child, get_size(), 0);
+				DBG("Resizing " << child->getID() << " with offset " << getSize() << " and size " << 0 << " (no space left)");
+				resizeChild(child, getSize(), 0);
 			} else {
-				const int assigned = child_size == -1? expanded_size(expanded++) : std::min(child_size, size - offset);
-				resize_child(child, offset, assigned);
+				const int assigned = child_size == -1? expandedSize(expanded++) : std::min(child_size, size - offset);
+				resizeChild(child, offset, assigned);
 				offset += assigned;
 			}
 		}
@@ -120,42 +120,40 @@ namespace haunted::ui::boxes {
 		redraw();
 	}
 
-	void expandobox::draw() {
-		if (!can_draw())
+	void ExpandoBox::draw() {
+		if (!canDraw())
 			return;
 
-		colored::draw();
+		Colored::draw();
 
-		auto lock = term->lock_render();
-		for (control *child: children)
+		auto lock = terminal->lockRender();
+		for (Control *child: children)
 			child->draw();
 	}
 
-	bool expandobox::request_resize(control *child, size_t width, size_t height) {
+	bool ExpandoBox::requestResize(Control *child, size_t width, size_t height) {
 		// Don't try to resize anything that isn't a direct descendant.
-		for (auto iter = children.begin(), end = children.end(); iter != end; ++iter) {
+		for (auto iter = children.begin(), end = children.end(); iter != end; ++iter)
 			if (*iter == child) {
-				size_t pos = iter - children.begin();
-				sizes[pos] = orientation == box_orientation::vertical? height : width;
+				sizes[iter - children.begin()] = orientation == BoxOrientation::Vertical? height : width;
 				resize();
 				return true;
 			}
-		}
 
 		return false;
 	}
 
-	expandobox & expandobox::operator+=(expandobox::child_pair p) {
+	ExpandoBox & ExpandoBox::operator+=(const ExpandoBox::ChildPair &p) {
 		children.push_back(p.first);
 		sizes.push_back(p.second);
 		return *this;
 	}
 
-	expandobox::iterator expandobox::begin() {
+	ExpandoBox::iterator ExpandoBox::begin() {
 		return {children.begin(), sizes.begin()};
 	}
 
-	expandobox::iterator expandobox::end() {
+	ExpandoBox::iterator ExpandoBox::end() {
 		return {children.end(), sizes.end()};
 	}
 }

@@ -7,19 +7,19 @@
 #include <string>
 #include <unordered_set>
 
-#include "haunted/core/defs.h"
-#include "haunted/core/key.h"
-#include "haunted/ui/container.h"
-#include "haunted/ui/control.h"
-#include "haunted/ui/colored.h"
+#include "haunted/core/Defs.h"
+#include "haunted/core/Key.h"
+#include "haunted/ui/Container.h"
+#include "haunted/ui/Control.h"
+#include "haunted/ui/Colored.h"
 
-#include "lib/utf8.h"
+#include "lib/UTF8.h"
 
-namespace haunted::ui {
+namespace Haunted::UI {
 	/**
 	 * Represents a single-row control that displays text.
 	 */
-	class label: public control, public colored {
+	class Label: public Control, public Colored {
 		private:
 			/** Contains the label's text. */
 			std::string text;
@@ -33,23 +33,23 @@ namespace haunted::ui {
 
 		public:
 			/** Constructs a textinput with a parent, a position, text, an autoresize flag and a cutoff string. */
-			label(container *parent, const position &pos = {}, const std::string &text = "", bool autoresize = false,
+			Label(Container *parent, const Position &pos = {}, const std::string &text = "", bool autoresize = false,
 				const std::string &cutoff = "...");
 
-			label(const std::string &text, bool autoresize = false, const std::string &cutoff = "..."):
-				label(nullptr, {}, text, autoresize, cutoff) {}
+			Label(const std::string &text, bool autoresize = false, const std::string &cutoff = "..."):
+				Label(nullptr, {}, text, autoresize, cutoff) {}
 
 			/** Erases the label text. */
 			void clear();
 
 			/** Returns the label text. */
-			std::string get_text() const { return text; }
+			std::string getText() const { return text; }
 
 			/** Sets the label text. */
-			void set_text(const std::string &);
+			void setText(const std::string &);
 
-			bool get_autoresize() const { return autoresize; }
-			void set_autoresize(bool);
+			bool getAutoresize() const { return autoresize; }
+			void setAutoresize(bool);
 
 			/** Returns the number of characters in the label. */
 			size_t length() const { return text.length(); }
@@ -58,16 +58,16 @@ namespace haunted::ui {
 			/** Renders the control onto the terminal. */
 			virtual void draw() override;
 
-			virtual bool can_draw() const override;
+			virtual bool canDraw() const override;
 
 			/** Returns the contents of the buffer. */
 			operator std::string() const { return text; }
 
-			virtual terminal * get_terminal() override { return term; }
-			virtual container * get_parent() const override { return parent; }
+			virtual Terminal * getTerminal() override { return terminal; }
+			virtual Container * getParent() const override { return parent; }
 
 			/** Writes the label text to an output stream. */
-			friend std::ostream & operator<<(std::ostream &os, const label &input);
+			friend std::ostream & operator<<(std::ostream &, const Label &);
 	};
 }
 

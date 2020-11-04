@@ -1,42 +1,41 @@
-#include "haunted/ui/container.h"
-#include "haunted/ui/control.h"
-#include "haunted/core/util.h"
-#include "haunted/core/terminal.h"
+#include "haunted/ui/Container.h"
+#include "haunted/ui/Control.h"
+#include "haunted/core/Util.h"
+#include "haunted/core/Terminal.h"
 
-namespace haunted::ui {
-	container::~container() {
-		for (control *child: children)
+namespace Haunted::UI {
+	Container::~Container() {
+		for (Control *child: children)
 			delete child;
 	}
 
-	control * container::operator[](size_t index) {
+	Control * Container::operator[](size_t index) {
 		return index < children.size()? children.at(index) : nullptr;
 	}
 
-	bool container::add_child(control *child) {
+	bool Container::addChild(Control *child) {
 		children.push_back(child);
 		return true;
 	}
 
-	bool container::remove_child(child *to_remove) {
-		for (auto iter = children.begin(); iter != children.end(); ++iter) {
+	bool Container::removeChild(Child *to_remove) {
+		for (auto iter = children.begin(); iter != children.end(); ++iter)
 			if (*iter == to_remove) {
 				children.erase(iter);
-				to_remove->set_parent(nullptr);
+				to_remove->setParent(nullptr);
 				return true;
 			}
-		}
 
 		return false;
 	}
 
-	control * container::child_at_offset(int x, int y) const {
-		const position pos = get_position();
+	Control * Container::childAtOffset(int x, int y) const {
+		const Position pos = getPosition();
 		x += pos.left;
 		y += pos.top;
 
-		for (control *child: children) {
-			const position &cpos = child->get_position();
+		for (Control *child: children) {
+			const Position &cpos = child->getPosition();
 			if ((cpos.left <= x) && (x <= cpos.right()) && (cpos.top <= y) && (y <= cpos.bottom()))
 				return child;
 		}
@@ -44,12 +43,12 @@ namespace haunted::ui {
 		return nullptr;
 	}
 
-	bool container::request_resize(control *, size_t, size_t) {
+	bool Container::requestResize(Control *, size_t, size_t) {
 		return false;
 	}
 
-	void container::redraw() {
-		for (control *child: children)
+	void Container::redraw() {
+		for (Control *child: children)
 			child->draw();
 	}
 }

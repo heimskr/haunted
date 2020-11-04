@@ -10,34 +10,34 @@
 
 #include <termios.h>
 
-#include "haunted/core/key.h"
-#include "haunted/core/mouse.h"
-#include "haunted/ui/coloration.h"
-#include "haunted/ui/container.h"
+#include "haunted/core/Key.h"
+#include "haunted/core/Mouse.h"
+#include "haunted/ui/Coloration.h"
+#include "haunted/ui/Container.h"
 
 #include "lib/formicine/ansi.h"
 #include "lib/formicine/performance.h"
 
-namespace haunted {
+namespace Haunted {
 	/**
 	 * This class enables interaction with terminals. It uses termios to change terminal modes.
 	 * When the destructor is called, it resets the modes to their original values.
 	 */
-	class terminal: public ui::container {
+	class Terminal: public UI::Container {
 		private:
-			std::istream &in_stream;
-			std::mutex output_mutex;
-			std::mutex winch_mutex;
-			std::recursive_mutex render_mutex;
-			std::thread input_thread;
+			std::istream &inStream;
+			std::mutex outputMutex;
+			std::mutex winchMutex;
+			std::recursive_mutex renderMutex;
+			std::thread inputThread;
 			termios original;
 
-			mouse_mode mmode = mouse_mode::none;
+			MouseMode mmode = MouseMode::None;
 
-			ui::control *root = nullptr;
+			UI::Control *root = nullptr;
 
 			// Input is sent to the focused control.
-			ui::control *focused = nullptr;
+			UI::Control *focused = nullptr;
 
 			int rows, cols;
 
@@ -48,7 +48,7 @@ namespace haunted {
 			virtual void reset();
 
 			/** Repeatedly reads from the terminal in a loop and dispatches the key presses to the focused control. */
-			virtual void work_input();
+			virtual void workInput();
 
 			/** Handles window resizes. */
 			virtual void winch(int, int);
@@ -58,8 +58,8 @@ namespace haunted {
 			// handler is called, it notifies all the listening terminal objects of the terminal's new dimensions.
 
 			/** Notifies terminal objects of a window resize. */
-			static void winch_handler(int);
-			static std::vector<terminal *> winch_targets;
+			static void winchHandler(int);
+			static std::vector<Terminal *> winchTargets;
 
 			/** Returns the terminal attributes from tcgetaddr. */
 			static termios getattr();
@@ -70,62 +70,62 @@ namespace haunted {
 		public:
 			termios attrs;
 			bool raw = false;
-			bool suppress_output = false;
-			ansi::ansistream &out_stream;
-			ui::coloration colors;
+			bool suppressOutput = false;
+			ansi::ansistream &outStream;
+			UI::Coloration colors;
 
 			bool dragging = false;
-			mouse_button drag_button = mouse_button::left;
+			MouseButton dragButton = MouseButton::Left;
 
 			/** Called after a key is pressed and processed. */
-			std::function<void(const key &)> key_postlistener {};
+			std::function<void(const Key &)> keyPostlistener {};
 
 			/** Called after a mouse event is processed. */
-			std::function<void(const mouse_report &)> mouse_postlistener {};
+			std::function<void(const MouseReport &)> mousePostlistener {};
 
 			/** Called when the client receives ^c. If this returns true, the client will quit. */
-			std::function<bool()> on_interrupt {[]() { return true; }};
+			std::function<bool()> onInterrupt {[]() { return true; }};
 
-			terminal(std::istream &, ansi::ansistream &);
-			terminal(std::istream &in_stream): terminal(in_stream, ansi::out) {}
-			terminal(): terminal(std::cin) {}
+			Terminal(std::istream &, ansi::ansistream &);
+			Terminal(std::istream &in_stream): Terminal(in_stream, ansi::out) {}
+			Terminal(): Terminal(std::cin) {}
 
-			terminal(const terminal &) = delete;
+			Terminal(const Terminal &) = delete;
 
 			/** Resets terminal attributes and joins threads as necessary. */
-			virtual ~terminal();
+			virtual ~Terminal();
 
 			/** Activates cbreak mode. */
 			virtual void cbreak();
 
 			/** Sets a handler to respond to SIGWINCH signals. */
-			virtual void watch_size();
+			virtual void watchSize();
 
 			/** Redraws the entire screen if a root control exists. This also adjusts the size and position of the root
 			 *  control to match the terminal. */
 			virtual void redraw() override;
 
 			/** Resets the colors to the terminal's defaults. */
-			virtual void reset_colors();
+			virtual void resetColors();
 
 			/** Sets the terminal's root control. If the new root isn't the same as the old root and the `delete_old`
 			 *  parameter is `true`, this function deletes the old root. */
-			virtual void set_root(ui::control *, bool delete_old = true);
+			virtual void setRoot(UI::Control *, bool delete_old = true);
 			
 			/** Draws the root control if one exists. */
 			virtual void draw();
 			
 			/** Sends a key press to whichever control is most appropriate and willing to receive it.
 			 *  Returns a pointer to the control or container that ended up handling the key press. */
-			virtual ui::inputhandler * send_key(const key &);
+			virtual UI::InputHandler * sendKey(const Key &);
 
-			virtual ui::inputhandler * send_mouse(const mouse_report &);
+			virtual UI::InputHandler * sendMouse(const MouseReport &);
 
 			/** Handles key combinations common to most console programs. */
-			virtual bool on_key(const key &) override;
+			virtual bool onKey(const Key &) override;
 
 			/** Starts the input-reading thread. */
-			virtual void start_input();
+			virtual void startInput();
 
 			/** Joins all the terminal's threads. */
 			virtual void join();
@@ -134,56 +134,56 @@ namespace haunted {
 			virtual void flush();
 
 			/** Focuses a control. */
-			virtual void focus(ui::control *);
+			virtual void focus(UI::Control *);
 			/** Returns the focused control. If none is currently selected, this function focuses the root control. */
-			virtual ui::control * get_focused();
+			virtual UI::Control * getFocused();
 
-			/** Adding a child to the terminal the normal way does nothing. This is so that controls whose parents
-			 *  don't exist yet can use the terminal as the parent without being set as the root. The program using this
-			 *  library is responsible for passing the intended root control to set_root. */
-			virtual bool add_child(ui::control *) override;
+			/** Adding a child to the terminal the normal way does nothing. This is so that controls whose parents don't
+			 *  exist yet can use the terminal as the parent without being set as the root. The program using this
+			 *  library is responsible for passing the intended root control to setRoot. */
+			virtual bool addChild(UI::Control *) override;
 
-			/** Returns the terminal. Required by haunted::ui::container. */
-			virtual terminal * get_terminal() override { return this; }
+			/** Returns the terminal. Required by Haunted::UI::container. */
+			virtual Terminal * getTerminal() override { return this; }
 
 			/** Returns true if a given control is the focused control. */
-			virtual bool has_focus(const ui::control *) const;
+			virtual bool hasFocus(const UI::Control *) const;
 
 			/** Returns the height (in rows) of the terminal. */
-			virtual int get_rows() const { return rows; }
+			virtual int getRows() const { return rows; }
 			/** Returns the width (in columns) of the terminal. */
-			virtual int get_cols() const { return cols; }
+			virtual int getCols() const { return cols; }
 			/** Returns a (0, 0)-based position representing the terminal. */
-			virtual position get_position() const override;
+			virtual Position getPosition() const override;
 
 			/** Recursively searches the all children within the terminal until a non-container control that contains
 			 *  the given coordinate is found. */
-			virtual ui::control * child_at_offset(int x, int y) const override;
+			virtual UI::Control * childAtOffset(int x, int y) const override;
 
 			/** Jumps to the focused widget. */
-			virtual void jump_to_focused();
+			virtual void jumpToFocused();
 
 			/** Jumps to a position on the screen. */
 			virtual void jump(int x, int y = -1);
-			virtual void    up(size_t n = 1) { out_stream.up(n);    }
-			virtual void  down(size_t n = 1) { out_stream.down(n);  }
-			virtual void right(size_t n = 1) { out_stream.right(n); }
-			virtual void  left(size_t n = 1) { out_stream.left(n);  }
-			virtual void clear_line()  { out_stream.clear_line();  }
-			virtual void clear_right() { out_stream.clear_right(); }
-			virtual void clear_left()  { out_stream.clear_left();  }
-			virtual void front() { out_stream.hpos(0); }
-			virtual void back()  { out_stream.hpos(cols); }
+			virtual void    up(size_t n = 1) { outStream.up(n);    }
+			virtual void  down(size_t n = 1) { outStream.down(n);  }
+			virtual void right(size_t n = 1) { outStream.right(n); }
+			virtual void  left(size_t n = 1) { outStream.left(n);  }
+			virtual void clearLine()  { outStream.clear_line();  }
+			virtual void clearRight() { outStream.clear_right(); }
+			virtual void clearLeft()  { outStream.clear_left();  }
+			virtual void front() { outStream.hpos(0); }
+			virtual void back()  { outStream.hpos(cols); }
 
 			/** Makes the cursor visible. */
-			virtual void show() { out_stream.show(); }
+			virtual void show() { outStream.show(); }
 			/** Makes the cursor invisible. */
-			virtual void hide() { out_stream.hide(); }
+			virtual void hide() { outStream.hide(); }
 
 			/** Sets the mouse-reporting mode. */
-			virtual void mouse(mouse_mode);
+			virtual void mouse(MouseMode);
 			/** Returns the current mouse mode. */
-			virtual mouse_mode mouse() const { return mmode; }
+			virtual MouseMode mouse() const { return mmode; }
 
 			/** Scrolls the screen vertically. Negative numbers scroll up, positive numbers scroll down. */
 			virtual void vscroll(int rows = 1);
@@ -193,9 +193,9 @@ namespace haunted {
 			/** Resets the horizontal margins of the scrollable area. */
 			virtual void hmargins();
 			/** Enables horizontal margins. This must be called before calling hmargins. */
-			virtual void enable_hmargins();
+			virtual void enableHmargins();
 			/** Disables horizontal margins. */
-			virtual void disable_hmargins();
+			virtual void disableHmargins();
 			/** Sets the vertical margins of the scrollable area. Zero-based. */
 			virtual void vmargins(size_t top, size_t bottom);
 			/** Resets the vertical margins of the scrollable area. */
@@ -205,31 +205,31 @@ namespace haunted {
 			/** Resets the vertical and horizontal margins of the scrollable area. */
 			virtual void margins();
 			/** Enables origin mode: the home position is set to the top-left corner of the margins. */
-			virtual void set_origin();
+			virtual void setOrigin();
 			/** Disables origin mode. */
-			virtual void reset_origin();
+			virtual void resetOrigin();
 
 			/** Returns a lock that gives the current thread exclusive permission to render components. */
-			virtual std::unique_lock<std::recursive_mutex> lock_render();
+			virtual std::unique_lock<std::recursive_mutex> lockRender();
 
 			/** Returns true if in_stream is in a valid state. */
 			virtual operator bool() const;
 			/** Reads a single raw character from the terminal as an int. */
-			virtual terminal & operator>>(int &);
+			virtual Terminal & operator>>(int &);
 			/** Reads a single raw character from the terminal. */
-			virtual terminal & operator>>(char &);
+			virtual Terminal & operator>>(char &);
 			/** Reads a key from the terminal. This conveniently handles much of the weirdness of terminal input. */
-			virtual terminal & operator>>(key &);
+			virtual Terminal & operator>>(Key &);
 
-			void debug_tree();
+			void debugTree();
 
 			/** Writes pretty much anything to the terminal. */
 			template <typename T>
-			terminal & operator<<(const T &t) {
-				auto w = formicine::perf.watch("template <T> operator<<(terminal, T)");
-				if (!suppress_output) {
-					std::unique_lock uniq(output_mutex);
-					out_stream << t;
+			Terminal & operator<<(const T &t) {
+				auto w = formicine::perf.watch("template <T> operator<<(Terminal, T)");
+				if (!suppressOutput) {
+					std::unique_lock uniq(outputMutex);
+					outStream << t;
 				}
 
 				return *this;
@@ -237,9 +237,9 @@ namespace haunted {
 
 			/** Deactivates a formicine style or color. */
 			template <typename T>
-			terminal & operator>>(const T &t) {
-				std::unique_lock uniq(output_mutex);
-				out_stream >> t;
+			Terminal & operator>>(const T &t) {
+				std::unique_lock uniq(outputMutex);
+				outStream >> t;
 				return *this;
 			}
 	};

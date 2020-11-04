@@ -3,33 +3,33 @@
 
 #include <list>
 
-#include "haunted/core/defs.h"
-#include "haunted/ui/boxes/box.h"
-#include "haunted/ui/container.h"
-#include "haunted/ui/control.h"
+#include "haunted/core/Defs.h"
+#include "haunted/ui/boxes/Box.h"
+#include "haunted/ui/Container.h"
+#include "haunted/ui/Control.h"
 
-namespace haunted::ui::boxes {
+namespace Haunted::UI::Boxes {
 	/**
 	 * Represents a box that contains some number of controls. At most one is active at any given time; the others are
 	 * kept in memory but aren't drawn.
 	 */
-	class swapbox: public virtual box {
+	class SwapBox: public virtual Box {
 		protected:
-			control *active = nullptr;
+			Control *active = nullptr;
 
 		public:
-			swapbox(const swapbox &) = delete;
-			swapbox(container *, const position &, std::initializer_list<control *> = {});
+			SwapBox(const SwapBox &) = delete;
+			SwapBox(Container *, const Position &, std::initializer_list<Control *> = {});
 
-			void set_active(control *);
-			control * get_active() { return active; }
+			void setActive(Control *);
+			Control * getActive() { return active; }
 
-			/** Returns the active control if the given coordinates are within the swapbox's area. */
-			virtual control * child_at_offset(int x, int y) const override;
+			/** Returns the active control if the given coordinates are within the SwapBox's area. */
+			virtual Control * childAtOffset(int x, int y) const override;
 
-			virtual void resize(const position &) override;
+			virtual void resize(const Position &) override;
 			virtual void draw() override;
-			bool on_key(const key &) override;
+			bool onKey(const Key &) override;
 	};
 }
 

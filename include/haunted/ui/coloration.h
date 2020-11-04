@@ -5,31 +5,31 @@
 
 #include "lib/formicine/ansi.h"
 
-namespace haunted::ui {
+namespace Haunted::UI {
 	/**
-	 * Class for handling terminal colors. Each haunted::terminal keeps one of these.
+	 * Class for handling terminal colors. Each Haunted::terminal keeps one of these.
 	 * 
 	 */
-	class coloration {
+	class Coloration {
 		private:
-			ansi::ansistream *out_stream;
-			std::mutex *mux;
-			ansi::color last_foreground = ansi::color::normal;
-			ansi::color last_background = ansi::color::normal;
+			ansi::ansistream *outStream;
+			std::mutex *mutex;
+			ansi::color lastForeground = ansi::color::normal;
+			ansi::color lastBackground = ansi::color::normal;
 
-			std::unique_lock<std::mutex> get_lock() { return std::unique_lock(*mux); }
+			std::unique_lock<std::mutex> getLock() { return std::unique_lock(*mutex); }
 
 		public:
-			coloration(ansi::ansistream *out_stream_, std::mutex *mux_): out_stream(out_stream_), mux(mux_) {}
+			Coloration(ansi::ansistream *out_stream, std::mutex *mutex_): outStream(out_stream), mutex(mutex_) {}
 
 			/** Attempts to set the foreground. Returns whether the given foreground is different from the last one. */
-			bool set_foreground(ansi::color);
+			bool setForeground(ansi::color);
 
 			/** Attempts to set the background. Returns whether the given background is different from the last one. */
-			bool set_background(ansi::color);
+			bool setBackground(ansi::color);
 
 			/** Attempts to set both the foreground and the background. Returns whether any change occurred. */
-			bool set_both(ansi::color foreground, ansi::color background);
+			bool setBoth(ansi::color foreground, ansi::color background);
 
 			/** Sets the terminal's colors to the stored foreground and background colors. */
 			void apply();
@@ -40,8 +40,8 @@ namespace haunted::ui {
 			/** Prints the foreground and background information to the debug log. */
 			void debug();
 
-			ansi::color get_foreground() const { return last_foreground; }
-			ansi::color get_background() const { return last_background; }
+			ansi::color getForeground() const { return lastForeground; }
+			ansi::color getBackground() const { return lastBackground; }
 	};
 }
 

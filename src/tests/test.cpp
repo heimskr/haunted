@@ -12,17 +12,17 @@
 #include <fcntl.h>
 
 #include "lib/formicine/ansi.h"
-#include "haunted/tests/test.h"
-#include "haunted/core/csi.h"
-#include "haunted/core/dummy_terminal.h"
-#include "haunted/core/key.h"
-#include "haunted/core/util.h"
-#include "haunted/core/terminal.h"
-#include "haunted/ui/boxes/simplebox.h"
-#include "haunted/ui/boxes/expandobox.h"
-#include "haunted/ui/label.h"
-#include "haunted/ui/textbox.h"
-#include "haunted/ui/textinput.h"
+#include "haunted/tests/Test.h"
+#include "haunted/core/CSI.h"
+#include "haunted/core/DummyTerminal.h"
+#include "haunted/core/Key.h"
+#include "haunted/core/Util.h"
+#include "haunted/core/Terminal.h"
+#include "haunted/ui/boxes/SimpleBox.h"
+#include "haunted/ui/boxes/ExpandoBox.h"
+#include "haunted/ui/Label.h"
+#include "haunted/ui/Textbox.h"
+#include "haunted/ui/TextInput.h"
 #include "lib/ustring.h"
 
 #ifdef NODEBUG
@@ -31,26 +31,26 @@
 #define INFO(x) ansi::out << ansi::info << x << ansi::endl
 #endif
 
-namespace haunted::tests {
+namespace Haunted::Tests {
 	std::pair<int, int> maintest::parse_csi(const std::string &input) {
-		haunted::csi testcsi(input);
+		Haunted::CSI testcsi(input);
 		return {testcsi.first, testcsi.second};
 	}
 
-	void maintest::test_textinput(terminal &term) {
-		haunted::ui::textinput *ti = new haunted::ui::textinput(&term);
-		term.set_root(ti);
+	void maintest::test_textinput(Terminal &term) {
+		Haunted::UI::TextInput *ti = new Haunted::UI::TextInput(&term);
+		term.setRoot(ti);
 		ti->focus();
-		ti->resize({0, 0, term.get_cols(), 1});
+		ti->resize({0, 0, term.getCols(), 1});
 		term.cbreak();
-		term.start_input();
+		term.startInput();
 	}
 
-	void maintest::test_key(terminal &term) {
-		key k;
+	void maintest::test_key(Terminal &term) {
+		Key k;
 		term.cbreak();
 		while (term >> k) {
-			if (k == ktype::mouse)
+			if (k == KeyType::Mouse)
 				continue;
 
 			std::cout <<  "\r"  << std::setw(3) << std::left << std::setfill(' ')
@@ -62,8 +62,8 @@ namespace haunted::tests {
 		}
 	}
 
-	void maintest::test_cursor(terminal &term) {
-		term.out_stream.clear();
+	void maintest::test_cursor(Terminal &term) {
+		term.outStream.clear();
 		term.jump(180, 0);
 		term << "0";
 		term.jump(181, 1);
@@ -71,79 +71,79 @@ namespace haunted::tests {
 		term.flush();
 	}
 
-	void maintest::test_margins(terminal &term) {
+	void maintest::test_margins(Terminal &term) {
 		term.cbreak();
-		term.out_stream.clear();
-		term.out_stream.jump();
+		term.outStream.clear();
+		term.outStream.jump();
 		const std::string spam = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		for (int i = 0; i < 40; ++i) {
 			std::cout << spam.substr(i % spam.length(), std::string::npos) << spam.substr(0, i % spam.length()) << "\n";
 		}
 
 		sleep(1); std::cerr << "Setting margins.\n";
-		term.enable_hmargins();
+		term.enableHmargins();
 		term.margins(2, 10, 5, 15);
 		
 		sleep(1); std::cerr << "Scrolling up.\n";
-		term.out_stream.scroll_up(2);
+		term.outStream.scroll_up(2);
 		
 		sleep(1); std::cerr << "Scrolling down.\n";
-		term.out_stream.scroll_down(1);
+		term.outStream.scroll_down(1);
 
 		sleep(2); std::cerr << "Jumping and printing.\n";
-		term.out_stream.jump(5, 2);
+		term.outStream.jump(5, 2);
 		term << "Hello";
 		term.flush();
 
 		sleep(2); std::cerr << "Setting origin, jumping and printing.\n";
-		term.set_origin();
-		term.out_stream.jump();
+		term.setOrigin();
+		term.outStream.jump();
 		term << "Hi :)";
 		term.flush();
 
 		sleep(2); std::cerr << "Clearing line.\n";
-		term.out_stream.clear_line();
+		term.outStream.clear_line();
 
 		sleep(1); std::cerr << "Clearing all.\n";
-		term.out_stream.clear();
+		term.outStream.clear();
 
 		sleep(1); std::cerr << "Resetting margins.\n";
 		term.margins();
 
 		sleep(5); std::cerr << "Scrolling up.\n";
-		term.out_stream.scroll_up(2);
+		term.outStream.scroll_up(2);
 
 		sleep(5); std::cerr << "Done.\n";
-		term.disable_hmargins();
+		term.disableHmargins();
 	}
 
-	void maintest::test_textbox(terminal &term) {
-		using haunted::ui::textline, haunted::ui::simpleline;
+	void maintest::test_textbox(Terminal &term) {
+		using Haunted::UI::TextLine, Haunted::UI::SimpleLine;
 
 		term.cbreak();
-		haunted::ui::textbox *tb = new haunted::ui::textbox(&term);
+		Haunted::UI::Textbox *tb = new Haunted::UI::Textbox(&term);
 		*tb += "hi";
 		*tb += "what's up :)";
 		*tb += "third line.";
 		term.draw();
-		key k;
+		Key k;
 		while (term >> k) {
 			if (k == '\\')
 				break;
-			if (k == ktype::up_arrow) {
+			if (k == KeyType::UpArrow) {
 				tb->vscroll(-1);
 				tb->draw();
-			} else if (k == ktype::down_arrow) {
+			} else if (k == KeyType::DownArrow) {
 				tb->vscroll(1);
 				tb->draw();
-			} else if (k == ktype::left_arrow) {
-				tb->set_voffset(-1);
+			} else if (k == KeyType::LeftArrow) {
+				tb->setVoffset(-1);
 				tb->draw();
-			} else if (k == ktype::hash) {
-				*tb += simpleline("This is a very long line. Its purpose is to test the continuation of lines in a textbox. Its continuation value is set to 26, so the wrapped text should line up with the start of the second sentence in the line.", 26);
-			} else if (k == ktype::star) {
-				for (const haunted::ui::textbox::line_ptr &line: tb->lines) {
-					DBG(line->get_continuation() << "[" << std::string(*line) << "]");
+			} else if (k == KeyType::Hash) {
+				*tb += SimpleLine("This is a very long line. Its purpose is to test the continuation of lines in a textbox. Its continuation value is set to 26, so the wrapped text should line up with the start of the second sentence in the line.", 26);
+			} else if (k == KeyType::Star) {
+				for (const Haunted::UI::Textbox::LinePtr &line: tb->lines) {
+					DBG(line->getContinuation() << "[" << std::string(*line) << "]");
 				}
 			} else {
 				*tb += "Key: [" + std::string(k) + "]";
@@ -151,95 +151,95 @@ namespace haunted::tests {
 		}
 	}
 
-	void maintest::test_expandobox(terminal &term) {
-		using namespace haunted::ui;
-		using namespace haunted::ui::boxes;
+	void maintest::test_expandobox(Terminal &term) {
+		using namespace Haunted::UI;
+		using namespace Haunted::UI::Boxes;
 
 		term.cbreak();
-		textbox   *tb  = new textbox();               tb->set_name("tb");
-		textinput *ti  = new textinput();             ti->set_name("ti");
-		label     *tlb = new label("Title",  false); tlb->set_name("tlb");
-		label     *slb = new label("Status", false); slb->set_name("slb");
+		Textbox   *tb  = new Textbox();               tb->setName("tb");
+		TextInput *ti  = new TextInput();             ti->setName("ti");
+		Label     *tlb = new Label("Title",  false); tlb->setName("tlb");
+		Label     *slb = new Label("Status", false); slb->setName("slb");
 
-		expandobox *vexp = new expandobox(&term, term.get_position(), box_orientation::vertical, {
+		ExpandoBox *vexp = new ExpandoBox(&term, term.getPosition(), BoxOrientation::Vertical, {
 			{tlb, 1}, {tb, -1}, {slb, 1}, {ti, 1}
 		});
-		vexp->set_name("vexp").resize();
+		vexp->setName("vexp").resize();
 
 		term.redraw();
 		ti->focus();
 
-		tlb->set_colors(ansi::color::white, ansi::color::blue);
-		slb->set_colors(ansi::color::white, ansi::color::blue);
+		tlb->setColors(ansi::color::white, ansi::color::blue);
+		slb->setColors(ansi::color::white, ansi::color::blue);
 
-		ti->listen(textinput::event::submit, [&](const ustring &sstr, int) {
+		ti->listen(TextInput::Event::Submit, [&](const ustring &sstr, int) {
 			if (!sstr.empty()) {
 				*tb += sstr;
 				ti->clear();
 			}
 		});
 
-		key k;
+		Key k;
 		while (term >> k) {
-			if (k == key(ktype::c).ctrl())
+			if (k == Key(KeyType::c).ctrl())
 				break;
 
-			if (k == kmod::ctrl) {
+			if (k == KeyMod::Ctrl) {
 				switch (k.type) {
-					case ktype::F:  DBG("Focused: " << term.get_focused()->get_id());  break;
-					case ktype::k:  dbgstream.clear().jump().flush();                  break;
-					case ktype::l:  term.redraw();                                     break;
+					case KeyType::F:  DBG("Focused: " << term.getFocused()->getID());  break;
+					case KeyType::k:  dbgstream.clear().jump().flush();                  break;
+					case KeyType::l:  term.redraw();                                     break;
 
-					case ktype::f: {
-						tb->clear_lines();
+					case KeyType::f: {
+						tb->clearLines();
 						static std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-						for (int i = 0; i < tb->get_position().height - 1; ++i)
+						for (int i = 0; i < tb->getPosition().height - 1; ++i)
 							*tb += std::string(1, alphabet[i % 26]);
 						ti->focus();
 						break;
 					}
 
-					default: term.send_key(k);
+					default: term.sendKey(k);
 				}
-			} else if (k == kmod::alt) {
+			} else if (k == KeyMod::Alt) {
 				switch (k.type) {
-					case ktype::c:  tb->clear_lines(); break;
+					case KeyType::c:  tb->clearLines(); break;
 
-					case ktype::l:
-						ti->set_prefix(ti->empty()? "" : "[" + ti->str() + "] ");
+					case KeyType::l:
+						ti->setPrefix(ti->empty()? "" : "[" + ti->str() + "] ");
 						ti->clear();
-						ti->jump_cursor();
+						ti->jumpCursor();
 						break;
 
-					case ktype::s:
+					case KeyType::s:
 						if (!ti->empty()) {
-							slb->set_text(*ti);
+							slb->setText(*ti);
 							ti->clear();
-							ti->jump_cursor();
+							ti->jumpCursor();
 						}
 						break;
 					
-					case ktype::t:
+					case KeyType::t:
 						if (!ti->empty()) {
-							tlb->set_text(*ti);
+							tlb->setText(*ti);
 							ti->clear();
-							ti->jump_cursor();
+							ti->jumpCursor();
 						}
 						break;
 
-					default: term.send_key(k);
+					default: term.sendKey(k);
 				}
-			} else if (k.is_arrow() && k.mods == key::get_modset(kmod::shift)) {
-				tb->on_key(key(k.type));
+			} else if (k.isArrow() && k.mods == Key::getModSet(KeyMod::Shift)) {
+				tb->onKey(Key(k.type));
 				ti->focus();
 			} else {
-				term.send_key(k);
+				term.sendKey(k);
 			}
 		}
 	}
 
 	/** Runs some tests for the CSI u functions. */
-	void maintest::unittest_csiu(testing &unit) {
+	void maintest::unittest_csiu(Testing &unit) {
 		using namespace std::string_literals;
 		INFO(wrap("Testing CSI u validation.\n", ansi::style::bold));
 
@@ -256,7 +256,7 @@ namespace haunted::tests {
 			{{"42;0u"s },  true},
 			{{"3;911u"s},  true},
 			{{"5;5U"s  }, false},
-		}, &csi::is_csiu, "is_csiu");
+		}, &CSI::isCSIu, "is_csiu");
 
 		// ansi::out << "\nTesting CSI u parsing.\n";
 		// unit.check({
@@ -278,22 +278,22 @@ namespace haunted::tests {
 		ansi::out << ansi::endl;
 	}
 
-	void maintest::unittest_textbox(testing &unit) {
-		using namespace haunted::ui;
-		INFO(wrap("Testing haunted::ui::textbox.\n", ansi::style::bold));
+	void maintest::unittest_textbox(Testing &unit) {
+		using namespace Haunted::UI;
+		INFO(wrap("Testing Haunted::UI::Textbox.\n", ansi::style::bold));
 		
-		dummy_terminal dummy;
+		DummyTerminal dummy;
 
-		boxes::simplebox wrapper(&dummy);
+		Boxes::SimpleBox wrapper(&dummy);
 		wrapper.resize({0, 0, 20, 10});
 		
-		textbox *tb = new textbox(&wrapper, wrapper.get_position());
+		Textbox *tb = new Textbox(&wrapper, wrapper.getPosition());
 
-		std::shared_ptr<simpleline> t1 = std::make_shared<simpleline>("Hello", 4);
-		std::shared_ptr<simpleline> t2 = std::make_shared<simpleline>("This line is longer than the control's width of 20 characters. Its continuation should align with the third word.", 10);
-		std::shared_ptr<simpleline> t3 = std::make_shared<simpleline>("Another line.", 1);
-		std::shared_ptr<simpleline> t4 = std::make_shared<simpleline>("This is another long line with a continuation of 0.");
-		std::shared_ptr<simpleline> t5 = std::make_shared<simpleline>("Exactly 20 chars :^)", 0);
+		std::shared_ptr<SimpleLine> t1 = std::make_shared<SimpleLine>("Hello", 4);
+		std::shared_ptr<SimpleLine> t2 = std::make_shared<SimpleLine>("This line is longer than the control's width of 20 characters. Its continuation should align with the third word.", 10);
+		std::shared_ptr<SimpleLine> t3 = std::make_shared<SimpleLine>("Another line.", 1);
+		std::shared_ptr<SimpleLine> t4 = std::make_shared<SimpleLine>("This is another long line with a continuation of 0.");
+		std::shared_ptr<SimpleLine> t5 = std::make_shared<SimpleLine>("Exactly 20 chars :^)", 0);
 
 		*tb += *t1;
 		*tb += *t2;
@@ -302,10 +302,10 @@ namespace haunted::tests {
 		*tb += *t4;
 		*tb += *t5;
 
-		int rows = tb->total_rows();
+		int rows = tb->totalRows();
 
-		unit.check(tb->line_rows(*t2), 11, "line_rows(" + ansi::wrap("t2", ansi::style::bold) + ")");
-		unit.check(rows, 18, "total_rows()");
+		unit.check(tb->lineRows(*t2), 11, "lineRows(" + ansi::wrap("t2", ansi::style::bold) + ")");
+		unit.check(rows, 18, "totalRows()");
 
 		unit.check({
 			{{0},  {&*t1, 0}},
@@ -326,10 +326,10 @@ namespace haunted::tests {
 			{{15}, {&*t4, 1}},
 			{{16}, {&*t4, 2}},
 			{{17}, {&*t5, 0}},
-		}, &textbox::line_at_row, tb, "line_at_row");
+		}, &Textbox::lineAtRow, tb, "lineAtRow");
 
-		unit.check("line_at_row(" + std::to_string(rows) + ")", typeid(std::out_of_range), "Invalid row index: " +
-			std::to_string(rows), tb, &textbox::line_at_row, rows);
+		unit.check("lineAtRow(" + std::to_string(rows) + ")", typeid(std::out_of_range), "Invalid row index: " +
+			std::to_string(rows), tb, &Textbox::lineAtRow, rows);
 
 		unit.check({
 			{{0, true}, "Hello               "},
@@ -343,7 +343,7 @@ namespace haunted::tests {
 			{{8, true}, "          should ali"},
 			{{9, true}, "          gn with th"},
 			{{10, true}, ""},
-		}, &textbox::text_at_row, tb, "text_at_row");
+		}, &Textbox::textAtRow, tb, "textAtRow");
 
 		INFO("Trying to scroll 8 lines down (current voffset is " << ansi::wrap(std::to_string(tb->voffset),
 			ansi::style::bold) << ").");
@@ -362,93 +362,93 @@ namespace haunted::tests {
 			{{8, true},  "ation of 0.         "},
 			{{9, true},  "Exactly 20 chars :^)"},
 			{{10, true}, ""},
-		}, &textbox::text_at_row, tb, "textbox::text_at_row");
+		}, &Textbox::textAtRow, tb, "textbox::textAtRow");
 
-		unit.check(tb->next_row(), -1, "next_row()");
+		unit.check(tb->nextRow(), -1, "nextRow()");
 		INFO("Resetting textbox.");
-		tb->clear_lines();
-		unit.check("line_at_row(0)", typeid(std::out_of_range), "Invalid row index: 0", tb, &textbox::line_at_row, 0);
+		tb->clearLines();
+		unit.check("lineAtRow(0)", typeid(std::out_of_range), "Invalid row index: 0", tb, &Textbox::lineAtRow, 0);
 		unit.check(tb->voffset, 0, "voffset");
-		unit.check(tb->total_rows(), 0, "total_rows()");
+		unit.check(tb->totalRows(), 0, "totalRows()");
 		// unit.check(tb->effective_voffset(), 0, "effective_voffset()");
-		unit.check(tb->pos.height, 10, "pos.height");
-		unit.check(tb->next_row(), 0, "next_row()");
+		unit.check(tb->position.height, 10, "pos.height");
+		unit.check(tb->nextRow(), 0, "nextRow()");
 		*tb += *t1;
-		unit.check(tb->next_row(), 1, "next_row()");
+		unit.check(tb->nextRow(), 1, "nextRow()");
 		*tb += *t1;
-		unit.check(tb->next_row(), 2, "next_row()");
+		unit.check(tb->nextRow(), 2, "nextRow()");
 		*tb += *t4;
-		unit.check(tb->next_row(), 5, "next_row()");
+		unit.check(tb->nextRow(), 5, "nextRow()");
 		*tb += *t1;
-		unit.check(tb->next_row(), 6, "next_row()");
+		unit.check(tb->nextRow(), 6, "nextRow()");
 		*tb += *t1;
-		unit.check(tb->next_row(), 7, "next_row()");
+		unit.check(tb->nextRow(), 7, "nextRow()");
 		*tb += *t1;
-		unit.check(tb->next_row(), 8, "next_row()");
+		unit.check(tb->nextRow(), 8, "nextRow()");
 		*tb += *t1;
-		unit.check(tb->next_row(), 9, "next_row()");
+		unit.check(tb->nextRow(), 9, "nextRow()");
 		*tb += *t1;
-		unit.check(tb->next_row(), -1, "next_row()");
+		unit.check(tb->nextRow(), -1, "nextRow()");
 
 		using namespace std::string_literals;
-		unit.check(t1->text_at_row(tb->pos.width, 0), "Hello               "s, "t1.text_at_row(0)");
-		unit.check(t2->text_at_row(tb->pos.width, 0), "This line is longer "s, "t2.text_at_row(0)");
-		unit.check(t2->text_at_row(tb->pos.width, 1), "          than the c"s, "t2.text_at_row(1)");
-		unit.check(t2->text_at_row(tb->pos.width, 2), "          ontrol's w"s, "t2.text_at_row(2)");
-		unit.check(t2->text_at_row(tb->pos.width, 3), "          idth of 20"s, "t2.text_at_row(3)");
-		unit.check(t2->text_at_row(tb->pos.width, 4), "           character"s, "t2.text_at_row(4)");
-		unit.check(t2->text_at_row(tb->pos.width, 5), "          s. Its con"s, "t2.text_at_row(5)");
-		unit.check(t2->text_at_row(tb->pos.width, 6), "          tinuation "s, "t2.text_at_row(6)");
-		unit.check(t2->text_at_row(tb->pos.width, 7), "          should ali"s, "t2.text_at_row(7)");
-		unit.check(t2->text_at_row(tb->pos.width, 8), "          gn with th"s, "t2.text_at_row(8)");
+		unit.check(t1->textAtRow(tb->position.width, 0), "Hello               "s, "t1.textAtRow(0)");
+		unit.check(t2->textAtRow(tb->position.width, 0), "This line is longer "s, "t2.textAtRow(0)");
+		unit.check(t2->textAtRow(tb->position.width, 1), "          than the c"s, "t2.textAtRow(1)");
+		unit.check(t2->textAtRow(tb->position.width, 2), "          ontrol's w"s, "t2.textAtRow(2)");
+		unit.check(t2->textAtRow(tb->position.width, 3), "          idth of 20"s, "t2.textAtRow(3)");
+		unit.check(t2->textAtRow(tb->position.width, 4), "           character"s, "t2.textAtRow(4)");
+		unit.check(t2->textAtRow(tb->position.width, 5), "          s. Its con"s, "t2.textAtRow(5)");
+		unit.check(t2->textAtRow(tb->position.width, 6), "          tinuation "s, "t2.textAtRow(6)");
+		unit.check(t2->textAtRow(tb->position.width, 7), "          should ali"s, "t2.textAtRow(7)");
+		unit.check(t2->textAtRow(tb->position.width, 8), "          gn with th"s, "t2.textAtRow(8)");
 
 		ansi::out << ansi::endl;
 	}
 
-	void maintest::unittest_expandobox(testing &unit) {
-		using namespace haunted::ui::boxes;
-		INFO(wrap("Testing haunted::ui::boxes::expandobox.\n", ansi::style::bold));
+	void maintest::unittest_expandobox(Testing &unit) {
+		using namespace Haunted::UI::Boxes;
+		INFO(wrap("Testing Haunted::UI::Boxes::expandobox.\n", ansi::style::bold));
 
-		dummy_terminal dummy;
+		DummyTerminal dummy;
 
-		simplebox wrapper(&dummy);
+		SimpleBox wrapper(&dummy);
 		wrapper.resize({10, 10, 500, 100});
 
-		ui::textbox *tb1 = new ui::textbox(nullptr);
-		ui::textbox *tb2 = new ui::textbox(nullptr);
-		ui::textbox *tb3 = new ui::textbox(nullptr);
-		ui::textbox *tb4 = new ui::textbox(nullptr);
+		UI::Textbox *tb1 = new UI::Textbox(nullptr);
+		UI::Textbox *tb2 = new UI::Textbox(nullptr);
+		UI::Textbox *tb3 = new UI::Textbox(nullptr);
+		UI::Textbox *tb4 = new UI::Textbox(nullptr);
 
-		expandobox *expando = new expandobox(&wrapper, wrapper.get_position(), box_orientation::horizontal,
+		ExpandoBox *expando = new ExpandoBox(&wrapper, wrapper.getPosition(), BoxOrientation::Horizontal,
 			{{tb1, 10}, {tb2, -1}});
 
-		unit.check(wrapper.get_position(),  {10, 10, 500, 100}, "wrapper position");
-		unit.check(expando->get_position(), {10, 10, 500, 100}, "expando position");
-		unit.check(tb1->get_position(), {-1, -1, -1, -1}, "tb1 position");
-		unit.check(tb2->get_position(), {-1, -1, -1, -1}, "tb2 position");
+		unit.check(wrapper.getPosition(),  {10, 10, 500, 100}, "wrapper position");
+		unit.check(expando->getPosition(), {10, 10, 500, 100}, "expando position");
+		unit.check(tb1->getPosition(), {-1, -1, -1, -1}, "tb1 position");
+		unit.check(tb2->getPosition(), {-1, -1, -1, -1}, "tb2 position");
 		INFO("Expanding children.");
 		expando->resize();
-		unit.check(tb1->get_position(), {10, 10, 10,  100}, "tb1 position");
-		unit.check(tb2->get_position(), {20, 10, 490, 100}, "tb2 position");
+		unit.check(tb1->getPosition(), {10, 10, 10,  100}, "tb1 position");
+		unit.check(tb2->getPosition(), {20, 10, 490, 100}, "tb2 position");
 		INFO("Adding tb3 and expanding.");
 		(*expando += {tb3, 90}).resize();
-		unit.check(tb1->get_position(), {10,  10, 10,  100}, "tb1 position");
-		unit.check(tb2->get_position(), {20,  10, 400, 100}, "tb2 position");
-		unit.check(tb3->get_position(), {420, 10, 90,  100}, "tb3 position");
+		unit.check(tb1->getPosition(), {10,  10, 10,  100}, "tb1 position");
+		unit.check(tb2->getPosition(), {20,  10, 400, 100}, "tb2 position");
+		unit.check(tb3->getPosition(), {420, 10, 90,  100}, "tb3 position");
 		INFO("Adding tb4 and expanding.");
 		(*expando += {tb4, -1}).resize();
-		unit.check(tb1->get_position(), {10,  10, 10,  100}, "tb1 position");
-		unit.check(tb2->get_position(), {20,  10, 200, 100}, "tb2 position");
-		unit.check(tb3->get_position(), {220, 10, 90,  100}, "tb3 position");
-		unit.check(tb4->get_position(), {310, 10, 200, 100}, "tb4 position");
+		unit.check(tb1->getPosition(), {10,  10, 10,  100}, "tb1 position");
+		unit.check(tb2->getPosition(), {20,  10, 200, 100}, "tb2 position");
+		unit.check(tb3->getPosition(), {220, 10, 90,  100}, "tb3 position");
+		unit.check(tb4->getPosition(), {310, 10, 200, 100}, "tb4 position");
 
-		INFO("Reorienting horizontal → box_orientation::vertical.");
+		INFO("Reorienting horizontal → BoxOrientation::Vertical.");
 		expando->resize({10, 10, 100, 250});
-		expando->set_orientation(box_orientation::vertical);
-		unit.check(tb1->get_position(), {10, 10,  100, 10}, "tb1 position");
-		unit.check(tb2->get_position(), {10, 20,  100, 75}, "tb2 position");
-		unit.check(tb3->get_position(), {10, 95,  100, 90}, "tb3 position");
-		unit.check(tb4->get_position(), {10, 185, 100, 75}, "tb4 position");
+		expando->setOrientation(BoxOrientation::Vertical);
+		unit.check(tb1->getPosition(), {10, 10,  100, 10}, "tb1 position");
+		unit.check(tb2->getPosition(), {10, 20,  100, 75}, "tb2 position");
+		unit.check(tb3->getPosition(), {10, 95,  100, 90}, "tb3 position");
+		unit.check(tb4->getPosition(), {10, 185, 100, 75}, "tb4 position");
 
 		std::string ansistr = "["_d + "00:00:00" + "] <"_d + "@kai" + "> "_d + "Hello there.";
 		std::string stripped = ansi::strip(ansistr);
@@ -468,15 +468,22 @@ namespace haunted::tests {
 		ansi::out << ansi::endl;
 	}
 
-	void maintest::unittest_ustring(testing &unit) {
+	void maintest::unittest_ustring(Testing &unit) {
 		std::string example = "foo🎉🇩🇪👮🏻‍♂️bar👨‍👨‍👧‍👦";
 		ustring uexample(example);
 		std::string pieces[] = {"f", "o", "o", "🎉", "🇩🇪", "👮🏻‍♂️", "b", "a", "r", "👨‍👨‍👧‍👦"};
 		int i = 0;
-		for (std::string piece: uexample) {
+#ifndef ENABLE_ICU
+		// for (char ch: uexample) {
+		// 	unit.check(ch, pieces[i].front(), "pieces[" + std::to_string(i) + "]");
+		// 	++i;
+		// }
+#else
+		for (const std::string &piece: uexample) {
 			unit.check(piece, pieces[i], "pieces[" + std::to_string(i) + "]");
 			++i;
 		}
+#endif
 
 		unit.check(uexample.substr(0, 1), "f",  "substr(0, 1)");
 		unit.check(uexample.substr(1, 2), "oo", "substr(1, 2)");
@@ -486,20 +493,26 @@ namespace haunted::tests {
 		unit.check(uexample.substr(uexample.length() - 1, 10), "👨‍👨‍👧‍👦", "substr(length() - 1, 10)");
 		unit.check("substr(length() + 1, 1)", typeid(std::out_of_range), "Invalid index: 11 (length is 10)", &uexample,
 			&ustring::substr, uexample.length() + 1, 1UL);
+#ifdef ENABLE_ICU
 		unit.check(uexample[5], "👮🏻‍♂️", "uexample[5]");
 		unit.check(uexample.at(5), "👮🏻‍♂️", "at(5)");
+#endif
 		ansi::out << ansi::info << "Inserting " << "\""_d << "baz"_b << "\""_d << " at index 4." << ansi::endl;
 		uexample.insert(4, "baz");
 		unit.check(uexample, "foo🎉baz🇩🇪👮🏻‍♂️bar👨‍👨‍👧‍👦", "uexample");
-		unit.check(uexample.width_until(11), 14UL, "uexample.width_until(11)");
-		unit.check(uexample.width_until(13), 17UL, "uexample.width_until(13)");
+#ifdef ENABLE_ICU
+		unit.check(uexample.widthUntil(11), 14UL, "uexample.widthUntil(11)");
+		unit.check(uexample.widthUntil(13), 17UL, "uexample.widthUntil(13)");
+#endif
 		unit.check(uexample.substr(7, 2), "🇩🇪👮🏻‍♂️", "substr(7, 2)");
 		unit.check(uexample.length(), 13UL, "length()");
 		i = 0;
+#ifdef ENABLE_ICU
 		for (size_t len: {1, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1, 1, 2}) {
 			unit.check(uexample.width_at(i), len, "width_at(" + std::to_string(i) + ")");
 			++i;
 		}
+#endif
 		ansi::out << ansi::info << "Erasing 3 characters at index 6." << ansi::endl;
 		uexample.erase(6, 3);
 		unit.check(uexample, "foo🎉babar👨‍👨‍👧‍👦", "uexample");
@@ -519,30 +532,30 @@ namespace haunted::tests {
 
 
 int main(int argc, char **argv) {
-	using namespace haunted;
+	using namespace Haunted;
 	
 	const std::string arg = argc < 2? "" : argv[1];
 
 	// terminal term(std::cin, ansi::out);
 	// term.watch_size();
 
-	haunted::tests::testing unit;
+	Haunted::Tests::Testing unit;
 
-#define MKTERM terminal term(std::cin, ansi::out); term.watch_size();
+#define MKTERM Terminal term(std::cin, ansi::out); term.watchSize();
 	if (arg == "key") {
-		mouse_mode mode = mouse_mode::none;
+		MouseMode mode = MouseMode::None;
 		if (2 < argc) {
 			const std::string marg = argv[2];
 			if (marg == "basic") {
-				mode = mouse_mode::basic;
+				mode = MouseMode::Basic;
 			} else if (marg == "normal") {
-				mode = mouse_mode::normal;
+				mode = MouseMode::Normal;
 			} else if (marg == "highlight") {
-				mode = mouse_mode::highlight;
+				mode = MouseMode::Highlight;
 			} else if (marg == "motion") {
-				mode = mouse_mode::motion;
+				mode = MouseMode::Motion;
 			} else if (marg == "any") {
-				mode = mouse_mode::any;
+				mode = MouseMode::Any;
 			} else if (marg == "none") {
 				std::cout << "\e[?9l\e[?1000l\e[?1001l\e[?1002l\e[?1003l";
 				return 0;
@@ -556,36 +569,36 @@ int main(int argc, char **argv) {
 
 		MKTERM
 
-		if (mode != mouse_mode::none)
+		if (mode != MouseMode::None)
 			term.mouse(mode);
 
-		haunted::tests::maintest::test_key(term);
+		Haunted::Tests::maintest::test_key(term);
 	} else if (arg == "input") { MKTERM
-		haunted::tests::maintest::test_textinput(term);
+		Haunted::Tests::maintest::test_textinput(term);
 	} else if (arg == "cursor") { MKTERM
-		haunted::tests::maintest::test_cursor(term);
+		Haunted::Tests::maintest::test_cursor(term);
 	} else if (arg == "margins") { MKTERM
-		haunted::tests::maintest::test_margins(term);
+		Haunted::Tests::maintest::test_margins(term);
 	} else if (arg == "textbox") { MKTERM
-		haunted::tests::maintest::test_textbox(term);
+		Haunted::Tests::maintest::test_textbox(term);
 	} else if (arg == "expandobox") { MKTERM
-		haunted::tests::maintest::test_expandobox(term);
+		Haunted::Tests::maintest::test_expandobox(term);
 	} else if (arg == "unitcsiu") {
-		haunted::tests::maintest::unittest_csiu(unit);
+		Haunted::Tests::maintest::unittest_csiu(unit);
 	} else if (arg == "unittextbox") {
-		haunted::tests::maintest::unittest_textbox(unit);
+		Haunted::Tests::maintest::unittest_textbox(unit);
 	} else if (arg == "unitexpandobox") {
-		haunted::tests::maintest::unittest_expandobox(unit);
+		Haunted::Tests::maintest::unittest_expandobox(unit);
 	} else if (arg == "unitustring") {
-		haunted::tests::maintest::unittest_ustring(unit);
+		Haunted::Tests::maintest::unittest_ustring(unit);
 	} else if (arg == "unit") {
 		ansi::out << ansi::endl;
-		haunted::tests::maintest::unittest_csiu(unit);
-		haunted::tests::maintest::unittest_textbox(unit);
-		haunted::tests::maintest::unittest_expandobox(unit);
-		haunted::tests::maintest::unittest_ustring(unit);
+		Haunted::Tests::maintest::unittest_csiu(unit);
+		Haunted::Tests::maintest::unittest_textbox(unit);
+		Haunted::Tests::maintest::unittest_expandobox(unit);
+		Haunted::Tests::maintest::unittest_ustring(unit);
 	} else {
-		haunted::tests::maintest::unittest_textbox(unit);
+		Haunted::Tests::maintest::unittest_textbox(unit);
 	}
 #undef MKTERM
 }

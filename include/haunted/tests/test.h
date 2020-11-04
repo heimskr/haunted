@@ -9,19 +9,19 @@
 
 #include <cassert>
 
-#include "haunted/core/terminal.h"
-#include "haunted/core/util.h"
-#include "haunted/ui/textbox.h"
+#include "haunted/core/Terminal.h"
+#include "haunted/core/Util.h"
+#include "haunted/ui/Textbox.h"
 
 #include "lib/formicine/ansi.h"
 
-namespace haunted::tests {
+namespace Haunted::Tests {
 	/**
 	 * Contains general utilities for testing.
 	 */
-	class testing {
+	class Testing {
 		private:
-			size_t total_passed = 0, total_failed = 0;
+			size_t totalPassed = 0, totalFailed = 0;
 
 			// multi_apply is based on the possible implementation for std::apply at cppreference:
 			// https://en.cppreference.com/w/cpp/utility/apply
@@ -90,8 +90,8 @@ namespace haunted::tests {
 				return stringify(static_cast<int>(e));
 			}
 
-			static std::string stringify(haunted::ui::textline *tl) {
-				return tl? std::to_string(tl->get_continuation()) + ":["_d + std::string(*tl) + "]"_d : "null";
+			static std::string stringify(Haunted::UI::TextLine *tl) {
+				return tl? std::to_string(tl->getContinuation()) + ":["_d + std::string(*tl) + "]"_d : "null";
 			}
 
 			template <typename T>
@@ -146,8 +146,8 @@ namespace haunted::tests {
 			}
 
 			// We want to be able to compare the pairs returned by line_at_row as equal even if the addresses of the
-			// pointers differ, as long as the content of the textlines is the same.
-			using tl_pair = std::pair<haunted::ui::textline *, int>;
+			// pointers differ, as long as the content of the TextLines is the same.
+			using tl_pair = std::pair<Haunted::UI::TextLine *, int>;
 			static bool equal(tl_pair left, tl_pair right) {
 				return left.second == right.second && *left.first == *right.first;
 			}
@@ -160,11 +160,10 @@ namespace haunted::tests {
 			/** Whether to display results on destruction. */
 			bool autodisplay;
 
-			testing(bool autodisplay): autodisplay(autodisplay) {}
-			testing(): testing(true) {}
+			Testing(bool autodisplay = true): autodisplay(autodisplay) {}
 
-			~testing() {
-				if (autodisplay && (total_failed != 0 || total_passed != 0)) {
+			~Testing() {
+				if (autodisplay && (totalFailed != 0 || totalPassed != 0)) {
 					ansi::out << ansi::endl;
 					display_results();
 				}
@@ -209,15 +208,15 @@ namespace haunted::tests {
 							failed++;
 						}
 					} catch (std::exception &err) {
-						display_failed(stringify(input), "\e[31;1m" + util::demangle_object(err) + "\e[22m: " +
+						display_failed(stringify(input), "\e[31;1m" + Util::demangleObject(err) + "\e[22m: " +
 						               std::string(err.what()) + "\e[0m", stringify(expected), prefix,
 						               padding.substr(0, max_length - length));
 						failed++;
 					}
 				}
 
-				total_passed += passed;
-				total_failed += failed;
+				totalPassed += passed;
+				totalFailed += failed;
 				return failed == 0;
 			}
 
@@ -252,11 +251,11 @@ namespace haunted::tests {
 			bool check(const A &actual, const E &expected, const std::string &fn_name) {
 				bool result = equal(actual, expected);
 				if (result) {
-					++total_passed;
+					++totalPassed;
 					ansi::out << ansi::good << fn_name << " " << "== "_d << ansi::green(stringify(actual))
 					          << ansi::endl;
 				} else {
-					++total_failed;
+					++totalFailed;
 					ansi::out << ansi::bad << fn_name << " " << "== "_d << ansi::red(stringify(actual))
 					          << " (expected " << ansi::bold(stringify(expected)) << ")" << ansi::endl;
 				}
@@ -274,7 +273,7 @@ namespace haunted::tests {
 			template <typename O, typename... I>
 			bool check(const std::string &fn_name, const std::type_info &errtype, const std::string &what,
 			           std::function<O(I...)> fn, I... args) {
-				const std::string demangled = util::demangle(std::string(errtype.name()));
+				const std::string demangled = Util::demangle(std::string(errtype.name()));
 				try {
 					const std::string returned = stringify(fn(args...));
 					ansi::out << ansi::bad << fn_name << " == "_d << ansi::red(returned) << " (expected " << demangled;
@@ -288,7 +287,7 @@ namespace haunted::tests {
 						if (!message.empty())
 							ansi::out << " (" << (what.empty()? message : ansi::green(message)) << ")";
 						ansi::out << ansi::endl;
-						++total_passed;
+						++totalPassed;
 						return true;
 					}
 
@@ -301,7 +300,7 @@ namespace haunted::tests {
 				}
 
 				ansi::out << ansi::endl;
-				++total_failed;
+				++totalFailed;
 				return false;
 			}
 
@@ -338,24 +337,24 @@ namespace haunted::tests {
 			}
 
 			void display_results() const {
-				if (total_failed == 0 && total_passed == 0) {
+				if (totalFailed == 0 && totalPassed == 0) {
 					ansi::out << ansi::warn << "No tests were run.\n";
-				} else if (total_failed == 0) {
-					if (total_passed == 1)
+				} else if (totalFailed == 0) {
+					if (totalPassed == 1)
 						ansi::out << ansi::good << "Test passed.\n";
 					else
-						ansi::out << ansi::good << "All " << total_passed << " tests passed.\n";
-				} else if (total_passed == 0) {
-					if (total_failed == 1)
+						ansi::out << ansi::good << "All " << totalPassed << " tests passed.\n";
+				} else if (totalPassed == 0) {
+					if (totalFailed == 1)
 						ansi::out << ansi::bad << "Test failed.\n";
 					else
-						ansi::out << ansi::bad << "All " << total_failed << " tests failed.\n";
+						ansi::out << ansi::bad << "All " << totalFailed << " tests failed.\n";
 				} else {
 					ansi::out << ansi::warn
-						<< "Passed " << wrap(std::to_string(total_passed), ansi::color::green)
-						<< ", failed " << wrap(std::to_string(total_failed), ansi::color::red)
+						<< "Passed " << wrap(std::to_string(totalPassed), ansi::color::green)
+						<< ", failed " << wrap(std::to_string(totalFailed), ansi::color::red)
 						<< " (" << ansi::style::bold << std::setprecision(4)
-						<< (total_passed * 100.0 / (total_passed + total_failed)) << "%" >> ansi::style::bold
+						<< (totalPassed * 100.0 / (totalPassed + totalFailed)) << "%" >> ansi::style::bold
 						<< ")" << std::defaultfloat << ansi::endl;
 				}
 			}
@@ -366,7 +365,7 @@ namespace haunted::tests {
 				ansi::out << ansi::bad << prefix << ansi::parens << ansi::bold(input) << padding << " == "_d;
 
 				if (err != nullptr)
-					ansi::out << ansi::red(ansi::bold(util::demangle_object(err)) + ": " + std::string(err->what()));
+					ansi::out << ansi::red(ansi::bold(Util::demangleObject(err)) + ": " + std::string(err->what()));
 				else
 					ansi::out << ansi::red(actual);
 
@@ -383,16 +382,16 @@ namespace haunted::tests {
 	class maintest {
 		public:
 			static std::pair<int, int> parse_csi(const std::string &);
-			static void test_textinput(terminal &);
-			static void test_key(terminal &);
-			static void test_cursor(terminal &);
-			static void test_margins(terminal &);
-			static void test_textbox(terminal &);
-			static void test_expandobox(terminal &);
-			static void unittest_csiu(testing &);
-			static void unittest_textbox(testing &);
-			static void unittest_expandobox(testing &);
-			static void unittest_ustring(testing &);
+			static void test_textinput(Terminal &);
+			static void test_key(Terminal &);
+			static void test_cursor(Terminal &);
+			static void test_margins(Terminal &);
+			static void test_textbox(Terminal &);
+			static void test_expandobox(Terminal &);
+			static void unittest_csiu(Testing &);
+			static void unittest_textbox(Testing &);
+			static void unittest_expandobox(Testing &);
+			static void unittest_ustring(Testing &);
 	};
 }
 

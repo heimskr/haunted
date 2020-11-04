@@ -5,7 +5,7 @@
 #include "lib/ustring.h"
 #include "lib/formicine/ansi.h"
 
-namespace haunted {
+namespace Haunted {
 	ustring::ustring(const char *str) {
 		data = icu::UnicodeString::fromUTF8(str);
 		scan_length();

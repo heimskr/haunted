@@ -1,23 +1,23 @@
 #ifndef HAUNTED_UI_BOXES_BOX_H_
 #define HAUNTED_UI_BOXES_BOX_H_
 
-#include "haunted/core/defs.h"
-#include "haunted/ui/container.h"
-#include "haunted/ui/control.h"
+#include "haunted/core/Defs.h"
+#include "haunted/ui/Container.h"
+#include "haunted/ui/Control.h"
 
-namespace haunted::ui::boxes {
+namespace Haunted::UI::Boxes {
 	/**
 	 * Base class representing boxes, which are controls that contain at least two subcontrols
 	 * and resize them as appropriate.
 	 */
-	class box: public virtual container, public control {
+	class Box: public virtual Container, public Control {
 		public:
-			box() = delete;
-			box(container *parent_, const position &pos_ = {}): control(parent_, pos_) {}
+			Box() = delete;
+			Box(Container *parent_, const Position &pos_ = {}): Control(parent_, pos_) {}
 
-			virtual terminal * get_terminal() override { return term; }
+			virtual Terminal * getTerminal() override { return terminal; }
 
-			virtual position get_position() const override { return control::get_position(); }
+			virtual Position getPosition() const override { return Control::getPosition(); }
 	};
 }
 

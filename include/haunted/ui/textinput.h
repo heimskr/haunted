@@ -7,28 +7,28 @@
 #include <string>
 #include <unordered_set>
 
-#include "haunted/core/defs.h"
-#include "haunted/core/key.h"
-#include "haunted/ui/colored.h"
-#include "haunted/ui/container.h"
-#include "haunted/ui/control.h"
+#include "haunted/core/Defs.h"
+#include "haunted/core/Key.h"
+#include "haunted/ui/Colored.h"
+#include "haunted/ui/Container.h"
+#include "haunted/ui/Control.h"
 #include "lib/ustring.h"
 
-#include "lib/utf8.h"
+#include "lib/UTF8.h"
 
-namespace haunted::ui {
+namespace Haunted::UI {
 	/**
 	 * Represents a control that accepts user input.
 	 * This control should have a height of one row;
 	 * any rows below the first will be unused.
 	 */
-	class textinput: public control, public colored {
+	class TextInput: public Control, public Colored {
 #ifndef ENABLE_ICU
 		using string = std::string;
 #else
 		using string = ustring;
 #endif
-		using update_fn = std::function<void(const string &, int)>;
+		using Update_f = std::function<void(const string &, int)>;
 
 		private:
 			/** By default, all characters below 0x20 are ignored by insert(). However, if the character is contained in
@@ -39,7 +39,7 @@ namespace haunted::ui {
 			std::string prefix;
 
 			/** The size in columns (not bytes) of the prefix. */
-			size_t prefix_length = 0;
+			size_t prefixLength = 0;
 
 			/** The text that the user has entered so far. */
 			string buffer;
@@ -53,16 +53,16 @@ namespace haunted::ui {
 
 			/** UTF-8 codepoints are received byte by byte. The first byte indicates how long the codepoint will be.
 			 *  This field is set whenever we receive an indication of the codepoint length. */
-			size_t bytes_expected = 0;
+			size_t bytesExpected = 0;
 
 			/** A function to call whenever the buffer or cursor has changed. */
-			update_fn on_update;
+			Update_f onUpdate;
 
 			/** A function to call whenever the buffer is submitted (e.g., the user presses return). */
-			update_fn on_submit;
+			Update_f onSubmit;
 
-			/** Every time the textinput is redrawn, the screen position of the cursor is recorded. */
-			point cursor_pos;
+			/** Every time the TextInput is redrawn, the screen position of the cursor is recorded. */
+			Point cursorPosition;
 
 			/** Informs the update listener (if one has been added with listen()) that the buffer or cursor has changed.
 			 */
@@ -72,87 +72,87 @@ namespace haunted::ui {
 			void submit();
 
 			/** Partially re-renders the control onto the terminal in response to an cursor move. */
-			void draw_cursor();
+			void drawCursor();
 
 			/** Partially re-renders the control onto the terminal in response to an insertion. */
-			void draw_insert();
+			void drawInsert();
 
 			/** Blanks out the spaces to the right of the buffer. */
-			void clear_line();
+			void clearLine();
 
-			/** Blanks out the non-prefix portion of the textinput. */
-			void clear_text();
+			/** Blanks out the non-prefix portion of the TextInput. */
+			void clearText();
 
-			/** Blanks out the non-prefix portion of the textinput starting at a given offset past the left edge of the
+			/** Blanks out the non-prefix portion of the TextInput starting at a given offset past the left edge of the
 			 *  non-prefix portion. */
-			void clear_right(size_t);
+			void clearRight(size_t);
 
-			/** Returns a point representing the position of the textinput cursor on the screen. */
-			point find_cursor() const;
+			/** Returns a point representing the position of the TextInput cursor on the screen. */
+			Point findCursor() const;
 
 			/** Adjusts the scroll if the input is too long and a character has been inserted, based on the cursor's
 			 *  current position. Returns true if the scroll was changed. */
-			bool check_scroll();
+			bool checkScroll();
 
 #ifndef ENABLE_ICU
 			/** Returns the character to the left of the cursor. */
-			char prev_char();
+			char prevChar();
 
 			/** Returns the character to the right of the cursor. */
-			char next_char();
+			char nextChar();
 #else
 			/** Returns the character to the left of the cursor. */
-			superchar prev_char();
+			superchar prevChar();
 
 			/** Returns the character to the right of the cursor. */
-			superchar next_char();
+			superchar nextChar();
 #endif
 
 			/** Returns the width of the buffer area (i.e., the width of the control minus the prefix length). */
-			size_t text_width() const { return pos.width - prefix_length; }
+			size_t textWidth() const { return position.width - prefixLength; }
 
-			/** Returns true if the cursor is at the right edge of the textinput. */
-			bool cursor_at_right() const { return cursor - scroll == text_width(); }
+			/** Returns true if the cursor is at the right edge of the TextInput. */
+			bool cursorAtRight() const { return cursor - scroll == textWidth(); }
 
-			/** Returns true if the cursor is at the left edge of the textinput. */
-			bool cursor_at_left() const { return cursor == scroll; }
+			/** Returns true if the cursor is at the left edge of the TextInput. */
+			bool cursorAtLeft() const { return cursor == scroll; }
 
 			/** Returns true if the cursor is at the end of the buffer. */
-			bool at_end() const { return cursor == size(); }
+			bool atEnd() const { return cursor == size(); }
 
 		public:
-			enum class event: int {update = 1, submit = 2};
+			enum class Event: int {Update = 1, Submit = 2};
 
 			/** When a multibyte UTF-8 codepoint is being received, the individual bytes are stored in this buffer. */
-			std::string unicode_byte_buffer;
+			std::string unicodeByteBuffer;
 
 			/** When a multi-codepoint UTF-8 grapheme is being received, the individual codepoints are stored in this
 			 *  buffer. */
-			std::vector<uint32_t> unicode_codepoint_buffer;
+			std::vector<uint32_t> unicodeCodepointBuffer;
 
-			/** Constructs a textinput with a parent and a position and an initial buffer and cursor. */
-			textinput(container *parent, position pos, const string &buffer, size_t cursor);
+			/** Constructs a TextInput with a parent and a position and an initial buffer and cursor. */
+			TextInput(Container *parent, const Position &pos, const string &buffer, size_t cursor);
 
-			/** Constructs a textinput with a parent and a position and an initial buffer and a default cursor. */
-			textinput(container *parent, position pos, const string &buffer):
-				textinput(parent, pos, buffer, 0) {}
+			/** Constructs a TextInput with a parent and a position and an initial buffer and a default cursor. */
+			TextInput(Container *parent, const Position &pos, const string &buffer):
+				TextInput(parent, pos, buffer, 0) {}
 
-			/** Constructs a textinput with a parent and position and a default buffer and cursor. */
-			textinput(container *parent, position pos):
-				textinput(parent, pos, "") {}
+			/** Constructs a TextInput with a parent and position and a default buffer and cursor. */
+			TextInput(Container *parent, const Position &pos):
+				TextInput(parent, pos, "") {}
 
-			/** Constructs a textinput with a parent, a default position and an initial buffer and cursor. */
-			textinput(container *parent, const string &buffer, size_t cursor);
+			/** Constructs a TextInput with a parent, a default position and an initial buffer and cursor. */
+			TextInput(Container *parent, const string &buffer, size_t cursor);
 
-			/** Constructs a textinput with a parent, a default position and an initial buffer and default cursor. */
-			textinput(container *parent, const string &buffer):
-				textinput(parent, buffer, 0) {}
+			/** Constructs a TextInput with a parent, a default position and an initial buffer and default cursor. */
+			TextInput(Container *parent, const string &buffer):
+				TextInput(parent, buffer, 0) {}
 
-			/** Constructs a textinput with a parent and a default position, buffer and cursor. */
-			textinput(container *parent): textinput(parent, "") {}
+			/** Constructs a TextInput with a parent and a default position, buffer and cursor. */
+			TextInput(Container *parent): TextInput(parent, "") {}
 
-			/** Constructs a textinput with no parent, no position and no initial contents. */
-			textinput(): textinput(nullptr, "") {}
+			/** Constructs a TextInput with no parent, no position and no initial contents. */
+			TextInput(): TextInput(nullptr, "") {}
 
 			/** Returns the contents of the buffer as a string. */
 			std::string str() const { return buffer; }
@@ -161,13 +161,13 @@ namespace haunted::ui {
 			operator std::string() const { return buffer; }
 
 			/** Sets a function to listen for updates to the buffer. */
-			void listen(event, const update_fn &);
+			void listen(Event, const Update_f &);
 
 			/** Returns the cursor's offset. */
-			size_t get_cursor() const { return cursor; }
+			size_t getCursor() const { return cursor; }
 
 			/** Moves the cursor to a given position. */
-			void move_to(size_t);
+			void moveTo(size_t);
 
 			/** Inserts a string into the buffer at the cursor's position. */
 			void insert(const std::string &);
@@ -179,22 +179,22 @@ namespace haunted::ui {
 			void clear();
 
 			/** Erases the first word before the cursor (^w). */
-			void erase_word();
+			void eraseWord();
 
 			/** Erases the first character before the cursor. */
 			void erase();
 
 			/** Erases the first character after the cursor. */
-			void erase_forward();
+			void eraseForward();
 
 			/** Returns the contents of the buffer. */
-			std::string get_text() const;
+			std::string getText() const;
 
 			/** Sets the contents of the buffer and moves the cursor to the end of the buffer. */
-			void set_text(const std::string &);
+			void setText(const std::string &);
 
-			/** Sets the prefix portion of the textinput. */
-			void set_prefix(const std::string &);
+			/** Sets the prefix portion of the TextInput. */
+			void setPrefix(const std::string &);
 
 			/** Moves the cursor one character to the left unless it's already at the leftmost edge. */
 			void left();
@@ -208,11 +208,11 @@ namespace haunted::ui {
 			/** Moves the cursor to the end of the buffer. */
 			void end();
 
-			/** Moves the cursor left by one word. Uses the same word-detecting logic as erase_word(). */
-			void prev_word();
+			/** Moves the cursor left by one word. Uses the same word-detecting logic as eraseWord(). */
+			void prevWord();
 
-			/** Moves the cursor right by one word. Uses the same word-detecting logic as erase_word(). */
-			void next_word();
+			/** Moves the cursor right by one word. Uses the same word-detecting logic as eraseWord(). */
+			void nextWord();
 
 			/** Swaps the character to the left of the cursor with the character to the right of the cursor. */
 			void transpose();
@@ -224,42 +224,42 @@ namespace haunted::ui {
 			/** Returns whether the buffer is empty. */
 			bool empty() const;
 
-			bool on_mouse(const mouse_report &) override;
+			bool onMouse(const MouseReport &) override;
 
 			/** Handles key presses. */
-			bool on_key(const key &) override;
+			bool onKey(const Key &) override;
 
 			/** Renders the control onto the terminal. */
 			virtual void draw() override;
 
 			/** Clears the space to the right of the cursor and redraws the text. */
-			void draw_right(int offset = 0);
+			void drawRight(int offset = 0);
 
 			/** Partially re-renders the control onto the terminal in response to a deletion. */
-			void draw_erase();
+			void drawErase();
 
-			void print_graphemes(string);
+			void printGraphemes(string);
 
-			virtual bool can_draw() const override;
+			virtual bool canDraw() const override;
 
-			/** Focuses the textinput and jumps to its cursor. */
+			/** Focuses the TextInput and jumps to its cursor. */
 			void focus() override;
 
-			/** Moves the terminal cursor to the position of the textinput cursor. */
-			void jump_cursor();
+			/** Moves the terminal cursor to the position of the TextInput cursor. */
+			void jumpCursor();
 
 			/** Jumps to the cursor. */
-			virtual void jump_focus() override;
+			virtual void jumpFocus() override;
 
-			/** Moves the terminal cursor to the position of the textinput cursor if the textinput is focused. Returns
-			 *  true if the textinput is focused and the cursor was moved. */
-			bool try_jump();
+			/** Moves the terminal cursor to the position of the TextInput cursor if the TextInput is focused. Returns
+			 *  true if the TextInput is focused and the cursor was moved. */
+			bool tryJump();
 
-			virtual terminal * get_terminal() override { return term; }
-			virtual container * get_parent() const override { return parent; }
+			virtual Terminal * getTerminal() override { return terminal; }
+			virtual Container * getParent() const override { return parent; }
 
 			/** Writes the contents of the buffer to an output stream. */
-			friend std::ostream & operator<<(std::ostream &os, const textinput &input);
+			friend std::ostream & operator<<(std::ostream &os, const TextInput &input);
 	};
 }
 

@@ -1,27 +1,27 @@
-#include "haunted/ui/textline.h"
+#include "haunted/ui/TextLine.h"
 #include "lib/formicine/performance.h"
 
-namespace haunted::ui {
+namespace Haunted::UI {
 
 
 // Protected instance methods
 
 
-	void textline::mark_dirty() {
+	void TextLine::markDirty() {
 		dirty = true;
-		num_rows_ = -1;
+		numRows_ = -1;
 		lines_.clear();
 	}
 
-	void textline::clean(int width) {
+	void TextLine::clean(int width) {
 		if (!dirty)
 			return;
 
 		cleaning = true;
 
-		num_rows_ = num_rows(width);
-		for (int row = 0; row < num_rows_; ++row)
-			lines_.push_back(text_at_row(width, row));
+		numRows_ = numRows(width);
+		for (int row = 0; row < numRows_; ++row)
+			lines_.push_back(textAtRow(width, row));
 
 		cleaning = false;
 		dirty = false;
@@ -31,7 +31,7 @@ namespace haunted::ui {
 // Public instance methods
 
 
-	std::string textline::text_at_row(size_t width, int row, bool pad_right) {
+	std::string TextLine::textAtRow(size_t width, int row, bool pad_right) {
 		if (!dirty) {
 			return lines_[row];
 		} else if (!cleaning) {
@@ -39,7 +39,7 @@ namespace haunted::ui {
 			return lines_[row];
 		}
 
-		auto w = formicine::perf.watch("textline::text_at_row");
+		auto w = formicine::perf.watch("TextLine::textAtRow");
 		const std::string text = std::string(*this);
 		const size_t text_length = ansi::length(text);
 
@@ -48,7 +48,7 @@ namespace haunted::ui {
 			     : ansi::substr(text, 0, width);
 		}
 
-		const int continuation = get_continuation();
+		const int continuation = getContinuation();
 		const size_t index = continuation + row * (width - continuation);
 		if (index >= text_length)
 			return pad_right? std::string(width, ' ') : "";
@@ -61,16 +61,16 @@ namespace haunted::ui {
 		return chunk;
 	}
 
-	int textline::num_rows(int width) {
+	int TextLine::numRows(int width) {
 		if (!dirty) {
-			return num_rows_;
+			return numRows_;
 		} else if (!cleaning) {
 			clean(width);
-			return num_rows_;
+			return numRows_;
 		}
 
 		const std::string text = ansi::strip(*this);
-		// auto w = formicine::perf.watch("textline::num_rows");
+		// auto w = formicine::perf.watch("TextLine::numRows");
 
 		int length = ansi::length(text);
 		if (length <= width)
@@ -79,12 +79,12 @@ namespace haunted::ui {
 		// Ignore all the text on the first line because it's not affected by continuation.
 		length -= width;
 
-		const int continuation = get_continuation();
+		const int continuation = getContinuation();
 		const int adjusted_continuation = width - (width == continuation? continuation - 1 : continuation);
 		return length / adjusted_continuation + (length % adjusted_continuation? 2 : 1);
 	}
 
-	bool textline::operator==(textline &other) {
-		return get_continuation() == other.get_continuation() && std::string(*this) == std::string(other);
+	bool TextLine::operator==(TextLine &other) {
+		return getContinuation() == other.getContinuation() && std::string(*this) == std::string(other);
 	}
 }

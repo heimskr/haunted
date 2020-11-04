@@ -1,24 +1,24 @@
 #ifndef HAUNTED_UI_BOXES_SIMPLEBOX_H_
 #define HAUNTED_UI_BOXES_SIMPLEBOX_H_
 
-#include "haunted/core/defs.h"
-#include "haunted/ui/boxes/box.h"
-#include "haunted/ui/container.h"
-#include "haunted/ui/control.h"
+#include "haunted/core/Defs.h"
+#include "haunted/ui/boxes/Box.h"
+#include "haunted/ui/Container.h"
+#include "haunted/ui/Control.h"
 
-namespace haunted::ui::boxes {
+namespace Haunted::UI::Boxes {
 	/**
 	 * Represents a simple box that can contain one child. When the box is moved or resized, the child is moved to the
 	 * same position as the box but not resized.
 	 */
-	class simplebox: public virtual box {
+	class SimpleBox: public virtual Box {
 		protected:
 
 		public:
-			using box::box;
+			using Box::Box;
 
-			virtual int max_children() const override { return 1; }
-			virtual void resize(const position &) override;
+			virtual int maxChildren() const override { return 1; }
+			virtual void resize(const Position &) override;
 			virtual void move(int, int) override;
 			virtual void draw() override;
 	};

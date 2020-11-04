@@ -1,68 +1,68 @@
 #ifndef HAUNTED_UI_CONTROL_H_
 #define HAUNTED_UI_CONTROL_H_
 
-#include "haunted/core/defs.h"
-#include "haunted/core/key.h"
-#include "haunted/ui/child.h"
-#include "haunted/ui/container.h"
-#include "haunted/ui/inputhandler.h"
+#include "haunted/core/Defs.h"
+#include "haunted/core/Key.h"
+#include "haunted/ui/Child.h"
+#include "haunted/ui/Container.h"
+#include "haunted/ui/InputHandler.h"
 
-namespace haunted::ui {
+namespace Haunted::UI {
 	/**
 	 * Represents a control.
 	 * This includes things like boxes, text views and text inputs.
 	 */
-	class control: public virtual inputhandler, public child {
+	class Control: public virtual InputHandler, public Child {
 		protected:
 			/** The control's controlling terminal. */
-			terminal *term;
+			Terminal *terminal;
 
 			/** A name (ideally unique) that identifies the control. */
 			std::string name;
 
 			/** Whether margins are currently set for this component. */
-			bool in_margins = false;
+			bool inMargins = false;
 
 			/** The absolute position of the control on the screen. */
-			haunted::position pos = {};
+			Haunted::Position position = {};
 
 			/** Sets the margins if needed, executes a function and resets the margins if needed. Returns true if the
 			 *  margins were set. */
-			bool try_margins(std::function<void()>);
+			bool tryMargins(std::function<void()>);
 
 		public:
 			/** Whether to ignore this control when calculating the indices of the other children of this control's
 			 *  parent. */
-			bool ignore_index = false;
+			bool ignoreIndex = false;
 
-			control() = delete;
-			control(const control &) = delete;
-			control & operator=(const control &) = delete;
+			Control() = delete;
+			Control(const Control &) = delete;
+			Control & operator=(const Control &) = delete;
 
-			control(container *parent_, haunted::position pos_);
-			control(const haunted::position &pos_): child(nullptr), term(nullptr), pos(pos_) {}
-			control(container *parent_, terminal *term_);
-			control(container *parent_);
+			Control(Container *parent_, const Haunted::Position &position_);
+			Control(const Haunted::Position &position_): Child(nullptr), terminal(nullptr), position(position_) {}
+			Control(Container *parent_, Terminal *terminal_);
+			Control(Container *parent_);
 
-			virtual ~control() = 0;
+			virtual ~Control() = 0;
 
 			/** Returns the control's identifier. */
-			virtual std::string get_id(bool pad = false) const;
+			virtual std::string getID(bool pad = false) const;
 
 			/** Sets the control's name. */
-			virtual control & set_name(const std::string &name_) { name = name_; return *this; }
+			virtual Control & setName(const std::string &name_) { name = name_; return *this; }
 			
 			/** Gets the control's name. */
-			virtual const std::string & get_name() { return name; }
+			virtual const std::string & getName() { return name; }
 
 			/** Renders the control on the terminal. */
 			virtual void draw() = 0;
 
 			/** Returns whether the control's in a state in which it can be rendered. */
-			virtual bool can_draw() const;
+			virtual bool canDraw() const;
 
 			/** Resizes the control to fit a new position. */
-			virtual void resize(const haunted::position &);
+			virtual void resize(const Haunted::Position &);
 
 			/** Reassigns the control's current position to itself. Useful for container. */
 			virtual void resize();
@@ -74,52 +74,52 @@ namespace haunted::ui {
 			virtual void focus();
 
 			/** Sets the parent and adopts its terminal. */
-			virtual void set_parent(container *) override;
+			virtual void setParent(Container *) override;
 
-			virtual container * get_parent() const { return parent; }
-			virtual terminal * get_terminal() { return term; }
-			void set_terminal(terminal *term_) { term = term_;  }
+			virtual Container * getParent() const { return parent; }
+			virtual Terminal * getTerminal() { return terminal; }
+			void setTerminal(Terminal *terminal_) { terminal = terminal_;  }
 
 			/** Returns the control's position. */
-			virtual position get_position() const { return pos; }
+			virtual Position getPosition() const { return position; }
 
 			/** Moves the cursor on the screen to the top-left corner of the control. */
 			virtual void jump();
 
 			/** Jumps to an appropriate location within the control. Useful for textinput. */
-			virtual void jump_focus();
+			virtual void jumpFocus();
 
 			/** Erases the portion of the display that this control occupies. */
-			virtual void clear_rect();
+			virtual void clearRect();
 
 			/** Flushes the terminal's output buffer. */
 			void flush();
 
 			/** Returns true if the control is its terminal's focused control. */
-			bool has_focus() const;
+			bool hasFocus() const;
 
 			/** Returns true if the control's right edge is at the right edge of the screen. */
-			bool at_right() const;
+			bool atRight() const;
 
 			/** Returns true if the control's left edge is at the left edge of the screen. */
-			bool at_left() const;
+			bool atLeft() const;
 
 			/** Sets the terminal's scrollable region with DECSLRM and DECSTBM to fit the control. */
-			void set_margins();
+			void setMargins();
 
 			/** Sets the terminal's scrollable region with DECSLRM to fit the control horizontally. */
-			void set_hmargins();
+			void setHmargins();
 
 			/** Resets the scrollable region. */
-			void reset_margins();
+			void resetMargins();
 
 			/** Returns the control's index within its parent's children. If the control has no parent or if it somehow
 			 *  turned out not to be present among its parent's children, this function returns -1. */
-			ssize_t get_index() const;
+			ssize_t getIndex() const;
 
-			friend class container;
+			friend class Container;
 
-			friend void swap(control &left, control &right);
+			friend void swap(Control &left, Control &right);
 	};
 }
 

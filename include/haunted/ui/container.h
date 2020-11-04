@@ -3,68 +3,68 @@
 
 #include <deque>
 
-#include "haunted/core/defs.h"
-#include "haunted/core/util.h"
-#include "haunted/ui/inputhandler.h"
+#include "haunted/core/Defs.h"
+#include "haunted/core/Util.h"
+#include "haunted/ui/InputHandler.h"
 
-namespace haunted {
-	class terminal;
+namespace Haunted {
+	class Terminal;
 }
 
-namespace haunted::ui {
-	class control;
-	class child;
+namespace Haunted::UI {
+	class Control;
+	class Child;
 
 	/**
 	 * Containers contain controls.
 	 */
-	class container: public virtual inputhandler {
-		friend class control;
+	class Container: public virtual InputHandler {
+		friend class Control;
 
 		public:
-			using type = std::deque<control *>;
+			using Type = std::deque<Control *>;
 
 		protected:
-			type children;
+			Type children;
 		
 		public:
-			virtual ~container();
+			virtual ~Container();
 
 			/** Adds a child to the container. Returns true if successful. */
-			virtual bool add_child(control *);
+			virtual bool addChild(Control *);
 
 			/** Removes a child from the container. Returns true if successful. */
-			virtual bool remove_child(child *);
+			virtual bool removeChild(Child *);
 
 			/** Returns the largest number of children the container can accommodate.
 			 *  A value of -1 means the container can hold an arbitrary number of children. */
-			virtual int max_children() const { return -1; }
+			virtual int maxChildren() const { return -1; }
 
-			type & get_children() { return children; }
+			Type & getChildren() { return children; }
 
-			virtual position get_position() const = 0;
+			virtual Position getPosition() const = 0;
 
 			/** Returns the terminal associated with the container. */
-			virtual haunted::terminal * get_terminal() = 0;
+			virtual Haunted::Terminal * getTerminal() = 0;
 
 			/** Returns the child control at an offset from the top left corner of this container. */
-			virtual control * child_at_offset(int x, int y) const;
+			virtual Control * childAtOffset(int x, int y) const;
 
 			/** Asks the parent to assign a new size to one of its children. Useful for expandoboxes.
 			 *  Returns true if the request was granted. */
-			virtual bool request_resize(control *, size_t width, size_t height);
+			virtual bool requestResize(Control *, size_t width, size_t height);
 
 			/** Redraws all the container's children in order. */
 			virtual void redraw();
 
-			bool empty()   const { return children.empty(); }
+			bool   empty() const { return children.empty(); }
 			size_t size()  const { return children.size();  }
 			size_t count() const { return children.size();  }
 
 			BEGIN_END(children)
 
 			/** Returns the nth child (indexes `children`). */
-			control * operator[](size_t);
+			Control * operator[](size_t);
 	};
 }
 

@@ -1,24 +1,24 @@
 #ifndef HAUNTED_UI_BOXES_DUALBOX_H_
 #define HAUNTED_UI_BOXES_DUALBOX_H_
 
-#include "haunted/ui/boxes/orientedbox.h"
+#include "haunted/ui/boxes/OrientedBox.h"
 
-namespace haunted::ui::boxes {
+namespace Haunted::UI::Boxes {
 	/**
 	 * Base class for boxes that contain exactly two children.
 	 */
-	class dualbox: public orientedbox {
+	class DualBox: public OrientedBox {
 		public:
-			using orientedbox::orientedbox;
+			using OrientedBox::OrientedBox;
 
-			dualbox() = delete;
-			dualbox(dualbox &&) = delete;
-			dualbox(const dualbox &) = delete;
+			DualBox() = delete;
+			DualBox(DualBox &&) = delete;
+			DualBox(const DualBox &) = delete;
 
-			virtual void resize(const position &) override;
-			virtual int max_children() const override;
-			virtual int size_one() const = 0;
-			virtual int size_two() const = 0;
+			virtual void resize(const Position &) override;
+			virtual int maxChildren() const override { return 2; }
+			virtual int sizeOne() const = 0;
+			virtual int sizeTwo() const = 0;
 	};
 }
 

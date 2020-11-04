@@ -3,39 +3,39 @@
 #include <iostream>
 #include <unistd.h>
 
-#include "haunted/core/defs.h"
+#include "haunted/core/Defs.h"
 
-#include "lib/superstring.h"
-#include "lib/utf8.h"
+#include "lib/Superstring.h"
+#include "lib/UTF8.h"
 #include "lib/formicine/ansi.h"
 
-namespace haunted {
-	superstring::superstring(const std::string &str) {
+namespace Haunted {
+	Superstring::Superstring(const std::string &str) {
 		size_t length = str.length();
 		for (size_t i = 0; i < length; ++i) {
 			unsigned char c = str[i];
 			if (c < 0x80) {
 				chunks.push_back(std::string(1, c));
 			} else {
-				chunks.push_back(str.substr(i, utf8::width(c)));
+				chunks.push_back(str.substr(i, UTF8::width(c)));
 			}
 		}
 	}
 
-	superstring::iterator superstring::nth(size_t pos) {
+	Superstring::iterator Superstring::nth(size_t pos) {
 		iterator iter = begin();
 		for (size_t i = 0; i < pos; ++i, ++iter);
 		return iter;
 	}
 
-	std::string superstring::str() const {
+	std::string Superstring::str() const {
 		std::string out;
 		for (const std::string &sub: chunks)
 			out.append(sub);
 		return out;
 	}
 
-	superchar & superstring::operator[](ssize_t pos) {
+	Superchar & Superstring::operator[](ssize_t pos) {
 		if (pos < 0) {
 			for (ssize_t i = 0; pos < i; --i)
 				chunks.push_front({});
@@ -49,18 +49,18 @@ namespace haunted {
 		return *nth(pos);
 	}
 
-	superchar & superstring::at(size_t pos) {
+	Superchar & Superstring::at(size_t pos) {
 		if (size() <= pos)
-			throw std::out_of_range("superstring");
+			throw std::out_of_range("Superstring");
 
 		return *nth(pos);
 	}
 
-	std::string superstring::substr(size_t pos, size_t n) const {
+	std::string Superstring::substr(size_t pos, size_t n) const {
 		return std::string(*this).substr(pos, n);
 	}
 
-	void superstring::insert(size_t pos, const superchar &item) {
+	void Superstring::insert(size_t pos, const Superchar &item) {
 		if (pos == size()) {
 			chunks.push_back(item);
 		} else if (pos == 0) {
@@ -70,17 +70,17 @@ namespace haunted {
 		}
 	}
 
-	void superstring::insert(size_t pos, char ch) {
-		insert(pos, superchar(1, ch));
+	void Superstring::insert(size_t pos, char ch) {
+		insert(pos, Superchar(1, ch));
 	}
 
-	void superstring::dbg() {
+	void Superstring::dbg() {
 		std::string str = "[" + std::to_string(size()) + "]";
-		for (const superchar &sc: chunks)
+		for (const Superchar &sc: chunks)
 			str += " \"" + sc + "\"";
 	}
 
-	superstring & superstring::erase(size_t pos, size_t len) {
+	Superstring & Superstring::erase(size_t pos, size_t len) {
 		if (size() == 0 && pos == 0)
 			return *this;
 
@@ -100,9 +100,9 @@ namespace haunted {
 		return *this;
 	}
 
-	size_t superstring::text_length() const {
+	size_t Superstring::textLength() const {
 		size_t out = 0;
-		for (const superchar &sc: chunks)
+		for (const Superchar &sc: chunks)
 			out += sc.length();
 		return out;
 	}

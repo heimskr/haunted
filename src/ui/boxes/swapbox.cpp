@@ -1,23 +1,23 @@
-#include "haunted/core/defs.h"
-#include "haunted/core/terminal.h"
-#include "haunted/ui/boxes/swapbox.h"
+#include "haunted/core/Defs.h"
+#include "haunted/core/Terminal.h"
+#include "haunted/ui/boxes/SwapBox.h"
 
-namespace haunted::ui::boxes {
-	swapbox::swapbox(container *parent_, const position &pos_, std::initializer_list<control *> children_):
-	box(parent_, pos_) {
+namespace Haunted::UI::Boxes {
+	SwapBox::SwapBox(Container *parent_, const Position &pos_, std::initializer_list<Control *> children_):
+	Box(parent_, pos_) {
 		if (parent_)
-			parent_->add_child(this);
+			parent_->addChild(this);
 
-		for (control *ctrl: children_) {
-			ctrl->set_parent(this);
-			ctrl->set_terminal(nullptr);
-			children.push_back(ctrl);
+		for (Control *control: children_) {
+			control->setParent(this);
+			control->setTerminal(nullptr);
+			children.push_back(control);
 		}
 
 		if (children_.size() != 0) {
 			active = *children_.begin();
-			active->set_parent(this);
-			active->set_terminal(term);
+			active->setParent(this);
+			active->setTerminal(terminal);
 		}
 	}
 
@@ -25,30 +25,30 @@ namespace haunted::ui::boxes {
 // Public instance methods
 
 
-	void swapbox::set_active(control *new_active) {
+	void SwapBox::setActive(Control *new_active) {
 		// To prevent children's terminals from disappearing mid-render, we need to acquire the terminal's render lock.
 		std::unique_lock<std::recursive_mutex> lock;
-		if (term)
-			lock = term->lock_render();
+		if (terminal)
+			lock = terminal->lockRender();
 
 		if (new_active == active)
 			return;
 
 		if (new_active == nullptr) {
-			active->set_terminal(nullptr);
+			active->setTerminal(nullptr);
 			active = nullptr;
 
-			clear_rect();
+			clearRect();
 		} else if (new_active != nullptr) {
 			if (active != nullptr) {
-				active->set_terminal(nullptr);
-				if (active->get_position() != new_active->get_position())
-					new_active->resize(active->get_position());
+				active->setTerminal(nullptr);
+				if (active->getPosition() != new_active->getPosition())
+					new_active->resize(active->getPosition());
 			}
 
 			active = new_active;
-			active->set_terminal(term);
-			active->set_parent(this);
+			active->setTerminal(terminal);
+			active->setParent(this);
 			active->draw();
 		}
 
@@ -56,27 +56,27 @@ namespace haunted::ui::boxes {
 			children.push_back(new_active);
 	}
 
-	control * swapbox::child_at_offset(int x, int y) const {
-		return (x - pos.left < pos.width && y - pos.top < pos.height)? active : nullptr;
+	Control * SwapBox::childAtOffset(int x, int y) const {
+		return (x - position.left < position.width && y - position.top < position.height)? active : nullptr;
 	}
 
-	void swapbox::resize(const position &new_pos) {
-		control::resize(new_pos);
+	void SwapBox::resize(const Position &new_pos) {
+		Control::resize(new_pos);
 		if (active)
 			active->resize(new_pos);
 	}
 
-	void swapbox::draw() {
-		if (!can_draw())
+	void SwapBox::draw() {
+		if (!canDraw())
 			return;
 
 		if (active)
 			active->draw();
 		else
-			clear_rect();
+			clearRect();
 	}
 
-	bool swapbox::on_key(const key &k) {
-		return key_fn? key_fn(k) : active && active->on_key(k);
+	bool SwapBox::onKey(const Key &key) {
+		return keyFunction? keyFunction(key) : (active && active->onKey(key));
 	}
 }

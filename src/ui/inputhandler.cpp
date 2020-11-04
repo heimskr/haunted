@@ -1,12 +1,12 @@
-#include "haunted/ui/inputhandler.h"
-#include "haunted/ui/control.h"
+#include "haunted/ui/InputHandler.h"
+#include "haunted/ui/Control.h"
 
-namespace haunted::ui {
-	bool inputhandler::on_key(const key &k) {
-		return key_fn? key_fn(k) : false;
+namespace Haunted::UI {
+	bool InputHandler::onKey(const Key &k) {
+		return keyFunction? keyFunction(k) : false;
 	}
 
-	bool inputhandler::on_mouse(const mouse_report &m) {
-		return mouse_fn? mouse_fn(m) : false;
+	bool InputHandler::onMouse(const MouseReport &m) {
+		return mouseFunction? mouseFunction(m) : false;
 	}
 }

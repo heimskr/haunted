@@ -7,22 +7,22 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#include "haunted/core/csi.h"
-#include "haunted/core/key.h"
-#include "haunted/core/terminal.h"
-#include "haunted/core/util.h"
-#include "haunted/ui/child.h"
-#include "haunted/ui/control.h"
+#include "haunted/core/CSI.h"
+#include "haunted/core/Key.h"
+#include "haunted/core/Terminal.h"
+#include "haunted/core/Util.h"
+#include "haunted/ui/Child.h"
+#include "haunted/ui/Control.h"
 
 #include "lib/formicine/futil.h"
 
-namespace haunted {
+namespace Haunted {
 	using uchar = unsigned char;
 
-	std::vector<terminal *> terminal::winch_targets {};
+	std::vector<Terminal *> Terminal::winchTargets {};
 
-	terminal::terminal(std::istream &in_stream_, ansi::ansistream &out_stream_):
-	in_stream(in_stream_), out_stream(out_stream_), colors(&out_stream_, &output_mutex) {
+	Terminal::Terminal(std::istream &inStream, ansi::ansistream &outStream):
+	inStream(inStream), outStream(outStream), colors(&outStream, &outputMutex) {
 		original = attrs = getattr();
 		winsize size;
 		ioctl(STDIN_FILENO, TIOCGWINSZ, &size);
@@ -30,10 +30,10 @@ namespace haunted {
 		cols = size.ws_col;
 	}
 
-	terminal::~terminal() {
-		if (!suppress_output) {
-			out_stream.reset_colors();
-			out_stream.clear();
+	Terminal::~Terminal() {
+		if (!suppressOutput) {
+			outStream.reset_colors();
+			outStream.clear();
 			reset();
 			join();
 			jump(0, 0);
@@ -46,14 +46,14 @@ namespace haunted {
 // Private static methods
 
 
-	void terminal::winch_handler(int) {
+	void Terminal::winchHandler(int) {
 		winsize new_size;
 		ioctl(STDIN_FILENO, TIOCGWINSZ, &new_size);
-		for (terminal *ptr: winch_targets)
-			ptr->winch(new_size.ws_row, new_size.ws_col);
+		for (Terminal *terminal: winchTargets)
+			terminal->winch(new_size.ws_row, new_size.ws_col);
 	}
 
-	termios terminal::getattr() {
+	termios Terminal::getattr() {
 		termios out;
 		int result;
 		if ((result = tcgetattr(STDIN_FILENO, &out)) < 0)
@@ -62,7 +62,7 @@ namespace haunted {
 		return out;
 	}
 
-	void terminal::setattr(const termios &new_attrs) {
+	void Terminal::setattr(const termios &new_attrs) {
 		int result;
 		if ((result = tcsetattr(STDIN_FILENO, TCSAFLUSH, &new_attrs)) < 0)
 			throw std::runtime_error("tcsetattr returned " + std::to_string(result));
@@ -72,36 +72,35 @@ namespace haunted {
 // Private instance methods
 
 
-	void terminal::apply() {
+	void Terminal::apply() {
 		setattr(attrs);
 	}
 
-	void terminal::reset() {
-		mouse(mouse_mode::none);
+	void Terminal::reset() {
+		mouse(MouseMode::None);
 		setattr(original);
 		attrs = original;
 	}
 
-	void terminal::work_input() {
-		key k;
+	void Terminal::workInput() {
+		Key key;
 		// Sometimes, calling cbreak() once doesn't seem to properly set all the flags (e.g., arrow keys produce strings
 		// like "^[[C"). Calling it twice appears to work, but it's not pretty.
 		cbreak();
 		cbreak();
-		while (*this >> k) {
-			if (k == key(ktype::c, kmod::ctrl) && on_interrupt())
+		while (*this >> key) {
+			if (key == Key(KeyType::c, KeyMod::Ctrl) && onInterrupt())
 				break;
-
-			send_key(k);
+			sendKey(key);
 		}
 	}
 
-	void terminal::winch(int new_rows, int new_cols) {
+	void Terminal::winch(int new_rows, int new_cols) {
 		bool changed = rows != new_rows || cols != new_cols;
 		rows = new_rows;
 		cols = new_cols;
 		if (changed) {
-			std::unique_lock lock(winch_mutex);
+			std::unique_lock lock(winchMutex);
 			redraw();
 		}
 	}
@@ -110,27 +109,27 @@ namespace haunted {
 // Public instance methods
 
 
-	void terminal::cbreak() {
+	void Terminal::cbreak() {
 		attrs.c_lflag &= ~(ECHO | ICANON | ISIG);
 		attrs.c_iflag &= ~IXON;
 		apply();
 	}
 
-	void terminal::watch_size() {
-		if (winch_targets.empty())
-			std::signal(SIGWINCH, &terminal::winch_handler);
-		winch_targets.push_back(this);
+	void Terminal::watchSize() {
+		if (winchTargets.empty())
+			std::signal(SIGWINCH, &Terminal::winchHandler);
+		winchTargets.push_back(this);
 	}
 
-	void terminal::redraw() {
+	void Terminal::redraw() {
 		if (root) {
 			colors.reset();
-			out_stream.clear().jump();
+			outStream.clear().jump();
 			root->resize({0, 0, cols, rows});
 		}
 	}
 
-	void terminal::set_root(ui::control *new_root, bool delete_old) {
+	void Terminal::setRoot(UI::Control *new_root, bool delete_old) {
 		if (root != new_root) {
 			if (delete_old)
 				delete root;
@@ -139,104 +138,106 @@ namespace haunted {
 		}
 	}
 
-	void terminal::draw() {
+	void Terminal::draw() {
 		if (root)
 			root->draw();
 	}
 
-	void terminal::reset_colors() {
+	void Terminal::resetColors() {
 		colors.reset();
 	}
 
-	ui::inputhandler * terminal::send_key(const key &k) {
+	UI::InputHandler * Terminal::sendKey(const Key &key) {
 		// If the root is null, there are no controls and nothing to send key presses to.
 		if (root == nullptr)
 			return nullptr;
 
-		ui::control *ctrl = get_focused();
+		UI::Control *control = getFocused();
 
-		if (!ctrl)
+		if (!control)
 			throw std::runtime_error("Focused control is null");
 
-		if (ctrl->on_key(k)) {
-			if (key_postlistener)
-				key_postlistener(k);
-			return ctrl;
+		if (control->onKey(key)) {
+			if (keyPostlistener)
+				keyPostlistener(key);
+			return control;
 		}
 
-		ui::container *ptr = ctrl->get_parent();
+		UI::Container *ptr = control->getParent();
 		
 		// Keep trying on_key, going up to the root as long as we keep getting false. If we're at the root and on_key
 		// still returns false, let the terminal itself handle the keypress as a last resort.
-		while (ptr && !ptr->on_key(k)) {
-			if (dynamic_cast<ui::control *>(ptr) == root) {
-				on_key(k);
-				if (key_postlistener)
-					key_postlistener(k);
+		while (ptr && !ptr->onKey(key)) {
+			if (dynamic_cast<UI::Control *>(ptr) == root) {
+				onKey(key);
+				if (keyPostlistener)
+					keyPostlistener(key);
 				return this;
 			}
 
-			if (ui::child *cptr = dynamic_cast<ui::child *>(ptr)) {
-				ptr = cptr->get_parent();
+			if (UI::Child *cptr = dynamic_cast<UI::Child *>(ptr)) {
+				ptr = cptr->getParent();
 			} else {
-				if (key_postlistener)
-					key_postlistener(k);
+				if (keyPostlistener)
+					keyPostlistener(key);
 				return nullptr;
 			}
 		}
 
-		if (key_postlistener)
-			key_postlistener(k);
+		if (keyPostlistener)
+			keyPostlistener(key);
 
 		return ptr;
 	}
 
-	ui::inputhandler * terminal::send_mouse(const mouse_report &report) {
-		ui::control *ctrl = child_at_offset(report.x, report.y);
+	UI::InputHandler * Terminal::sendMouse(const MouseReport &report) {
+		UI::Control *control = childAtOffset(report.x, report.y);
 
-		if (ctrl == nullptr) {
+		if (control == nullptr) {
 			DBG(report.str() << " nullptr"_d);
 			return nullptr;
 		}
 
-		if (ctrl->on_mouse(report)) {
-			if (mouse_postlistener)
-				mouse_postlistener(report);
-			return ctrl;
+		if (control->onMouse(report)) {
+			if (mousePostlistener)
+				mousePostlistener(report);
+			return control;
 		}
 
-		ui::container *ptr = ctrl->get_parent();
+		UI::Container *ptr = control->getParent();
 
-		while (ptr && !ptr->on_mouse(report)) {
-			if (dynamic_cast<ui::control *>(ptr) == root) {
-				on_mouse(report);
-				if (mouse_postlistener)
-					mouse_postlistener(report);
+		while (ptr && !ptr->onMouse(report)) {
+			if (dynamic_cast<UI::Control *>(ptr) == root) {
+				onMouse(report);
+				if (mousePostlistener)
+					mousePostlistener(report);
 				return this;
 			}
 
-			if (ui::child *cptr = dynamic_cast<ui::child *>(ptr)) {
-				ptr = cptr->get_parent();
+			if (UI::Child *cptr = dynamic_cast<UI::Child *>(ptr)) {
+				ptr = cptr->getParent();
 			} else {
-				if (mouse_postlistener)
-					mouse_postlistener(report);
+				if (mousePostlistener)
+					mousePostlistener(report);
 				return nullptr;
 			}
 		}
 
-		if (mouse_postlistener)
-			mouse_postlistener(report);
+		if (mousePostlistener)
+			mousePostlistener(report);
 
 		return ptr;
 	}
 
-	bool terminal::on_key(const key &k) {
-		if (k == kmod::ctrl) {
-			switch (k.type) {
-				case ktype::l:
+	bool Terminal::onKey(const Key &key) {
+		if (key == KeyMod::Ctrl) {
+			switch (key.type) {
+				case KeyType::l:
 					redraw();
 					break;
-				case ktype::y: debug_tree(); break;
+				case KeyType::y:
+					debugTree();
+					break;
 				default:
 					return false;
 			}
@@ -247,71 +248,71 @@ namespace haunted {
 		return false;
 	}
 
-	void terminal::start_input() {
-		input_thread = std::thread(&terminal::work_input, this);
+	void Terminal::startInput() {
+		inputThread = std::thread(&Terminal::workInput, this);
 	}
 
-	void terminal::join() {
-		if (input_thread.joinable())
-			input_thread.join();
+	void Terminal::join() {
+		if (inputThread.joinable())
+			inputThread.join();
 	}
 
-	void terminal::flush() {
-		out_stream.flush();
+	void Terminal::flush() {
+		outStream.flush();
 	}
 
-	void terminal::focus(ui::control *to_focus) {
+	void Terminal::focus(UI::Control *to_focus) {
 		focused = to_focus;
 	}
 
-	ui::control * terminal::get_focused() {
+	UI::Control * Terminal::getFocused() {
 		if (focused)
 			return focused;
 		focused = root;
 		return root;
 	}
 
-	bool terminal::add_child(ui::control *) {
+	bool Terminal::addChild(UI::Control *) {
 		return false;
 	}
 
-	bool terminal::has_focus(const ui::control *ctrl) const {
-		return focused == ctrl;
+	bool Terminal::hasFocus(const UI::Control *control) const {
+		return focused == control;
 	}
 
-	position terminal::get_position() const {
+	Position Terminal::getPosition() const {
 		return {0, 0, cols, rows};
 	}
 
-	ui::control * terminal::child_at_offset(int x, int y) const {
-		ui::container *cont = dynamic_cast<container *>(root);
-		while (cont != nullptr) {
-			ui::control *ctrl = cont->child_at_offset(x, y);
-			if (ctrl == nullptr)
+	UI::Control * Terminal::childAtOffset(int x, int y) const {
+		UI::Container *container = dynamic_cast<UI::Container *>(root);
+		while (container != nullptr) {
+			UI::Control *control = container->childAtOffset(x, y);
+			if (control == nullptr)
 				return nullptr;
-			cont = dynamic_cast<container *>(ctrl);
-			if (cont == nullptr)
-				return ctrl;
+			container = dynamic_cast<UI::Container *>(control);
+			if (container == nullptr)
+				return control;
 		}
 
 		return nullptr;
 	}
 
-	void terminal::jump_to_focused() {
+	void Terminal::jumpToFocused() {
 		if (focused)
-			focused->jump_focus();
+			focused->jumpFocus();
 	}
 
-	void terminal::jump(int x, int y) {
-		std::unique_lock uniq(output_mutex);
-		out_stream.jump(x, y);
+	void Terminal::jump(int x, int y) {
+		std::unique_lock uniq(outputMutex);
+		outStream.jump(x, y);
 	}
 
-	void terminal::mouse(mouse_mode mode) {
-		std::unique_lock uniq(output_mutex);
-		if (mode == mouse_mode::none) {
+	void Terminal::mouse(MouseMode mode) {
+		std::unique_lock uniq(outputMutex);
+		if (mode == MouseMode::None) {
 			if (mmode != mode) {
-				out_stream << "\e[?" << std::to_string(int(mmode)) << ";1006l";
+				outStream << "\e[?" << std::to_string(int(mmode)) << ";1006l";
 				mmode = mode;
 			}
 
@@ -319,98 +320,98 @@ namespace haunted {
 		}
 
 		if (mode != mmode) {
-			if (mmode != mouse_mode::none)
-				out_stream << "\e[?" << std::to_string(int(mmode)) << "l";
-			out_stream << "\e[?" << std::to_string(int(mode)) << ";1006h";
+			if (mmode != MouseMode::None)
+				outStream << "\e[?" << std::to_string(int(mmode)) << "l";
+			outStream << "\e[?" << std::to_string(int(mode)) << ";1006h";
 			mmode = mode;
 		}
 	}
 
-	void terminal::vscroll(int rows) {
-		std::unique_lock uniq(output_mutex);
+	void Terminal::vscroll(int rows) {
+		std::unique_lock uniq(outputMutex);
 		if (0 < rows) {
-			out_stream.scroll_down(rows);
+			outStream.scroll_down(rows);
 		} else if (rows < 0) {
-			out_stream.scroll_up(-rows);
+			outStream.scroll_up(-rows);
 		}
 	}
 
-	void terminal::hmargins(size_t left, size_t right) {
-		std::unique_lock uniq(output_mutex);
-		out_stream.hmargins(left, right);
+	void Terminal::hmargins(size_t left, size_t right) {
+		std::unique_lock uniq(outputMutex);
+		outStream.hmargins(left, right);
 	}
 
-	void terminal::hmargins() {
-		std::unique_lock uniq(output_mutex);
-		out_stream.hmargins();
+	void Terminal::hmargins() {
+		std::unique_lock uniq(outputMutex);
+		outStream.hmargins();
 	}
 
-	void terminal::vmargins(size_t top, size_t bottom) {
-		std::unique_lock uniq(output_mutex);
-		out_stream.vmargins(top, bottom);
+	void Terminal::vmargins(size_t top, size_t bottom) {
+		std::unique_lock uniq(outputMutex);
+		outStream.vmargins(top, bottom);
 	}
 
-	void terminal::vmargins() {
-		std::unique_lock uniq(output_mutex);
-		out_stream.vmargins();
+	void Terminal::vmargins() {
+		std::unique_lock uniq(outputMutex);
+		outStream.vmargins();
 	}
 
-	void terminal::margins(size_t top, size_t bottom, size_t left, size_t right) {
+	void Terminal::margins(size_t top, size_t bottom, size_t left, size_t right) {
 		vmargins(top, bottom);
 		hmargins(left, right);
 	}
 
-	void terminal::margins() {
+	void Terminal::margins() {
 		hmargins();
 		vmargins();
 	}
 
-	void terminal::enable_hmargins() { // DECLRMM: Left Right Margin Mode
-		std::unique_lock uniq(output_mutex);
-		out_stream.enable_hmargins();
+	void Terminal::enableHmargins() { // DECLRMM: Left Right Margin Mode
+		std::unique_lock uniq(outputMutex);
+		outStream.enable_hmargins();
 	}
 
-	void terminal::disable_hmargins() {
-		std::unique_lock uniq(output_mutex);
-		out_stream.disable_hmargins();
+	void Terminal::disableHmargins() {
+		std::unique_lock uniq(outputMutex);
+		outStream.disable_hmargins();
 	}
 
-	void terminal::set_origin() {
-		std::unique_lock uniq(output_mutex);
-		out_stream.set_origin();
+	void Terminal::setOrigin() {
+		std::unique_lock uniq(outputMutex);
+		outStream.set_origin();
 	}
 
-	void terminal::reset_origin() {
-		std::unique_lock uniq(output_mutex);
-		out_stream.reset_origin();
+	void Terminal::resetOrigin() {
+		std::unique_lock uniq(outputMutex);
+		outStream.reset_origin();
 	}
 
-	std::unique_lock<std::recursive_mutex> terminal::lock_render() {
-		return std::unique_lock(render_mutex);
+	std::unique_lock<std::recursive_mutex> Terminal::lockRender() {
+		return std::unique_lock(renderMutex);
 	}
 
 
 // Public operators
 
 
-	terminal::operator bool() const {
-		return bool(in_stream);
+	Terminal::operator bool() const {
+		return bool(inStream);
 	}
 
-	terminal & terminal::operator>>(int &ch) {
-		if (int c = in_stream.get())
+	Terminal & Terminal::operator>>(int &ch) {
+		if (int c = inStream.get())
 			ch = c;
 		return *this;
 	}
 
-	terminal & terminal::operator>>(char &ch) {
+	Terminal & Terminal::operator>>(char &ch) {
 		char c = 0;
-		if (in_stream.get(c))
+		if (inStream.get(c))
 			ch = c;
 		return *this;
 	}
 
-	terminal & terminal::operator>>(key &k) {
+	Terminal & Terminal::operator>>(Key &key) {
 		// If we receive an escape followed by a [ and another escape, we return Alt+[ after receiving the second
 		// escape, but this discards the second escape. To make up for this, we use a static bool to indicate that this
 		// weird sequence has occurred.
@@ -419,18 +420,18 @@ namespace haunted {
 		char c;
 		if (raw) {
 			*this >> c;
-			k = c;
+			key = c;
 			return *this;
 		}
 
-		k = 0;
+		key = 0;
 
 		if (!(*this >> c))
 			return *this;
 
 		// It's important to reset the partial_escape flag. Resetting it right after reading it prevents me from having
 		// to insert a reset before every return statement.
-		bool escape = partial_escape || c == uchar(ktype::escape);
+		bool escape = partial_escape || c == uchar(KeyType::Escape);
 		partial_escape = false;
 
 		if (escape) {
@@ -439,13 +440,13 @@ namespace haunted {
 			if (!(*this >> c))
 				return *this;
 
-			if (c == uchar(ktype::escape)) {
+			if (c == uchar(KeyType::Escape)) {
 				// We can't tell the difference between an actual press of the escape key and the beginning of a CSI.
 				// Perhaps it would be possible with the use of some timing trickery, but I don't consider that
 				// necessary right now (YAGNI!). Instead, the user will have to press the escape key twice.
-				k = {c, kmod::none};
+				key = {c, KeyMod::None};
 				return *this;
-			} else if (c == uchar(ktype::open_square)) {
+			} else if (c == uchar(KeyType::OpenSquare)) {
 				if (!(*this >> c))
 					return *this;
 
@@ -453,21 +454,21 @@ namespace haunted {
 					// To input an actual Alt+[, the user has to press the [ key again. Otherwise, we wouldn't be able
 					// to tell the difference between an actual Alt+[ and the beginning of a CSI.
 					case '[':
-						k = {c, kmod::alt};
+						key = {c, KeyMod::Alt};
 						return *this;
 
 					// If there's another escape immediately after "^[", we'll assume the user typed an actual Alt+[ and
 					// then input another escape sequence.
-					case int(ktype::escape):
+					case int(KeyType::Escape):
 						partial_escape = false;
-						k = {'[', kmod::alt};
+						key = {'[', KeyMod::Alt};
 						return *this;
 
 					// If the first character after the [ is A, B, C or D, it's an arrow key.
-					case 'A': k = ktype::up_arrow;    return *this;
-					case 'B': k = ktype::down_arrow;  return *this;
-					case 'C': k = ktype::right_arrow; return *this;
-					case 'D': k = ktype::left_arrow;  return *this;
+					case 'A': key = KeyType::UpArrow;    return *this;
+					case 'B': key = KeyType::DownArrow;  return *this;
+					case 'C': key = KeyType::RightArrow; return *this;
+					case 'D': key = KeyType::LeftArrow;  return *this;
 				}
 
 				// At this point, we haven't yet determined what the input is. A CSI sequence ends with a character in
@@ -475,7 +476,7 @@ namespace haunted {
 				static std::string buffer;
 				buffer = c;
 
-				while (!util::is_finalchar(c)) {
+				while (!Util::isFinalchar(c)) {
 					if (!(*this >> c))
 						return *this;
 
@@ -489,82 +490,81 @@ namespace haunted {
 						throw std::invalid_argument("Unrecognized sequence");
 					}
 
-					mouse_report report {buffer};
+					MouseReport report(buffer);
 
-					if (report.action == mouse_action::down) {
+					if (report.action == MouseAction::Down) {
 						dragging = true;
-						drag_button = report.button;
-					} else if (report.action == mouse_action::up) {
+						dragButton = report.button;
+					} else if (report.action == MouseAction::Up) {
 						dragging = false;
 					}
 
-					if (dragging && report.action == mouse_action::move) {
-						report.action = mouse_action::drag;
-						report.button = drag_button;
+					if (dragging && report.action == MouseAction::Move) {
+						report.action = MouseAction::Drag;
+						report.button = dragButton;
 					}
 
-					send_mouse(report);
+					sendMouse(report);
 
-					k = ktype::mouse;
+					key = KeyType::Mouse;
 					return *this;
 				}
 
-				const csi parsed = buffer;
+				const CSI parsed = buffer;
 
-				// Sometimes, get_key() returns keys with modifiers already set. For example, ^[Z represents shift+tab.
+				// Sometimes, getKey() returns keys with modifiers already set. For example, ^[Z represents shift+tab.
 				// If these modifiers are already set, then modifiers weren't specified the CSI u way and we shouldn't
 				// change them.
-				k = parsed.get_key();
-				if (k.mods.none())
-					k = key(k.type, modset((parsed.second - 1) & 7));
+				key = parsed.getKey();
+				if (key.mods.none())
+					key = Key(key.type, ModSet((parsed.second - 1) & 7));
 
 				return *this;
 			}
 
-			k = {c, kmod::alt};
+			key = {c, KeyMod::Alt};
 		} else if (c == 9) {
-			k = {ktype::tab};
+			key = {KeyType::Tab};
 		} else if (c == 10) {
-			k = {ktype::enter};
+			key = {KeyType::Enter};
 		} else if (c == 13) {
-			k = {ktype::carriage_return};
+			key = {KeyType::CarriageReturn};
 		} else if (0 < c && c < 27) {
 			// 1..26 corresponds to ^a..^z.
-			k = {uchar(ktype::a) + c - 1, kmod::ctrl};
+			key = {uchar(KeyType::a) + c - 1, KeyMod::Ctrl};
 		} else {
-			k = c;
+			key = c;
 		}
 
 		return *this;
 	}
 
-	void terminal::debug_tree() {
-		ansi::ansistream &dbg = haunted::dbgstream;
+	void Terminal::debugTree() {
+		ansi::ansistream &dbg = Haunted::dbgstream;
 		dbg << "terminal"_b << ansi::endl;
 
 		if (root) {
-			std::deque<std::pair<int, ui::control *>> queue {{1, root}};
+			std::deque<std::pair<int, UI::Control *>> queue {{1, root}};
 
 			int depth;
-			ui::control *ctrl;
+			UI::Control *control;
 
 			while (!queue.empty()) {
-				std::tie(depth, ctrl) = queue.back();
+				std::tie(depth, control) = queue.back();
 				queue.pop_back();
 
-				const haunted::position &pos = ctrl->get_position();
+				const Haunted::Position &pos = control->getPosition();
 				int width = pos.width, height = pos.height, top = pos.top, left = pos.left;
 
 				dbg << ansi::color::gray << std::string(depth * 2, ' ') << ansi::action::reset
-					<< ctrl->get_id() << (ctrl->has_focus()? " *"_d : "");
+					<< control->getID() << (control->hasFocus()? " *"_d : "");
 				dbg.jump(25, -1).save()        << "("_d << left << ","_d;
 				dbg.restore().right(6)         << top << ") "_d;
 				dbg.restore().right(10).save() << width;
 				dbg.restore().right(3)         << " × "_d << height << ansi::endl;
-				if (ui::container *cont = dynamic_cast<ui::container *>(ctrl)) {
-					for (ui::control *child: cont->get_children())
+				if (UI::Container *cont = dynamic_cast<UI::Container *>(control))
+					for (UI::Control *child: cont->getChildren())
 						queue.push_back({depth + 1, child});
-				}
 			}
 		}
 	}

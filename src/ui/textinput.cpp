@@ -1,54 +1,54 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "haunted/core/terminal.h"
-#include "haunted/ui/textinput.h"
-#include "lib/uutil.h"
+#include "haunted/core/Terminal.h"
+#include "haunted/ui/TextInput.h"
+#include "lib/UUtil.h"
 
-namespace haunted::ui {
-	std::unordered_set<unsigned char> textinput::whitelist = {9, 10, 11, 13};
+namespace Haunted::UI {
+	std::unordered_set<unsigned char> TextInput::whitelist = {9, 10, 11, 13};
 
-	textinput::textinput(container *parent_, position pos_, const textinput::string &buffer_, size_t cursor_):
-	control(parent_, pos_), buffer(buffer_), cursor(cursor_) {
-		if (parent_ != nullptr)
-			parent_->add_child(this);
+	TextInput::TextInput(Container *parent_, const Position &pos_, const TextInput::string &buffer_, size_t cursor_):
+	Control(parent_, pos_), buffer(buffer_), cursor(cursor_) {
+		if (parent_)
+			parent_->addChild(this);
 	}
 
-	textinput::textinput(container *parent_, const textinput::string &buffer_, size_t cursor_):
-	control(parent_), buffer(buffer_), cursor(cursor_) {
-		if (parent_ != nullptr)
-			parent_->add_child(this);
+	TextInput::TextInput(Container *parent_, const TextInput::string &buffer_, size_t cursor_):
+	Control(parent_), buffer(buffer_), cursor(cursor_) {
+		if (parent_)
+			parent_->addChild(this);
 	}
 
 
 // Private instance methods
 
 
-	void textinput::update() {
-		if (on_update)
-			on_update(buffer, cursor);
+	void TextInput::update() {
+		if (onUpdate)
+			onUpdate(buffer, cursor);
 	}
 
-	void textinput::submit() {
-		if (on_submit)
-			on_submit(buffer, cursor);
+	void TextInput::submit() {
+		if (onSubmit)
+			onSubmit(buffer, cursor);
 	}
 
-	void textinput::draw_cursor() {
-		if (can_draw() && term->has_focus(this))
-			jump_cursor();
+	void TextInput::drawCursor() {
+		if (canDraw() && terminal->hasFocus(this))
+			jumpCursor();
 	}
 
-	void textinput::draw_insert() {
-		if (!can_draw())
+	void TextInput::drawInsert() {
+		if (!canDraw())
 			return;
 
 		// It's assumed that the cursor has just been moved to the right from the insertion.
 		// We need to account for that by using a decremented copy of the cursor.
-		size_t cur = cursor - 1;
+		const size_t cur = cursor - 1;
 
-		if (text_width() <= cur - scroll) {
-			// If, for whatever reason, the cursor is to the right of the bounds of the textinput, there's no visible
+		if (textWidth() <= cur - scroll) {
+			// If, for whatever reason, the cursor is to the right of the bounds of the TextInput, there's no visible
 			// change to render because the change in text occurs entirely offscreen. We can just give up now if that's
 			// the case.
 			return;
@@ -56,65 +56,65 @@ namespace haunted::ui {
 
 		if (cur < scroll) {
 			// Things will turn out weird if we use this approach when the cursor is to the left of the bounds of the
-			// textinput, so when that's the case we just rerender the whole thing. TODO: improve this?
+			// TextInput, so when that's the case we just rerender the whole thing. TODO: improve this?
 			draw();
 			return;
 		}
 
-		auto lock = term->lock_render();
-		try_colors();
-		term->out_stream.save();
-		jump_cursor();
-		term->out_stream.left();
-		point cpos = find_cursor();
+		auto lock = terminal->lockRender();
+		tryColors();
+		terminal->outStream.save();
+		jumpCursor();
+		terminal->outStream.left();
+		Point cpos = findCursor();
 		// Print only enough text to reach the right edge. Printing more would cause wrapping or text being printed out
 		// of bounds.
-		*term << buffer.substr(cur, pos.right() - cpos.x + 2);
-		term->out_stream.restore();
-		term->colors.apply();
-		if (has_focus())
-			jump_cursor();
+		*terminal << buffer.substr(cur, position.right() - cpos.x + 2);
+		terminal->outStream.restore();
+		terminal->colors.apply();
+		if (hasFocus())
+			jumpCursor();
 		flush();
 	}
 
-	void textinput::clear_line() {
+	void TextInput::clearLine() {
 		// If the buffer touches the right edge of the container, there's nothing to do.
-		if (pos.width - prefix_length > length() - scroll)
-			clear_right(length() - scroll);
+		if (position.width - prefixLength > length() - scroll)
+			clearRight(length() - scroll);
 	}
 
-	void textinput::clear_text() {
-		clear_right(0);
+	void TextInput::clearText() {
+		clearRight(0);
 	}
 
-	void textinput::clear_right(size_t offset) {
-		if (!can_draw())
+	void TextInput::clearRight(size_t offset) {
+		if (!canDraw())
 			return;
 
-		term->jump(prefix_length + offset, pos.top);
-		apply_colors();
-		if (pos.right() == term->get_position().right()) {
-			// If the textinput stretches to the right edge of the terminal, we can use clear_right.
-			term->out_stream.clear_right();
+		terminal->jump(prefixLength + offset, position.top);
+		applyColors();
+		if (position.right() == terminal->getPosition().right()) {
+			// If the TextInput stretches to the right edge of the terminal, we can use clearRight.
+			terminal->outStream.clear_right();
 		} else {
-			// Horizontal margins don't work everywhere, and clear_right doesn't respect them anyway, so we have to use
+			// Horizontal margins don't work everywhere, and clearRight doesn't respect them anyway, so we have to use
 			// this unsavory hack to clear just part of the screen.
-			*term << std::string(pos.width - (prefix_length + offset), ' ');
+			*terminal << std::string(position.width - (prefixLength + offset), ' ');
 		}
 	}
 
-	point textinput::find_cursor() const {
+	Point TextInput::findCursor() const {
 #ifndef ENABLE_ICU
-		return {static_cast<int>(pos.left + prefix_length + cursor - scroll), pos.top};
+		return {static_cast<int>(position.left + prefixLength + cursor - scroll), position.top};
 #else
-		return {static_cast<int>(pos.left + prefix_length + buffer.width_until(cursor, scroll)), pos.top};
+		return {static_cast<int>(position.left + prefixLength + buffer.widthUntil(cursor, scroll)), position.top};
 #endif
 	}
 
-	bool textinput::check_scroll() {
+	bool TextInput::checkScroll() {
 		const size_t len = length();
 
-		if (text_width() < len && cursor == len) {
+		if (textWidth() < len && cursor == len) {
 			// If the cursor is at the end of the input, increment the scroll. This keeps the cursor at the right edge
 			// of the control and pushes the other text to the left, truncating the first character.
 			++scroll;
@@ -130,20 +130,20 @@ namespace haunted::ui {
 	}
 
 #ifndef ENABLE_ICU
-	char textinput::prev_char() {
+	char TextInput::prevChar() {
 		return cursor > 0? buffer[cursor - 1]  : '\0';
 	}
 
-	char textinput::next_char() {
+	char TextInput::nextChar() {
 		return cursor < size()? buffer[cursor] : '\0';
 	}
 #else
-	superchar textinput::prev_char() {
-		return cursor > 0? buffer[cursor - 1]  : superchar();
+	superchar TextInput::prevChar() {
+		return cursor > 0? buffer[cursor - 1]  : Superchar();
 	}
 
-	superchar textinput::next_char() {
-		return cursor < size()? buffer[cursor] : superchar();
+	superchar TextInput::nextChar() {
+		return cursor < size()? buffer[cursor] : Superchar();
 	}
 #endif
 
@@ -151,41 +151,41 @@ namespace haunted::ui {
 // Public instance methods
 
 
-	void textinput::listen(event evt, const update_fn &fn) {
-		if (evt == event::update) {
-			on_update = fn;
-		} else if (evt == event::submit) {
-			on_submit = fn;
+	void TextInput::listen(Event event, const Update_f &fn) {
+		if (event == Event::Update) {
+			onUpdate = fn;
+		} else if (event == Event::Submit) {
+			onSubmit = fn;
 		} else {
-			throw std::invalid_argument("Invalid event type: " + std::to_string(static_cast<int>(evt)));
+			throw std::invalid_argument("Invalid event type: " + std::to_string(static_cast<int>(event)));
 		}
 	}
 
-	void textinput::move_to(size_t new_cursor) {
+	void TextInput::moveTo(size_t new_cursor) {
 		if (new_cursor <= size() && new_cursor != cursor) {
 			cursor = new_cursor;
-			if (check_scroll()) {
+			if (checkScroll()) {
 				draw();
-				try_jump();
+				tryJump();
 			}
 			update();
 		}
 	}
 
-	void textinput::insert(const std::string &str) {
-		textinput::string newstr = str;
+	void TextInput::insert(const std::string &str) {
+		TextInput::string newstr = str;
 		buffer.insert(cursor, newstr);
 		cursor += ansi::length(newstr);
 		update();
 	}
 
-	void textinput::insert(unsigned char ch) {
+	void TextInput::insert(unsigned char ch) {
 		if (ch < 0x20 && whitelist.find(ch) == whitelist.end())
 			return;
 
-		if (!unicode_byte_buffer.empty()) {
-			unicode_byte_buffer.push_back(ch);
-			if (unicode_byte_buffer.size() == bytes_expected) {
+		if (!unicodeByteBuffer.empty()) {
+			unicodeByteBuffer.push_back(ch);
+			if (unicodeByteBuffer.size() == bytesExpected) {
 				// The Unicode buffer now contains a complete and valid codepoint. (The first byte is valid, at least.)
 
 				bool do_insert = true;
@@ -194,25 +194,25 @@ namespace haunted::ui {
 				// Extract the full codepoint from the buffer.
 				uint32_t uchar;
 				UErrorCode code = U_ZERO_ERROR;
-				icu::UnicodeString::fromUTF8(unicode_byte_buffer).toUTF32(reinterpret_cast<int *>(&uchar), 1, code);
+				icu::UnicodeString::fromUTF8(unicodeByteBuffer).toUTF32(reinterpret_cast<int *>(&uchar), 1, code);
 				if (0 < code)
-					throw std::runtime_error("textinput::insert: toUTF32 returned " + std::to_string(code));
+					throw std::runtime_error("TextInput::insert: toUTF32 returned " + std::to_string(code));
 
 
 				// If this is half a flag...
-				if (uutil::is_regional_indicator(uchar)) {
-					if (unicode_codepoint_buffer.empty()) {
-						// ...and it's the first half, don't insert it into the textinput yet, but insert it into the
+				if (UUtil::isRegionalIndicator(uchar)) {
+					if (unicodeCodepointBuffer.empty()) {
+						// ...and it's the first half, don't insert it into the TextInput yet, but insert it into the
 						// codepoint buffer.
 						do_insert = false;
-						unicode_codepoint_buffer.push_back(uchar);
+						unicodeCodepointBuffer.push_back(uchar);
 					} else {
-						// Otherwise, if it's the second half, insert both halves into the textinput.
-						// int uchars[] = {static_cast<int>(unicode_codepoint_buffer[0]), static_cast<int>(uchar)};
-						int uchars[] = {static_cast<int>(unicode_codepoint_buffer[0]), static_cast<int>(uchar)};
-						unicode_byte_buffer.clear();
-						icu::UnicodeString::fromUTF32(uchars, 2).toUTF8String(unicode_byte_buffer);
-						unicode_codepoint_buffer.clear();
+						// Otherwise, if it's the second half, insert both halves into the TextInput.
+						// int uchars[] = {static_cast<int>(unicodeCodepointBuffer[0]), static_cast<int>(uchar)};
+						int uchars[] = {static_cast<int>(unicodeCodepointBuffer[0]), static_cast<int>(uchar)};
+						unicodeByteBuffer.clear();
+						icu::UnicodeString::fromUTF32(uchars, 2).toUTF8String(unicodeByteBuffer);
+						unicodeCodepointBuffer.clear();
 					}
 				}
 #endif
@@ -220,20 +220,20 @@ namespace haunted::ui {
 				if (do_insert) {
 					size_t old_length = buffer.length();
 					DBG("Old length: " << old_length);
-					buffer.insert(cursor, unicode_byte_buffer);
+					buffer.insert(cursor, unicodeByteBuffer);
 					DBG("New length: " << buffer.length());
 					cursor += buffer.length() - old_length;
-					DBG("Inserting character from Unicode buffer: \"" << unicode_byte_buffer << "\" (raw length: " <<
-						unicode_byte_buffer.length() << ")");
-					draw_insert();
+					DBG("Inserting character from Unicode buffer: \"" << unicodeByteBuffer << "\" (raw length: " <<
+						unicodeByteBuffer.length() << ")");
+					drawInsert();
 					update();
 				}
 
-				unicode_byte_buffer.clear();
-				bytes_expected = 0;
+				unicodeByteBuffer.clear();
+				bytesExpected = 0;
 			}
 		} else {
-			size_t width = utf8::width(ch);
+			const size_t width = UTF8::width(ch);
 			if (width < 2) {
 				// It seems we've received a plain old ASCII character or an invalid UTF8 start byte.
 				// Either way, append it to the buffer.
@@ -242,64 +242,64 @@ namespace haunted::ui {
 #else
 				buffer.insert(cursor++, ch);
 #endif
-				draw_insert();
+				drawInsert();
 				update();
 			} else {
 				// This byte is the first of a multi-byte codepoint.
 				// Set the expected width and initialize the Unicode buffer with the byte.
-				bytes_expected = width;
-				unicode_byte_buffer.push_back(ch);
+				bytesExpected = width;
+				unicodeByteBuffer.push_back(ch);
 			}
 		}
 	}
 
-	void textinput::clear() {
+	void TextInput::clear() {
 		buffer.clear();
 		cursor = 0;
-		clear_text();
-		jump_cursor();
+		clearText();
+		jumpCursor();
 		update();
 	}
 
-	void textinput::erase_word() {
-		if (cursor == 0 || !can_draw())
+	void TextInput::eraseWord() {
+		if (cursor == 0 || !canDraw())
 			return;
 
 		size_t to_erase = 0;
 #ifndef ENABLE_ICU
-		for (; prev_char() == ' '; --cursor)
+		for (; prevChar() == ' '; --cursor)
 			to_erase++;
-		for (; prev_char() != '\0' && prev_char() != ' '; --cursor)
+		for (; prevChar() != '\0' && prevChar() != ' '; --cursor)
 			to_erase++;
 #else
-		for (; prev_char() == " "; --cursor)
+		for (; prevChar() == " "; --cursor)
 			to_erase++;
-		for (; prev_char() != "" && prev_char() != " "; --cursor)
+		for (; prevChar() != "" && prevChar() != " "; --cursor)
 			to_erase++;
 #endif
 		buffer.erase(cursor, to_erase);
-		check_scroll();
-		draw_right();
+		checkScroll();
+		drawRight();
 		update();
 	}
 
-	void textinput::erase() {
+	void TextInput::erase() {
 		if (cursor > 0) {
-			auto lock = term->lock_render();
+			auto lock = terminal->lockRender();
 			buffer.erase(--cursor, 1);
 
-			if (can_draw()) {
-				if (cursor == length() && scroll < cursor && cursor - scroll < text_width()) {
+			if (canDraw()) {
+				if (cursor == length() && scroll < cursor && cursor - scroll < textWidth()) {
 					// If there's no text after the cursor and the cursor is in bounds,
 					// it should be sufficient to erase the old character from the screen.
-					apply_colors();
-					term->out_stream.save();
-					jump_cursor();
-					*term << ' ';
-					term->out_stream.restore();
+					applyColors();
+					terminal->outStream.save();
+					jumpCursor();
+					*terminal << ' ';
+					terminal->outStream.restore();
 				} else {
-					// Otherwise, we need draw_erase() to handle things.
-					draw_erase();
+					// Otherwise, we need drawErase() to handle things.
+					drawErase();
 				}
 			}
 
@@ -307,38 +307,38 @@ namespace haunted::ui {
 		}
 	}
 
-	void textinput::erase_forward() {
-		if (at_end())
+	void TextInput::eraseForward() {
+		if (atEnd())
 			return;
 
 		buffer.erase(cursor, 1);
-		draw_erase();
+		drawErase();
 		update();
 	}
 
-	std::string textinput::get_text() const {
+	std::string TextInput::getText() const {
 		return buffer;
 	}
 
-	void textinput::set_text(const std::string &text) {
+	void TextInput::setText(const std::string &text) {
 		buffer = text;
 		cursor = text.size();
-		if (cursor > text_width())
-			scroll = text_width() - cursor;
+		if (cursor > textWidth())
+			scroll = textWidth() - cursor;
 		draw();
 		update();
 	}
 
-	void textinput::set_prefix(const std::string &prefix_) {
+	void TextInput::setPrefix(const std::string &prefix_) {
 		if (prefix != prefix_) {
 			prefix = prefix_;
-			prefix_length = ansi::length(prefix);
+			prefixLength = ansi::length(prefix);
 			draw();
 			update();
 		}
 	}
 
-	void textinput::left() {
+	void TextInput::left() {
 		if (cursor == 0)
 			return;
 
@@ -350,15 +350,15 @@ namespace haunted::ui {
 		update();
 	}
 
-	void textinput::right() {
+	void TextInput::right() {
 		// Don't do anything if the cursor is already at the end of the text.
 		if (cursor == buffer.length())
 			return;
 
 		// Because there's text to the right, we increment the cursor.
 
-		if (cursor++ - scroll == text_width()) {
-			// If we were at the right edge of the textinput, we need to increment the scroll and redraw too.
+		if (cursor++ - scroll == textWidth()) {
+			// If we were at the right edge of the TextInput, we need to increment the scroll and redraw too.
 			++scroll;
 			draw();
 		}
@@ -366,7 +366,7 @@ namespace haunted::ui {
 		update();
 	}
 
-	void textinput::start() {
+	void TextInput::start() {
 		if (cursor != 0) {
 			cursor = 0;
 			
@@ -379,12 +379,12 @@ namespace haunted::ui {
 		}
 	}
 
-	void textinput::end() {
+	void TextInput::end() {
 		if (cursor != size()) {
 			cursor = size();
 			
-			if (buffer.length() > text_width()) {
-				size_t new_scroll = buffer.length() - text_width();
+			if (buffer.length() > textWidth()) {
+				const size_t new_scroll = buffer.length() - textWidth();
 				if (scroll != new_scroll) {
 					scroll = new_scroll;
 					draw();
@@ -395,18 +395,18 @@ namespace haunted::ui {
 		}
 	}
 
-	void textinput::prev_word() {
+	void TextInput::prevWord() {
 		if (cursor == 0)
 			return;
 
-		size_t old_cursor = cursor;
+		const size_t old_cursor = cursor;
 
 #ifndef ENABLE_ICU
-		for (; prev_char() == ' '; --cursor);
-		for (; prev_char() != '\0' && prev_char() != ' '; --cursor);
+		for (; prevChar() == ' '; --cursor);
+		for (; prevChar() != '\0' && prevChar() != ' '; --cursor);
 #else
-		for (; prev_char() == " "; --cursor);
-		for (; !prev_char().empty() && prev_char() != " "; --cursor);
+		for (; prevChar() == " "; --cursor);
+		for (; !prevChar().empty() && prevChar() != " "; --cursor);
 #endif
 
 		if (cursor != old_cursor) {
@@ -419,25 +419,25 @@ namespace haunted::ui {
 		}
 	}
 
-	void textinput::next_word() {
+	void TextInput::nextWord() {
 		if (cursor == size())
 			return;
 
-		size_t old_cursor = cursor;
+		const size_t old_cursor = cursor;
 
 #ifndef ENABLE_ICU
-		for (; next_char() == ' '; ++cursor);
-		for (; next_char() != '\0' && next_char() != ' '; ++cursor);
+		for (; nextChar() == ' '; ++cursor);
+		for (; nextChar() != '\0' && nextChar() != ' '; ++cursor);
 #else
-		for (; next_char() == " "; ++cursor);
-		for (; !next_char().empty() && next_char() != " "; ++cursor);
+		for (; nextChar() == " "; ++cursor);
+		for (; !nextChar().empty() && nextChar() != " "; ++cursor);
 #endif
 
 		if (cursor != old_cursor) {
-			if (cursor - scroll > text_width()) {
+			if (cursor - scroll > textWidth()) {
 				// If we've moved beyond the right edge, we need to adjust the scroll to align the cursor with the right
 				// edge.
-				scroll = cursor - text_width();
+				scroll = cursor - textWidth();
 				draw();
 			}
 
@@ -445,7 +445,7 @@ namespace haunted::ui {
 		}
 	}
 
-	void textinput::transpose() {
+	void TextInput::transpose() {
 		const size_t len = length();
 		// If there aren't at least two characters, there's nothing to transpose.
 		// Don't do anything if the cursor is at the beginning either.
@@ -453,7 +453,7 @@ namespace haunted::ui {
 			return;
 
 		if (cursor == len) {
-			size_t blen = buffer.length();
+			const size_t blen = buffer.length();
 #ifndef ENABLE_ICU
 			std::string penultimate = {1, buffer[blen - 2]}, ultimate = {1, buffer[blen - 1]};
 #else
@@ -461,7 +461,7 @@ namespace haunted::ui {
 #endif
 			buffer.erase(blen - 2);
 			buffer += ultimate + penultimate;
-			draw_right(-2);
+			drawRight(-2);
 		} else {
 #ifndef ENABLE_ICU
 			std::string before_cursor = {1, buffer[cursor - 1]}, at_cursor = {1, buffer[cursor]};
@@ -470,82 +470,82 @@ namespace haunted::ui {
 #endif
 			buffer.erase(cursor - 1, 2);
 			buffer.insert(cursor - 1, at_cursor + before_cursor);
-			draw_right(-1);
+			drawRight(-1);
 			++cursor;
-			jump_cursor();
+			jumpCursor();
 		}
 	}
 
-	size_t textinput::length() const {
+	size_t TextInput::length() const {
 		return buffer.length();
 	}
 
-	size_t textinput::size() const {
+	size_t TextInput::size() const {
 		return buffer.length();
 	}
 
-	bool textinput::empty() const {
+	bool TextInput::empty() const {
 		return buffer.empty();
 	}
 
-	bool textinput::on_mouse(const mouse_report &) {
+	bool TextInput::onMouse(const MouseReport &) {
 		focus();
 		return true;
 	}
 
-	bool textinput::on_key(const key &k) {
-		int type = int(k.type);
-		modset mods = k.mods;
+	bool TextInput::onKey(const Key &key) {
+		const int type = int(key.type);
+		ModSet mods = key.mods;
 
-		switch (kmod(mods.to_ulong())) {
-			case kmod::none:
+		switch (KeyMod(mods.to_ulong())) {
+			case KeyMod::None:
 				switch (type) {
-					case int(ktype::right_arrow): right(); break;
-					case int(ktype::left_arrow):   left(); break;
-					case int(ktype::backspace):   erase(); break;
-					case int(ktype::enter):      submit(); break;
-					case int(ktype::home):        start(); break;
-					case int(ktype::end):           end(); break;
-					case int(ktype::down_arrow):
-					case int(ktype::up_arrow):
-					case int(ktype::page_down):
-					case int(ktype::page_up): return false;
-					case int(ktype::mouse):   return true;
-					case int(ktype::tab):
+					case int(KeyType::RightArrow): right(); break;
+					case int(KeyType::LeftArrow):   left(); break;
+					case int(KeyType::Backspace):   erase(); break;
+					case int(KeyType::Enter):      submit(); break;
+					case int(KeyType::Home):        start(); break;
+					case int(KeyType::End):           end(); break;
+					case int(KeyType::DownArrow):
+					case int(KeyType::UpArrow):
+					case int(KeyType::PageDown):
+					case int(KeyType::PageUp): return false;
+					case int(KeyType::Mouse):  return true;
+					case int(KeyType::Tab):
 						return false;
 					default:
-						insert(char(k));
-						if (check_scroll())
+						insert(char(key));
+						if (checkScroll())
 							draw();
 						return true;
 				}
 				break;
-			case kmod::ctrl:
+			case KeyMod::Ctrl:
 				switch (type) {
-					case 'a':      start(); break;
-					case 'e':        end(); break;
-					case 'h':      erase(); break;
-					case 't':  transpose(); break;
-					case 'u':      clear(); break;
-					case 'w': erase_word(); break;
+					case 'a':     start(); break;
+					case 'e':       end(); break;
+					case 'h':     erase(); break;
+					case 't': transpose(); break;
+					case 'u':     clear(); break;
+					case 'w': eraseWord(); break;
 					case 'm': {
 #ifndef ENABLE_ICU
 						DBG("Length: " << buffer.length());
 #else
-						DBG("Length: " << buffer.length() << "; raw length: " << buffer.get_data().length());
+						DBG("Length: " << buffer.length() << "; raw length: " << buffer.getData().length());
 #endif
 						for (size_t i = 0, len = buffer.length(); i < len; ++i) {
 #ifndef ENABLE_ICU
-							std::string piece = {1, buffer[i]};
+							const std::string piece = {1, buffer[i]};
 							DBG(i << ": " << "[" << piece << "] " << piece.length() << "l");
 #else
-							std::string piece = buffer[i];
+							const std::string piece = buffer[i];
 							DBG(i << ": " << "[" << piece << "] " << buffer.width_at(i) << "w " << piece.length() << "l");
 #endif
 						}
 
 #ifdef ENABLE_ICU
-						buffer.scan_length();
+						buffer.scanLength();
 						DBG("Scanned length. New length: " << buffer.length());
 #endif
 						break;
@@ -553,11 +553,11 @@ namespace haunted::ui {
 					default: return false;
 				}
 				break;
-			case kmod::alt:
+			case KeyMod::Alt:
 				switch (type) {
-					case int(ktype::backspace): erase_word(); break;
-					case 'b': prev_word(); break;
-					case 'f': next_word(); break;
+					case int(KeyType::Backspace): eraseWord(); break;
+					case 'b': prevWord(); break;
+					case 'f': nextWord(); break;
 					case 'H': start();     break;
 					case 'F': end();       break;
 					default: return false;
@@ -566,21 +566,21 @@ namespace haunted::ui {
 			default: return false;
 		}
 
-		draw_cursor();
+		drawCursor();
 		flush();
 		return true;
 	}
 
-	void textinput::draw() {
-		if (!can_draw())
+	void TextInput::draw() {
+		if (!canDraw())
 			return;
 
-		colored::draw();
+		Colored::draw();
 
-		auto lock = term->lock_render();
-		size_t twidth = text_width();
+		auto lock = terminal->lockRender();
+		size_t twidth = textWidth();
 
-		clear_line();
+		clearLine();
 		jump();
 
 		try {
@@ -589,128 +589,128 @@ namespace haunted::ui {
 			if (sscroll < 0)
 				sscroll = -sscroll;
 
-			*term << prefix;
-			print_graphemes(buffer.substr(sscroll));
+			*terminal << prefix;
+			printGraphemes(buffer.substr(sscroll));
 		} catch (std::out_of_range &) {
-			DBGT("std::out_of_range in textinput::draw(): scroll[" << static_cast<ssize_t>(scroll) << "], twidth[" <<
+			DBGT("std::out_of_range in TextInput::draw(): scroll[" << static_cast<ssize_t>(scroll) << "], twidth[" <<
 				twidth << "], buffer[" << buffer.size() << "] = \"" << std::string(buffer) << "\"");
-			*term << prefix;
+			*terminal << prefix;
 		}
 
-		term->reset_colors();
-		term->jump_to_focused();
+		terminal->resetColors();
+		terminal->jumpToFocused();
 	}
 
-	void textinput::draw_right(int offset) {
-		if (!can_draw())
+	void TextInput::drawRight(int offset) {
+		if (!canDraw())
 			return;
 
-		auto lock = term->lock_render();
-		DBG("draw_right(" << offset << ")");
-		apply_colors();
-		term->out_stream.save();
-		clear_line();
-		size_t old_cursor = cursor;
+		auto lock = terminal->lockRender();
+		DBG("drawRight(" << offset << ")");
+		applyColors();
+		terminal->outStream.save();
+		clearLine();
+		const size_t old_cursor = cursor;
 		cursor = offset < 0 && -offset > static_cast<int>(cursor)? 0 : cursor + offset;
 		if (cursor > length())
 			cursor = length();
-		jump_cursor();
-		size_t twidth = text_width();
-		*term << buffer.substr(cursor, twidth - cursor + scroll);
+		jumpCursor();
+		size_t twidth = textWidth();
+		*terminal << buffer.substr(cursor, twidth - cursor + scroll);
 		cursor = old_cursor;
-		term->out_stream.restore();
+		terminal->outStream.restore();
 	}
 
-	void textinput::draw_erase() {
-		DBG("draw_erase()");
-		if (!can_draw() || text_width() <= cursor - scroll) {
+	void TextInput::drawErase() {
+		DBG("drawErase()");
+		if (!canDraw() || textWidth() <= cursor - scroll) {
 			// If the cursor is at or beyond the right edge, do nothing.
 			return;
 		}
 
-		auto lock = term->lock_render();
-		apply_colors();
-		term->out_stream.save();
+		auto lock = terminal->lockRender();
+		applyColors();
+		terminal->outStream.save();
 
 		if (cursor <= scroll) {
 			// If the cursor is at or beyond the left edge, redraw the entire line.
-			clear_text();
-			term->jump(pos.left + prefix_length, pos.top);
-			// *term << buffer.substr(scroll, text_width());
-			print_graphemes(buffer.substr(scroll));
-			jump_cursor();
+			clearText();
+			terminal->jump(position.left + prefixLength, position.top);
+			// *terminal << buffer.substr(scroll, textWidth());
+			printGraphemes(buffer.substr(scroll));
+			jumpCursor();
 			flush();
 		} else {
 			// If the cursor is somewhere between the two edges, clear part of the line and print part of the buffer.
-			clear_right(cursor - scroll);
-			jump_cursor();
-			// *term << buffer.substr(cursor, text_width() - cursor + scroll);
-			print_graphemes(buffer.substr(cursor));
+			clearRight(cursor - scroll);
+			jumpCursor();
+			// *terminal << buffer.substr(cursor, textWidth() - cursor + scroll);
+			printGraphemes(buffer.substr(cursor));
 		}
 
-		term->out_stream.restore();
+		terminal->outStream.restore();
 		flush();
 	}
 
-	void textinput::print_graphemes(textinput::string to_print) {
-		size_t twidth = text_width();
+	void TextInput::printGraphemes(TextInput::string to_print) {
+		const size_t twidth = textWidth();
 #ifndef ENABLE_ICU
-		size_t width = to_print.size();
+#define TP_WIDTH size
 #else
-		size_t width = to_print.width();
+#define TP_WIDTH width
 #endif
-		while (twidth < width)
+		while (twidth < to_print.TP_WIDTH())
 			to_print.pop_back();
+#undef TP_WIDTH
 
 #ifndef ENABLE_ICU
 		for (const char grapheme: to_print) {
-			*term << grapheme;
+			*terminal << grapheme;
 #else
 		size_t i = 0;
 		for (const std::string &grapheme: to_print) {
-			width = to_print.width_at(i++);
+			const size_t width = to_print.width_at(i++);
 			if (width == 1) {
-				*term << grapheme;
+				*terminal << grapheme;
 			} else {
-				term->out_stream.save();
-				*term << grapheme;
-				term->out_stream.restore().right(width);
+				terminal->outStream.save();
+				*terminal << grapheme;
+				terminal->outStream.restore().right(width);
 			}
 #endif
 		}
 	}
 
-	bool textinput::can_draw() const {
-		return control::can_draw() && !term->suppress_output;
+	bool TextInput::canDraw() const {
+		return Control::canDraw() && !terminal->suppressOutput;
 	}
 
-	void textinput::focus() {
-		control::focus();
-		colored::focus();
-		jump_cursor();
+	void TextInput::focus() {
+		Control::focus();
+		Colored::focus();
+		jumpCursor();
 	}
 
-	void textinput::jump_cursor() {
-		if (term != nullptr) {
-			auto lock = term->lock_render();
-			point cpos = find_cursor();
-			term->jump(cpos.x, cpos.y);
+	void TextInput::jumpCursor() {
+		if (terminal) {
+			auto lock = terminal->lockRender();
+			Point cpos = findCursor();
+			terminal->jump(cpos.x, cpos.y);
 		}
 	}
 
-	void textinput::jump_focus() {
-		jump_cursor();
+	void TextInput::jumpFocus() {
+		jumpCursor();
 	}
 
-	bool textinput::try_jump() {
-		if (term == nullptr || !has_focus())
+	bool TextInput::tryJump() {
+		if (!terminal || !hasFocus())
 			return false;
-		jump_cursor();
+		jumpCursor();
 		return true;
 	}
+}
 
-	std::ostream & operator<<(std::ostream &os, const textinput &input) {
-		os << std::string(input);
-		return os;
-	}
+std::ostream & operator<<(std::ostream &os, const Haunted::UI::TextInput &input) {
+	return os << std::string(input);
 }

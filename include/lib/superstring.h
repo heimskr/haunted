@@ -4,24 +4,24 @@
 #include <list>
 #include <string>
 
-namespace haunted {
+namespace Haunted {
 	/** Represents a character made of any number of codepoints. */
-	using superchar = std::string;
+	using Superchar = std::string;
 
 	/** Used for creating an easily editable string that can accommodate characters containing multiple codepoints (such
 	 *  as some emoji). */
-	class superstring {
+	class Superstring {
 		private:
-			std::list<superchar> chunks;
+			std::list<Superchar> chunks;
 			using iterator = decltype(chunks)::iterator;
 
 			iterator nth(size_t);
 
 		public:
 			/** Assembles a new superstring from a UTF-8 string. */
-			superstring(const std::string &);
-			superstring(const char *str): superstring(std::string(str)) {}
-			superstring(char ch, size_t n = 1): superstring(std::string(n, ch)) {}
+			Superstring(const std::string &);
+			Superstring(const char *str): Superstring(std::string(str)) {}
+			Superstring(char ch, size_t n = 1): Superstring(std::string(n, ch)) {}
 
 			/** Joins the substrings into a single string. */
 			std::string str() const;
@@ -30,15 +30,15 @@ namespace haunted {
 			operator std::string() const { return str(); }
 
 			/** Accesses a substring. */
-			superchar & operator[](ssize_t);
+			Superchar & operator[](ssize_t);
 
 			/** Accesses a substring. */
-			superchar & at(size_t);
+			Superchar & at(size_t);
 
 			std::string substr(size_t, size_t) const;
-			void insert(size_t, const superchar &);
+			void insert(size_t, const Superchar &);
 			void insert(size_t, char);
-			superstring & erase(size_t = 0, size_t = std::string::npos);
+			Superstring & erase(size_t = 0, size_t = std::string::npos);
 
 			void dbg();
 
@@ -53,7 +53,7 @@ namespace haunted {
 			bool empty() const { return chunks.empty(); }
 
 			/** Returns the sum of all the substrings' lengths. */
-			size_t text_length() const;
+			size_t textLength() const;
 
 			void clear() { chunks.clear(); }
 	};

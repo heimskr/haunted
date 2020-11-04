@@ -1,18 +1,18 @@
 #include <stdexcept>
 
-#include "haunted/core/csi.h"
-#include "haunted/core/terminal.h"
-#include "haunted/core/util.h"
+#include "haunted/core/CSI.h"
+#include "haunted/core/Terminal.h"
+#include "haunted/core/Util.h"
 
-namespace haunted {
-	void csi::scan_number(unsigned int &target, ssize_t &i, const std::string &str) {
-		for (ssize_t p = 1; 0 <= i && util::is_numeric(str[i]); --i) {
+namespace Haunted {
+	void CSI::scanNumber(unsigned int &target, ssize_t &i, const std::string &str) {
+		for (ssize_t p = 1; 0 <= i && Util::isNumeric(str[i]); --i) {
 			target += p * (str[i] - '0');
 			p *= 10;
 		}
 	}
 
-	void csi::parse_u(const std::string &str) {
+	void CSI::parseU(const std::string &str) {
 		// Format for CSI u: "CSI [number];[modifier] u"
 
 		first = second = 0;
@@ -20,25 +20,25 @@ namespace haunted {
 		ssize_t i = len - 2;
 		suffix = str[len - 1];
 
-		if (!util::is_numeric(str[0]))
+		if (!Util::isNumeric(str[0]))
 			throw std::invalid_argument("CSI u: first character isn't numeric");
 
 		if (str[len - 3] != ';')
 			throw std::invalid_argument("CSI u: semicolon not in expected position");
 
 		const char penult = str[len - 2];
-		if (!util::in_range(penult, '1', '8'))
+		if (!Util::inRange(penult, '1', '8'))
 			throw std::invalid_argument("CSI u: invalid penultimate character: '" + std::string(1, penult) + "'");
 
 		second = penult - '0';
 
-		scan_number(first, i = len - 4, str);
+		scanNumber(first, i = len - 4, str);
 		
 		if (i != -1)
 			throw std::invalid_argument("CSI u: parsing failed for \"" + str + "\"");
 	}
 
-	void csi::parse_special(const std::string &str) {
+	void CSI::parseSpecial(const std::string &str) {
 		// Format for CSI ~ (special): "CSI [number];[modifier] ~" or "CSI [number] ~"
 
 		first = second = 0;
@@ -47,7 +47,7 @@ namespace haunted {
 		suffix = str[len - 1];
 
 		// Although it can have either one or two components, the first character is always a number.
-		if (!util::is_numeric(str[0]))
+		if (!Util::isNumeric(str[0]))
 			throw std::invalid_argument("CSI ~: first character isn't numeric");
 
 		ssize_t semicolon_pos = str.find(';');
@@ -56,13 +56,13 @@ namespace haunted {
 			// If there's no semicolon, it's just one component, so we just scan from the end of the string and
 			// assume everything's numeric. The modifier is 1 (none) by default.
 			second = 1;
-			scan_number(first, i, str);
+			scanNumber(first, i, str);
 		} else if (semicolon_pos == len - 2) {
 			// If the second-to-last character is a semicolon, then there's nothing between the semicolon and the
 			// final character. That's invalid.
 			throw std::invalid_argument("CSI ~: missing number after semicolon");
 
-		} else if (!util::in_range(str[len - 2], '1', '8')) {
+		} else if (!Util::inRange(str[len - 2], '1', '8')) {
 			// If the semicolon isn't incorrect, then the character after it has to represent a valid modifier.
 			throw std::invalid_argument("CSI ~: invalid character after semicolon");
 
@@ -70,7 +70,7 @@ namespace haunted {
 			// If the semicolon and modifier are valid, take the modifier and scan the string starting right before
 			// the semicolon.
 			second = str[len - 2] - '0';
-			scan_number(first, i = semicolon_pos - 1, str);
+			scanNumber(first, i = semicolon_pos - 1, str);
 		}
 
 		// The scan needs to end at the beginning of the string; otherwise, the first number is invalid.
@@ -78,59 +78,59 @@ namespace haunted {
 			throw std::invalid_argument("CSI ~: parsing failed for \"" + str + "\" at " + std::to_string(i));
 	}
 
-	csi::csi(int first, int second, char suffix): first(first), second(second), suffix(suffix) {
+	CSI::CSI(int first, int second, char suffix): first(first), second(second), suffix(suffix) {
 		switch (suffix) {
-			case 'u': type = csi_type::u; break;
-			case '~': type = csi_type::special; break;
-			default: type = csi_type::really_special;
+			case 'u': type = CSIType::U; break;
+			case '~': type = CSIType::Special; break;
+			default: type = CSIType::ReallySpecial;
 		}
 	}
 
-	key csi::get_key() const {
+	Key CSI::getKey() const {
 		switch (suffix) {
-			case 'A': return ktype::up_arrow;
-			case 'B': return ktype::down_arrow;
-			case 'C': return ktype::right_arrow;
-			case 'D': return ktype::left_arrow;
-			case 'F': return ktype::end;
-			case 'H': return ktype::home;
-			case 'P': return ktype::f1;
-			case 'Q': return ktype::f2;
-			case 'R': return ktype::f3;
-			case 'S': return ktype::f4;
-			case 'Z': return key(ktype::tab).shift();
-			case 'u': return ktype(first);
+			case 'A': return KeyType::UpArrow;
+			case 'B': return KeyType::DownArrow;
+			case 'C': return KeyType::RightArrow;
+			case 'D': return KeyType::LeftArrow;
+			case 'F': return KeyType::End;
+			case 'H': return KeyType::Home;
+			case 'P': return KeyType::F1;
+			case 'Q': return KeyType::F2;
+			case 'R': return KeyType::F3;
+			case 'S': return KeyType::F4;
+			case 'Z': return Key(KeyType::Tab).shift();
+			case 'u': return KeyType(first);
 			case '~':
 				switch (first) {
-					case 2:  return ktype::insert;
-					case 3:  return ktype::del;
+					case 2:  return KeyType::Insert;
+					case 3:  return KeyType::Del;
 					case 147:
-					case 5:  return ktype::page_up;
+					case 5:  return KeyType::PageUp;
 					case 148:
-					case 6:  return ktype::page_down;
+					case 6:  return KeyType::PageDown;
 					case 1:
-					case 7:  return ktype::home;
+					case 7:  return KeyType::Home;
 					case 4:
-					case 8:  return ktype::end;
-					case 11: return ktype::f1;
-					case 12: return ktype::f2;
-					case 13: return ktype::f3;
-					case 14: return ktype::f4;
-					case 15: return ktype::f5;
-					case 17: return ktype::f6;
-					case 18: return ktype::f7;
-					case 19: return ktype::f8;
-					case 20: return ktype::f9;
-					case 21: return ktype::f10;
-					case 23: return ktype::f11;
-					case 24: return ktype::f12;
+					case 8:  return KeyType::End;
+					case 11: return KeyType::F1;
+					case 12: return KeyType::F2;
+					case 13: return KeyType::F3;
+					case 14: return KeyType::F4;
+					case 15: return KeyType::F5;
+					case 17: return KeyType::F6;
+					case 18: return KeyType::F7;
+					case 19: return KeyType::F8;
+					case 20: return KeyType::F9;
+					case 21: return KeyType::F10;
+					case 23: return KeyType::F11;
+					case 24: return KeyType::F12;
 					default: throw std::invalid_argument("Unexpected special key: " + std::to_string(first));
 				}
 			default: throw std::invalid_argument("Unexpected suffix: '" + std::string(1, suffix) + "'");
 		}
 	}
 	
-	csi::csi(const std::string &str): first(0), second(0) {
+	CSI::CSI(const std::string &str): first(0), second(0) {
 		static const std::string endings = "u~ABCDFHPQRSZ";
 		size_t len = str.length();
 
@@ -146,9 +146,9 @@ namespace haunted {
 			throw std::invalid_argument("Invalid CSI ending: '" + std::string(1, suffix) + "'");
 		
 		if (suffix == 'u') {
-			parse_u(str);
+			parseU(str);
 		} else if (suffix == '~') {
-			parse_special(str);
+			parseSpecial(str);
 		} else {
 			// At this point, the sequence must be a "really special" type. That means it's either
 			// "CSI 1;[modifier] {ABCDFHPQRS}" or "CSI {ABCDFHPQRS}".
@@ -164,7 +164,7 @@ namespace haunted {
 
 			// This part is really easy; we know that the part before the suffix is exactly three characters long, that
 			// the first two characters are "1;" and that the third character is a number between 1 and 8 (inclusive).
-			if (str[0] != '1' || str[1] != ';' || !util::in_range(str[2], '1', '8'))
+			if (str[0] != '1' || str[1] != ';' || !Util::inRange(str[2], '1', '8'))
 				throw std::invalid_argument("Parsing failed for \"really special\" CSI: \"" + str + "\"");
 
 			first = str[0] - '0';
@@ -172,22 +172,22 @@ namespace haunted {
 		}
 	}
 
-	bool csi::is_csiu(const std::string &str) {
+	bool CSI::isCSIu(const std::string &str) {
 		const size_t len = str.size();
 
 		// There are four components in a CSI u sequence, so the string has to be at least 4 bytes.
 		// It also needs to start with a number.
-		if (len < 4 || !util::is_numeric(str[0]))
+		if (len < 4 || !Util::isNumeric(str[0]))
 			return false;
 
 		size_t i = 0;
-		for (; i < len && util::is_numeric(str[i]); ++i);
+		for (; i < len && Util::isNumeric(str[i]); ++i);
 		if (str[i++] != ';') return false;
-		for (; i < len && util::is_numeric(str[i]); ++i);
+		for (; i < len && Util::isNumeric(str[i]); ++i);
 		return i == len - 1 && str[i] == 'u';
 	}
 
-	csi::operator std::pair<int, int>() const {
+	CSI::operator std::pair<int, int>() const {
 		return {first, second};
 	}
 }

@@ -1,11 +1,11 @@
 #ifndef HAUNTED_UI_BOXES_PROPOBOX_H_
 #define HAUNTED_UI_BOXES_PROPOBOX_H_
 
-#include "haunted/ui/boxes/box.h"
-#include "haunted/ui/boxes/dualbox.h"
-#include "haunted/ui/colored.h"
+#include "haunted/ui/boxes/Box.h"
+#include "haunted/ui/boxes/DualBox.h"
+#include "haunted/ui/Colored.h"
 
-namespace haunted::ui::boxes {
+namespace Haunted::UI::Boxes {
 	/**
 	 * Represents a box whose two children's lengths are determined with a ratio. 
 	 * For example, if the ratio is 1.5, the first child's size will be 1.5x
@@ -19,28 +19,28 @@ namespace haunted::ui::boxes {
 	 * 
 	 *     size_two = size_box/(1 + ratio)
 	 */
-	class propobox: public dualbox, public haunted::ui::colored {
+	class PropoBox: public DualBox, public Colored {
 		protected:
-			propobox(container *, const position &, double, box_orientation);
+			PropoBox(Container *, const Position &, double, BoxOrientation);
 			double ratio;
 
 		public:
-			propobox(container *, double, box_orientation, control * = nullptr, control * = nullptr,
-				const position & = {});
-			double get_ratio() const { return ratio; }
-			void set_ratio(const double);
+			PropoBox(Container *, double, BoxOrientation, Control * = nullptr, Control * = nullptr,
+				const Position & = {});
+			double getRatio() const { return ratio; }
+			void setRatio(const double);
 
-			using control::resize;
-			void resize(const position &) override;
+			using Control::resize;
+			void resize(const Position &) override;
 
 			virtual void draw() override;
-			virtual int max_children() const override { return 2; }
-			virtual int size_one() const override;
-			virtual int size_two() const override;
-			virtual int get_size() const override;
+			virtual int maxChildren() const override { return 2; }
+			virtual int sizeOne() const override;
+			virtual int sizeTwo() const override;
+			virtual int getSize() const override;
 
-			virtual terminal * get_terminal() override { return term; }
-			virtual container * get_parent() const override { return parent; }
+			virtual Terminal * getTerminal() override { return terminal; }
+			virtual Container * getParent() const override { return parent; }
 	};
 }
 

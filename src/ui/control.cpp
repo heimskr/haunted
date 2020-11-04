@@ -1,37 +1,40 @@
 #include <sstream>
 
-#include "haunted/core/terminal.h"
-#include "haunted/core/util.h"
-#include "haunted/ui/control.h"
+#include "haunted/core/Terminal.h"
+#include "haunted/core/Util.h"
+#include "haunted/ui/Control.h"
 
 #include "lib/formicine/ansi.h"
 
-namespace haunted::ui {
-	control::control(container *parent_, haunted::position pos_): child(parent_), term(nullptr), pos(pos_) {
-		if (parent_ != nullptr)
-			term = parent_->get_terminal();
+namespace Haunted::UI {
+	Control::Control(Container *parent_, const Haunted::Position &position_):
+	Child(parent_), terminal(nullptr), position(position_) {
+		if (parent_)
+			terminal = parent_->getTerminal();
 	}
 
-	control::control(container *parent_, terminal *term_): child(parent_), term(term_) {}
+	Control::Control(Container *parent_, Terminal *terminal_):
+		Child(parent_), terminal(terminal_) {}
 
-	control::control(container *parent_): control(parent_, parent_ == nullptr? nullptr : parent_->get_terminal()) {}
+	Control::Control(Container *parent_):
+		Control(parent_, parent_ == nullptr? nullptr : parent_->getTerminal()) {}
 
-	control::~control() = default;
+	Control::~Control() = default;
 
 
 // Protected instance methods
 
 
-	bool control::try_margins(std::function<void()> fn) {
-		const bool should_reset_margins = !in_margins;
+	bool Control::tryMargins(std::function<void()> fn) {
+		const bool should_reset_margins = !inMargins;
 
 		if (should_reset_margins)
-			set_margins();
+			setMargins();
 
 		fn();
 
 		if (should_reset_margins)
-			reset_margins();
+			resetMargins();
 
 		return should_reset_margins;
 	}
@@ -40,15 +43,15 @@ namespace haunted::ui {
 // Public instance methods
 
 
-	void control::resize(const haunted::position &new_pos) {
+	void Control::resize(const Haunted::Position &new_pos) {
 		// It's up to the caller of resize() to also call draw().
-		pos = new_pos;
+		position = new_pos;
 	}
 
-	std::string control::get_id(bool pad) const {
+	std::string Control::getID(bool pad) const {
 		std::stringstream ss;
 		if (name.empty()) {
-			std::string demangled = util::demangle_object(*this);
+			std::string demangled = Util::demangleObject(*this);
 			if (pad)
 				ss << std::setw(10);
 			ss << demangled.substr(demangled.find_last_of(':') + 1) << "\e[2m|\e[0;33m" << this << "\e[39m";
@@ -71,128 +74,127 @@ namespace haunted::ui {
 		return ss.str();
 	}
 
-	bool control::can_draw() const {
-		return parent != nullptr && term != nullptr && 0 <= pos.left && 0 <= pos.top;
+	bool Control::canDraw() const {
+		return parent != nullptr && terminal != nullptr && 0 <= position.left && 0 <= position.top;
 	}
 
-	void control::resize() {
-		resize(pos);
+	void Control::resize() {
+		resize(position);
 	}
 
-	void control::move(int left, int top) {
-		pos.left = left;
-		pos.top = top;
+	void Control::move(int left, int top) {
+		position.left = left;
+		position.top = top;
 	}
 
-	void control::focus() {
-		if (term)
-			term->focus(this);
+	void Control::focus() {
+		if (terminal)
+			terminal->focus(this);
 	}
 
-	void control::set_parent(container *parent_) {
-		child::set_parent(parent_);
+	void Control::setParent(Container *parent_) {
+		Child::setParent(parent_);
 		if (parent_ != nullptr) {
-			terminal *parent_term = parent_->get_terminal();
-			if (parent_term != nullptr)
-				set_terminal(parent_term);
+			if (Terminal *parent_term = parent_->getTerminal())
+				setTerminal(parent_term);
 		}
 	}
 
-	void control::jump() {
-		pos.jump();
+	void Control::jump() {
+		position.jump();
 	}
 
-	void control::jump_focus() {
+	void Control::jumpFocus() {
 		jump();
 	}
 
-	void control::clear_rect() {
-		if (term == nullptr)
+	void Control::clearRect() {
+		if (!terminal)
 			return;
 
-		try_margins([&, this]() {
-			if (at_left() && at_right()) {
+		tryMargins([&, this]() {
+			if (atLeft() && atRight()) {
 				// Galaxy brain trickery here. If this control is as wide as the entire terminal, we can vscroll the
 				// contents into oblivion very efficiently.
-				term->vscroll(pos.height);
-			} else if (at_left()) {
+				terminal->vscroll(position.height);
+			} else if (atLeft()) {
 				// If we're at the left, we can clear each line from the end of the line to the left edge of the screen.
-				term->jump(pos.width - 1, 0);
-				for (int i = 0; i < pos.height; ++i) {
+				terminal->jump(position.width - 1, 0);
+				for (int i = 0; i < position.height; ++i) {
 					if (i)
-						term->down();
-					term->clear_left();
+						terminal->down();
+					terminal->clearLeft();
 				}
-			} else if (at_right()) {
+			} else if (atRight()) {
 				// If we're at the right, we can clear each line from the start of the line to the right edge.
-				term->jump(pos.left, 0);
-				for (int i = 0; i < pos.height; ++i) {
+				terminal->jump(position.left, 0);
+				for (int i = 0; i < position.height; ++i) {
 					if (i)
-						term->down();
-					term->clear_right();
+						terminal->down();
+					terminal->clearRight();
 				}
 			} else {
 				// If we're at neither edge, we have to print a total of width*height spaces. Very sad.
-				std::string spaces(static_cast<size_t>(pos.width), ' ');
-				for (int i = 0; i < pos.height; ++i) {
-					term->jump(pos.left, i);
-					*term << spaces;
+				std::string spaces(static_cast<size_t>(position.width), ' ');
+				for (int i = 0; i < position.height; ++i) {
+					terminal->jump(position.left, i);
+					*terminal << spaces;
 				}
 			}
 		});
 	}
 
-	void control::flush() {
-		if (term != nullptr)
-			term->flush();
+	void Control::flush() {
+		if (terminal != nullptr)
+			terminal->flush();
 	}
 
-	bool control::has_focus() const {
-		return term && term->has_focus(this);
+	bool Control::hasFocus() const {
+		return terminal && terminal->hasFocus(this);
 	}
 
-	bool control::at_right() const {
-		return term != nullptr && pos.left + pos.width == term->get_cols();
+	bool Control::atRight() const {
+		return terminal != nullptr && position.left + position.width == terminal->getCols();
 	}
 
-	bool control::at_left() const {
-		return pos.left == 0;
+	bool Control::atLeft() const {
+		return position.left == 0;
 	}
 
-	void control::set_margins() {
-		if (term != nullptr) {
-			term->enable_hmargins();
-			term->margins(pos.top, pos.bottom(), pos.left, pos.right());
-			term->set_origin();
-			in_margins = true;
+	void Control::setMargins() {
+		if (terminal != nullptr) {
+			terminal->enableHmargins();
+			terminal->margins(position.top, position.bottom(), position.left, position.right());
+			terminal->setOrigin();
+			inMargins = true;
 		}
 	}
 
-	void control::set_hmargins() {
-		if (term != nullptr) {
-			term->enable_hmargins();
-			term->hmargins(pos.left, pos.right());
-			term->set_origin();
+	void Control::setHmargins() {
+		if (terminal != nullptr) {
+			terminal->enableHmargins();
+			terminal->hmargins(position.left, position.right());
+			terminal->setOrigin();
 		}
 	}
 
-	void control::reset_margins() {
-		if (term != nullptr) {
-			term->reset_origin();
-			term->margins();
-			term->disable_hmargins();
-			in_margins = false;
+	void Control::resetMargins() {
+		if (terminal != nullptr) {
+			terminal->resetOrigin();
+			terminal->margins();
+			terminal->disableHmargins();
+			inMargins = false;
 		}
 	}
 
-	ssize_t control::get_index() const {
-		if (parent != nullptr && !ignore_index) {
+	ssize_t Control::getIndex() const {
+		if (parent != nullptr && !ignoreIndex) {
 			ssize_t i = 0;
 			for (auto iter = parent->begin(); iter != parent->end(); ++iter, ++i) {
 				if (*iter == this)
 					return i;
 
-				if ((*iter)->ignore_index)
+				if ((*iter)->ignoreIndex)
 					--i;
 			}
 		}
@@ -200,11 +202,11 @@ namespace haunted::ui {
 		return -1;
 	}
 
-	void swap(control &left, control &right) {
-		swap(static_cast<child &>(left), static_cast<child &>(right));
-		std::swap(left.term, right.term);
-		std::swap(left.name, right.name);
-		std::swap(left.pos,  right.pos);
-		std::swap(left.in_margins, right.in_margins);
+	void swap(Haunted::UI::Control &left, Haunted::UI::Control &right) {
+		swap(static_cast<Haunted::UI::Child &>(left), static_cast<Haunted::UI::Child &>(right));
+		std::swap(left.terminal,  right.terminal);
+		std::swap(left.name,      right.name);
+		std::swap(left.position,  right.position);
+		std::swap(left.inMargins, right.inMargins);
 	}
 }

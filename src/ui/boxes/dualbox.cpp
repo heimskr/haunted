@@ -1,23 +1,19 @@
-#include "haunted/ui/boxes/dualbox.h"
+#include "haunted/ui/boxes/DualBox.h"
 
-namespace haunted::ui::boxes {
-	void dualbox::resize(const position &new_pos) {
-		if (orientation == box_orientation::horizontal) {
-			if (control *left = (*this)[0])
-				left->resize({new_pos.left, new_pos.top, size_one(), new_pos.height});
+namespace Haunted::UI::Boxes {
+	void DualBox::resize(const Position &new_pos) {
+		if (orientation == BoxOrientation::Horizontal) {
+			if (Control *left = (*this)[0])
+				left->resize({new_pos.left, new_pos.top, sizeOne(), new_pos.height});
 			
-			if (control *right = (*this)[1])
-				right->resize({new_pos.left + size_one(), new_pos.top, size_two(), new_pos.height});
+			if (Control *right = (*this)[1])
+				right->resize({new_pos.left + sizeOne(), new_pos.top, sizeTwo(), new_pos.height});
 		} else {
-			if (control *top = (*this)[0])
-				top->resize({new_pos.left, new_pos.top, new_pos.width, size_one()});
+			if (Control *top = (*this)[0])
+				top->resize({new_pos.left, new_pos.top, new_pos.width, sizeOne()});
 			
-			if (control *bottom = (*this)[0])
-				bottom->resize({new_pos.left, new_pos.top + size_one(), new_pos.width, size_two()});
+			if (Control *bottom = (*this)[1])
+				bottom->resize({new_pos.left, new_pos.top + sizeOne(), new_pos.width, sizeTwo()});
 		}
-	}
-
-	int dualbox::max_children() const {
-		return 2;
 	}
 }

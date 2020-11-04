@@ -1,75 +1,74 @@
 #include <stdexcept>
 
-#include "haunted/core/terminal.h"
-#include "haunted/ui/boxes/dualbox.h"
-#include "haunted/ui/boxes/propobox.h"
+#include "haunted/core/Terminal.h"
+#include "haunted/ui/boxes/PropoBox.h"
 
-namespace haunted::ui::boxes {
-	propobox::propobox(container *parent_, const position &pos_, double ratio_, box_orientation orientation_):
-	dualbox(parent_, pos_, orientation_), ratio(ratio_) {
+namespace Haunted::UI::Boxes {
+	PropoBox::PropoBox(Container *parent_, const Position &pos_, double ratio_, BoxOrientation orientation_):
+	DualBox(parent_, pos_, orientation_), ratio(ratio_) {
 		if (parent_)
-			parent_->add_child(this);
+			parent_->addChild(this);
 
 		if (ratio < 0)
 			throw std::domain_error("Box ratio cannot be negative");
 	}
 
-	propobox::propobox(container *parent_, double ratio_, box_orientation orientation_, control *one, control *two,
-	const position &pos_): propobox(parent_, pos_, ratio_, orientation_) {
-		for (control *ctrl: {one, two}) {
-			ctrl->set_parent(this);
-			ctrl->set_terminal(term);
-			children.push_back(ctrl);
+	PropoBox::PropoBox(Container *parent_, double ratio_, BoxOrientation orientation_, Control *one, Control *two,
+	const Position &pos_): PropoBox(parent_, pos_, ratio_, orientation_) {
+		for (Control *control: {one, two}) {
+			control->setParent(this);
+			control->setTerminal(terminal);
+			children.push_back(control);
 		}
 	}
 
-	void propobox::set_ratio(const double ratio_) {
+	void PropoBox::setRatio(const double ratio_) {
 		if (ratio != ratio_) {
 			ratio = ratio_;
 			resize();
 		}
 	}
 
-	void propobox::resize(const position &new_pos) {
-		control::resize(new_pos);
+	void PropoBox::resize(const Position &new_pos) {
+		Control::resize(new_pos);
 
 		if (children.size() == 0) {
 			return;
 		} else if (children.size() == 1) {
 			children[0]->resize(new_pos);
 		} else if (children.size() == 2) {
-			if (orientation == box_orientation::horizontal) {
-				children[0]->resize({pos.left, pos.top, size_one(), pos.height});
-				children[1]->resize({pos.left + size_one(), pos.top, size_two(), pos.height});
-			} else if (orientation == box_orientation::vertical) {
-				children[0]->resize({pos.left, pos.top, pos.width, size_one()});
-				children[1]->resize({pos.left, pos.top + size_one(), pos.width, size_two()});
+			if (orientation == BoxOrientation::Horizontal) {
+				children[0]->resize({position.left, position.top, sizeOne(), position.height});
+				children[1]->resize({position.left + sizeOne(), position.top, sizeTwo(), position.height});
+			} else if (orientation == BoxOrientation::Vertical) {
+				children[0]->resize({position.left, position.top, position.width, sizeOne()});
+				children[1]->resize({position.left, position.top + sizeOne(), position.width, sizeTwo()});
 			} else throw std::runtime_error("Unknown orientation: " + std::to_string(static_cast<int>(orientation)));
-		} else throw std::runtime_error("Invalid number of children for propobox: " + std::to_string(children.size()));
+		} else throw std::runtime_error("Invalid number of children for PropoBox: " + std::to_string(children.size()));
 
 		redraw();
 	}
 
-	void propobox::draw() {
-		if (!can_draw())
+	void PropoBox::draw() {
+		if (!canDraw())
 			return;
 
-		colored::draw();
+		Colored::draw();
 
-		auto lock = term->lock_render();
-		for (control *child: children)
+		auto lock = terminal->lockRender();
+		for (Control *child: children)
 			child->draw();
 	}
 
-	int propobox::size_one() const {
-		return get_size() - size_two();
+	int PropoBox::sizeOne() const {
+		return getSize() - sizeTwo();
 	}
 
-	int propobox::size_two() const {
-		return get_size() / (1.0 + ratio);
+	int PropoBox::sizeTwo() const {
+		return getSize() / (1.0 + ratio);
 	}
 
-	int propobox::get_size() const {
-		return orientation == box_orientation::horizontal? pos.width : pos.height;
+	int PropoBox::getSize() const {
+		return orientation == BoxOrientation::Horizontal? position.width : position.height;
 	}
 }

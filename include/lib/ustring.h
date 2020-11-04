@@ -2,7 +2,7 @@
 #define HAUNTED_LIB_USTRING_H_
 
 #ifndef ENABLE_ICU
-namespace haunted {
+namespace Haunted {
 	using ustring = std::string;
 }
 
@@ -15,7 +15,7 @@ namespace haunted {
 
 #define USTRING_WIDTH_AT_BUFFER_SIZE 10
 
-namespace haunted {
+namespace Haunted {
 	/**
 	 * This is a wrapper class for icu::UnicodeString that indexes strings by graphemes rather than codepoints.
 	 */
@@ -23,18 +23,18 @@ namespace haunted {
 		private:
 			icu::UnicodeString data;
 			size_t length_;
-			const char *cached_cstr = nullptr;
+			const char *cachedCstr = nullptr;
 
 			void delete_cached();
 
 		public:
-			size_t & scan_length();
+			size_t & scanLength();
 			ustring(const char *);
 			ustring(const std::string &);
 			ustring(const icu::UnicodeString &);
 			~ustring();
 
-			icu::UnicodeString & get_data() { return data; }
+			icu::UnicodeString & getData() { return data; }
 
 			void check_index(size_t) const;
 
@@ -55,9 +55,9 @@ namespace haunted {
 			std::string at(size_t) const;
 
 			/** Returns the width (in columns) of the character at a given index. */
-			size_t width_at(size_t) const;
+			size_t widthAt(size_t) const;
 			/** Returns the width (in columns) of all text before a given index and optionally after a given offset. */
-			size_t width_until(size_t index, size_t offset = 0) const;
+			size_t widthUntil(size_t index, size_t offset = 0) const;
 			/** Returns the total width of the text. */
 			size_t width() const;
 

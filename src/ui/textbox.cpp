@@ -2,61 +2,61 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "haunted/ui/textbox.h"
+#include "haunted/ui/Textbox.h"
 
 #include "lib/formicine/performance.h"
 
-namespace haunted::ui {
+namespace Haunted::UI {
 
 
 // Public constructors
 
 
-	textbox::textbox(container *parent_, position pos_, const std::vector<std::string> &contents):
-	colored_control(parent_, pos_) {
-		if (parent_ != nullptr)
-			parent_->add_child(this);
-		set_lines(contents);
-		// add_child could modify the position, so we set the position again at the end to overoverwrite it.
-		pos = pos_;
+	Textbox::Textbox(Container *parent_, const Position &pos_, const std::vector<std::string> &contents):
+	ColoredControl(parent_, pos_) {
+		if (parent_)
+			parent_->addChild(this);
+		setLines(contents);
+		// addChild could modify the position, so we set the position again at the end to overoverwrite it.
+		position = pos_;
 	}
 
-	textbox::textbox(container *parent_, const std::vector<std::string> &contents): colored_control(parent_) {
-		if (parent_ != nullptr)
-			parent_->add_child(this);
-		set_lines(contents);
+	Textbox::Textbox(Container *parent_, const std::vector<std::string> &contents): ColoredControl(parent_) {
+		if (parent_)
+			parent_->addChild(this);
+		setLines(contents);
 	}
 
 
 // Private instance methods
 
 
-	void textbox::set_lines(const std::vector<std::string> &strings) {
+	void Textbox::setLines(const std::vector<std::string> &strings) {
 		lines.clear();
 		for (const std::string &str: strings) {
-			std::unique_ptr<simpleline> ptr = std::make_unique<simpleline>(str, 0);
+			std::unique_ptr<SimpleLine> ptr = std::make_unique<SimpleLine>(str, 0);
 			lines.push_back(std::move(ptr));
 		}
 
-		rows_dirty();
+		rowsDirty();
 	}
 
-	void textbox::draw_new_line(textline &line, bool inserted) {
-		if (!can_draw())
+	void Textbox::drawNewLine(TextLine &line, bool inserted) {
+		if (!canDraw())
 			return;
 
-		auto lock = term->lock_render();
-		auto w = formicine::perf.watch("textbox::draw_new_line");
+		auto lock = terminal->lockRender();
+		auto w = formicine::perf.watch("Textbox::drawNewLine");
 
-		const int new_lines = line_rows(line);
+		const int new_lines = lineRows(line);
 		const int offset = inserted? new_lines : 0;
 
-		int next = next_row(offset);
+		int next = nextRow(offset);
 		if (!autoscroll && next < 0)
 			return;
 
-		try_margins([&, this]() {
-			apply_colors();
+		tryMargins([&, this]() {
+			applyColors();
 
 			// It's assumed that whatever's calling this method will deal with autoscroll on its own.
 
@@ -66,40 +66,40 @@ namespace haunted::ui {
 			if (next < 0)
 				return;
 
-			term->jump(0, next);
-			for (int row = next, i = 0; row < pos.height && i < new_lines; ++row, ++i) {
+			terminal->jump(0, next);
+			for (int row = next, i = 0; row < position.height && i < new_lines; ++row, ++i) {
 				if (i > 0)
-					*term << "\n";
-				*term << line.text_at_row(pos.width, i, true);
+					*terminal << "\n";
+				*terminal << line.textAtRow(position.width, i, true);
 			}
 
 			uncolor();
 		});
 
-		term->jump_to_focused();
+		terminal->jumpToFocused();
 	}
 
-	int textbox::next_row(int offset_offset) {
+	int Textbox::nextRow(int offset_offset) {
 		int offset = voffset + offset_offset;
-		int total = total_rows();
+		int total = totalRows();
 
 		// Return -1 if the next row is below the visible area.
-		if (pos.height <= total - offset)
+		if (position.height <= total - offset)
 			return -1;
 
 		return total - offset;
 	}
 
-	std::pair<textline *, int> textbox::line_at_row(int row) {
-		if (lines.empty() || row >= total_rows())
+	std::pair<TextLine *, int> Textbox::lineAtRow(int row) {
+		if (lines.empty() || row >= totalRows())
 			throw std::out_of_range("Invalid row index: " + std::to_string(row));
 
-		auto w = formicine::perf.watch("textbox::line_at_row");
+		auto w = formicine::perf.watch("Textbox::lineAtRow");
 
 		int line_count = lines.size(), index = 0, row_count = 0, last_count = 0, offset = -1;
 
 		for (index = 0, row_count = 0; index < line_count; ++index) {
-			last_count = line_rows(*lines[index]);
+			last_count = lineRows(*lines[index]);
 			if (row_count <= row && row < row_count + last_count) {
 				offset = row - row_count;
 				break;
@@ -114,25 +114,25 @@ namespace haunted::ui {
  		return {lines[index].get(), offset == -1? row - row_count : offset};
 	}
 
-	std::string textbox::text_at_row(int row, bool pad_right) {
-		const size_t cols = pos.width;
-		auto w = formicine::perf.watch("textbox::text_at_row");
+	std::string Textbox::textAtRow(int row, bool pad_right) {
+		const size_t cols = position.width;
+		auto w = formicine::perf.watch("Textbox::textAtRow");
 		// w.canceled = true;
-		textline *line;
+		TextLine *line;
 		size_t offset;
 
-		if (pos.height <= row || row < 0) {
+		if (position.height <= row || row < 0) {
 			return "";
 		}
 
-		if (lines.empty() || (row + voffset) >= total_rows()) {
+		if (lines.empty() || (row + voffset) >= totalRows()) {
 			return pad_right? std::string(cols, ' ') : "";
 		} else {
-			std::tie(line, offset) = line_at_row(row + voffset);
+			std::tie(line, offset) = lineAtRow(row + voffset);
 		}
 
 		const std::string line_text = std::string(*line);
-		const int continuation = line->get_continuation();
+		const int continuation = line->getContinuation();
 
 		if (offset == 0) {
 			const size_t line_length = ansi::length(line_text);
@@ -164,8 +164,8 @@ namespace haunted::ui {
 		return std::string(continuation, ' ') + str;
 	}
 
-	bool textbox::do_scroll(size_t rows) {
-		if (autoscroll && pos.height == total_rows() - voffset) {
+	bool Textbox::doScroll(size_t rows) {
+		if (autoscroll && position.height == totalRows() - voffset) {
 			vscroll(rows);
 			return true;
 		}
@@ -173,83 +173,83 @@ namespace haunted::ui {
 		return false;
 	}
 
-	void textbox::rows_dirty() {
-		total_rows_ = -1;
+	void Textbox::rowsDirty() {
+		totalRows_ = -1;
 	}
 
-	void textbox::lines_dirty() {
-		for (line_ptr line: lines)
-			line->mark_dirty();
+	void Textbox::linesDirty() {
+		for (LinePtr line: lines)
+			line->markDirty();
 	}
 
-	void textbox::mark_dirty() {
-		rows_dirty();
-		lines_dirty();
+	void Textbox::markDirty() {
+		rowsDirty();
+		linesDirty();
 	}
 
 
 // Public instance methods
 
 
-	void textbox::clear_lines() {
+	void Textbox::clearLines() {
 		lines.clear();
-		rows_dirty();
+		rowsDirty();
 		if (0 < voffset)
 			voffset = 0;
 		draw();
 	}
 
-	void textbox::vscroll(int delta) {
-		auto w = formicine::perf.watch("textbox::vscroll");
+	void Textbox::vscroll(int delta) {
+		auto w = formicine::perf.watch("Textbox::vscroll");
 
-		const int total = total_rows();
+		const int total = totalRows();
 		const int old_voffset = voffset;
 
 		voffset = std::max(std::min(total - static_cast<int>(scroll_buffer), voffset + delta), 0);
 
 		// Don't let the voffset extend past the point where the (scroll_buffer + 1)th-last line of text is just above
 		// the first row.
-		if (pos.height < total)
+		if (position.height < total)
 			voffset = std::min(voffset, total - static_cast<int>(scroll_buffer));
 
-		if (!can_draw())
+		if (!canDraw())
 			return;
 
-		auto lock = term->lock_render();
+		auto lock = terminal->lockRender();
 		const int diff = old_voffset - voffset;
 
-		try_margins([&, this]() {
-			apply_colors();
-			term->vscroll(diff);
+		tryMargins([&, this]() {
+			applyColors();
+			terminal->vscroll(diff);
 
 			// If new < old, we need to render newly exposed lines at the top. If old < new, we render at the bottom.
 			if (voffset < old_voffset) {
-				term->jump(0, 0);
+				terminal->jump(0, 0);
 				for (int i = 0; i < diff; ++i) {
-					*term << text_at_row(i);
-					if (i < pos.height - 1)
-						*term << "\n";
+					*terminal << textAtRow(i);
+					if (i < position.height - 1)
+						*terminal << "\n";
 				}
 			} else if (old_voffset < voffset) {
-				term->jump(0, pos.height + diff);
-				for (int i = pos.height + diff; i < pos.height; ++i) {
-					*term << text_at_row(i);
-					if (i < pos.height - 1)
-						*term << "\n";
+				terminal->jump(0, position.height + diff);
+				for (int i = position.height + diff; i < position.height; ++i) {
+					*terminal << textAtRow(i);
+					if (i < position.height - 1)
+						*terminal << "\n";
 				}
 			}
 
 			uncolor();
 		});
 
-		term->jump_to_focused();
+		terminal->jumpToFocused();
 	}
 
-	int textbox::get_voffset() const {
+	int Textbox::getVoffset() const {
 		return voffset;
 	}
 
-	void textbox::set_voffset(int new_voffset) {
+	void Textbox::setVoffset(int new_voffset) {
 		const int old_voffset = voffset;
 		if (new_voffset != old_voffset) {
 			voffset = old_voffset;
@@ -257,96 +257,96 @@ namespace haunted::ui {
 		}
 	}
 
-	void textbox::set_autoscroll(bool autoscroll_) {
+	void Textbox::setAutoscroll(bool autoscroll_) {
 		if (autoscroll != autoscroll_)
 			autoscroll = autoscroll_;
 	}
 
-	int textbox::line_rows(textline &line) {
+	int Textbox::lineRows(TextLine &line) {
 		// TODO: support doublewide characters.
 
-		auto w = formicine::perf.watch("textbox::line_rows");
+		auto w = formicine::perf.watch("Textbox::lineRows");
 
-		return line.num_rows(pos.width);
+		return line.numRows(position.width);
 	}
 
-	int textbox::total_rows() {
-		auto w = formicine::perf.watch("textbox::total_rows");
+	int Textbox::totalRows() {
+		auto w = formicine::perf.watch("Textbox::totalRows");
 
-		if (total_rows_ != -1)
-			return total_rows_;
+		if (totalRows_ != -1)
+			return totalRows_;
 
-		total_rows_ = 0;
-		for (const line_ptr &line: lines)
-			total_rows_ += line_rows(*line);
+		totalRows_ = 0;
+		for (const LinePtr &line: lines)
+			totalRows_ += lineRows(*line);
 
-		return total_rows_;
+		return totalRows_;
 	}
 
-	void textbox::draw() {
-		if (!can_draw())
+	void Textbox::draw() {
+		if (!canDraw())
 			return;
 
-		auto w = formicine::perf.watch("textbox::draw");
-		auto lock = term->lock_render();
+		auto w = formicine::perf.watch("Textbox::draw");
+		auto lock = terminal->lockRender();
 
-		try_margins([&, this]() {
-			term->hide();
-			clear_rect();
-			apply_colors();
+		tryMargins([&, this]() {
+			terminal->hide();
+			clearRect();
+			applyColors();
 
-			if (0 <= voffset && total_rows() <= voffset) {
+			if (0 <= voffset && totalRows() <= voffset) {
 				// There's no need to draw anything if the box has been scrolled down beyond all its contents.
 			} else {
 				try {
 					std::string text {};
-					text.reserve(pos.height * pos.width);
-					for (int i = 0; i < pos.height; ++i) {
+					text.reserve(position.height * position.width);
+					for (int i = 0; i < position.height; ++i) {
 						if (i != 0)
 							text.push_back('\n');
-						text += text_at_row(i, false);
+						text += textAtRow(i, false);
 					}
 
-					term->jump(0, 0);
-					*term << text;
-					apply_colors();
+					terminal->jump(0, 0);
+					*terminal << text;
+					applyColors();
 				} catch (const std::out_of_range &) {}
 			}
 			
 			uncolor();
-			term->show();
+			terminal->show();
 		});
 
-		term->jump_to_focused();
+		terminal->jumpToFocused();
 	}
 
-	void textbox::resize(const haunted::position &new_pos) {
-		colored_control::resize(new_pos);
-		mark_dirty();
+	void Textbox::resize(const Haunted::Position &new_pos) {
+		ColoredControl::resize(new_pos);
+		markDirty();
 	}
 
-	bool textbox::on_key(const key &k) {
-		return key_fn? key_fn(k) : default_on_key(k);
+	bool Textbox::onKey(const Key &key) {
+		return keyFunction? keyFunction(key) : defaultOnKey(key);
 	}
 
-	bool textbox::on_mouse(const mouse_report &report) {
-		if (report.action == mouse_action::scrollup) {
+	bool Textbox::onMouse(const MouseReport &report) {
+		if (report.action == MouseAction::ScrollUp) {
 			vscroll(-1);
 			return true;
-		} else if (report.action == mouse_action::scrolldown) {
+		} else if (report.action == MouseAction::ScrollDown) {
 			vscroll(1);
 			return true;
 		}
 
-		mouse_report relative = report;
-		relative.x -= pos.left;
-		relative.y -= pos.top;
+		MouseReport relative = report;
+		relative.x -= position.left;
+		relative.y -= position.top;
 
 		try {
-			textline *line;
-			std::tie(line, relative.y) = line_at_row(relative.y + voffset);
+			TextLine *line;
+			std::tie(line, relative.y) = lineAtRow(relative.y + voffset);
 			if (line) {
-				line->on_mouse(relative);
+				line->onMouse(relative);
 				return true;
 			}
 		} catch(const std::out_of_range &) {}
@@ -354,15 +354,15 @@ namespace haunted::ui {
 		return false;
 	}
 
-	bool textbox::default_on_key(const key &k) {
-		if (k == ktype::up_arrow) {
+	bool Textbox::defaultOnKey(const Key &k) {
+		if (k == KeyType::UpArrow) {
 			vscroll(-1);
 			draw();
-		} else if (k == ktype::down_arrow) {
+		} else if (k == KeyType::DownArrow) {
 			vscroll(1);
 			draw();
-		} else if (k == ktype::left_arrow) {
-			set_autoscroll(true);
+		} else if (k == KeyType::LeftArrow) {
+			setAutoscroll(true);
 			draw();
 		} else {
 			return false;
@@ -371,33 +371,33 @@ namespace haunted::ui {
 		return true;
 	}
 
-	bool textbox::can_draw() const {
-		return parent != nullptr && term != nullptr && !term->suppress_output;
+	bool Textbox::canDraw() const {
+		return parent != nullptr && terminal != nullptr && !terminal->suppressOutput;
 	}
 
-	void textbox::focus() {
-		control::focus();
-		colored::focus();
+	void Textbox::focus() {
+		Control::focus();
+		Colored::focus();
 	}
 
-	textbox & textbox::operator+=(const std::string &text) {
-		auto w = formicine::perf.watch("textbox::operator+=");
+	Textbox & Textbox::operator+=(const std::string &text) {
+		auto w = formicine::perf.watch("Textbox::operator+=");
 		if (!text.empty() && text.back() == '\n')
 			return *this += text.substr(0, text.size() - 1);
 
-		std::unique_ptr<simpleline> ptr = std::make_unique<simpleline>(text, 0);
-		const size_t nrows = ptr->num_rows(pos.width);
-		do_scroll(nrows);
+		std::unique_ptr<SimpleLine> ptr = std::make_unique<SimpleLine>(text, 0);
+		const size_t nrows = ptr->numRows(position.width);
+		doScroll(nrows);
 		lines.push_back(std::move(ptr));
-		rows_dirty();
-		draw_new_line(*lines.back(), true);
+		rowsDirty();
+		drawNewLine(*lines.back(), true);
 		return *this;
 	}
 
-	textbox::operator std::string() {
-		auto w = formicine::perf.watch("textbox::operator std::string");
+	Textbox::operator std::string() {
+		auto w = formicine::perf.watch("Textbox::operator std::string");
 		std::string out = "";
-		for (const line_ptr &line: lines) {
+		for (const LinePtr &line: lines) {
 			if (!out.empty())
 				out += "\n";
 			out += std::string(*line);
@@ -406,10 +406,10 @@ namespace haunted::ui {
 		return out;
 	}
 
-	void swap(textbox &left, textbox &right) {
-		swap(static_cast<control &>(left), static_cast<control &>(right));
-		swap(static_cast<colored &>(left), static_cast<colored &>(right));
-		std::swap(left.lines,      right.lines);
-		std::swap(left.voffset,	   right.voffset);
+	void swap(Haunted::UI::Textbox &left, Haunted::UI::Textbox &right) {
+		swap(static_cast<Haunted::UI::Control &>(left), static_cast<Haunted::UI::Control &>(right));
+		swap(static_cast<Haunted::UI::Colored &>(left), static_cast<Haunted::UI::Colored &>(right));
+		std::swap(left.lines,   right.lines);
+		std::swap(left.voffset, right.voffset);
 	}
 }

@@ -7,23 +7,23 @@
 
 #include <cxxabi.h>
 
-namespace haunted {
-	class util {
+namespace Haunted {
+	class Util {
 		public:
 			/** Returns true if the character is in the range [A-Za-z]. */
-			static bool is_alpha(char);
+			static bool isAlpha(char);
 
 			/** Returns true if the character is in the range [0-9]. */
-			static bool is_numeric(char);
+			static bool isNumeric(char);
 
 			/** Returns true if the character is in the range [A-Za-z0-9]. */
-			static bool is_alphanum(char);
+			static bool isAlphanum(char);
 
 			/** Returns true if the character is in the range [0x40, 0x7e]. */
-			static bool is_finalchar(char);
+			static bool isFinalchar(char);
 
 			/** Returns true if the character is in a closed interval. */
-			static bool in_range(char, char min, char max);
+			static bool inRange(char, char min, char max);
 
 			/** Demangles a type name. */
 			static std::string demangle(const std::string &mangled) {
@@ -39,7 +39,7 @@ namespace haunted {
 
 			/** Returns the demangled name of an object. */
 			template <typename T>
-			static std::string demangle_object(const T &object) {
+			static std::string demangleObject(const T &object) {
 				return demangle(std::string(typeid(object).name()));
 			}
 	};
