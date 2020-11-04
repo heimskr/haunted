@@ -35,6 +35,9 @@ namespace Haunted::UI {
 			 *  parent. */
 			bool ignoreIndex = false;
 
+			/** If true, canDraw() will always return false. */
+			bool suppressDraw = false;
+
 			Control() = delete;
 			Control(const Control &) = delete;
 			Control & operator=(const Control &) = delete;

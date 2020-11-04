@@ -1,8 +1,9 @@
 #ifndef HAUNTED_UI_TEXTBOX_H_
 #define HAUNTED_UI_TEXTBOX_H_
 
-#include <deque>
 #include <functional>
+#include <list>
+#include <mutex>
 #include <string>
 #include <utility>
 
@@ -31,13 +32,18 @@ namespace Haunted::UI {
 
 		protected:
 			/** Holds all the textlines in the box. */
-			std::deque<LinePtr> lines;
+			std::list<LinePtr> lines;
 
 			/** The number of rows the container has been scrolled vertically. */
 			int voffset = 0;
 
 			/** Whether the textbox should automatically scroll to keep up with lines added to the bottom. */
 			bool autoscroll = false;
+
+			/** Used for locking when doing operations on lines. */
+			std::recursive_mutex line_mutex;
+
+			std::unique_lock<std::recursive_mutex> lockLines() { return std::unique_lock(line_mutex); }
 
 			/** Empties the buffer and replaces it with 0-continuation lines from a vector of string. */
 			void setLines(const std::vector<std::string> &);
@@ -99,7 +105,7 @@ namespace Haunted::UI {
 			/** Deletes all lines in the textbox. */
 			void clearLines();
 
-			std::deque<LinePtr> & getLines() { return lines; }
+			std::list<LinePtr> & getLines() { return lines; }
 
 			/** Scrolls the textbox down (positive argument) or up (negative argument). */
 			void vscroll(int = 1);
@@ -138,6 +144,8 @@ namespace Haunted::UI {
 			bool canDraw() const override;
 
 			void focus() override;
+
+			void redrawLine(TextLine &);
 
 			/** Adds a string to the end of the textbox. */
 			Textbox & operator+=(const std::string &);

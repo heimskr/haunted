@@ -34,7 +34,7 @@ namespace Haunted::UI {
 	void Textbox::setLines(const std::vector<std::string> &strings) {
 		lines.clear();
 		for (const std::string &str: strings) {
-			std::unique_ptr<SimpleLine> ptr = std::make_unique<SimpleLine>(str, 0);
+			std::shared_ptr<SimpleLine> ptr = std::make_shared<SimpleLine>(str, 0);
 			lines.push_back(std::move(ptr));
 		}
 
@@ -98,8 +98,9 @@ namespace Haunted::UI {
 
 		int line_count = lines.size(), index = 0, row_count = 0, last_count = 0, offset = -1;
 
+		auto iter = lines.begin();
 		for (index = 0, row_count = 0; index < line_count; ++index) {
-			last_count = lineRows(*lines[index]);
+			last_count = lineRows(**(iter++));
 			if (row_count <= row && row < row_count + last_count) {
 				offset = row - row_count;
 				break;
@@ -111,7 +112,7 @@ namespace Haunted::UI {
 		if (line_count <= index)
 			throw std::out_of_range("Line index too large: " + std::to_string(index));
 
- 		return {lines[index].get(), offset == -1? row - row_count : offset};
+		return {std::next(lines.begin(), index)->get(), offset == -1? row - row_count : offset};
 	}
 
 	std::string Textbox::textAtRow(int row, bool pad_right) {
@@ -121,9 +122,8 @@ namespace Haunted::UI {
 		TextLine *line;
 		size_t offset;
 
-		if (position.height <= row || row < 0) {
+		if (position.height <= row || row < 0)
 			return "";
-		}
 
 		if (lines.empty() || (row + voffset) >= totalRows()) {
 			return pad_right? std::string(cols, ' ') : "";
@@ -265,13 +265,14 @@ namespace Haunted::UI {
 	int Textbox::lineRows(TextLine &line) {
 		// TODO: support doublewide characters.
 
-		auto w = formicine::perf.watch("Textbox::lineRows");
-
+		auto w = formicine::perf.watch("textbox::lineRows");
+		auto lock = lockLines();
 		return line.numRows(position.width);
 	}
 
 	int Textbox::totalRows() {
-		auto w = formicine::perf.watch("Textbox::totalRows");
+		auto w = formicine::perf.watch("textbox::total_rows");
+		auto lock = lockLines();
 
 		if (totalRows_ != -1)
 			return totalRows_;
@@ -287,8 +288,9 @@ namespace Haunted::UI {
 		if (!canDraw())
 			return;
 
-		auto w = formicine::perf.watch("Textbox::draw");
+		auto w = formicine::perf.watch("textbox::draw");
 		auto lock = terminal->lockRender();
+		auto line_lock = lockLines();
 
 		tryMargins([&, this]() {
 			terminal->hide();
@@ -372,7 +374,7 @@ namespace Haunted::UI {
 	}
 
 	bool Textbox::canDraw() const {
-		return parent != nullptr && terminal != nullptr && !terminal->suppressOutput;
+		return parent != nullptr && terminal != nullptr && !terminal->suppressOutput && !suppressDraw;
 	}
 
 	void Textbox::focus() {
@@ -380,12 +382,43 @@ namespace Haunted::UI {
 		Colored::focus();
 	}
 
+	void Textbox::redrawLine(TextLine &to_redraw) {
+		int rows = 0;
+		auto lock = lockLines();
+		for (LinePtr &line: lines) {
+			if (line.get() == &to_redraw)
+				break;
+			rows += lineRows(*line);
+		}
+
+		int next = rows - voffset;
+		if (voffset <= rows && next < position.height) {
+			// The line is in view.
+			to_redraw.markDirty();
+			to_redraw.clean(position.width);
+			const int new_lines = lineRows(to_redraw);
+			tryMargins([&, this]() {
+				applyColors();
+
+				terminal->jump(0, next);
+				for (int row = next, i = 0; row < position.height && i < new_lines; ++row, ++i) {
+					if (i > 0)
+						*terminal << "\n";
+					*terminal << to_redraw.textAtRow(position.width, i, true);
+				}
+
+				uncolor();
+			});
+		}
+	}
+
 	Textbox & Textbox::operator+=(const std::string &text) {
-		auto w = formicine::perf.watch("Textbox::operator+=");
+		auto w = formicine::perf.watch("textbox::operator+=");
+		auto lock = lockLines();
 		if (!text.empty() && text.back() == '\n')
 			return *this += text.substr(0, text.size() - 1);
 
-		std::unique_ptr<SimpleLine> ptr = std::make_unique<SimpleLine>(text, 0);
+		std::shared_ptr<SimpleLine> ptr = std::make_shared<SimpleLine>(text, 0);
 		const size_t nrows = ptr->numRows(position.width);
 		doScroll(nrows);
 		lines.push_back(std::move(ptr));
@@ -395,7 +428,8 @@ namespace Haunted::UI {
 	}
 
 	Textbox::operator std::string() {
-		auto w = formicine::perf.watch("Textbox::operator std::string");
+		auto w = formicine::perf.watch("textbox::operator std::string");
+		auto lock = lockLines();
 		std::string out = "";
 		for (const LinePtr &line: lines) {
 			if (!out.empty())

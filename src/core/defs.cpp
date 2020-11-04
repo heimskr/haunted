@@ -36,8 +36,8 @@ namespace Haunted {
 		return "[(" + std::to_string(left) + ", " + std::to_string(top) + "), " + std::to_string(width) + " x " +
 			std::to_string(height) + "]";
 	}
-}
 
-std::ostream & operator<<(std::ostream &os, const Haunted::Position &pos) {
-	return os << std::string(pos);
+	std::ostream & operator<<(std::ostream &os, const Haunted::Position &pos) {
+		return os << std::string(pos);
+	}
 }

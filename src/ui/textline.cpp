@@ -1,10 +1,11 @@
+#include "haunted/ui/Textbox.h"
 #include "haunted/ui/TextLine.h"
 #include "lib/formicine/performance.h"
 
 namespace Haunted::UI {
 
 
-// Protected instance methods
+// Public instance methods
 
 
 	void TextLine::markDirty() {
@@ -14,11 +15,10 @@ namespace Haunted::UI {
 	}
 
 	void TextLine::clean(int width) {
-		if (!dirty)
+		if (!dirty || cleaning)
 			return;
 
 		cleaning = true;
-
 		numRows_ = numRows(width);
 		for (int row = 0; row < numRows_; ++row)
 			lines_.push_back(textAtRow(width, row));
@@ -26,10 +26,6 @@ namespace Haunted::UI {
 		cleaning = false;
 		dirty = false;
 	}
-
-
-// Public instance methods
-
 
 	std::string TextLine::textAtRow(size_t width, int row, bool pad_right) {
 		if (!dirty) {

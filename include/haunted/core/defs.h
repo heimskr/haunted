@@ -78,9 +78,9 @@ namespace Haunted {
 		public:
 			NullTerminal(T *source): std::runtime_error(NullTerminal::createRuntimeError(source)) {}
 	};
-}
 
-std::ostream & operator<<(std::ostream &, const Haunted::Position &);
+	std::ostream & operator<<(std::ostream &, const Haunted::Position &);
+}
 
 namespace Haunted::UI {
 	class Control;

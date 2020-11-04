@@ -1,6 +1,7 @@
 #ifndef HAUNTED_UI_TEXTLINE_H_
 #define HAUNTED_UI_TEXTLINE_H_
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -28,6 +29,7 @@ namespace Haunted::UI {
 
 		public:
 			Textbox *box = nullptr;
+			std::function<void(const MouseReport &)> mouseFunction;
 
 			TextLine() {}
 
@@ -49,7 +51,7 @@ namespace Haunted::UI {
 
 			/** Called when the line is clicked on. 
 			 *  The MouseReport's position is relative to the top left of the line. */
-			virtual void onMouse(const Haunted::MouseReport &) {}
+			virtual void onMouse(const MouseReport &report) { if (mouseFunction) mouseFunction(report); }
 
 			/** Returns the raw text of the line. */
 			virtual operator std::string() = 0;

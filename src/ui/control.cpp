@@ -75,7 +75,7 @@ namespace Haunted::UI {
 	}
 
 	bool Control::canDraw() const {
-		return parent != nullptr && terminal != nullptr && 0 <= position.left && 0 <= position.top;
+		return parent != nullptr && terminal != nullptr && 0 <= position.left && 0 <= position.top && !suppressDraw;
 	}
 
 	void Control::resize() {
