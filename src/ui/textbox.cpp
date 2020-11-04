@@ -205,12 +205,12 @@ namespace Haunted::UI {
 		const int total = totalRows();
 		const int old_voffset = voffset;
 
-		voffset = std::max(std::min(total - static_cast<int>(scroll_buffer), voffset + delta), 0);
+		voffset = std::max(std::min(total - static_cast<int>(scrollBuffer), voffset + delta), 0);
 
-		// Don't let the voffset extend past the point where the (scroll_buffer + 1)th-last line of text is just above
+		// Don't let the voffset extend past the point where the (scrollBuffer + 1)th-last line of text is just above
 		// the first row.
 		if (position.height < total)
-			voffset = std::min(voffset, total - static_cast<int>(scroll_buffer));
+			voffset = std::min(voffset, total - static_cast<int>(scrollBuffer));
 
 		if (!canDraw())
 			return;

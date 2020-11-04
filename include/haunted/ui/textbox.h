@@ -85,7 +85,7 @@ namespace Haunted::UI {
 
 		public:
 			/** The minimum number of lines that must be visible at the top. */
-			unsigned int scroll_buffer = 0;
+			unsigned int scrollBuffer = 0;
 
 			/** Constructs a textbox with a parent, a position and initial contents. */
 			Textbox(Container *parent_, const Position &pos_, const std::vector<std::string> &contents_);
