@@ -15,6 +15,10 @@ namespace Haunted {
 		return type == other && *this == KeyMod::Shift;
 	}
 
+	bool Key::isCtrlShift(KeyType other) const {
+		return type == other && (mods.to_ulong() == (static_cast<int>(KeyMod::Ctrl) | static_cast<int>(KeyMod::Shift)));
+	}
+
 	bool Key::isArrow() const {
 		return type == KeyType::UpArrow    || type == KeyType::DownArrow ||
 		       type == KeyType::RightArrow || type == KeyType::LeftArrow;

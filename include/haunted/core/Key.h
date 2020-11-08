@@ -36,7 +36,7 @@ namespace Haunted {
 	 * For mouse reports, what's called alt here actually represents the meta key,
 	 * as alt-clicks don't seem to be reported.
 	 */
-	enum class KeyMod {None = 0, Shift = 1, Alt = 2, Ctrl = 4};
+	enum class KeyMod: int {None = 0, Shift = 1, Alt = 2, Ctrl = 4};
 
 	using ModSet = std::bitset<3>;
 
@@ -70,6 +70,10 @@ namespace Haunted {
 
 			/** Returns true if this key's type is equal to a given key type and this key's only modifier is shift. */
 			bool isShift(KeyType) const;
+
+			/** Returns true if this key's type is equal to a given key type and this key's only modifiers are shift and
+			 *  control. */
+			bool isCtrlShift(KeyType) const;
 
 			/** Returns true if the key is one of the arrow keys. */
 			bool isArrow() const;
