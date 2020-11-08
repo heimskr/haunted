@@ -25,7 +25,6 @@ namespace Haunted {
 	 */
 	class Terminal: public UI::Container {
 		private:
-			std::istream &inStream;
 			std::mutex outputMutex;
 			std::mutex winchMutex;
 			std::recursive_mutex renderMutex;
@@ -71,6 +70,8 @@ namespace Haunted {
 			termios attrs;
 			bool raw = false;
 			bool suppressOutput = false;
+			bool alive = true;
+			std::istream &inStream;
 			ansi::ansistream &outStream;
 			UI::Coloration colors;
 

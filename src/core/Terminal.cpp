@@ -88,7 +88,8 @@ namespace Haunted {
 		// like "^[[C"). Calling it twice appears to work, but it's not pretty.
 		cbreak();
 		cbreak();
-		while (*this >> key) {
+		while (alive) {
+			*this >> key;
 			if (key == Key(KeyType::c, KeyMod::Ctrl) && onInterrupt())
 				break;
 			sendKey(key);

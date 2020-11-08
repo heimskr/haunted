@@ -8,13 +8,13 @@
 namespace Haunted::UI {
 	std::unordered_set<unsigned char> TextInput::whitelist = {9, 10, 11, 13};
 
-	TextInput::TextInput(Container *parent_, const Position &pos_, const TextInput::string &buffer_, size_t cursor_):
+	TextInput::TextInput(Container *parent_, const Position &pos_, const TextInput::String &buffer_, size_t cursor_):
 	Control(parent_, pos_), buffer(buffer_), cursor(cursor_) {
 		if (parent_)
 			parent_->addChild(this);
 	}
 
-	TextInput::TextInput(Container *parent_, const TextInput::string &buffer_, size_t cursor_):
+	TextInput::TextInput(Container *parent_, const TextInput::String &buffer_, size_t cursor_):
 	Control(parent_), buffer(buffer_), cursor(cursor_) {
 		if (parent_)
 			parent_->addChild(this);
@@ -39,13 +39,13 @@ namespace Haunted::UI {
 			jumpCursor();
 	}
 
-	void TextInput::drawInsert() {
+	void TextInput::drawInsert(size_t count) {
 		if (!canDraw())
 			return;
 
 		// It's assumed that the cursor has just been moved to the right from the insertion.
 		// We need to account for that by using a decremented copy of the cursor.
-		const size_t cur = cursor - 1;
+		const size_t cur = cursor - count;
 
 		if (textWidth() <= cur - scroll) {
 			// If, for whatever reason, the cursor is to the right of the bounds of the TextInput, there's no visible
@@ -69,7 +69,8 @@ namespace Haunted::UI {
 		Point cpos = findCursor();
 		// Print only enough text to reach the right edge. Printing more would cause wrapping or text being printed out
 		// of bounds.
-		*terminal << buffer.substr(cur, position.right() - cpos.x + 2);
+		// *terminal << buffer.substr(cur, position.right() - cpos.x + 2);
+		printGraphemes(buffer.substr(cur));
 		terminal->outStream.restore();
 		terminal->colors.apply();
 		if (hasFocus())
@@ -173,7 +174,7 @@ namespace Haunted::UI {
 	}
 
 	void TextInput::insert(const std::string &str) {
-		TextInput::string newstr = str;
+		TextInput::String newstr = str;
 		buffer.insert(cursor, newstr);
 		cursor += ansi::length(newstr);
 		update();
@@ -616,7 +617,8 @@ namespace Haunted::UI {
 			cursor = length();
 		jumpCursor();
 		size_t twidth = textWidth();
-		*terminal << buffer.substr(cursor, twidth - cursor + scroll);
+		// *terminal << buffer.substr(cursor, twidth - cursor + scroll);
+		printGraphemes(buffer.substr(cursor));
 		cursor = old_cursor;
 		terminal->outStream.restore();
 	}
@@ -652,24 +654,38 @@ namespace Haunted::UI {
 		flush();
 	}
 
-	void TextInput::printGraphemes(TextInput::string to_print) {
+	void TextInput::printGraphemes(TextInput::String to_print) {
 		const size_t twidth = textWidth();
+
+		String new_string;
+
+		for (StringPiece piece: to_print) {
+#ifdef ENABLE_ICU
+			String promoted = String(piece);
+#else
+			String promoted = String(1, piece);
+#endif
+			for (const std::pair<const std::string &, RenderChar_f> &pair: characterRenderers)
+				promoted = pair.second(promoted);
+			new_string += promoted;
+		}
+
 #ifndef ENABLE_ICU
 #define TP_WIDTH size
 #else
 #define TP_WIDTH width
 #endif
-		while (twidth < to_print.TP_WIDTH())
-			to_print.pop_back();
+		while (twidth < new_string.TP_WIDTH())
+			new_string.pop_back();
 #undef TP_WIDTH
 
 #ifndef ENABLE_ICU
-		for (const char grapheme: to_print) {
+		for (const char grapheme: new_string) {
 			*terminal << grapheme;
 #else
 		size_t i = 0;
-		for (const std::string &grapheme: to_print) {
-			const size_t width = to_print.width_at(i++);
+		for (const std::string &grapheme: new_string) {
+			const size_t width = new_string.width_at(i++);
 			if (width == 1) {
 				*terminal << grapheme;
 			} else {

@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <list>
 #include <ostream>
 #include <string>
 #include <unordered_set>
@@ -23,12 +24,16 @@ namespace Haunted::UI {
 	 * any rows below the first will be unused.
 	 */
 	class TextInput: public Control, public Colored {
+		public:
 #ifndef ENABLE_ICU
-		using string = std::string;
+			using String = std::string;
+			using StringPiece = char;
 #else
-		using string = ustring;
+			using String = ustring;
+			using StringPiece = std::string;
 #endif
-		using Update_f = std::function<void(const string &, int)>;
+			using Update_f = std::function<void(const String &, int)>;
+			using RenderChar_f = std::function<String(const String &)>;
 
 		private:
 			/** By default, all characters below 0x20 are ignored by insert(). However, if the character is contained in
@@ -42,7 +47,7 @@ namespace Haunted::UI {
 			size_t prefixLength = 0;
 
 			/** The text that the user has entered so far. */
-			string buffer;
+			String buffer;
 
 			/** The offset within the text where new input will be inserted. */
 			size_t cursor = 0;
@@ -70,12 +75,6 @@ namespace Haunted::UI {
 
 			/** Informs the submit listener (if one has been added with listen()) that the buffer has been submitted. */
 			void submit();
-
-			/** Partially re-renders the control onto the terminal in response to an cursor move. */
-			void drawCursor();
-
-			/** Partially re-renders the control onto the terminal in response to an insertion. */
-			void drawInsert();
 
 			/** Blanks out the spaces to the right of the buffer. */
 			void clearLine();
@@ -130,11 +129,14 @@ namespace Haunted::UI {
 			 *  buffer. */
 			std::vector<uint32_t> unicodeCodepointBuffer;
 
+			/** Contains functions that change how individual characters should be rendered. */
+			std::map<std::string, RenderChar_f> characterRenderers;
+
 			/** Constructs a TextInput with a parent and a position and an initial buffer and cursor. */
-			TextInput(Container *parent, const Position &pos, const string &buffer, size_t cursor);
+			TextInput(Container *parent, const Position &pos, const String &buffer, size_t cursor);
 
 			/** Constructs a TextInput with a parent and a position and an initial buffer and a default cursor. */
-			TextInput(Container *parent, const Position &pos, const string &buffer):
+			TextInput(Container *parent, const Position &pos, const String &buffer):
 				TextInput(parent, pos, buffer, 0) {}
 
 			/** Constructs a TextInput with a parent and position and a default buffer and cursor. */
@@ -142,10 +144,10 @@ namespace Haunted::UI {
 				TextInput(parent, pos, "") {}
 
 			/** Constructs a TextInput with a parent, a default position and an initial buffer and cursor. */
-			TextInput(Container *parent, const string &buffer, size_t cursor);
+			TextInput(Container *parent, const String &buffer, size_t cursor);
 
 			/** Constructs a TextInput with a parent, a default position and an initial buffer and default cursor. */
-			TextInput(Container *parent, const string &buffer):
+			TextInput(Container *parent, const String &buffer):
 				TextInput(parent, buffer, 0) {}
 
 			/** Constructs a TextInput with a parent and a default position, buffer and cursor. */
@@ -238,7 +240,13 @@ namespace Haunted::UI {
 			/** Partially re-renders the control onto the terminal in response to a deletion. */
 			void drawErase();
 
-			void printGraphemes(string);
+			/** Partially re-renders the control onto the terminal in response to an cursor move. */
+			void drawCursor();
+
+			/** Partially re-renders the control onto the terminal in response to an insertion. */
+			void drawInsert(size_t count = 1);
+
+			void printGraphemes(String);
 
 			virtual bool canDraw() const override;
 
