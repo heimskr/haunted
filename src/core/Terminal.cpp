@@ -90,7 +90,7 @@ namespace Haunted {
 		cbreak();
 		while (alive) {
 			*this >> key;
-			if (key == Key(KeyType::c, KeyMod::Ctrl) && onInterrupt())
+			if (key == Key(KeyType::c, KeyMod::Ctrl) && (!onInterrupt || onInterrupt()))
 				break;
 			sendKey(key);
 		}
