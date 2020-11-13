@@ -2,3 +2,6 @@
 	path = formicine
 	url = https://github.com/heimskr/formicine.git
 
+[submodule "unicorn-lib"]
+	path = unicorn-lib
+	url = https://github.com/CaptainCrowbar/unicorn-lib.git

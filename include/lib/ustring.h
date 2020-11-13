@@ -1,7 +1,7 @@
 #ifndef HAUNTED_LIB_USTRING_H_
 #define HAUNTED_LIB_USTRING_H_
 
-#ifndef ENABLE_ICU
+#ifndef ENABLE_UNICODE
 namespace Haunted {
 	using ustring = std::string;
 }
@@ -10,18 +10,17 @@ namespace Haunted {
 
 #include <string>
 
-#include <unicode/ustring.h>
-#include <unicode/brkiter.h>
+#include "unicorn/library.hpp"
 
 #define USTRING_WIDTH_AT_BUFFER_SIZE 10
 
 namespace Haunted {
 	/**
-	 * This is a wrapper class for icu::UnicodeString that indexes strings by graphemes rather than codepoints.
+	 * This is a wrapper class that indexes strings by graphemes rather than codepoints.
 	 */
 	class ustring {
 		private:
-			icu::UnicodeString data;
+			RS::Ustring data;
 			size_t length_;
 			const char *cachedCstr = nullptr;
 
@@ -31,10 +30,9 @@ namespace Haunted {
 			size_t & scanLength();
 			ustring(const char * = "");
 			ustring(const std::string &);
-			ustring(const icu::UnicodeString &);
 			~ustring();
 
-			icu::UnicodeString & getData() { return data; }
+			RS::Ustring & getData() { return data; }
 
 			void checkIndex(size_t) const;
 
@@ -68,39 +66,8 @@ namespace Haunted {
 			std::string operator[](size_t) const;
 			operator std::string() const;
 			friend std::ostream & operator<<(std::ostream &, const ustring &);
-
-			class iterator {
-				friend class ustring;
-
-				private:
-					const ustring &ustr;
-					icu::BreakIterator *bi;
-					icu::Locale locale;
-					size_t prev, pos;
-					iterator(const ustring &, const icu::Locale & = icu::Locale::getUS());
-					iterator & end();
-
-				public:
-					iterator(const iterator &);
-					~iterator();
-					iterator & operator++();
-					iterator & operator--();
-					iterator & operator+=(ssize_t);
-					iterator & operator-=(ssize_t);
-					iterator operator+(ssize_t) const;
-					iterator operator-(ssize_t) const;
-					std::string operator*();
-					bool operator==(const iterator &) const;
-					bool operator!=(const iterator &) const;
-			};
-
-			iterator begin() const;
-			iterator end() const;
-			iterator begin(const icu::Locale &) const;
-			iterator end(const icu::Locale &) const;
 	};
 
-	ustring::iterator operator+(ssize_t, const ustring::iterator &);
 	std::ostream & operator<<(std::ostream &, const ustring &);
 }
 

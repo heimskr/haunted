@@ -1,4 +1,4 @@
-#ifdef ENABLE_ICU
+#ifdef ENABLE_UNICODE
 
 #include <cstring>
 
@@ -7,16 +7,12 @@
 
 namespace Haunted {
 	ustring::ustring(const char *str) {
-		data = icu::UnicodeString::fromUTF8(str);
+		data = RS::Unicorn::to_utf8(std::string(str));
 		scanLength();
 	}
 
 	ustring::ustring(const std::string &str) {
-		data = icu::UnicodeString::fromUTF8(str);
-		scanLength();
-	}
-
-	ustring::ustring(const icu::UnicodeString &ustr): data(ustr) {
+		data = RS::Unicorn::to_utf8(str);
 		scanLength();
 	}
 
@@ -26,7 +22,7 @@ namespace Haunted {
 
 	size_t & ustring::scanLength() {
 		length_ = 0;
-		for (ustring::iterator iter = begin(), end_ = end(); iter != end_; ++iter, ++length_);
+		// for (ustring::iterator iter = begin(), end_ = end(); iter != end_; ++iter, ++length_);
 		return length_;
 	}
 
@@ -43,7 +39,8 @@ namespace Haunted {
 	}
 
 	ustring ustring::rawSubstr(size_t start, size_t len) const {
-		return ustring(data.tempSubString(start, len));
+		// return ustring(data.tempSubString(start, len));
+		return ustring();
 	}
 
 	ustring ustring::substr(size_t start, size_t len) const {
@@ -52,19 +49,19 @@ namespace Haunted {
 		if (len == 0)
 			return "";
 
-		ustring::iterator iter = begin();
+		// ustring::iterator iter = begin();
 
-		for (size_t i = 0; i < start; ++i)
-			++iter;
+		// for (size_t i = 0; i < start; ++i)
+		// 	++iter;
 
-		icu::UnicodeString raw;
-		ustring::iterator end_ = end();
-		for (size_t i = 0; i < len && iter != end_; ++i) {
-			raw.append(data.tempSubString(iter.prev, iter.pos - iter.prev));
-			++iter;
-		}
+		// icu::UnicodeString raw;
+		// ustring::iterator end_ = end();
+		// for (size_t i = 0; i < len && iter != end_; ++i) {
+		// 	raw.append(data.tempSubString(iter.prev, iter.pos - iter.prev));
+		// 	++iter;
+		// }
 
-		return ustring(raw);
+		// return ustring(raw);
 	}
 
 	size_t ustring::length() const {
@@ -72,7 +69,8 @@ namespace Haunted {
 	}
 
 	bool ustring::empty() const {
-		return data.isEmpty();
+		// return data.isEmpty();
+		return false;
 	}
 
 	const char * ustring::c_str() {
@@ -88,15 +86,15 @@ namespace Haunted {
 	void ustring::clear() {
 		deleteCached();
 		length_ = 0;
-		data.remove();
+		// data.remove();
 	}
 	
 	ustring & ustring::insert(size_t pos, const ustring &str) {
 		if (!str.empty()) {
-			ustring::iterator iter = begin() + pos;
-			data.insert(iter.prev, str.data);
-			DBG("inserting [" << str << "] (raw length: " << std::string(str).length() << ")");
-			length_ += str.length_;
+			// ustring::iterator iter = begin() + pos;
+			// data.insert(iter.prev, str.data);
+			// DBG("inserting [" << str << "] (raw length: " << std::string(str).length() << ")");
+			// length_ += str.length_;
 			deleteCached();
 		}
 
@@ -104,8 +102,8 @@ namespace Haunted {
 	}
 	
 	ustring & ustring::insert(size_t pos, char16_t ch) {
-		ustring::iterator iter = begin() + pos;
-		data.insert(iter.prev, ch);
+		// ustring::iterator iter = begin() + pos;
+		// data.insert(iter.prev, ch);
 		++length_;
 		deleteCached();
 		return *this;
@@ -113,14 +111,14 @@ namespace Haunted {
 
 	ustring & ustring::erase(size_t pos, size_t len) {
 		if (0 < len) {
-			size_t raw_pos, raw_erase = 0;
-			ustring::iterator iter = begin() + pos, end_ = end();
-			raw_pos = iter.prev;
-			size_t to_erase;
-			for (to_erase = 0; to_erase < len && iter != end_; ++to_erase, ++iter);
-			raw_erase = iter.prev - raw_pos;
-			data.remove(raw_pos, raw_erase);
-			length_ -= to_erase;
+			// size_t raw_pos, raw_erase = 0;
+			// ustring::iterator iter = begin() + pos, end_ = end();
+			// raw_pos = iter.prev;
+			// size_t to_erase;
+			// for (to_erase = 0; to_erase < len && iter != end_; ++to_erase, ++iter);
+			// raw_erase = iter.prev - raw_pos;
+			// data.remove(raw_pos, raw_erase);
+			// length_ -= to_erase;
 			deleteCached();
 		}
 
@@ -224,128 +222,6 @@ namespace Haunted {
 
 	std::ostream & operator<<(std::ostream &os, const ustring &us) {
 		return os << std::string(us);
-	}
-
-// Iterator
-
-	ustring::iterator::iterator(const ustring &ustr_, const icu::Locale &locale_): ustr(ustr_), locale(locale_) {
-		UErrorCode code = U_ZERO_ERROR;
-		bi = icu::BreakIterator::createCharacterInstance(locale, code);
-		if (0 < code) {
-			throw std::runtime_error("icu::BreakIterator::createCharacterInstance returned error code " +
-				std::to_string(code));
-		}
-
-		bi->setText(ustr.data);
-		prev = 0;
-		pos = bi->next();
-	}
-
-	ustring::iterator::iterator(const ustring::iterator &iter): ustr(iter.ustr) {
-		bi = iter.bi->clone();
-		locale = iter.locale;
-		prev = iter.prev;
-		pos = iter.pos;
-	}
-
-	ustring::iterator::~iterator() {
-		delete bi;
-	}
-
-	ustring::iterator & ustring::iterator::operator++() {
-		prev = pos;
-		pos = bi->next();
-		return *this;
-	}
-
-	ustring::iterator & ustring::iterator::operator--() {
-		pos = prev;
-		prev = bi->previous();
-		return *this;
-	}
-
-	ustring::iterator & ustring::iterator::operator+=(ssize_t offset) {
-		if (offset < 0)
-			return *this -= -offset;
-
-		if (offset == 0)
-			return *this;
-
-		if (offset == 1)
-			return ++*this;
-
-		prev = bi->next(offset - 1);
-		pos = bi->next();
-		return *this;
-	}
-
-	ustring::iterator & ustring::iterator::operator-=(ssize_t offset) {
-		if (offset < 0)
-			return *this += -offset;
-
-		if (offset == 0)
-			return *this;
-
-		if (offset == 1)
-			return --*this;
-
-		for (ssize_t i = 0; i < offset; ++i)
-			bi->previous();
-
-		prev = bi->previous();
-		pos = bi->next();
-		return *this;
-	}
-
-	ustring::iterator ustring::iterator::operator+(ssize_t to_add) const {
-		ustring::iterator copy = *this;
-		copy += to_add;
-		return copy;
-	}
-
-	ustring::iterator operator+(ssize_t to_add, const ustring::iterator &iter) {
-		return iter + to_add;
-	}
-
-	ustring::iterator ustring::iterator::operator-(ssize_t to_subtract) const {
-		ustring::iterator copy = *this;
-		copy -= to_subtract;
-		return copy;
-	}
-
-	std::string ustring::iterator::operator*() {
-		return ustr.rawSubstr(prev, pos - prev);
-	}
-
-	bool ustring::iterator::operator==(const ustring::iterator &rhs) const {
-		return &ustr == &rhs.ustr &&
-			((pos == rhs.pos && prev == rhs.prev) || (pos == std::string::npos && prev == rhs.prev));
-	}
-
-	bool ustring::iterator::operator!=(const ustring::iterator &rhs) const {
-		return &ustr != &rhs.ustr ||
-			((pos != rhs.pos || prev != rhs.prev) && (pos != std::string::npos || prev != rhs.prev));
-	}
-
-	ustring::iterator & ustring::iterator::end() {
-		prev = pos = bi->last();
-		return *this;
-	}
-
-	ustring::iterator ustring::begin() const {
-		return ustring::iterator(*this);
-	}
-
-	ustring::iterator ustring::end() const {
-		return ustring::iterator(*this).end();
-	}
-
-	ustring::iterator ustring::begin(const icu::Locale &locale) const {
-		return ustring::iterator(*this, locale);
-	}
-
-	ustring::iterator ustring::end(const icu::Locale &locale) const {
-		return ustring::iterator(*this, locale).end();
 	}
 }
 
