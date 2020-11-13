@@ -8,46 +8,46 @@
 namespace Haunted {
 	ustring::ustring(const char *str) {
 		data = icu::UnicodeString::fromUTF8(str);
-		scan_length();
+		scanLength();
 	}
 
 	ustring::ustring(const std::string &str) {
 		data = icu::UnicodeString::fromUTF8(str);
-		scan_length();
+		scanLength();
 	}
 
 	ustring::ustring(const icu::UnicodeString &ustr): data(ustr) {
-		scan_length();
+		scanLength();
 	}
 
 	ustring::~ustring() {
-		delete_cached();
+		deleteCached();
 	}
 
-	size_t & ustring::scan_length() {
+	size_t & ustring::scanLength() {
 		length_ = 0;
 		for (ustring::iterator iter = begin(), end_ = end(); iter != end_; ++iter, ++length_);
 		return length_;
 	}
 
-	void ustring::delete_cached() {
-		if (cached_cstr)
-			delete cached_cstr;
+	void ustring::deleteCached() {
+		if (cachedCstr)
+			delete cachedCstr;
 	}
 
-	void ustring::check_index(size_t index) const {
+	void ustring::checkIndex(size_t index) const {
 		if (length_ < index) {
 			throw std::out_of_range("Invalid index: " + std::to_string(index) + " (length is " + std::to_string(length_)
 				+ ")");
 		}
 	}
 
-	ustring ustring::raw_substr(size_t start, size_t len) const {
+	ustring ustring::rawSubstr(size_t start, size_t len) const {
 		return ustring(data.tempSubString(start, len));
 	}
 
 	ustring ustring::substr(size_t start, size_t len) const {
-		check_index(start);
+		checkIndex(start);
 
 		if (len == 0)
 			return "";
@@ -76,17 +76,17 @@ namespace Haunted {
 	}
 
 	const char * ustring::c_str() {
-		if (cached_cstr)
-			return cached_cstr;
+		if (cachedCstr)
+			return cachedCstr;
 		std::string str = *this;
 		const size_t len = str.length() + 1;
-		cached_cstr = static_cast<const char *>(std::calloc(len, sizeof(char)));
-		std::memcpy(reinterpret_cast<void *>(const_cast<char *>(cached_cstr)), str.c_str(), len);
-		return cached_cstr;
+		cachedCstr = static_cast<const char *>(std::calloc(len, sizeof(char)));
+		std::memcpy(reinterpret_cast<void *>(const_cast<char *>(cachedCstr)), str.c_str(), len);
+		return cachedCstr;
 	}
 
 	void ustring::clear() {
-		delete_cached();
+		deleteCached();
 		length_ = 0;
 		data.remove();
 	}
@@ -97,7 +97,7 @@ namespace Haunted {
 			data.insert(iter.prev, str.data);
 			DBG("inserting [" << str << "] (raw length: " << std::string(str).length() << ")");
 			length_ += str.length_;
-			delete_cached();
+			deleteCached();
 		}
 
 		return *this;
@@ -107,7 +107,7 @@ namespace Haunted {
 		ustring::iterator iter = begin() + pos;
 		data.insert(iter.prev, ch);
 		++length_;
-		delete_cached();
+		deleteCached();
 		return *this;
 	}
 
@@ -121,7 +121,7 @@ namespace Haunted {
 			raw_erase = iter.prev - raw_pos;
 			data.remove(raw_pos, raw_erase);
 			length_ -= to_erase;
-			delete_cached();
+			deleteCached();
 		}
 
 		return *this;
@@ -138,8 +138,8 @@ namespace Haunted {
 		return substr(index, 1UL);
 	}
 
-	size_t ustring::width_at(size_t index) const {
-		check_index(index);
+	size_t ustring::widthAt(size_t index) const {
+		checkIndex(index);
 
 		ustring::iterator iter = begin() + index;
 
@@ -148,7 +148,7 @@ namespace Haunted {
 
 		UChar32 buf[USTRING_WIDTH_AT_BUFFER_SIZE];
 		UErrorCode code = U_ZERO_ERROR;
-		raw_substr(iter.prev, iter.pos - iter.prev).data.toUTF32(buf, USTRING_WIDTH_AT_BUFFER_SIZE, code);
+		rawSubstr(iter.prev, iter.pos - iter.prev).data.toUTF32(buf, USTRING_WIDTH_AT_BUFFER_SIZE, code);
 		UChar32 ch = buf[0];
 
 		if (0 < code)
@@ -189,17 +189,17 @@ namespace Haunted {
 		return 1;
 	}
 
-	size_t ustring::width_until(size_t index, size_t offset) const {
+	size_t ustring::widthUntil(size_t index, size_t offset) const {
 		size_t total_width = 0;
 		for (size_t i = offset; i < index && i < length_; ++i) {
-			// DBG("width('" << at(i) << "') == " << width_at(i));
-			total_width += width_at(i);
+			// DBG("width('" << at(i) << "') == " << widthAt(i));
+			total_width += widthAt(i);
 		}
 		return total_width;
 	}
 
 	size_t ustring::width() const {
-		return width_until(length_, 0);
+		return widthUntil(length_, 0);
 	}
 
 // Operators
@@ -314,7 +314,7 @@ namespace Haunted {
 	}
 
 	std::string ustring::iterator::operator*() {
-		return ustr.raw_substr(prev, pos - prev);
+		return ustr.rawSubstr(prev, pos - prev);
 	}
 
 	bool ustring::iterator::operator==(const ustring::iterator &rhs) const {

@@ -101,10 +101,10 @@ namespace Haunted::UI {
 			char nextChar();
 #else
 			/** Returns the character to the left of the cursor. */
-			superchar prevChar();
+			Superchar prevChar();
 
 			/** Returns the character to the right of the cursor. */
-			superchar nextChar();
+			Superchar nextChar();
 #endif
 
 			/** Returns the width of the buffer area (i.e., the width of the control minus the prefix length). */
@@ -265,6 +265,7 @@ namespace Haunted::UI {
 
 			virtual Terminal * getTerminal() override { return terminal; }
 			virtual Container * getParent() const override { return parent; }
+			const String & getBuffer() const { return buffer; }
 
 			/** Writes the contents of the buffer to an output stream. */
 			friend std::ostream & operator<<(std::ostream &os, const TextInput &input);

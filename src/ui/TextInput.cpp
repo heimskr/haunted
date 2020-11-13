@@ -66,7 +66,7 @@ namespace Haunted::UI {
 		terminal->outStream.save();
 		jumpCursor();
 		terminal->outStream.left();
-		Point cpos = findCursor();
+		// Point cpos = findCursor();
 		// Print only enough text to reach the right edge. Printing more would cause wrapping or text being printed out
 		// of bounds.
 		// *terminal << buffer.substr(cur, position.right() - cpos.x + 2);
@@ -139,11 +139,11 @@ namespace Haunted::UI {
 		return cursor < size()? buffer[cursor] : '\0';
 	}
 #else
-	superchar TextInput::prevChar() {
+	Superchar TextInput::prevChar() {
 		return cursor > 0? buffer[cursor - 1]  : Superchar();
 	}
 
-	superchar TextInput::nextChar() {
+	Superchar TextInput::nextChar() {
 		return cursor < size()? buffer[cursor] : Superchar();
 	}
 #endif
@@ -181,8 +181,10 @@ namespace Haunted::UI {
 	}
 
 	void TextInput::insert(unsigned char ch) {
-		if (ch < 0x20 && whitelist.find(ch) == whitelist.end())
+		if (ch < 0x20 && whitelist.find(ch) == whitelist.end()) {
+			DBG("Ignoring " << static_cast<int>(ch) << ".");
 			return;
+		}
 
 		if (!unicodeByteBuffer.empty()) {
 			unicodeByteBuffer.push_back(ch);
@@ -541,7 +543,7 @@ namespace Haunted::UI {
 							DBG(i << ": " << "[" << piece << "] " << piece.length() << "l");
 #else
 							const std::string piece = buffer[i];
-							DBG(i << ": " << "[" << piece << "] " << buffer.width_at(i) << "w " << piece.length() << "l");
+							DBG(i << ": " << "[" << piece << "] " << buffer.widthAt(i) << "w " << piece.length() << "l");
 #endif
 						}
 
@@ -607,7 +609,6 @@ namespace Haunted::UI {
 			return;
 
 		auto lock = terminal->lockRender();
-		DBG("drawRight(" << offset << ")");
 		applyColors();
 		terminal->outStream.save();
 		clearLine();
@@ -616,7 +617,7 @@ namespace Haunted::UI {
 		if (cursor > length())
 			cursor = length();
 		jumpCursor();
-		size_t twidth = textWidth();
+		// size_t twidth = textWidth();
 		// *terminal << buffer.substr(cursor, twidth - cursor + scroll);
 		printGraphemes(buffer.substr(cursor));
 		cursor = old_cursor;
@@ -624,7 +625,6 @@ namespace Haunted::UI {
 	}
 
 	void TextInput::drawErase() {
-		DBG("drawErase()");
 		if (!canDraw() || textWidth() <= cursor - scroll) {
 			// If the cursor is at or beyond the right edge, do nothing.
 			return;
@@ -685,7 +685,7 @@ namespace Haunted::UI {
 #else
 		size_t i = 0;
 		for (const std::string &grapheme: new_string) {
-			const size_t width = new_string.width_at(i++);
+			const size_t width = new_string.widthAt(i++);
 			if (width == 1) {
 				*terminal << grapheme;
 			} else {

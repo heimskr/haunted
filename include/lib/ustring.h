@@ -25,20 +25,20 @@ namespace Haunted {
 			size_t length_;
 			const char *cachedCstr = nullptr;
 
-			void delete_cached();
+			void deleteCached();
 
 		public:
 			size_t & scanLength();
-			ustring(const char *);
+			ustring(const char * = "");
 			ustring(const std::string &);
 			ustring(const icu::UnicodeString &);
 			~ustring();
 
 			icu::UnicodeString & getData() { return data; }
 
-			void check_index(size_t) const;
+			void checkIndex(size_t) const;
 
-			ustring raw_substr(size_t, size_t = std::string::npos) const;
+			ustring rawSubstr(size_t, size_t = std::string::npos) const;
 			ustring substr(size_t, size_t = std::string::npos) const;
 
 			size_t length() const;

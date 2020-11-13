@@ -108,7 +108,7 @@ namespace Haunted::UI::Boxes {
 			Control *child = children[i];
 			const int child_size = sizes.size() <= i? -1 : sizes[i];
 			// const int child_size = p.second;
-			DBG("child: " << child << ", size: " << child_size);
+			// DBG("child: " << child << ", size: " << child_size);
 
 			if (offset >= size) {
 				// If there's no space left, assign the child a size of zero and place it at the far edge.
