@@ -1,6 +1,7 @@
 #ifndef HAUNTED_UI_TEXTLINE_H_
 #define HAUNTED_UI_TEXTLINE_H_
 
+#include <deque>
 #include <functional>
 #include <string>
 #include <vector>
@@ -127,6 +128,7 @@ namespace Haunted::UI {
 			}
 	};
 
+	using DequeLine  = TextLine<std::deque>;
 	using VectorLine = TextLine<std::vector>;
 }
 

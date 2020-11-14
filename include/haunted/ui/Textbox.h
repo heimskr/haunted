@@ -1,6 +1,7 @@
 #ifndef HAUNTED_UI_TEXTBOX_H_
 #define HAUNTED_UI_TEXTBOX_H_
 
+#include <deque>
 #include <functional>
 #include <list>
 #include <mutex>
@@ -546,6 +547,7 @@ namespace Haunted::UI {
 			}
 	};
 
+	using DequeBox  = Textbox<std::deque>;
 	using VectorBox = Textbox<std::vector>;
 }
 
