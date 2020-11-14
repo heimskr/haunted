@@ -59,7 +59,7 @@ namespace Haunted {
 
 		icu::UnicodeString raw;
 		ustring::iterator end_ = end();
-		for (size_t i = 0; i < len && iter != end_; ++i) {
+		for (size_t i = 0; i < len && iter < end_; ++i) {
 			raw.append(data.tempSubString(iter.prev, iter.pos - iter.prev));
 			++iter;
 		}
@@ -325,6 +325,10 @@ namespace Haunted {
 	bool ustring::iterator::operator!=(const ustring::iterator &rhs) const {
 		return &ustr != &rhs.ustr ||
 			((pos != rhs.pos || prev != rhs.prev) && (pos != std::string::npos || prev != rhs.prev));
+	}
+
+	bool ustring::iterator::operator<(const ustring::iterator &rhs) const {
+		return &ustr == &rhs.ustr && pos < rhs.pos;
 	}
 
 	ustring::iterator & ustring::iterator::end() {

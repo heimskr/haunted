@@ -121,7 +121,7 @@ namespace Haunted::Tests {
 		using Haunted::UI::TextLine, Haunted::UI::SimpleLine;
 
 		term.cbreak();
-		Haunted::UI::Textbox *tb = new Haunted::UI::Textbox(&term);
+		auto *tb = new Haunted::UI::VectorBox(&term);
 		*tb += "hi";
 		*tb += "what's up :)";
 		*tb += "third line.";
@@ -140,9 +140,9 @@ namespace Haunted::Tests {
 				tb->setVoffset(-1);
 				tb->draw();
 			} else if (k == KeyType::Hash) {
-				*tb += SimpleLine("This is a very long line. Its purpose is to test the continuation of lines in a textbox. Its continuation value is set to 26, so the wrapped text should line up with the start of the second sentence in the line.", 26);
+				*tb += SimpleLine<std::vector>("This is a very long line. Its purpose is to test the continuation of lines in a textbox. Its continuation value is set to 26, so the wrapped text should line up with the start of the second sentence in the line.", 26);
 			} else if (k == KeyType::Star) {
-				for (const Haunted::UI::Textbox::LinePtr &line: tb->lines) {
+				for (const Haunted::UI::VectorBox::LinePtr &line: tb->lines) {
 					DBG(line->getContinuation() << "[" << std::string(*line) << "]");
 				}
 			} else {
@@ -156,7 +156,7 @@ namespace Haunted::Tests {
 		using namespace Haunted::UI::Boxes;
 
 		term.cbreak();
-		Textbox   *tb  = new Textbox();               tb->setName("tb");
+		VectorBox *tb  = new VectorBox();             tb->setName("tb");
 		TextInput *ti  = new TextInput();             ti->setName("ti");
 		Label     *tlb = new Label("Title",  false); tlb->setName("tlb");
 		Label     *slb = new Label("Status", false); slb->setName("slb");
@@ -287,13 +287,13 @@ namespace Haunted::Tests {
 		Boxes::SimpleBox wrapper(&dummy);
 		wrapper.resize({0, 0, 20, 10});
 		
-		Textbox *tb = new Textbox(&wrapper, wrapper.getPosition());
+		VectorBox *tb = new VectorBox(&wrapper, wrapper.getPosition());
 
-		std::shared_ptr<SimpleLine> t1 = std::make_shared<SimpleLine>("Hello", 4);
-		std::shared_ptr<SimpleLine> t2 = std::make_shared<SimpleLine>("This line is longer than the control's width of 20 characters. Its continuation should align with the third word.", 10);
-		std::shared_ptr<SimpleLine> t3 = std::make_shared<SimpleLine>("Another line.", 1);
-		std::shared_ptr<SimpleLine> t4 = std::make_shared<SimpleLine>("This is another long line with a continuation of 0.");
-		std::shared_ptr<SimpleLine> t5 = std::make_shared<SimpleLine>("Exactly 20 chars :^)", 0);
+		auto t1 = std::make_shared<SimpleLine<std::vector>>("Hello", 4);
+		auto t2 = std::make_shared<SimpleLine<std::vector>>("This line is longer than the control's width of 20 characters. Its continuation should align with the third word.", 10);
+		auto t3 = std::make_shared<SimpleLine<std::vector>>("Another line.", 1);
+		auto t4 = std::make_shared<SimpleLine<std::vector>>("This is another long line with a continuation of 0.");
+		auto t5 = std::make_shared<SimpleLine<std::vector>>("Exactly 20 chars :^)", 0);
 
 		*tb += *t1;
 		*tb += *t2;
@@ -326,10 +326,10 @@ namespace Haunted::Tests {
 			{{15}, {&*t4, 1}},
 			{{16}, {&*t4, 2}},
 			{{17}, {&*t5, 0}},
-		}, &Textbox::lineAtRow, tb, "lineAtRow");
+		}, &VectorBox::lineAtRow, tb, "lineAtRow");
 
 		unit.check("lineAtRow(" + std::to_string(rows) + ")", typeid(std::out_of_range), "Invalid row index: " +
-			std::to_string(rows), tb, &Textbox::lineAtRow, rows);
+			std::to_string(rows), tb, &VectorBox::lineAtRow, rows);
 
 		unit.check({
 			{{0, true}, "Hello               "},
@@ -343,7 +343,7 @@ namespace Haunted::Tests {
 			{{8, true}, "          should ali"},
 			{{9, true}, "          gn with th"},
 			{{10, true}, ""},
-		}, &Textbox::textAtRow, tb, "textAtRow");
+		}, &VectorBox::textAtRow, tb, "textAtRow");
 
 		INFO("Trying to scroll 8 lines down (current voffset is " << ansi::wrap(std::to_string(tb->voffset),
 			ansi::style::bold) << ").");
@@ -362,12 +362,12 @@ namespace Haunted::Tests {
 			{{8, true},  "ation of 0.         "},
 			{{9, true},  "Exactly 20 chars :^)"},
 			{{10, true}, ""},
-		}, &Textbox::textAtRow, tb, "textbox::textAtRow");
+		}, &VectorBox::textAtRow, tb, "VectorBox::textAtRow");
 
 		unit.check(tb->nextRow(), -1, "nextRow()");
 		INFO("Resetting textbox.");
 		tb->clearLines();
-		unit.check("lineAtRow(0)", typeid(std::out_of_range), "Invalid row index: 0", tb, &Textbox::lineAtRow, 0);
+		unit.check("lineAtRow(0)", typeid(std::out_of_range), "Invalid row index: 0", tb, &VectorBox::lineAtRow, 0);
 		unit.check(tb->voffset, 0, "voffset");
 		unit.check(tb->totalRows(), 0, "totalRows()");
 		// unit.check(tb->effective_voffset(), 0, "effective_voffset()");
@@ -414,10 +414,10 @@ namespace Haunted::Tests {
 		SimpleBox wrapper(&dummy);
 		wrapper.resize({10, 10, 500, 100});
 
-		UI::Textbox *tb1 = new UI::Textbox(nullptr);
-		UI::Textbox *tb2 = new UI::Textbox(nullptr);
-		UI::Textbox *tb3 = new UI::Textbox(nullptr);
-		UI::Textbox *tb4 = new UI::Textbox(nullptr);
+		UI::VectorBox *tb1 = new UI::VectorBox(nullptr);
+		UI::VectorBox *tb2 = new UI::VectorBox(nullptr);
+		UI::VectorBox *tb3 = new UI::VectorBox(nullptr);
+		UI::VectorBox *tb4 = new UI::VectorBox(nullptr);
 
 		ExpandoBox *expando = new ExpandoBox(&wrapper, wrapper.getPosition(), BoxOrientation::Horizontal,
 			{{tb1, 10}, {tb2, -1}});

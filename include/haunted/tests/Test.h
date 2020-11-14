@@ -90,7 +90,8 @@ namespace Haunted::Tests {
 				return stringify(static_cast<int>(e));
 			}
 
-			static std::string stringify(Haunted::UI::TextLine *tl) {
+			template <template <typename... T> typename C>
+			static std::string stringify(Haunted::UI::TextLine<C> *tl) {
 				return tl? std::to_string(tl->getContinuation()) + ":["_d + std::string(*tl) + "]"_d : "null";
 			}
 
@@ -147,8 +148,10 @@ namespace Haunted::Tests {
 
 			// We want to be able to compare the pairs returned by line_at_row as equal even if the addresses of the
 			// pointers differ, as long as the content of the TextLines is the same.
-			using tl_pair = std::pair<Haunted::UI::TextLine *, int>;
-			static bool equal(tl_pair left, tl_pair right) {
+			template <template <typename... T> typename C>
+			using tl_pair = std::pair<Haunted::UI::TextLine<C> *, int>;
+			template <template <typename... T> typename C>
+			static bool equal(tl_pair<C> left, tl_pair<C> right) {
 				return left.second == right.second && *left.first == *right.first;
 			}
 

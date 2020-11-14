@@ -92,6 +92,7 @@ namespace Haunted {
 					std::string operator*();
 					bool operator==(const iterator &) const;
 					bool operator!=(const iterator &) const;
+					bool operator<(const iterator &) const;
 			};
 
 			iterator begin() const;
