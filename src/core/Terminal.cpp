@@ -101,7 +101,7 @@ namespace Haunted {
 		rows = new_rows;
 		cols = new_cols;
 		if (changed) {
-			std::unique_lock lock(winchMutex);
+			std::unique_lock<std::mutex> lock(winchMutex);
 			redraw();
 		}
 	}
@@ -305,12 +305,12 @@ namespace Haunted {
 	}
 
 	void Terminal::jump(int x, int y) {
-		std::unique_lock uniq(outputMutex);
+		std::unique_lock<std::mutex> uniq(outputMutex);
 		outStream.jump(x, y);
 	}
 
 	void Terminal::mouse(MouseMode mode) {
-		std::unique_lock uniq(outputMutex);
+		std::unique_lock<std::mutex> uniq(outputMutex);
 		if (mode == MouseMode::None) {
 			if (mmode != mode) {
 				outStream << "\e[?" << std::to_string(int(mmode)) << ";1006l";
@@ -329,7 +329,7 @@ namespace Haunted {
 	}
 
 	void Terminal::vscroll(int rows) {
-		std::unique_lock uniq(outputMutex);
+		std::unique_lock<std::mutex> uniq(outputMutex);
 		if (0 < rows) {
 			outStream.scroll_down(rows);
 		} else if (rows < 0) {
@@ -338,22 +338,22 @@ namespace Haunted {
 	}
 
 	void Terminal::hmargins(size_t left, size_t right) {
-		std::unique_lock uniq(outputMutex);
+		std::unique_lock<std::mutex> uniq(outputMutex);
 		outStream.hmargins(left, right);
 	}
 
 	void Terminal::hmargins() {
-		std::unique_lock uniq(outputMutex);
+		std::unique_lock<std::mutex> uniq(outputMutex);
 		outStream.hmargins();
 	}
 
 	void Terminal::vmargins(size_t top, size_t bottom) {
-		std::unique_lock uniq(outputMutex);
+		std::unique_lock<std::mutex> uniq(outputMutex);
 		outStream.vmargins(top, bottom);
 	}
 
 	void Terminal::vmargins() {
-		std::unique_lock uniq(outputMutex);
+		std::unique_lock<std::mutex> uniq(outputMutex);
 		outStream.vmargins();
 	}
 
@@ -368,27 +368,27 @@ namespace Haunted {
 	}
 
 	void Terminal::enableHmargins() { // DECLRMM: Left Right Margin Mode
-		std::unique_lock uniq(outputMutex);
+		std::unique_lock<std::mutex> uniq(outputMutex);
 		outStream.enable_hmargins();
 	}
 
 	void Terminal::disableHmargins() {
-		std::unique_lock uniq(outputMutex);
+		std::unique_lock<std::mutex> uniq(outputMutex);
 		outStream.disable_hmargins();
 	}
 
 	void Terminal::setOrigin() {
-		std::unique_lock uniq(outputMutex);
+		std::unique_lock<std::mutex> uniq(outputMutex);
 		outStream.set_origin();
 	}
 
 	void Terminal::resetOrigin() {
-		std::unique_lock uniq(outputMutex);
+		std::unique_lock<std::mutex> uniq(outputMutex);
 		outStream.reset_origin();
 	}
 
 	std::unique_lock<std::recursive_mutex> Terminal::lockRender() {
-		return std::unique_lock(renderMutex);
+		return std::unique_lock<std::recursive_mutex>(renderMutex);
 	}
 
 
@@ -437,6 +437,7 @@ namespace Haunted {
 
 		if (escape) {
 			// If we read an escape byte, that means something interesting is about to happen.
+			partial_escape = true; // ???
 
 			if (!(*this >> c))
 				return *this;
