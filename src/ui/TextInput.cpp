@@ -43,7 +43,6 @@ namespace Haunted::UI {
 		if (!canDraw())
 			return;
 
-		DBG("<drawInsert>");
 
 		// It's assumed that the cursor has just been moved to the right from the insertion.
 		// We need to account for that by using a decremented copy of the cursor.
@@ -587,8 +586,6 @@ namespace Haunted::UI {
 		if (!canDraw())
 			return;
 
-		DBG("<draw>");
-
 		Colored::draw();
 
 		auto lock = terminal->lockRender();
@@ -667,12 +664,10 @@ namespace Haunted::UI {
 
 	void TextInput::printGraphemes(TextInput::String to_print) {
 		const size_t twidth = textWidth();
-		DBG("<printGraphemes>");
 
 		String new_string;
 
 		for (StringPiece piece: to_print) {
-			DBG("Piece: [" << piece << "]");
 #ifdef ENABLE_ICU
 			String promoted = String(piece);
 #else
@@ -683,8 +678,6 @@ namespace Haunted::UI {
 			new_string += promoted;
 		}
 
-		DBG(":: formed new_string.");
-
 #ifdef ENABLE_ICU
 		while (twidth < new_string.width())
 			new_string.pop_back();
@@ -692,8 +685,6 @@ namespace Haunted::UI {
 		while (twidth < new_string.size())
 			new_string.pop_back();
 #endif
-
-		DBG(":: popped.");
 
 #ifndef ENABLE_ICU
 		for (const char grapheme: new_string) {
@@ -711,8 +702,6 @@ namespace Haunted::UI {
 			}
 #endif
 		}
-
-		DBG("</printGraphemes>");
 	}
 
 	bool TextInput::canDraw() const {

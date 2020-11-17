@@ -512,6 +512,7 @@ namespace Haunted::UI {
 			Textbox & operator+=(T &line) {
 				auto w = formicine::perf.watch("template textbox::operator+=");
 				std::unique_ptr<T> line_copy = std::make_unique<T>(line);
+				line_copy->box = this;
 				if (autoscroll)
 					doScroll(line_copy->numRows(position.width));
 				lines.push_back(std::move(line_copy));
@@ -542,8 +543,12 @@ namespace Haunted::UI {
 			friend void swap(Textbox<C> &left, Textbox<C> &right) {
 				swap(static_cast<Haunted::UI::Control &>(left), static_cast<Haunted::UI::Control &>(right));
 				swap(static_cast<Haunted::UI::Colored &>(left), static_cast<Haunted::UI::Colored &>(right));
-				std::swap(left.lines,   right.lines);
-				std::swap(left.voffset, right.voffset);
+				std::swap(left.lines,        right.lines);
+				std::swap(left.voffset,      right.voffset);
+				std::swap(left.autoscroll,   right.autoscroll);
+				std::swap(left.scrollBuffer, right.scrollBuffer);
+				left.markDirty();
+				right.markDirty();
 			}
 	};
 
