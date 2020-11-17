@@ -228,7 +228,7 @@ namespace Haunted::UI {
 				}
 #endif
 
-				if (do_insert) {
+				if (do_insert) { //-V547
 					size_t old_length = buffer.length();
 					DBG("Old length: " << old_length);
 					buffer.insert(cursor, unicodeByteBuffer);
