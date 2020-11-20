@@ -437,7 +437,6 @@ namespace Haunted {
 
 		if (escape) {
 			// If we read an escape byte, that means something interesting is about to happen.
-			partial_escape = true; // ???
 
 			if (!(*this >> c))
 				return *this;
@@ -447,6 +446,7 @@ namespace Haunted {
 				// Perhaps it would be possible with the use of some timing trickery, but I don't consider that
 				// necessary right now (YAGNI!). Instead, the user will have to press the escape key twice.
 				key = {c, KeyMod::None};
+				partial_escape = true; // ???
 				return *this;
 			} else if (c == uchar(KeyType::OpenSquare)) {
 				if (!(*this >> c))
