@@ -338,14 +338,14 @@ namespace Haunted::UI {
 			int lineRows(TextLine<C> &line) {
 				// TODO: support doublewide characters.
 
-				auto w = formicine::perf.watch("textbox::lineRows");
+				auto w = formicine::perf.watch("Textbox::lineRows");
 				auto lock = lockLines();
 				return line.numRows(position.width);
 			}
 
 			/** Returns the total number of rows occupied by all the lines in the text box. */
 			int totalRows() {
-				auto w = formicine::perf.watch("textbox::total_rows");
+				auto w = formicine::perf.watch("Textbox::total_rows");
 				auto lock = lockLines();
 
 				if (totalRows_ != -1)
@@ -363,7 +363,7 @@ namespace Haunted::UI {
 				if (!canDraw())
 					return;
 
-				auto w = formicine::perf.watch("textbox::draw");
+				auto w = formicine::perf.watch("Textbox::draw");
 				auto lock = terminal->lockRender();
 				auto line_lock = lockLines();
 
@@ -493,7 +493,7 @@ namespace Haunted::UI {
 
 			/** Adds a string to the end of the textbox. */
 			Textbox & operator+=(const std::string &text) {
-				auto w = formicine::perf.watch("textbox::operator+=");
+				auto w = formicine::perf.watch("Textbox::operator+=");
 				auto lock = lockLines();
 				if (!text.empty() && text.back() == '\n')
 					return *this += text.substr(0, text.size() - 1);
@@ -523,7 +523,7 @@ namespace Haunted::UI {
 
 			/** Returns the textbox's contents. */
 			operator std::string() {
-				auto w = formicine::perf.watch("textbox::operator std::string");
+				auto w = formicine::perf.watch("Textbox::operator std::string");
 				auto lock = lockLines();
 				std::string out = "";
 				for (const LinePtr &line: lines) {
