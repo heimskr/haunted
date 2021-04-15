@@ -673,7 +673,7 @@ namespace Haunted::UI {
 #else
 			String promoted = String(1, piece);
 #endif
-			for (const std::pair<const std::string &, RenderChar_f> &pair: characterRenderers)
+			for (auto &pair: characterRenderers)
 				promoted = pair.second(promoted);
 			new_string += promoted;
 		}
