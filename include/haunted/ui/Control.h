@@ -47,7 +47,7 @@ namespace Haunted::UI {
 			Control(Container *parent_, Terminal *terminal_);
 			Control(Container *parent_);
 
-			virtual ~Control() = 0;
+			virtual ~Control() {}
 
 			/** Returns the control's identifier. */
 			virtual std::string getID(bool pad = false) const;

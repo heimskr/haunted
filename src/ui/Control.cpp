@@ -19,8 +19,6 @@ namespace Haunted::UI {
 	Control::Control(Container *parent_):
 		Control(parent_, parent_ == nullptr? nullptr : parent_->getTerminal()) {}
 
-	Control::~Control() = default;
-
 
 // Protected instance methods
 
