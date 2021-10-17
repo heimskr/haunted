@@ -24,7 +24,7 @@ namespace Haunted::UI {
 			bool inMargins = false;
 
 			/** The absolute position of the control on the screen. */
-			Haunted::Position position = {};
+			Haunted::Position position;
 
 			/** Sets the margins if needed, executes a function and resets the margins if needed. Returns true if the
 			 *  margins were set. */
@@ -47,7 +47,7 @@ namespace Haunted::UI {
 			Control(Container *parent_, Terminal *terminal_);
 			Control(Container *parent_);
 
-			virtual ~Control() {}
+			virtual ~Control() = default;
 
 			/** Returns the control's identifier. */
 			virtual std::string getID(bool pad = false) const;

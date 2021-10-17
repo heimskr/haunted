@@ -28,7 +28,7 @@ namespace Haunted::UI {
 				background(background), foreground(foreground), inheritForeground(inherit_fg),
 				inheritBackground(inherit_bg) {}
 
-			virtual ~Colored() = 0;
+			virtual ~Colored() {}
 
 			ansi::color getForeground() const { return foreground; }
 			ansi::color getBackground() const { return background; }

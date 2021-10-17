@@ -30,6 +30,8 @@ namespace Haunted::UI {
 			virtual bool onKey(const Key &);
 
 			virtual bool onMouse(const MouseReport &);
+
+			virtual ~InputHandler() = default;
 	};
 }
 

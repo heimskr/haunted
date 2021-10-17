@@ -16,7 +16,7 @@ namespace Haunted::UI {
 			Child(const Child &) = delete;
 			Child & operator=(const Child &) = delete;
 
-			virtual ~Child() = 0;
+			virtual ~Child() = default;
 
 			Container * getParent();
 			virtual void setParent(Container *);

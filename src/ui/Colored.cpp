@@ -4,8 +4,6 @@
 #include "haunted/ui/Colored.h"
 
 namespace Haunted::UI {
-	Colored::~Colored() = default;
-
 	ansi::color Colored::findColor(ansi::color_type type) const {
 		Container *p = getParent();
 
