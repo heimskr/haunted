@@ -36,6 +36,18 @@ namespace Haunted {
 		return {type, ModSet(mods).set(2, true)};
 	}
 
+	bool Key::hasShift() const {
+		return mods[0];
+	}
+
+	bool Key::hasAlt() const {
+		return mods[1];
+	}
+
+	bool Key::hasCtrl() const {
+		return mods[2];
+	}
+
 	Key::operator bool() const {
 		return int(type) != '\0';
 	}

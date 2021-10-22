@@ -87,6 +87,10 @@ namespace Haunted {
 			/** Returns a copy of the key with the control modifier set. */
 			Key ctrl() const;
 
+			bool hasShift() const;
+			bool hasAlt() const;
+			bool hasCtrl() const;
+
 			/** Returns false if the key is null/invalid. */
 			operator bool() const;
 
