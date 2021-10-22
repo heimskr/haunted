@@ -149,9 +149,12 @@ namespace Haunted {
 	}
 
 	UI::InputHandler * Terminal::sendKey(const Key &key) {
-		// If the root is null, there are no controls and nothing to send key presses to.
-		if (root == nullptr)
+		// If the root is null, there are no controls.
+		if (root == nullptr) {
+			if (keyPostlistener)
+				keyPostlistener(key);
 			return nullptr;
+		}
 
 		UI::Control *control = getFocused();
 
