@@ -519,7 +519,7 @@ namespace Haunted::UI {
 				rowsDirty();
 				if (canDraw()) {
 					if (autoscroll)
-						doScroll(ptr->numRows(position.width));
+						doScroll(lines.back()->numRows(position.width));
 					drawNewLine(*lines.back(), true);
 				}
 				return *this;
