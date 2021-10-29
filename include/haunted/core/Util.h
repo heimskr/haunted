@@ -42,6 +42,13 @@ namespace Haunted {
 			static std::string demangleObject(const T &object) {
 				return demangle(std::string(typeid(object).name()));
 			}
+
+			template <typename T>
+			static std::string hex(T n) {
+				std::stringstream ss;
+				ss << std::hex << n;
+				return ss.str();
+			}
 	};
 }
 

@@ -8,15 +8,15 @@ namespace Haunted {
 		return 0 <= x && 0 <= y;
 	}
 
-	void Position::jump(int inner_offset_left, int inner_offset_top) {
+	void Position::jump(ssize_t inner_offset_left, ssize_t inner_offset_top) {
 		ansi::out.jump(left + inner_offset_left, top + inner_offset_top);
 	}
 
-	int Position::right() const {
+	ssize_t Position::right() const {
 		return left + width - 1;
 	}
 
-	int Position::bottom() const {
+	ssize_t Position::bottom() const {
 		return top + height - 1;
 	}
 

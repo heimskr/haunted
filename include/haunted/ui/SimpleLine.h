@@ -9,17 +9,18 @@ namespace Haunted::UI {
 	 */
 	template <template <typename... T> typename C = std::vector>
 	struct SimpleLine: public TextLine<C> {
-		int continuation = 0;
+		size_t continuation = 0;
 
 		/** The raw text of the line. */
 		std::string text = "";
 
-		SimpleLine(const std::string &text_, int continuation_ = 0): continuation(continuation_), text(text_) {
+		SimpleLine(const std::string &text_, size_t continuation_ = 0, const bool *allow_wrap = nullptr):
+		TextLine<C>(allow_wrap), continuation(continuation_), text(text_) {
 			text.erase(std::remove(text.begin(), text.end(), '\r'), text.end());
 			text.erase(std::remove(text.begin(), text.end(), '\n'), text.end());
 		}
 
-		SimpleLine(int continuation_): continuation(continuation_) {}
+		SimpleLine(size_t continuation_): continuation(continuation_) {}
 
 		SimpleLine(): SimpleLine("", 0) {}
 
@@ -28,7 +29,7 @@ namespace Haunted::UI {
 			return text;
 		}
 
-		int getContinuation() override { return continuation; }
+		size_t getContinuation() override { return continuation; }
 
 		virtual bool operator==(SimpleLine &other) {
 			return getContinuation() == other.getContinuation() && text == other.text;

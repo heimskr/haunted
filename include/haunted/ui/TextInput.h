@@ -32,7 +32,7 @@ namespace Haunted::UI {
 			using String = ustring;
 			using StringPiece = std::string;
 #endif
-			using Update_f = std::function<void(const String &, int)>;
+			using Update_f = std::function<void(const String &, ssize_t)>;
 			using RenderChar_f = std::function<String(const String &)>;
 
 		private:
@@ -235,7 +235,7 @@ namespace Haunted::UI {
 			virtual void draw() override;
 
 			/** Clears the space to the right of the cursor and redraws the text. */
-			void drawRight(int offset = 0);
+			void drawRight(ssize_t offset = 0);
 
 			/** Partially re-renders the control onto the terminal in response to a deletion. */
 			void drawErase();

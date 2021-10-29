@@ -1,5 +1,4 @@
-#ifndef HAUNTED_UI_TEXTBOX_H_
-#define HAUNTED_UI_TEXTBOX_H_
+#pragma once
 
 #include <deque>
 #include <functional>
@@ -37,15 +36,15 @@ namespace Haunted::UI {
 			C<LinePtr> lines;
 
 			/** The number of rows the container has been scrolled vertically. */
-			int voffset = 0;
+			ssize_t voffset = 0;
 
 			/** Whether the textbox should automatically scroll to keep up with lines added to the bottom. */
 			bool autoscroll = false;
 
 			/** Used for locking when doing operations on lines. */
-			std::recursive_mutex line_mutex;
+			std::recursive_mutex lineMutex;
 
-			std::unique_lock<std::recursive_mutex> lockLines() { return std::unique_lock(line_mutex); }
+			std::unique_lock<std::recursive_mutex> lockLines() { return std::unique_lock(lineMutex); }
 
 			/** Empties the buffer and replaces it with 0-continuation lines from a vector of string. */
 			void setLines(const std::vector<std::string> &strings) {
@@ -89,7 +88,7 @@ namespace Haunted::UI {
 
 					terminal->jump(0, next);
 					for (int row = next, i = 0; row < position.height && i < new_lines; ++row, ++i) {
-						if (i > 0)
+						if (0 < i)
 							*terminal << "\n";
 						*terminal << line.textAtRow(position.width, i, true);
 					}
@@ -101,27 +100,30 @@ namespace Haunted::UI {
 			}
 
 			/** Returns the row on which the next line should be drawn or -1 if it's out of bounds. */
-			int nextRow(int offset_offset = 0) {
-				int offset = voffset + offset_offset;
-				int total = totalRows();
+			ssize_t nextRow(ssize_t offset_offset = 0) {
+				ssize_t offset = voffset + offset_offset;
+				size_t total = totalRows();
 
 				// Return -1 if the next row is below the visible area.
-				if (position.height <= total - offset)
+				if (position.height <= ssize_t(total) - offset)
 					return -1;
 
-				return total - offset;
+				return ssize_t(total) - offset;
 			}
 
 			/** Returns a pair of the line at a given row (ignoring voffset and zero-based) and the number of rows past
 			 *  the start of the line. For example, if the textbox contains one line that occupies a single row and a
 			 *  second line that spans 5 rows, then calling this function with 4 will return {lines[1], 3}. */
-			std::pair<TextLine<C> *, int> lineAtRow(int row) {
+			std::pair<TextLine<C> *, size_t> lineAtRow(size_t row) {
 				if (lines.empty() || row >= totalRows())
 					throw std::out_of_range("Invalid row index: " + std::to_string(row));
 
 				auto w = formicine::perf.watch("Textbox::lineAtRow");
 
-				int line_count = lines.size(), index = 0, row_count = 0, last_count = 0, offset = -1;
+				if (!allowWrap)
+					return {lines.at(row).get(), row};
+
+				size_t line_count = lines.size(), index = 0, row_count = 0, last_count = 0, offset = -1;
 
 				auto iter = lines.begin();
 				for (index = 0, row_count = 0; index < line_count; ++index) {
@@ -129,50 +131,59 @@ namespace Haunted::UI {
 					if (row_count <= row && row < row_count + last_count) {
 						offset = row - row_count;
 						break;
-					} else {
+					} else
 						row_count += last_count;
-					}
 				}
 
 				if (line_count <= index)
 					throw std::out_of_range("Line index too large: " + std::to_string(index));
 
-				return {std::next(lines.begin(), index)->get(), offset == -1? row - row_count : offset};
+				return {std::next(lines.begin(), index)->get(), offset == -1ul? row - row_count : offset};
 			}
 
 			/** Returns the string to print on a given row (zero-based) of the textbox. Handles text wrapping and
 			 *  scrolling automatically. */
-			std::string textAtRow(int row, bool pad_right = true) {
-				const size_t cols = position.width;
+			std::string textAtRow(size_t row, bool pad_right = true) {
+				const ssize_t cols = position.width;
 				auto w = formicine::perf.watch("Textbox::textAtRow");
-				// w.canceled = true;
+
+				if (!allowWrap) {
+					if (lines.size() <= size_t(row) + voffset)
+						return pad_right? std::string(cols, ' ') + "\e[0m" : "\e[0m";
+					LinePtr &line = lines.at(row + voffset);
+					const std::string line_text = *line;
+					const size_t line_length = ansi::length(line_text);
+					if (cols < ssize_t(line_length))
+						return ansi::substr(line_text, 0, cols) + "\e[0m";
+					return line_text + (pad_right? std::string(cols - line_length, ' ') + "\e[0m": "\e[0m");
+				}
+
 				TextLine<C> *line;
 				size_t offset;
 
-				if (position.height <= row || row < 0)
-					return "";
+				if (size_t(position.height) <= row || row < 0)
+					return "\e[0m";
 
 				if (lines.empty() || (row + voffset) >= totalRows()) {
-					return pad_right? std::string(cols, ' ') : "";
+					return pad_right? std::string(cols, ' ') + "\e[0m": "\e[0m";
 				} else {
 					std::tie(line, offset) = lineAtRow(row + voffset);
 				}
 
-				const std::string line_text = std::string(*line);
-				const int continuation = line->getContinuation();
+				const std::string line_text = *line;
+				const size_t continuation = line->getContinuation();
 
 				if (offset == 0) {
 					const size_t line_length = ansi::length(line_text);
-					if (pad_right) {
-						return line_length <= cols? line_text + std::string(cols - line_length, ' ')
-							: ansi::substr(line_text, 0, cols);
-					} else {
-						return line_length <= cols? line_text : ansi::substr(line_text, 0, cols);
-					}
+					if (pad_right)
+						return (ssize_t(line_length) <= cols? line_text + std::string(cols - line_length, ' ')
+							: ansi::substr(line_text, 0, cols)) + "\e[0m";
+					else
+						return (ssize_t(line_length) <= cols? line_text : ansi::substr(line_text, 0, cols)) + "\e[0m";
 				}
 
 				// Number of chars visible per row on a continued line
-				size_t continuation_chars = cols - continuation;
+				const size_t continuation_chars = cols - continuation;
 
 				// Ignore the first line. 
 				std::string str = ansi::substr(line_text, cols);
@@ -186,16 +197,17 @@ namespace Haunted::UI {
 
 				const size_t str_length = ansi::length(str);
 				// Return the continuation padding plus the segment of text visible on the row.
-				if (pad_right && continuation + str_length < cols)
-					return std::string(continuation, ' ') + str + std::string(cols - continuation - str_length, ' ');
-				return std::string(continuation, ' ') + str;
+				if (pad_right && ssize_t(continuation + str_length) < cols)
+					return std::string(continuation, ' ') + str + std::string(cols - continuation - str_length, ' ') +
+						"\e[0m";
+				return std::string(continuation, ' ') + str + "\e[0m";
 			}
 
 			/** Performs vertical scrolling for a given number of rows if autoscrolling is enabled and the right
 			 *  conditions are met. This should be done after the line is added to the set of lines but before the line
 			 *  is drawn. Returns true if this method caused any scrolling.*/
 			bool doScroll(size_t rows) {
-				if (autoscroll && position.height == totalRows() - voffset) {
+				if (autoscroll && position.height == ssize_t(totalRows()) - voffset) {
 					vscroll(rows);
 					return true;
 				}
@@ -207,6 +219,13 @@ namespace Haunted::UI {
 			/** The cached return value of total_rows(). */
 			int totalRows_ = -1;
 
+			/** The minimum number of lines that must be visible at the top. */
+			unsigned int scrollBuffer = 0;
+
+			/** Whether line wrapping is allowed. If false, overflowing text will be hidden, but performance will be
+			 *  better. */
+			bool allowWrap = true;
+
 			/** Marks the cached return value of total_rows() as dirty. */
 			void rowsDirty() {
 				totalRows_ = -1;
@@ -214,8 +233,9 @@ namespace Haunted::UI {
 
 			/** Marks the num_rows_ values of the contained lines as dirty. */
 			void linesDirty() {
-				for (LinePtr &line: lines)
-					line->markDirty();
+				if (allowWrap)
+					for (LinePtr &line: lines)
+						line->markDirty();
 			}
 
 			/** Marks everything as dirty. */
@@ -224,13 +244,9 @@ namespace Haunted::UI {
 				linesDirty();
 			}
 
-		public:
-			/** The minimum number of lines that must be visible at the top. */
-			unsigned int scrollBuffer = 0;
-
-			/** Constructs a textbox with a parent, a position and initial contents. */
-			Textbox(Container *parent_, const Position &pos_, const std::vector<std::string> &contents_):
-			ColoredControl(parent_, pos_) {
+			Textbox(Container *parent_, const Position &pos_ = {}, bool allow_wrap = true,
+				const C<std::string> &contents_ = {}):
+				ColoredControl(parent_, pos_), allowWrap(allow_wrap) {
 				if (parent_)
 					parent_->addChild(this);
 				setLines(contents_);
@@ -238,21 +254,12 @@ namespace Haunted::UI {
 				position = pos_;
 			}
 
-			/** Constructs a textbox with a parent and position and empty contents. */
-			Textbox(Container *parent_, const Position &pos_): Textbox(parent_, pos_, {}) {}
-
-			/** Constructs a textbox with a parent, initial contents and a default position. */
-			Textbox(Container *parent_, const std::vector<std::string> &contents_): ColoredControl(parent_) {
+			Textbox(Container *parent_, bool allow_wrap, const C<std::string> &contents_ = {}):
+				ColoredControl(parent_), allowWrap(allow_wrap) {
 				if (parent_)
 					parent_->addChild(this);
 				setLines(contents_);
 			}
-
-			/** Constructs a textbox with a parent, a default position and empty contents. */
-			Textbox(Container *parent_): Textbox(parent_, std::vector<std::string>()) {}
-
-			/** Constructs a textbox with no parent and no contents. */
-			Textbox(): Textbox(nullptr, std::vector<std::string>()) {}
 
 			/** Deletes all lines in the textbox. */
 			void clearLines() {
@@ -266,13 +273,13 @@ namespace Haunted::UI {
 			C<LinePtr> & getLines() { return lines; }
 
 			/** Scrolls the textbox down (positive argument) or up (negative argument). */
-			void vscroll(int delta = 1) {
+			void vscroll(ssize_t delta = 1) {
 				auto w = formicine::perf.watch("Textbox::vscroll");
 
-				const int total = totalRows();
-				const int old_voffset = voffset;
+				const ssize_t total = totalRows();
+				const ssize_t old_voffset = voffset;
 
-				voffset = std::max(std::min(total - static_cast<int>(scrollBuffer), voffset + delta), 0);
+				voffset = std::max(std::min(total - ssize_t(scrollBuffer), voffset + delta), 0l);
 
 				// Don't let the voffset extend past the point where the (scrollBuffer + 1)th-last line of text is just
 				// above the first row.
@@ -283,7 +290,7 @@ namespace Haunted::UI {
 					return;
 
 				auto lock = terminal->lockRender();
-				const int diff = old_voffset - voffset;
+				const ssize_t diff = old_voffset - voffset;
 
 				tryMargins([&, this]() {
 					applyColors();
@@ -335,18 +342,24 @@ namespace Haunted::UI {
 			}
 
 			/** Returns the number of rows on the terminal a line of text would occupy. */
-			int lineRows(TextLine<C> &line) {
+			size_t lineRows(TextLine<C> &line) {
 				// TODO: support doublewide characters.
-
 				auto w = formicine::perf.watch("Textbox::lineRows");
+
+				if (!allowWrap)
+					return 1;
+
 				auto lock = lockLines();
 				return line.numRows(position.width);
 			}
 
 			/** Returns the total number of rows occupied by all the lines in the text box. */
-			int totalRows() {
+			size_t totalRows() {
 				auto w = formicine::perf.watch("Textbox::total_rows");
 				auto lock = lockLines();
+
+				if (!allowWrap)
+					return lines.size();
 
 				if (totalRows_ != -1)
 					return totalRows_;
@@ -372,7 +385,7 @@ namespace Haunted::UI {
 					clearRect();
 					applyColors();
 
-					if (0 <= voffset && totalRows() <= voffset) {
+					if (0 <= voffset && ssize_t(totalRows()) <= voffset) {
 						// There's no need to draw anything if the box has been scrolled down beyond all its contents.
 					} else {
 						try {
@@ -555,5 +568,3 @@ namespace Haunted::UI {
 	using DequeBox  = Textbox<std::deque>;
 	using VectorBox = Textbox<std::vector>;
 }
-
-#endif

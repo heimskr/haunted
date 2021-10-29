@@ -114,9 +114,9 @@ namespace Haunted::UI {
 
 	Point TextInput::findCursor() const {
 #ifndef ENABLE_ICU
-		return {static_cast<int>(position.left + prefixLength + cursor - scroll), position.top};
+		return {position.left + ssize_t(prefixLength) + ssize_t(cursor) - ssize_t(scroll), position.top};
 #else
-		return {static_cast<int>(position.left + prefixLength + buffer.widthUntil(cursor, scroll)), position.top};
+		return {position.left + ssize_t(prefixLength) + ssize_t(buffer.widthUntil(cursor, scroll)), position.top};
 #endif
 	}
 
@@ -166,7 +166,7 @@ namespace Haunted::UI {
 		} else if (event == Event::Submit) {
 			onSubmit = fn;
 		} else {
-			throw std::invalid_argument("Invalid event type: " + std::to_string(static_cast<int>(event)));
+			throw std::invalid_argument("Invalid event type: " + std::to_string(int(event)));
 		}
 	}
 
@@ -190,7 +190,7 @@ namespace Haunted::UI {
 
 	void TextInput::insert(unsigned char ch) {
 		if (ch < 0x20 && whitelist.find(ch) == whitelist.end()) {
-			DBG("Ignoring " << static_cast<int>(ch) << ".");
+			DBG("Ignoring " << int(ch) << ".");
 			return;
 		}
 
@@ -219,8 +219,8 @@ namespace Haunted::UI {
 						unicodeCodepointBuffer.push_back(uchar);
 					} else {
 						// Otherwise, if it's the second half, insert both halves into the TextInput.
-						// int uchars[] = {static_cast<int>(unicodeCodepointBuffer[0]), static_cast<int>(uchar)};
-						int uchars[] = {static_cast<int>(unicodeCodepointBuffer[0]), static_cast<int>(uchar)};
+						// int uchars[] = {int(unicodeCodepointBuffer[0]), int(uchar)};
+						int uchars[] = {int(unicodeCodepointBuffer[0]), int(uchar)};
 						unicodeByteBuffer.clear();
 						icu::UnicodeString::fromUTF32(uchars, 2).toUTF8String(unicodeByteBuffer);
 						unicodeCodepointBuffer.clear();
@@ -612,7 +612,7 @@ namespace Haunted::UI {
 		terminal->jumpToFocused();
 	}
 
-	void TextInput::drawRight(int offset) {
+	void TextInput::drawRight(ssize_t offset) {
 		if (!canDraw())
 			return;
 
@@ -621,7 +621,7 @@ namespace Haunted::UI {
 		terminal->outStream.save();
 		clearLine();
 		const size_t old_cursor = cursor;
-		cursor = offset < 0 && -offset > static_cast<int>(cursor)? 0 : cursor + offset;
+		cursor = offset < 0 && -offset > ssize_t(cursor)? 0 : cursor + offset;
 		if (cursor > length())
 			cursor = length();
 		jumpCursor();

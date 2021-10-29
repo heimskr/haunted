@@ -23,18 +23,19 @@ namespace Haunted::UI {
 	class TextLine {
 		public:
 			std::vector<std::string> lines_ {};
-			int numRows_ = -1;
+			ssize_t numRows_ = -1;
 			bool dirty = true;
 			bool cleaning = false;
+			const bool *allowWrap = nullptr;
 
 			/** Caches the return values of num_rows and text_at_row. */
-			void clean(int width) {
-				if (!dirty || cleaning)
+			void clean(ssize_t width) {
+				if (!dirty || cleaning || (allowWrap && !*allowWrap))
 					return;
 
 				cleaning = true;
 				numRows_ = numRows(width);
-				for (int row = 0; row < numRows_; ++row)
+				for (ssize_t row = 0; row < numRows_; ++row)
 					lines_.push_back(textAtRow(width, row));
 
 				cleaning = false;
@@ -45,7 +46,9 @@ namespace Haunted::UI {
 			Textbox<C> *box = nullptr;
 			std::function<void(const MouseReport &)> mouseFunction;
 
-			TextLine() {}
+			TextLine() = delete;
+
+			TextLine(const bool *allow_wrap): allowWrap(allow_wrap) {}
 
 			virtual ~TextLine() = default;
 
@@ -59,10 +62,25 @@ namespace Haunted::UI {
 			/** Returns the number of blank spaces at the beginning of a row to use when the line's longer than the
 			 *  width of its container and has to be wrapped. The first row of the line isn't padded, but all subsequent
 			 *  rows are. */
-			virtual int getContinuation() = 0;
+			virtual size_t getContinuation() = 0;
 
 			/** Returns the text for a given row relative to the line for a given textbox width. */
-			virtual std::string textAtRow(size_t width, int row, bool pad_right = true) {
+			virtual std::string textAtRow(size_t width, size_t row, bool pad_right = true) {
+				if (allowWrap && !*allowWrap) {
+					if (row != 0)
+						return pad_right? std::string(width, ' ') : "";
+					const std::string text = std::string(*this);
+					const size_t text_length = ansi::length(text);
+					if (width < text_length)
+						return ansi::substr(text, 0, width);
+					if (pad_right) {
+						if (width == text_length)
+							return text;
+						return text + std::string(text_length - width, ' ');
+					}
+					return text;
+				}
+
 				if (!dirty) {
 					return lines_[row];
 				} else if (!cleaning) {
@@ -79,7 +97,7 @@ namespace Haunted::UI {
 						: ansi::substr(text, 0, width);
 				}
 
-				const int continuation = getContinuation();
+				const size_t continuation = getContinuation();
 				const size_t index = continuation + row * (width - continuation);
 				if (index >= text_length)
 					return pad_right? std::string(width, ' ') : "";
@@ -93,7 +111,10 @@ namespace Haunted::UI {
 			}
 
 			/** Returns the number of rows the line will occupy for a given width. */
-			virtual int numRows(int width) {
+			virtual size_t numRows(ssize_t width) {
+				if (allowWrap && !*allowWrap)
+					return 1;
+
 				if (!dirty) {
 					return numRows_;
 				} else if (!cleaning) {

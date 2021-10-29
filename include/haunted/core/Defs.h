@@ -26,9 +26,9 @@ namespace Haunted {
 	enum class Side {Left, Right, Top, Bottom};
 
 	struct Point {
-		int x, y;
+		ssize_t x, y;
 
-		Point(int x, int y): x(x), y(y) {}
+		Point(ssize_t x, ssize_t y): x(x), y(y) {}
 		Point(): Point(-1, -1) {}
 
 		operator bool() const;
@@ -36,19 +36,19 @@ namespace Haunted {
 
 	/** Represents a position. This is zero-based, while ANSI is one-based, so be careful. */
 	struct Position {
-		int left, top, width, height;
+		ssize_t left, top, width, height;
 		
-		Position(int l, int t, int w, int h): left(l), top(t), width(w), height(h) {}
+		Position(ssize_t l, ssize_t t, ssize_t w, ssize_t h): left(l), top(t), width(w), height(h) {}
 		Position(): Position(-1, -1, -1, -1) {}
 		
 		/** Moves the cursor to a given offset from the top-left corner of the position. */
-		void jump(int offset_left = 0, int offset_top = 0);
+		void jump(ssize_t offset_left = 0, ssize_t offset_top = 0);
 
 		/** Returns the rightmost column of the position. */
-		int right() const;
+		ssize_t right() const;
 
 		/** Returns the bottommost column of the position. */
-		int bottom() const;
+		ssize_t bottom() const;
 
 		bool operator==(const Position &) const;
 		bool operator!=(const Position &) const;
@@ -67,12 +67,7 @@ namespace Haunted {
 			T *source;
 
 			std::runtime_error createRuntimeError(T *source) {
-				char msg[1024];
-				if (source == nullptr)
-					sprintf(msg, "Terminal is null");
-				else
-					sprintf(msg, "Terminal is null for %p", source);
-				return std::runtime_error(msg);
+				return std::runtime_error("Terminal is null " + (source? "for " + hex(source) : ""));
 			}
 
 		public:
