@@ -290,7 +290,7 @@ namespace Haunted::UI {
 					return;
 
 				auto lock = terminal->lockRender();
-				const ssize_t diff = old_voffset - voffset;
+				ssize_t diff = old_voffset - voffset;
 
 				tryMargins([&, this]() {
 					applyColors();
@@ -300,6 +300,7 @@ namespace Haunted::UI {
 					// bottom.
 					if (voffset < old_voffset) {
 						terminal->jump(0, 0);
+						diff = std::min(position.height, diff);
 						for (ssize_t i = 0; i < diff; ++i) {
 							*terminal << textAtRow(i);
 							if (i < position.height - 1)
