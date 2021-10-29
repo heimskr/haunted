@@ -300,14 +300,14 @@ namespace Haunted::UI {
 					// bottom.
 					if (voffset < old_voffset) {
 						terminal->jump(0, 0);
-						for (int i = 0; i < diff; ++i) {
+						for (ssize_t i = 0; i < diff; ++i) {
 							*terminal << textAtRow(i);
 							if (i < position.height - 1)
 								*terminal << "\n";
 						}
 					} else if (old_voffset < voffset) {
 						terminal->jump(0, position.height + diff);
-						for (int i = position.height + diff; i < position.height; ++i) {
+						for (ssize_t i = position.height + std::max(diff, -position.height); i < position.height; ++i) {
 							*terminal << textAtRow(i);
 							if (i < position.height - 1)
 								*terminal << "\n";
@@ -475,7 +475,10 @@ namespace Haunted::UI {
 			}
 
 			void redrawLine(TextLine<C> &to_redraw) {
-				int rows = 0;
+				if (!canDraw())
+					return;
+
+				ssize_t rows = 0;
 				auto lock = lockLines();
 				for (LinePtr &line: lines) {
 					if (line.get() == &to_redraw)
@@ -483,18 +486,18 @@ namespace Haunted::UI {
 					rows += lineRows(*line);
 				}
 
-				int next = rows - voffset;
+				ssize_t next = rows - voffset;
 				if (voffset <= rows && next < position.height) {
 					// The line is in view.
 					to_redraw.markDirty();
 					to_redraw.clean(position.width);
-					const int new_lines = lineRows(to_redraw);
-					tryMargins([&, this]() {
+					const ssize_t new_lines = ssize_t(lineRows(to_redraw));
+					tryMargins([this, &to_redraw, next, new_lines]() {
 						applyColors();
 
 						terminal->jump(0, next);
-						for (int row = next, i = 0; row < position.height && i < new_lines; ++row, ++i) {
-							if (i > 0)
+						for (ssize_t row = next, i = 0; row < position.height && i < new_lines; ++row, ++i) {
+							if (0 < i)
 								*terminal << "\n";
 							*terminal << to_redraw.textAtRow(position.width, i, true);
 						}
@@ -507,30 +510,33 @@ namespace Haunted::UI {
 			/** Adds a string to the end of the textbox. */
 			Textbox & operator+=(const std::string &text) {
 				auto w = formicine::perf.watch("Textbox::operator+=");
-				auto lock = lockLines();
 				if (!text.empty() && text.back() == '\n')
 					return *this += text.substr(0, text.size() - 1);
 
-				std::shared_ptr<SimpleLine<C>> ptr = std::make_shared<SimpleLine<C>>(text, 0);
-				const size_t nrows = ptr->numRows(position.width);
-				doScroll(nrows);
+				std::shared_ptr<SimpleLine<C>> ptr = std::make_shared<SimpleLine<C>>(text, 0, &allowWrap);
+				auto lock = lockLines();
 				lines.push_back(std::move(ptr));
 				rowsDirty();
-				drawNewLine(*lines.back(), true);
+				if (canDraw()) {
+					if (autoscroll)
+						doScroll(ptr->numRows(position.width));
+					drawNewLine(*lines.back(), true);
+				}
 				return *this;
 			}
 			
 			/** Adds a line to the end of the textbox. */
 			template <EXTENDS(T, TextLine<C>)>
 			Textbox & operator+=(T &line) {
-				auto w = formicine::perf.watch("template textbox::operator+=");
+				auto w = formicine::perf.watch("template Textbox::operator+=");
 				std::unique_ptr<T> line_copy = std::make_unique<T>(line);
 				line_copy->box = this;
-				if (autoscroll)
+				if (canDraw() && autoscroll)
 					doScroll(line_copy->numRows(position.width));
 				lines.push_back(std::move(line_copy));
 				rowsDirty();
-				drawNewLine(*lines.back(), true);
+				if (canDraw())
+					drawNewLine(*lines.back(), true);
 				return *this;
 			}
 

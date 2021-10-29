@@ -85,11 +85,10 @@ namespace Haunted::UI::Boxes {
 	}
 
 	void ExpandoBox::resizeChild(Control *child, int offset, int size) {
-		if (orientation == BoxOrientation::Horizontal) {
+		if (orientation == BoxOrientation::Horizontal)
 			child->resize({position.left + offset, position.top, size, position.height});
-		} else {
+		else
 			child->resize({position.left, position.top + offset, position.width, size});
-		}
 	}
 
 	void ExpandoBox::resize(const Position &new_pos) {

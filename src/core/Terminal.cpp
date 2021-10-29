@@ -127,6 +127,7 @@ namespace Haunted {
 			colors.reset();
 			outStream.clear().jump();
 			root->resize({0, 0, cols, rows});
+			root->draw();
 		}
 	}
 
