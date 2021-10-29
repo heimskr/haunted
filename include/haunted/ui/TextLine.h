@@ -76,7 +76,7 @@ namespace Haunted::UI {
 					if (pad_right) {
 						if (width == text_length)
 							return text;
-						return text + std::string(text_length - width, ' ');
+						return text + std::string(width - text_length, ' ');
 					}
 					return text;
 				}
