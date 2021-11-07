@@ -189,10 +189,8 @@ namespace Haunted::UI {
 	}
 
 	void TextInput::insert(unsigned char ch) {
-		if (ch < 0x20 && whitelist.find(ch) == whitelist.end()) {
-			DBG("Ignoring " << int(ch) << ".");
+		if (ch < 0x20 && whitelist.find(ch) == whitelist.end())
 			return;
-		}
 
 		if (!unicodeByteBuffer.empty()) {
 			unicodeByteBuffer.push_back(ch);
